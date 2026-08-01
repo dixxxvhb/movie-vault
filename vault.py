@@ -41,6 +41,13 @@ _links_path = os.path.join(BASE, "links.json")
 LINKS = (json.load(io.open(_links_path, encoding="utf-8"))
          if os.path.exists(_links_path) else [])
 
+# ---- the bespoke fronts (photo_svg per definitive film; v3) -----------------
+# photos.json is written from film_ledger_panels.photo_svg before building.
+# Optional: a slug without a scene falls back to its glyph.
+_photos_path = os.path.join(BASE, "photos.json")
+PHOTOS = (json.load(io.open(_photos_path, encoding="utf-8"))
+          if os.path.exists(_photos_path) else {})
+
 def sortkey(t):
     t = re.sub(r'^(The|A|An)\s+', '', t)
     return t.lower()
@@ -340,6 +347,7 @@ def _embed(obj):
 
 META_JS = _embed(META_RAW)          # slug -> [date, score, title]
 LINKS_JS = _embed(LINKS)            # [{from,to,relation,note,weight,directional,source}]
+PHOTOS_JS = _embed(PHOTOS)          # slug -> svg scene (the bespoke fronts)
 
 TEMPLATE = io.open(os.path.join(_here, "wall_template.html"), encoding="utf-8").read()
 
@@ -348,11 +356,12 @@ doc = (TEMPLATE
        .replace("__FACTS_JS__", _embed(FACTS))
        .replace("__SECTIONS__", sections)
        .replace("__META__", META_JS)
-       .replace("__LINKS__", LINKS_JS))
-for tok in ("__PALETTES__", "__FACTS_JS__", "__SECTIONS__", "__META__", "__LINKS__"):
+       .replace("__LINKS__", LINKS_JS)
+       .replace("__PHOTOS__", PHOTOS_JS))
+for tok in ("__PALETTES__", "__FACTS_JS__", "__SECTIONS__", "__META__", "__LINKS__", "__PHOTOS__"):
     assert tok not in doc, tok
 
 io.open(OUT, "w", encoding="utf-8").write(doc)
 print("wrote", OUT, len(doc), "bytes")
 print("ledger", len(tagged), "archive", len(arc), "certified", n_cert, "hazy", len(hazy_html))
-print("links", len(LINKS))
+print("links", len(LINKS), "fronts", len(PHOTOS))

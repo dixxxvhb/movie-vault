@@ -3,11 +3,14 @@
 Working copy of the movie-night ledger build, kept here so a Code session
 doesn't have to reconstruct it from scratch every time.
 
-**PIPELINE v2 (2026-08-01): the spatial Polaroid Wall.** `vault.py` +
-`wall_template.html` render an interactive pan/zoom wall with four modes
-(Wall / Backs / Constellations / Thread) and a `film_links` see-also layer.
-See `CHANGELOG.md` for what changed and `VAULT-REDESIGN-HANDOFF.md` for the
-spec. `legacy-v1/` holds the old stacked-panel pipeline.
+**PIPELINE v3 (2026-08-01): The Room.** `vault.py` + `wall_template.html`
+render a salon-hung wall in a painted room (height = rank, lamp over the
+Crown), an open shoebox and dark drawer of evidence-in-waiting, bespoke SVG
+fronts per definitive film (`film_ledger_panels.photo_svg`, pulled to
+`photos.json`), and three modes: The Wall / The Backs / The Investigation
+(merged Thread + Constellations: hold to light, click to follow, ember trail,
+"step back" clustering). See `CHANGELOG.md` v3 for details and sync step
+additions. `legacy-v1/` holds the old stacked-panel pipeline.
 
 **Live artifact URL (stable — always pass this as `url` on republish):**
 https://claude.ai/code/artifact/a58b1295-395f-4868-ba39-d4cbc5d87e94
@@ -54,6 +57,15 @@ not the record.
 
 4. If anything new got certified this session (a `CERTIFY` paste-block),
    write `certified.json` — shape and rules in the movie-night SKILL.md.
+
+4.5. Pull current fronts (v3; the bespoke scenes are blank without it):
+   ```sql
+   select jsonb_object_agg(slug, photo_svg)::text from film_ledger_panels
+   where photo_svg is not null;
+   ```
+   Save as `photos.json`. New films get a scene authored on the Code side
+   (236x236 viewBox, palette vars only, dead-center subject) and stored in
+   `photo_svg` alongside the panel insert.
 
 5. Pull current links (v2; optional, but the see-also layer and thread/
    constellations are empty without it):

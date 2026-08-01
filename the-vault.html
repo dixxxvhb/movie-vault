@@ -6,7 +6,7 @@
 <title>The Vault</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Caveat:wght@400;600;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap');
-:root{--wall:#E8E2D6;--wall2:#DCD4C4;--ink:#1C1914;--mid:#6E675A;--rule:#D2C9B8;--photo:#FFFEF8;--pencil:#8A8272;--pen:#25221C;--thread:#FFF3D6}
+:root{--wall:#E8E2D6;--wall2:#DCD4C4;--ink:#1C1914;--mid:#6E675A;--rule:#D2C9B8;--photo:#FFFEF8;--pencil:#8A8272;--pen:#25221C;--thread:#C42B2B}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wall2) 70%,#D4CBB9 100%);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;font-size:15px;line-height:1.6}
@@ -18,10 +18,26 @@ body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wal
 #world.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
 #source{display:none}
 
-/* wall regions: three rooms on one plane */
-.region{position:absolute;border-radius:26px;pointer-events:none}
-#regBox{background:rgba(120,100,70,.07);box-shadow:inset 0 0 0 1px rgba(110,103,90,.14)}
-#regHazy{background:linear-gradient(170deg,rgba(26,23,17,.82),rgba(35,31,23,.78));box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+/* room architecture: painted in layout() */
+.arch{position:absolute;pointer-events:none}
+.arch.wallpanel{background:
+  linear-gradient(180deg,rgba(255,252,244,.32) 0%,rgba(255,252,244,0) 14%),
+  repeating-linear-gradient(90deg,rgba(110,103,90,.045) 0 2px,rgba(110,103,90,0) 2px 220px);
+  box-shadow:inset 0 -140px 120px -100px rgba(110,95,70,.14)}
+.arch.rail{height:10px;background:linear-gradient(180deg,rgba(255,253,246,.9),rgba(190,180,160,.55) 60%,rgba(120,110,92,.35));box-shadow:0 2px 4px rgba(60,52,40,.14);border-radius:2px}
+.arch.baseboard{height:34px;background:linear-gradient(180deg,rgba(252,249,240,.95),rgba(206,197,178,.9) 55%,rgba(150,140,120,.8));box-shadow:0 -1px 0 rgba(255,255,255,.7) inset,0 6px 10px rgba(60,52,40,.16)}
+.arch.floor{background:repeating-linear-gradient(90deg,rgba(126,102,74,.32) 0 210px,rgba(108,86,60,.34) 210px 212px),linear-gradient(180deg,rgba(140,114,84,.34),rgba(112,90,64,.4))}
+.arch.lamp{background:radial-gradient(50% 90% at 50% 0%,rgba(255,241,205,.5),rgba(255,241,205,0) 70%)}
+.arch.wire{width:2px;background:linear-gradient(180deg,rgba(70,62,50,.5),rgba(70,62,50,.25))}
+.arch.shade{background:linear-gradient(180deg,#3A342A,#57503F);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);border-radius:3px}
+.arch.table{background:linear-gradient(180deg,rgba(96,74,52,.95),rgba(72,54,38,.95));border-radius:6px 6px 3px 3px;box-shadow:0 10px 24px rgba(50,40,28,.3)}
+.arch.tableleg{width:14px;background:linear-gradient(90deg,rgba(84,64,44,.95),rgba(60,45,32,.95));border-radius:0 0 4px 4px}
+.arch.boxwall{background:linear-gradient(180deg,#B79B72,#A5895F 60%,#8F7550);border-radius:8px;box-shadow:inset 0 10px 22px rgba(60,45,26,.5),inset 0 -8px 14px rgba(255,236,200,.14),0 14px 26px rgba(50,40,28,.28)}
+.arch.boxlid{background:linear-gradient(180deg,#C2A87F,#AE9268);border-radius:8px;box-shadow:0 8px 16px rgba(50,40,28,.3);transform:rotate(-6.5deg)}
+.arch.boxlabel{font-family:'Caveat',cursive;color:#3A2F1E;text-align:center;transform:rotate(-1.4deg)}
+.arch.cabinet{background:linear-gradient(180deg,#2A251D,#332D23 55%,#241F18);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.35),inset 0 14px 30px rgba(0,0,0,.5),0 16px 30px rgba(30,24,16,.4)}
+.arch.drawerlip{background:linear-gradient(180deg,#4A4234,#3A3328);border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.4)}
+.arch.pull{border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9BC9E,#7E7258 70%);box-shadow:0 2px 4px rgba(0,0,0,.5)}
 
 /* painted-on-the-wall text */
 .wtx{position:absolute;pointer-events:none}
@@ -32,8 +48,8 @@ body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wal
 .wtx .facts{font-size:13.5px;color:var(--mid);margin-top:20px;max-width:80ch}
 .wtx .facts b{font-weight:700;color:var(--ink)}
 .bandhead{position:absolute;pointer-events:none;white-space:nowrap}
-.bandhead h2{font-family:'Caveat',cursive;font-weight:700;font-size:54px;line-height:1;color:var(--pen);display:inline}
-.bandhead span{font-family:'Caveat',cursive;font-size:24px;color:var(--mid);margin-left:16px}
+.bandhead h2{font-family:'Caveat',cursive;font-weight:700;font-size:44px;line-height:1;color:var(--pen);display:inline;opacity:.85}
+.bandhead span{font-family:'Caveat',cursive;font-size:22px;color:var(--mid);margin-left:14px}
 .roomhead{position:absolute;pointer-events:none}
 .roomhead h2{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:64px;color:var(--ink)}
 .roomhead.dark h2{color:#B7AE9C}
@@ -46,27 +62,31 @@ body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wal
 .colo .fn b{color:var(--ink);font-weight:500}
 
 /* ============ one photo ============ */
-.photo{position:absolute;width:264px;height:324px;cursor:pointer;transition:left .7s cubic-bezier(.3,.8,.3,1),top .7s cubic-bezier(.3,.8,.3,1),transform .7s cubic-bezier(.3,.8,.3,1),opacity .45s;transform:rotate(var(--rot,0deg))}
+.photo{position:absolute;width:264px;height:324px;cursor:pointer;transition:left .7s cubic-bezier(.3,.8,.3,1),top .7s cubic-bezier(.3,.8,.3,1),transform .7s cubic-bezier(.3,.8,.3,1),opacity .45s;transform:rotate(var(--rot,0deg)) scale(var(--sc,1));transform-origin:50% 50%}
 .photo:hover{z-index:40}
 .photo.flipped{z-index:60}
 body.noanim .photo{transition:none !important}
-body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) translateY(-4px)}
+body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) scale(var(--sc,1)) translateY(-4px)}
 .photo.dim{opacity:.16;pointer-events:none}
 .photo.lit{z-index:35}
-.photo.lit .card{box-shadow:0 10px 26px rgba(28,25,20,.3),0 0 0 3px rgba(255,243,214,.9),0 0 26px 4px rgba(255,236,190,.55)}
-/* tape */
+.photo.lit .card{box-shadow:0 10px 26px rgba(28,25,20,.3),0 0 0 3px rgba(255,214,206,.85),0 0 26px 4px rgba(214,58,48,.35)}
+/* tape, with the penciled case number on it */
 .photo::before{content:'';position:absolute;top:-13px;left:50%;width:96px;height:27px;transform:translateX(-50%) rotate(-2.2deg);background:linear-gradient(100deg,rgba(244,238,218,.62),rgba(238,230,206,.5));box-shadow:0 1px 3px rgba(28,25,20,.14);z-index:5}
 .photo:nth-child(3n)::before{transform:translateX(-50%) rotate(1.8deg)}
+.photo.fresh::before{background:linear-gradient(100deg,rgba(255,253,246,.94),rgba(250,246,232,.86));box-shadow:0 1px 4px rgba(28,25,20,.2)}
+.photo.fresh .card{box-shadow:0 18px 34px rgba(28,25,20,.26),0 4px 10px rgba(28,25,20,.16),0 0 0 2px rgba(255,252,240,.9)}
+.rank{position:absolute;top:-11px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:6;font-family:'Caveat',cursive;font-size:16px;font-weight:600;color:var(--pencil);pointer-events:none;white-space:nowrap}
 .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.35,.7,.3,1);box-shadow:0 18px 34px rgba(28,25,20,.26),0 4px 10px rgba(28,25,20,.16);background:var(--photo);border-radius:2px}
 .photo.flipped .card{transform:rotateY(180deg)}
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--photo);border-radius:2px}
 .face.back{transform:rotateY(180deg);overflow:hidden}
-/* slight corner curl on the print */
 .face.front::after{content:'';position:absolute;right:0;bottom:0;width:34px;height:34px;background:linear-gradient(315deg,rgba(28,25,20,.10),rgba(28,25,20,0) 55%);border-radius:0 0 2px 0}
 
 /* the image field */
 .img{position:absolute;top:14px;left:14px;width:236px;height:236px;background:var(--bg);color:var(--fg);overflow:hidden}
 .img::before{content:var(--glyph);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:96px;line-height:1;color:var(--sub);opacity:.55;font-family:'Schibsted Grotesk',sans-serif}
+.img.hasphoto::before{content:none}
+.img svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .img::after{content:'';position:absolute;inset:0;background:linear-gradient(118deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 34%),radial-gradient(120% 90% at 50% 108%,rgba(0,0,0,.12),rgba(0,0,0,0) 55%)}
 .photo .img{transition:filter .9s ease}
 .photo.undev .img{filter:brightness(.16) saturate(.05) contrast(.75)}
@@ -78,20 +98,31 @@ body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) 
 .cscore{font-family:'Caveat',cursive;font-weight:700;font-size:27px;white-space:nowrap}
 .cscore small{font-size:14px;color:var(--pencil);font-weight:400}
 .cscore .cmode{display:block;font-size:12.5px;color:var(--pencil);font-weight:400;line-height:.9;text-align:right}
-.rank{position:absolute;top:16px;left:17px;z-index:4;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pencil);background:rgba(255,254,248,.82);padding:2px 7px;border-radius:3px}
 
-/* state: the shoebox (scored from memory, in pencil) */
-.photo.st-arc .img{filter:saturate(.3) contrast(.9) brightness(1.08)}
+/* state: the shoebox (evidence in waiting: a contact print, not a scene) */
+.photo.st-arc .img{filter:grayscale(.85) contrast(.82) brightness(1.1)}
+.photo.st-arc .img::before{opacity:.4}
 .photo.st-arc.undev .img{filter:brightness(.16) saturate(.05) contrast(.75)}
 .photo.st-arc .cfilm,.photo.st-arc .cscore{color:var(--pencil)}
+.photo.st-arc .card{box-shadow:0 8px 18px rgba(28,25,20,.28),0 2px 6px rgba(28,25,20,.16)}
+.photo.st-arc::before{display:none}
+.photo.st-arc .img::after{content:'';background:linear-gradient(118deg,rgba(255,255,255,.1) 0%,rgba(255,255,255,0) 34%),radial-gradient(120% 90% at 50% 108%,rgba(0,0,0,.16),rgba(0,0,0,0) 55%),repeating-linear-gradient(0deg,rgba(255,254,248,.05) 0 2px,rgba(0,0,0,.02) 2px 4px)}
+.photo.st-arc .awaiting{position:absolute;left:15px;top:16px;z-index:4;font-family:'Caveat',cursive;font-size:14px;color:var(--pencil);background:rgba(255,254,248,.75);padding:1px 7px;border-radius:3px;transform:rotate(-2deg)}
 /* state: hazy, the chemicals never finished */
 .photo.st-hazy .img{background:linear-gradient(160deg,#23211B 0%,#2E2B23 55%,#26241D 100%);color:#4A463C}
 .photo.st-hazy .img::before{opacity:.18;color:#8A8272}
 .photo.st-hazy .cfilm{color:var(--pencil)}
 .photo.st-hazy .cscore{font-size:15px;color:var(--pencil);font-weight:400}
-/* state: certified. pen over the pencil, color comes back */
+.photo.st-hazy::before{display:none}
+.photo.st-hazy .card{box-shadow:0 6px 14px rgba(0,0,0,.4)}
+/* state: certified. the DNA came back: full scene, full color, in pen */
 .photo.st-cert .img{filter:none}
+.photo.st-cert .img::before{opacity:.55}
 .photo.st-cert .cfilm,.photo.st-cert .cscore{color:var(--pen)}
+.photo.st-cert::before{display:block}
+/* the development: certify plays the chemical bath */
+@keyframes develop{0%{filter:brightness(.14) saturate(.05) contrast(.7)}55%{filter:brightness(.7) saturate(.5) contrast(.9) sepia(.3)}100%{filter:none}}
+.photo.developing .img{animation:develop 1.2s ease forwards}
 
 /* ============ the back of the photo ============ */
 .backscale{width:660px;height:810px;transform:scale(.4);transform-origin:0 0;overflow-y:auto;overflow-x:hidden;padding:34px 38px 40px;color:var(--pen);background:var(--photo)}
@@ -148,17 +179,28 @@ body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) 
 .certdone u{cursor:pointer;text-underline-offset:3px}
 .photo.st-hazy .certwrap{display:none}
 
-/* ============ threads (opt-in, temporary, never yarn) ============ */
+/* ============ the investigation (opt-in, temporary, never yarn) ============ */
 #threads{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:30}
 #threads line{stroke:#C42B2B;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(214,58,48,.95)) drop-shadow(0 0 14px rgba(196,43,43,.5));transition:opacity .18s}
 #threads line.fadeout{opacity:0 !important}
+#threads line.ember{stroke:#C42B2B;filter:drop-shadow(0 0 3px rgba(196,43,43,.4));stroke-dasharray:none !important;stroke-dashoffset:0 !important}
 body.holding .photo:not(.lit){opacity:.32;transition:opacity .25s}
 body.holding .wtx,body.holding .bandhead,body.holding .roomhead,body.holding .colo{opacity:.14;transition:opacity .25s}
+/* the room dims when the investigation is on */
+#dimmer{position:fixed;inset:0;pointer-events:none;background:radial-gradient(1200px 800px at 50% 40%,rgba(20,16,10,0),rgba(20,16,10,.32) 78%);opacity:0;transition:opacity .5s;z-index:20}
+body.mode-invest #dimmer{opacity:1}
+body.mode-backs #dimmer{opacity:.4}
+body.mode-invest .arch.lamp{opacity:.4}
+/* the note that flashes when you follow a link */
+#notecard{position:fixed;left:50%;bottom:74px;transform:translateX(-50%) rotate(-1deg);z-index:86;max-width:min(560px,84vw);background:var(--photo);border-radius:3px;box-shadow:0 14px 34px rgba(28,25,20,.35);padding:14px 22px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+#notecard.on{opacity:1;transform:translateX(-50%) rotate(-1deg) translateY(-6px)}
+#notecard .nrel{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#A8433A}
+#notecard .ntxt{font-family:'Caveat',cursive;font-size:22px;line-height:1.25;color:var(--pen);margin-top:3px}
 
-/* constellation labels */
+/* constellation labels (step back, inside the investigation) */
 .constlabel{position:absolute;pointer-events:none;font-family:'Caveat',cursive;font-weight:700;font-size:36px;color:var(--pen);opacity:.9;white-space:nowrap;transform:translate(-50%,-50%)}
-body.mode-const .wtx,body.mode-const .bandhead,body.mode-const .roomhead,body.mode-const .colo{opacity:.12}
-body.mode-const .region{opacity:.25}
+body.stepback .wtx,body.stepback .bandhead,body.stepback .roomhead,body.stepback .colo,body.stepback .arch{opacity:.12}
+body.stepback .region{opacity:.25}
 .photo.dim{opacity:.08 !important}
 
 /* ============ the desk (fixed chrome) ============ */
@@ -169,6 +211,9 @@ body.mode-const .region{opacity:.25}
 .opt{font-size:11.5px;font-weight:500;padding:6px 14px;border:1px solid var(--rule);border-radius:999px;background:var(--photo);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s;color:var(--mid)}
 .opt:hover{color:var(--ink);border-color:var(--mid)}
 .opt.on{background:var(--ink);color:var(--photo);border-color:var(--ink)}
+#stepbackChip{display:none}
+body.mode-invest #stepbackChip{display:inline-block;border-color:#A8433A;color:#A8433A}
+body.mode-invest #stepbackChip.on{background:#A8433A;color:var(--photo)}
 #tally{position:fixed;left:18px;bottom:14px;z-index:80;font-family:'Caveat',cursive;font-size:18px;color:var(--mid);pointer-events:none;max-width:46vw}
 #hint{position:fixed;right:18px;bottom:14px;z-index:80;font-family:'Caveat',cursive;font-size:17px;color:var(--mid);pointer-events:none;text-align:right}
 #offwall{position:fixed;top:64px;right:18px;z-index:85;display:none;font-family:'Caveat',cursive;font-size:18px;font-weight:600;padding:6px 16px;background:var(--pen);color:var(--photo);border-radius:999px;cursor:pointer;user-select:none}
@@ -219,7 +264,7 @@ body.dived #tally,body.dived #hint{display:none}
 
 @media (prefers-reduced-motion: reduce){
   .photo,.card,#world.glide{transition:none !important}
-  .photo .img{transition:none !important}
+  .photo .img{transition:none !important;animation:none !important}
 }
 </style>
 </head>
@@ -1289,6 +1334,7 @@ body.dived #tally,body.dived #hint{display:none}
 <div id="viewport"><div id="world">
   <svg id="threads"></svg>
 </div></div>
+<div id="dimmer"></div>
 
 <div id="desk">
   <span class="brand">The Vault</span>
@@ -1296,19 +1342,20 @@ body.dived #tally,body.dived #hint{display:none}
     <span class="dl">Mode</span>
     <span class="opt on" data-mode="wall">The Wall</span>
     <span class="opt" data-mode="backs">The Backs</span>
-    <span class="opt" data-mode="const">Constellations</span>
-    <span class="opt" data-mode="thread">The Thread</span>
+    <span class="opt" data-mode="invest">The Investigation</span>
+    <span class="opt" id="stepbackChip">step back</span>
     <span class="dl">Go to</span>
     <span class="opt" data-go="def">The wall</span>
     <span class="opt" data-go="box">The shoebox</span>
-    <span class="opt" data-go="hazy">The hazy wing</span>
-    <span class="opt" data-go="all">Everything</span>
+    <span class="opt" data-go="hazy">The dark drawer</span>
+    <span class="opt" data-go="all">The room</span>
   </div>
 </div>
 
 <div id="offwall">back on the wall</div>
 <div id="tally"></div>
 <div id="hint"></div>
+<div id="notecard"><div class="nrel"></div><div class="ntxt"></div></div>
 
 <div id="tray"><div class="trayin">
   <div class="traybar">
@@ -1325,11 +1372,11 @@ body.dived #tally,body.dived #hint{display:none}
 var META = {"game": ["2026-07-14", 6.8, "The Game"], "stby": ["2026-07-21", 9.4, "Sorry to Bother You"], "tdkr": ["2026-07-26", 9.6, "The Dark Knight Rises"], "enemy": ["2026-07-17", 9.6, "Enemy"], "ncfom": ["2026-07-19", 8.3, "No Country for Old Men"], "batman": ["2026-07-24", 9.5, "Batman Begins"], "br2049": ["2026-07-13", 9.8, "Blade Runner 2049"], "amadeus": ["2026-07-27", 9.3, "Amadeus"], "memento": ["2026-07-16", 10.0, "Memento"], "sicario": ["2026-07-14", 9.9, "Sicario"], "maverick": ["2026-07-17", 8.2, "Top Gun: Maverick"], "niceguys": ["2026-07-24", 8.6, "The Nice Guys"], "sunshine": ["2026-07-17", 7.4, "Sunshine"], "coherence": ["2026-07-15", 8.9, "Coherence"], "exmachina": ["2026-07-13", 8.8, "Ex Machina"], "malignant": ["2026-07-26", 5.4, "Malignant"], "obsession": ["2026-07-18", 7.9, "Obsession"], "darkknight": ["2026-07-24", 9.8, "The Dark Knight"], "poorthings": ["2026-07-23", 9.3, "Poor Things"], "bullettrain": ["2026-07-27", 9.1, "Bullet Train"], "annihilation": ["2026-07-29", 7.4, "Annihilation"], "nightcrawler": ["2026-07-21", 9.4, "Nightcrawler"], "disclosure-day": ["2026-07-31", 5.2, "Disclosure Day"], "silverlake": ["2026-07-30", 6.7, "Under the Silver Lake"]};
 var LINKS = [{"from": "Ex Machina", "to": "Her", "relation": "ai-feelings", "note": "Her completes the AI-feelings trilogy in the queue. The cold half and the warm half of the same question.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "The Game", "to": "Memento", "relation": "antibodies", "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "Poor Things", "to": "Sorry to Bother You", "relation": "audacity", "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.", "weight": 2, "directional": false, "source": "hand-authored"}, {"from": "The Dark Knight Rises", "to": "Memento", "relation": "bad-memory-asset", "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "The Nice Guys", "to": "Nightcrawler", "relation": "counterprogramming", "note": "Los Angeles twice: once as a punchline, once as a predator. The pick that proved counterprogramming his dread lane works.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Top Gun: Maverick", "to": "Bullet Train", "relation": "craft-blockbuster", "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.", "weight": 1, "directional": false, "source": "hand-authored"}, {"from": "Under the Silver Lake", "to": "Annihilation", "relation": "discussion-not-score", "note": "The two great-conversation mid-scores. Rich debriefs, ambient sprawl, hands that never fully close. Discussion value and rating are separate currencies.", "weight": 2, "directional": false, "source": "hand-authored"}, {"from": "Nightcrawler", "to": "Sicario", "relation": "execution-meritocracy", "note": "Two operators who never miss. One is the system working, one is a man feeding on it.", "weight": 2, "directional": false, "source": "hand-authored"}, {"from": "Sicario", "to": "No Country for Old Men", "relation": "execution-meritocracy", "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.", "weight": 3, "directional": false, "source": "hand-authored"}, {"from": "The Nice Guys", "to": "Bullet Train", "relation": "fun-shelf", "note": "The fun shelf, proven understocked and then stocked. Failure as the funniest material versus mayhem as choreography.", "weight": 2, "directional": false, "source": "hand-authored"}, {"from": "Ex Machina", "to": "Annihilation", "relation": "garland", "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.", "weight": 3, "directional": false, "source": "hand-authored"}, {"from": "Annihilation", "to": "Sunshine", "relation": "gorgeous-and-cold", "note": "Neighbors in The Sevens. Idea-forward, visually lovely, ensemble kept deliberately thin, and he docks for it every time.", "weight": 3, "directional": false, "source": "hand-authored"}, {"from": "Obsession", "to": "The Nice Guys", "relation": "guest-context", "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.", "weight": 1, "directional": true, "source": "hand-authored"}, {"from": "Coherence", "to": "The Vast of Night", "relation": "low-budget-wonder", "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Batman Begins", "to": "The Dark Knight", "relation": "nolan-arc", "note": "Begins states the Ra's thesis. The two ferries run the small experiment.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "The Dark Knight", "to": "The Dark Knight Rises", "relation": "nolan-arc", "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "The Dark Knight Rises", "to": "Batman Begins", "relation": "nolan-arc", "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "Amadeus", "to": "The Dark Knight", "relation": "obsession-with-a-rival", "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.", "weight": 1, "directional": false, "source": "hand-authored"}, {"from": "Disclosure Day", "to": "Malignant", "relation": "reveal-as-event", "note": "A Malignant-rule double violation: decoy hour plus exposition dump. Not a reveal, a zoom. Took the floor at 5.2.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "Malignant", "to": "Sorry to Bother You", "relation": "reveal-as-event", "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.", "weight": 3, "directional": false, "source": "hand-authored"}, {"from": "Sicario", "to": "Sicario: Day of the Soldado", "relation": "sequel", "note": "The sequel, queued with expectations pre-lowered. No Villeneuve, no Kate.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "No Country for Old Men", "to": "Sicario", "relation": "split-watch-asterisk", "note": "The 8.3 carries the split-watch asterisk. Never split a tension movie across two nights; the held breath breaks. His lesson, stated by him.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Memento", "to": "Run Lola Run", "relation": "structure-as-stimulation", "note": "Same family: structure as the stimulant. Three sprints at the same twenty minutes. Tabled by the sovereign; only he raises it.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Annihilation", "to": "Sorry to Bother You", "relation": "thin-ensemble", "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Annihilation", "to": "Coherence", "relation": "thin-ensemble", "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.", "weight": 3, "directional": true, "source": "hand-authored"}, {"from": "Under the Silver Lake", "to": "Memento", "relation": "unreliable-search", "note": "A man builds a system of meaning to avoid what he already knows. Sam's conspiracy and Leonard's notes are the same machine. The owl woman memory test proved it within twelve hours.", "weight": 2, "directional": true, "source": "hand-authored"}, {"from": "Blade Runner 2049", "to": "Sicario", "relation": "villeneuve", "note": "The Villeneuve spine. Two registers, same total control, tied and adjacent at the top of the board.", "weight": 3, "directional": false, "source": "hand-authored"}, {"from": "Enemy", "to": "Blade Runner 2049", "relation": "villeneuve", "note": "Villeneuve's small strange one against his colossus. Same director, opposite scale.", "weight": 2, "directional": false, "source": "hand-authored"}];
 var FACTS_HTML = "<b>The Ledger<\/b>: 24 films, July 13&ndash;31, 2026, scored live. &nbsp;&middot;&nbsp; <b>The Shoebox<\/b>: 33 films scored from memory. &nbsp;&middot;&nbsp; <b>The Hazy Wing<\/b>: 15 frames that never developed. &nbsp;&middot;&nbsp; <b>Definitive<\/b>: the Ledger plus every certified photo. Archive scores never move a Ledger anchor.";
+var PHOTOS = {"memento": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='58' y='52' width='120' height='132' rx='3' fill='var(--fg)' opacity='.95' transform='rotate(-4 118 118)'/><rect x='68' y='62' width='100' height='92' fill='var(--sub)' opacity='.85' transform='rotate(-4 118 118)'/><rect x='74' y='70' width='56' height='40' fill='var(--bg)' opacity='.7' transform='rotate(-4 118 118)'/><path d='M74 158 q14 -10 26 0 t26 0 t26 0' stroke='var(--acc)' stroke-width='3.5' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><path d='M80 172 q10 -7 20 0 t20 0' stroke='var(--acc)' stroke-width='3' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><circle cx='118' cy='118' r='112' fill='none' stroke='var(--sub)' stroke-width='1' opacity='.25'/><\/svg>", "br2049": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='var(--acc)' opacity='.14'/><g opacity='.5' fill='var(--sub)'><path d='M148 236 V70 q0 -14 10 -14 h60 q10 0 10 14 V236 Z'/><\/g><g fill='none' stroke='var(--fg)' stroke-width='2.5' opacity='.8'><path d='M160 96 q28 -18 56 0'/><path d='M164 130 q24 -14 48 0'/><path d='M168 164 q20 -10 40 0'/><\/g><path d='M60 236 V150 q0 -8 6 -8 h4 l6 -14 h8 l6 14 h4 q6 0 6 8 v86 Z' fill='var(--fg)'/><circle cx='90' cy='118' r='10' fill='var(--fg)'/><line x1='0' y1='236' x2='236' y2='236' stroke='var(--fg)' stroke-width='2' opacity='.4'/><circle cx='52' cy='48' r='16' fill='var(--fg)' opacity='.25'/><\/svg>", "darkknight": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='120' rx='86' ry='58' fill='var(--sub)' opacity='.22'/><path d='M20 120 C52 90 92 86 107 97 L111 79 L118 93 L125 79 L129 97 C144 86 184 90 216 120 C186 110 166 112 154 122 C161 136 152 150 140 152 C142 142 136 134 128 134 L118 160 L108 134 C100 134 94 142 96 152 C84 150 75 136 82 122 C70 112 50 110 20 120 Z' fill='var(--fg)'/><\/svg>", "tdkr": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='none' stroke='var(--sub)' stroke-width='3'><circle cx='118' cy='104' r='104' opacity='.25'/><circle cx='118' cy='102' r='82' opacity='.35'/><circle cx='118' cy='100' r='60' opacity='.5'/><circle cx='118' cy='98' r='40' opacity='.65'/><\/g><ellipse cx='118' cy='96' rx='24' ry='18' fill='var(--fg)' opacity='.95'/><g stroke='var(--sub)' stroke-width='4' opacity='.8'><line x1='118' y1='114' x2='118' y2='160'/><\/g><g fill='var(--fg)'><circle cx='118' cy='166' r='7'/><path d='M118 173 v22 M118 181 l-12 -7 M118 181 l12 8 M118 195 l-8 13 M118 195 l8 13' stroke='var(--fg)' stroke-width='4.5' stroke-linecap='round' fill='none'/><\/g><path d='M56 224 h124 M74 210 h88' stroke='var(--sub)' stroke-width='3' opacity='.4'/><\/svg>", "enemy": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='var(--sub)' opacity='.3'/><g fill='var(--fg)'><path d='M96 170 V120 q0 -16 -12 -20 q-10 -4 -10 -16 q0 -14 14 -14 q14 0 14 14 v86 Z'/><path d='M140 170 V120 q0 -16 12 -20 q10 -4 10 -16 q0 -14 -14 -14 q-14 0 -14 14 v86 Z'/><\/g><g stroke='var(--acc)' stroke-width='1.6' opacity='.7' fill='none'><path d='M118 44 v-16 M118 36 l-22 -14 M118 36 l22 -14 M104 30 l-26 -4 M132 30 l26 -4 M110 24 l-14 -16 M126 24 l14 -16 M118 28 l-6 -22 M118 28 l6 -22'/><\/g><\/svg>", "sicario": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='var(--sub)' opacity='.22'/><path d='M28 208 L118 96 L208 208 Z' fill='var(--bg)' opacity='.9'/><path d='M62 208 L118 128 L174 208 Z' fill='#000' opacity='.55'/><g fill='var(--fg)'><path d='M84 176 v-16 l6 -4 v-6 h8 v6 l4 3 v17 h-6 v-12 h-6 v12 Z'/><path d='M110 184 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/><path d='M137 192 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/><\/g><circle cx='118' cy='118' r='104' fill='none' stroke='var(--fg)' stroke-width='2' opacity='.5'/><line x1='118' y1='8' x2='118' y2='34' stroke='var(--fg)' stroke-width='2' opacity='.5'/><line x1='118' y1='202' x2='118' y2='228' stroke='var(--fg)' stroke-width='2' opacity='.35'/><\/svg>", "batman": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='150' width='176' height='86' fill='var(--sub)' opacity='.35'/><path d='M96 150 v-34 h44 v34' fill='var(--sub)' opacity='.5'/><path d='M104 116 h28 l-6 -18 h-16 Z' fill='var(--fg)'/><g fill='var(--fg)'><path d='M60 70 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M160 46 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M118 30 q7 -10 14 0 l-2 7 q9 -5 9 5 q0 7 -10 7 q-13 0 -13 -12 Z'/><path d='M40 120 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/><path d='M186 96 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/><\/g><\/svg>", "stby": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='40' y='150' width='156' height='10' rx='3' fill='var(--sub)'/><rect x='58' y='160' width='8' height='50' fill='var(--sub)' opacity='.7'/><rect x='170' y='160' width='8' height='50' fill='var(--sub)' opacity='.7'/><circle cx='118' cy='104' r='16' fill='var(--fg)'/><path d='M102 150 v-18 q0 -12 16 -12 q16 0 16 12 v18 Z' fill='var(--fg)'/><path d='M138 96 q14 -4 18 -16' stroke='var(--fg)' stroke-width='4' fill='none' stroke-linecap='round'/><rect x='152' y='64' width='12' height='20' rx='5' fill='var(--fg)'/><g stroke='var(--acc)' stroke-width='2.5' fill='none' opacity='.85' stroke-linecap='round'><path d='M172 60 q8 8 0 18'/><path d='M180 52 q14 14 0 32'/><path d='M188 44 q20 20 0 46'/><\/g><\/svg>", "nightcrawler": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='176' width='236' height='60' fill='var(--sub)' opacity='.3'/><line x1='0' y1='176' x2='236' y2='176' stroke='var(--acc)' stroke-width='1.5' opacity='.5'/><path d='M36 176 v-26 q0 -8 8 -8 h36 l14 -14 h30 q8 0 10 8 l4 14 h20 q8 0 8 8 v18 Z' fill='var(--fg)' opacity='.9'/><circle cx='70' cy='176' r='11' fill='var(--bg)' stroke='var(--fg)' stroke-width='4'/><circle cx='160' cy='176' r='11' fill='var(--bg)' stroke='var(--fg)' stroke-width='4'/><rect x='196' y='150' width='10' height='7' rx='2' fill='var(--acc)'/><g fill='var(--fg)'><circle cx='196' cy='84' r='10'/><path d='M186 132 v-24 q0 -10 10 -10 q10 0 10 10 v24 Z'/><rect x='168' y='96' width='24' height='14' rx='4'/><circle cx='166' cy='103' r='6' fill='var(--acc)'/><\/g><\/svg>", "poorthings": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 150 q60 -30 118 0 t118 0 V236 H0 Z' fill='var(--sub)' opacity='.4'/><circle cx='60' cy='54' r='22' fill='var(--acc)' opacity='.5'/><circle cx='176' cy='40' r='10' fill='var(--acc)' opacity='.35'/><g fill='var(--fg)'><circle cx='118' cy='74' r='15'/><path d='M118 89 q3 24 0 34' stroke='var(--fg)' stroke-width='6' fill='none'/><path d='M92 128 q-14 -14 -8 -26 q10 4 14 16 q4 -12 20 -12 q16 0 20 12 q4 -12 14 -16 q6 12 -8 26 q10 10 10 26 q0 28 -36 28 q-36 0 -36 -28 q0 -16 10 -26 Z'/><\/g><path d='M103 60 q15 -14 30 0' stroke='var(--fg)' stroke-width='4' fill='none' stroke-linecap='round'/><\/svg>", "amadeus": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='var(--sub)' stroke-width='1.6' opacity='.7'><line x1='24' y1='150' x2='212' y2='150'/><line x1='24' y1='160' x2='212' y2='160'/><line x1='24' y1='170' x2='212' y2='170'/><line x1='24' y1='180' x2='212' y2='180'/><line x1='24' y1='190' x2='212' y2='190'/><\/g><g fill='var(--acc)'><ellipse cx='70' cy='180' rx='7' ry='5' transform='rotate(-18 70 180)'/><rect x='75' y='150' width='2.6' height='30'/><ellipse cx='128' cy='170' rx='7' ry='5' transform='rotate(-18 128 170)'/><rect x='133' y='140' width='2.6' height='30'/><path d='M133 140 q10 6 0 16' fill='none' stroke='var(--acc)' stroke-width='2.6'/><ellipse cx='178' cy='160' rx='7' ry='5' transform='rotate(-18 178 160)'/><rect x='183' y='130' width='2.6' height='30'/><\/g><g fill='var(--fg)'><path d='M118 34 q26 0 30 26 q2 16 -6 24 h-48 q-8 -8 -6 -24 q4 -26 30 -26 Z'/><circle cx='88' cy='58' r='10'/><circle cx='148' cy='58' r='10'/><path d='M100 92 q18 14 36 0 l-4 16 h-28 Z' opacity='.85'/><\/g><\/svg>", "bullettrain": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='var(--sub)' stroke-width='3' opacity='.5' stroke-linecap='round'><line x1='10' y1='80' x2='90' y2='80'/><line x1='4' y1='120' x2='70' y2='120'/><line x1='14' y1='160' x2='84' y2='160'/><\/g><path d='M60 140 h110 q36 0 46 -24 q-16 -22 -52 -22 h-104 Z' fill='var(--fg)'/><path d='M164 96 q30 1 42 18 q-8 12 -26 15' fill='var(--acc)' opacity='.55'/><rect x='74' y='104' width='18' height='10' rx='3' fill='var(--bg)'/><rect x='102' y='104' width='18' height='10' rx='3' fill='var(--bg)'/><rect x='130' y='104' width='18' height='10' rx='3' fill='var(--bg)'/><rect x='96' y='158' width='44' height='30' rx='4' fill='var(--acc)'/><rect x='112' y='152' width='12' height='8' rx='3' fill='none' stroke='var(--acc)' stroke-width='3'/><\/svg>", "coherence": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='128' rx='78' ry='44' fill='var(--sub)' opacity='.45'/><g fill='var(--fg)'><circle cx='118' cy='66' r='8'/><circle cx='174' cy='84' r='8'/><circle cx='198' cy='128' r='8'/><circle cx='174' cy='172' r='8'/><circle cx='118' cy='190' r='8'/><circle cx='62' cy='172' r='8'/><circle cx='38' cy='128' r='8'/><circle cx='62' cy='84' r='8'/><\/g><rect x='104' y='122' width='28' height='9' rx='4.5' fill='var(--acc)' transform='rotate(-24 118 126)'/><rect x='104' y='122' width='28' height='9' rx='4.5' fill='none' stroke='var(--fg)' stroke-width='1' opacity='.4' transform='rotate(-24 118 126)'/><\/svg>", "exmachina": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='36' y='24' width='164' height='188' fill='none' stroke='var(--sub)' stroke-width='2' opacity='.6'/><line x1='118' y1='24' x2='118' y2='212' stroke='var(--sub)' stroke-width='1.5' opacity='.4'/><g fill='var(--fg)'><circle cx='150' cy='74' r='16'/><path d='M150 90 q-4 10 -4 22 h8 q0 -12 -4 -22 Z'/><\/g><g fill='none' stroke='var(--fg)' stroke-width='1.6' opacity='.8'><path d='M136 122 q14 -8 28 0 v50 q-14 10 -28 0 Z'/><path d='M136 136 h28 M136 150 h28 M136 164 h28'/><circle cx='150' cy='143' r='4' fill='var(--acc)' stroke='none'/><\/g><path d='M66 96 a16 16 0 1 1 0 .1 M66 112 q-4 12 -4 24 h8 q0 -12 -4 -24' fill='var(--sub)' opacity='.8'/><\/svg>", "niceguys": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='70' r='34' fill='var(--acc)' opacity='.5'/><path d='M196 236 V150 l6 -18 h4 l6 18 v86 Z' fill='var(--sub)' opacity='.6'/><path d='M199 134 q-12 -8 -20 -2 M199 132 q-2 -14 6 -20 M205 132 q8 -10 18 -8 M203 134 q12 -4 16 4' stroke='var(--sub)' stroke-width='4' fill='none' opacity='.6' stroke-linecap='round'/><g fill='var(--fg)'><circle cx='92' cy='108' r='13'/><path d='M78 176 v-34 q0 -14 14 -14 q14 0 14 14 v34 l-8 60 h-4 l-2 -44 h-4 l-2 44 h-4 Z'/><circle cx='148' cy='100' r='13'/><path d='M132 168 v-30 q0 -16 16 -16 q16 0 16 16 v30 l-6 68 h-5 l-3 -50 h-4 l-3 50 h-5 Z' opacity='.95'/><path d='M134 128 l-16 22' stroke='var(--fg)' stroke-width='7' stroke-linecap='round'/><\/g><\/svg>", "ncfom": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='168' width='236' height='68' fill='var(--sub)' opacity='.35'/><g fill='var(--fg)'><path d='M100 60 q0 -14 18 -14 q18 0 18 14 q0 10 -6 14 h-24 q-6 -4 -6 -14 Z'/><circle cx='118' cy='84' r='13'/><path d='M100 168 v-46 q0 -14 18 -14 q18 0 18 14 v46 Z'/><rect x='134' y='108' width='6' height='44' rx='3'/><rect x='131' y='148' width='12' height='14' rx='4'/><\/g><circle cx='118' cy='198' r='17' fill='var(--acc)' opacity='.9'/><circle cx='118' cy='198' r='17' fill='none' stroke='var(--fg)' stroke-width='1.5' opacity='.5'/><text x='118' y='204' text-anchor='middle' font-size='15' fill='var(--bg)' font-family='serif'>?<\/text><\/svg>", "maverick": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M112 210 q-4 -60 2 -120' stroke='var(--fg)' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><path d='M124 210 q4 -60 -2 -120' stroke='var(--fg)' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><g fill='var(--fg)'><path d='M118 26 l10 34 v34 l22 20 v12 l-22 -8 v14 l8 10 v8 l-18 -6 l-18 6 v-8 l8 -10 v-14 l-22 8 v-12 l22 -20 v-34 Z'/><\/g><circle cx='60' cy='52' r='18' fill='var(--acc)' opacity='.45'/><\/svg>", "obsession": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 26 a52 52 0 1 1 -0.1 0 Z M118 96 l-26 96 q26 14 52 0 Z' fill='var(--fg)' fill-rule='evenodd' opacity='.14'/><path d='M118 40 a40 40 0 1 1 -0.1 0 Z M118 92 l-20 84 q20 10 40 0 Z' fill='var(--bg)' stroke='var(--sub)' stroke-width='3' fill-rule='evenodd'/><g transform='translate(118 74)'><path d='M-26 0 q26 -20 52 0 q-26 20 -52 0 Z' fill='var(--fg)'/><circle cx='0' cy='0' r='10' fill='var(--acc)'/><circle cx='0' cy='0' r='4.5' fill='var(--bg)'/><\/g><\/svg>", "sunshine": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='108' r='84' fill='var(--acc)' opacity='.85'/><circle cx='118' cy='108' r='84' fill='none' stroke='var(--fg)' stroke-width='2' opacity='.5'/><circle cx='118' cy='108' r='62' fill='var(--fg)' opacity='.25'/><g transform='translate(118 176)'><circle cx='0' cy='0' r='16' fill='var(--sub)'/><circle cx='0' cy='0' r='16' fill='none' stroke='var(--bg)' stroke-width='2'/><rect x='-3' y='14' width='6' height='26' fill='var(--sub)'/><rect x='-14' y='38' width='28' height='8' rx='3' fill='var(--sub)'/><\/g><\/svg>", "annihilation": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient id='shmr' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='var(--acc)' stop-opacity='.55'/><stop offset='.5' stop-color='var(--sub)' stop-opacity='.35'/><stop offset='1' stop-color='var(--fg)' stop-opacity='.4'/><\/linearGradient><\/defs><path d='M0 60 q60 -40 120 -10 t116 -6 V236 H0 Z' fill='url(#shmr)'/><g fill='var(--fg)'><rect x='104' y='108' width='28' height='84' /><path d='M100 108 l18 -26 l18 26 Z'/><rect x='112' y='124' width='12' height='16' fill='var(--bg)'/><\/g><path d='M132 96 q34 -20 60 -8' stroke='var(--fg)' stroke-width='2' fill='none' opacity='.5'/><path d='M62 236 q-6 -50 14 -92' stroke='var(--sub)' stroke-width='3' fill='none' opacity='.6'/><\/svg>", "game": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='62' y='36' width='112' height='140' rx='6' fill='var(--sub)' opacity='.5'/><g fill='var(--fg)'><circle cx='118' cy='88' r='30'/><path d='M118 58 q-8 -18 6 -22 q10 -2 8 10' fill='none' stroke='var(--fg)' stroke-width='5' stroke-linecap='round'/><\/g><g fill='var(--bg)'><circle cx='106' cy='82' r='5'/><circle cx='130' cy='82' r='5'/><path d='M104 100 q14 12 28 0' stroke='var(--bg)' stroke-width='4' fill='none' stroke-linecap='round'/><\/g><circle cx='104' cy='96' r='6' fill='var(--acc)' opacity='.8'/><circle cx='132' cy='96' r='6' fill='var(--acc)' opacity='.8'/><path d='M84 176 l14 34 h40 l14 -34' fill='var(--sub)' opacity='.35'/><rect x='96' y='118' width='44' height='58' rx='8' fill='var(--fg)' opacity='.9'/><\/svg>", "silverlake": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 148 h236 v88 H0 Z' fill='var(--acc)' opacity='.45'/><path d='M20 168 q30 8 60 0 t60 0 t60 0' stroke='var(--bg)' stroke-width='3' fill='none' opacity='.5'/><path d='M30 196 q30 8 60 0 t60 0 t60 0' stroke='var(--bg)' stroke-width='3' fill='none' opacity='.35'/><g fill='var(--fg)'><circle cx='118' cy='70' r='14'/><path d='M102 130 v-24 q0 -14 16 -14 q16 0 16 14 v24 Z'/><rect x='96' y='64' width='16' height='11' rx='3' fill='var(--sub)'/><rect x='124' y='64' width='16' height='11' rx='3' fill='var(--sub)'/><rect x='110' y='67' width='16' height='4' fill='var(--sub)'/><\/g><g stroke='var(--fg)' stroke-width='2' opacity='.6' fill='none'><circle cx='52' cy='52' r='8'/><path d='M46 52 h12 M52 46 v12' transform='rotate(45 52 52)'/><path d='M176 40 l8 14 h-16 Z'/><circle cx='196' cy='84' r='5'/><\/g><\/svg>", "malignant": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='var(--fg)'><circle cx='118' cy='92' r='40'/><path d='M84 108 q-8 60 10 96 h48 q18 -36 10 -96 Z'/><\/g><g stroke='var(--sub)' stroke-width='3' fill='none' opacity='.8' stroke-linecap='round'><path d='M86 70 q-14 40 -4 96'/><path d='M150 70 q14 40 4 96'/><path d='M100 56 q-10 50 -4 110'/><path d='M136 56 q10 50 4 110'/><path d='M118 52 q-4 60 0 118'/><\/g><path d='M96 180 q22 -12 44 0 q-8 18 -22 18 q-14 0 -22 -18 Z' fill='var(--acc)' opacity='.9'/><circle cx='106' cy='186' r='3.5' fill='var(--bg)'/><circle cx='130' cy='186' r='3.5' fill='var(--bg)'/><\/svg>", "disclosure-day": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='48' y='56' width='140' height='96' rx='8' fill='var(--fg)' opacity='.92'/><rect x='58' y='66' width='120' height='76' rx='4' fill='var(--bg)'/><ellipse cx='118' cy='96' rx='26' ry='11' fill='var(--sub)'/><ellipse cx='118' cy='90' rx='12' ry='9' fill='var(--sub)'/><g stroke='var(--acc)' stroke-width='2.2' fill='none' opacity='.85' stroke-linecap='round'><path d='M84 92 q-8 8 0 16'/><path d='M152 92 q8 8 0 16'/><path d='M76 86 q-14 12 0 28'/><path d='M160 86 q14 12 0 28'/><\/g><rect x='108' y='152' width='20' height='14' fill='var(--fg)' opacity='.92'/><rect x='84' y='166' width='68' height='8' rx='3' fill='var(--fg)' opacity='.92'/><g fill='var(--sub)'><circle cx='74' cy='206' r='7'/><circle cx='100' cy='210' r='7'/><circle cx='136' cy='210' r='7'/><circle cx='162' cy='206' r='7'/><\/g><\/svg>"};
 
 /* ---------- geometry ---------- */
 var PW = 264, PH = 324;          /* one photo */
-var PX = 312, PY = 404;          /* wall pitch */
-var DEF_COLS = 6, BOX_COLS = 6, HAZY_COLS = 5;
+var SC_BOX = .56, SC_HAZY = .5;  /* evidence in waiting renders smaller */
 var BANDS = [
   [10.0, 10.0, 'The Crown', 'the perfect scores'],
   [9.0, 9.99, 'The Nines', 'the podium, extremely crowded'],
@@ -1337,11 +1384,13 @@ var BANDS = [
   [7.0, 7.99, 'The Sevens', 'liked it, itemized the bill'],
   [0, 6.99, 'The Floor', 'and below']
 ];
+/* salon geometry: photos per row, per band, hung around the center line */
+var BAND_COLS = [1, 5, 4, 3, 4];
 
 var world = document.getElementById('world');
 var viewport = document.getElementById('viewport');
 var threads = document.getElementById('threads');
-var stray = [];   /* wall-text elements rebuilt each layout */
+var stray = [];   /* wall-text + architecture rebuilt each layout */
 
 /* deterministic tiny jitter from a string */
 function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*16777619)>>>0}return h}
@@ -1353,6 +1402,7 @@ var byTitle = {};
 
 function buildPhotos(){
   var secs = [].slice.call(document.querySelectorAll('#source section.panel'));
+  var newest = null, newestRec = -1;
   secs.forEach(function(sec, i){
     var classes = sec.className.split(/\s+/);
     var slug = (sec.dataset.set === 'ledger') ? classes[1] : null;
@@ -1376,12 +1426,18 @@ function buildPhotos(){
     var img = document.createElement('div'); img.className = 'img';
     if (slug) img.classList.add(slug);
     else if (sec.getAttribute('style')) img.style.cssText = sec.getAttribute('style');
+    if (slug && PHOTOS[slug]){ img.classList.add('hasphoto'); img.innerHTML = PHOTOS[slug]; }
     var chin = document.createElement('div'); chin.className = 'chin';
     var cf = document.createElement('div'); cf.className = 'cfilm';
     cf.innerHTML = title + (year ? ' <span>' + year + '</span>' : '');
     var cs = document.createElement('div'); cs.className = 'cscore';
     chin.appendChild(cf); chin.appendChild(cs);
     front.appendChild(img); front.appendChild(chin);
+    if (state === 'arc'){
+      var aw = document.createElement('div'); aw.className = 'awaiting';
+      aw.textContent = 'awaiting development';
+      front.appendChild(aw);
+    }
 
     var back = document.createElement('div'); back.className = 'face back';
     var bs = document.createElement('div'); bs.className = 'backscale';
@@ -1392,14 +1448,16 @@ function buildPhotos(){
     world.appendChild(el);
 
     var p = {el: el, sec: sec, img: img, chinScore: cs, rankEl: rank,
-             key: title, slug: slug, state: state, score: score,
+             key: title, slug: slug, state: state, score: score, sc: 1,
              rec: parseInt(sec.dataset.rec || '0', 10),
              sort: sec.dataset.sort || title.toLowerCase(),
              home: {x: 0, y: 0}};
     photos.push(p);
     byTitle[title] = p;
     paintChin(p);
+    if (state === 'ledger' && p.rec > newestRec){ newestRec = p.rec; newest = p; }
   });
+  if (newest) newest.el.classList.add('fresh');   /* the print that just went up */
 }
 
 function paintChin(p){
@@ -1410,12 +1468,12 @@ function paintChin(p){
 }
 
 /* ---------- the links layer ---------- */
-var adj = {};      /* title -> [{kin, weight, relation}] undirected, on-wall only */
+var adj = {};      /* title -> [{kin, weight, relation, note}] undirected, on-wall only */
 function resolveLinks(){
   LINKS.forEach(function(l){
     if (byTitle[l.from] && byTitle[l.to]){
-      (adj[l.from] = adj[l.from] || []).push({kin: l.to, weight: l.weight, relation: l.relation});
-      (adj[l.to] = adj[l.to] || []).push({kin: l.from, weight: l.weight, relation: l.relation});
+      (adj[l.from] = adj[l.from] || []).push({kin: l.to, weight: l.weight, relation: l.relation, note: l.note});
+      (adj[l.to] = adj[l.to] || []).push({kin: l.from, weight: l.weight, relation: l.relation, note: l.note});
     }
   });
   /* see-also lines on the back, in the handwriting */
@@ -1440,9 +1498,10 @@ function resolveLinks(){
   });
 }
 
-/* ---------- layout: the ranked wall ---------- */
-var HDR = {x: 70, y: 60};
-var DEF0 = {x: 70, y: 560};
+/* ---------- layout: the room ---------- */
+var HDR = {x: 70, y: 120};
+var WALL_CX = 1760;          /* center line of the hang */
+var EYE = 640;               /* the Crown's eye line */
 var regions = {};
 
 function clearWallText(){ stray.forEach(function(e){ e.remove(); }); stray = []; }
@@ -1450,6 +1509,16 @@ function wallText(cls, x, y, html){
   var d = document.createElement('div');
   d.className = cls; d.style.left = x + 'px'; d.style.top = y + 'px';
   d.innerHTML = html; world.appendChild(d); stray.push(d);
+  return d;
+}
+function arch(cls, x, y, w, h, html){
+  var d = document.createElement('div');
+  d.className = 'arch ' + cls;
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.style.width = w + 'px'; d.style.height = h + 'px';
+  if (html) d.innerHTML = html;
+  world.insertBefore(d, threads);   /* behind the photos, behind the lines */
+  stray.push(d);
   return d;
 }
 
@@ -1466,11 +1535,8 @@ function layout(){
     '<p class="dek"><em>The condition is real, so the system is real:</em> neither of us trusts a memory older than the night it was made. A film gets its photo taken in the room, reaction first, number second, and goes on the wall. The shoebox holds the prints memory swears it took earlier. The dark frames never developed, and only a rewatch finishes the chemicals. If it isn\'t written on a photo, it didn\'t happen.</p>' +
     '<p class="facts">' + FACTS_HTML + '</p>');
 
-  /* definitive wall: tier bands */
-  var defs = defSet();
-  var y = DEF0.y, maxX = 0;
-  var i = 0;
   /* ranks with ties */
+  var defs = defSet();
   var k = 0;
   while (k < defs.length){
     var v = defs[k].score, j = k;
@@ -1479,68 +1545,117 @@ function layout(){
       defs[q].rankTxt = (j - k > 1 ? 'T-' + (k + 1) : 'No. ' + (k + 1));
     k = j;
   }
-  BANDS.forEach(function(b){
+
+  /* the hang: height is rank. the Crown alone at eye line, tiers descend. */
+  var y = EYE, maxW = 0, wallBottom = EYE;
+  BANDS.forEach(function(b, bi){
     var inb = defs.filter(function(p){ return p.score >= b[0] && p.score <= b[1]; });
     if (!inb.length) return;
-    wallText('bandhead', DEF0.x + 6, y, '<h2>' + b[2] + '</h2><span>' + b[3] + '</span>');
-    y += 96;
+    var cols = BAND_COLS[bi] || 4;
+    var pitchX = 306, pitchY = 396;
+    var rows = Math.ceil(inb.length / cols);
+    wallText('bandhead', WALL_CX - (cols * pitchX) / 2 - 6, y - 64,
+      '<h2>' + b[2] + '</h2><span>' + b[3] + '</span>');
     inb.forEach(function(p, n){
-      var col = n % DEF_COLS, row = Math.floor(n / DEF_COLS);
-      place(p, DEF0.x + col * PX + jit(p.key + 'x', 14),
-               y + row * PY + jit(p.key + 'y', 16));
+      var row = Math.floor(n / cols);
+      var inRow = Math.min(cols, inb.length - row * cols);
+      var col = n % cols;
+      var x = WALL_CX - (inRow * pitchX) / 2 + col * pitchX + (pitchX - PW) / 2
+              + jit(p.key + 'x', 40);
+      var yy = y + row * pitchY + n * 5 + jit(p.key + 'y', 52);
+      p.sc = 1; p.el.style.setProperty('--sc', '1');
+      place(p, x, yy);
       p.rankEl.textContent = p.rankTxt;
       p.sec.querySelector('.no').textContent = p.rankTxt;
-      maxX = Math.max(maxX, DEF0.x + col * PX + PW);
+      wallBottom = Math.max(wallBottom, yy + PH);
+      maxW = Math.max(maxW, inRow * pitchX);
     });
-    y += Math.ceil(inb.length / DEF_COLS) * PY + 40;
+    y += rows * pitchY + (rows - 1) * 20 + 132;
   });
-  var defBottom = y;
-  regions.def = {x: HDR.x - 40, y: HDR.y - 40, w: DEF_COLS * PX + 120, h: defBottom - HDR.y + 60};
 
-  /* colophon painted under the definitive wall */
-  wallText('colo', DEF0.x + 6, defBottom + 30,
+  regions.def = {x: WALL_CX - maxW / 2 - 160, y: 40,
+                 w: maxW + 320, h: wallBottom - 40 + 120};
+
+  /* colophon painted under the hang */
+  wallText('colo', WALL_CX - maxW / 2 - 6, wallBottom + 96,
     '<div class="prod">A Leonard &amp; Lou Production</div>' +
     '<div class="line">the ledger remembers what we can\'t</div>' +
-    '<p class="fn"><b>How a film gets certified:</b> flip its photo, write on it in pen: a fresh number and one line, and the line becomes its review. That is the whole toll. A rewatch always overrides a certification, and every rewatch of an archive film produces a paired measurement, memory against live. When there are enough to state a real number, I will state it and touch nothing.</p>');
+    '<p class="fn"><b>How a film gets certified:</b> lift its print from the shoebox, write on it in pen: a fresh number and one line, and the line becomes its review. The chemicals finish, the scene develops, and it takes its place on the wall. A rewatch always overrides a certification, and every rewatch of an archive film produces a paired measurement, memory against live. When there are enough to state a real number, I will state it and touch nothing.</p>');
 
-  /* the shoebox */
-  var BOX0 = {x: DEF0.x + DEF_COLS * PX + 460, y: 560};
+  /* ---- the room shell: one wall, one floor ---- */
+  var floorY = wallBottom + 330;
+  var roomX0 = HDR.x - 200;
+
+  /* the shoebox: an open box on a side table, prints riffled inside */
+  var BOXC = {x: regions.def.x + regions.def.w + 900, y: floorY - 480};
   var arcs = photos.filter(function(p){ return p.state === 'arc'; })
     .sort(function(a, b){ return b.score - a.score || (a.sort < b.sort ? -1 : 1); });
-  wallText('roomhead', BOX0.x + 6, BOX0.y - 210,
-    '<h2>The Shoebox</h2><p>prints memory swears it took. scores in pencil, quotes earned live only.</p>');
+  wallText('roomhead', BOXC.x - 420, BOXC.y - 420,
+    '<h2>The Shoebox</h2><p>prints memory swears it took. half evidence, waiting on the lab. scores in pencil.</p>');
+  /* prints riffled: tight deterministic scatter, overlapping, angled */
+  var bw = 5;   /* per riffle row */
+  var boxW = bw * (PW * SC_BOX * .78) + 260;
+  var boxRows = Math.ceil(arcs.length / bw);
+  var boxH = boxRows * (PH * SC_BOX * .62) + 220;
+  arch('boxwall', BOXC.x - boxW / 2, BOXC.y - 120, boxW, boxH + 140);
+  arch('boxlid', BOXC.x + boxW / 2 - 90, BOXC.y - 240, boxW * .82, 120);
+  arch('boxlabel', BOXC.x - boxW / 2 + 30, BOXC.y + boxH + 34, boxW - 60, 60,
+       '<div style="font-size:34px">the shoebox &middot; ' + arcs.length + ' prints</div>');
   arcs.forEach(function(p, n){
-    var col = n % BOX_COLS, row = Math.floor(n / BOX_COLS);
-    place(p, BOX0.x + col * PX + jit(p.key + 'x', 14),
-             BOX0.y + row * PY + jit(p.key + 'y', 16));
-    p.rankEl.textContent = 'memory ' + (n + 1);
+    var col = n % bw, row = Math.floor(n / bw);
+    p.sc = SC_BOX; p.el.style.setProperty('--sc', SC_BOX);
+    p.el.style.setProperty('--rot', (jit(p.key, 16)).toFixed(2) + 'deg');
+    place(p,
+      BOXC.x - boxW / 2 + 60 + col * (PW * SC_BOX * .78) + jit(p.key + 'bx', 34) - (PW - PW * SC_BOX) / 2,
+      BOXC.y - 60 + row * (PH * SC_BOX * .62) + jit(p.key + 'by', 26) - (PH - PH * SC_BOX) / 2);
+    p.rankEl.textContent = '';
     p.sec.querySelector('.no').textContent = 'memory No. ' + (n + 1);
   });
-  var boxRows = Math.ceil(arcs.length / BOX_COLS);
-  regions.box = {x: BOX0.x - 60, y: BOX0.y - 250, w: BOX_COLS * PX + 130, h: boxRows * PY + 340};
-  sizeRegion('regBox', regions.box);
+  /* the table it sits on */
+  arch('table', BOXC.x - boxW / 2 - 70, BOXC.y + boxH + 110, boxW + 140, 34);
+  arch('tableleg', BOXC.x - boxW / 2 - 40, BOXC.y + boxH + 144, 14, floorY - (BOXC.y + boxH + 144) + 10);
+  arch('tableleg', BOXC.x + boxW / 2 + 26, BOXC.y + boxH + 144, 14, floorY - (BOXC.y + boxH + 144) + 10);
+  regions.box = {x: BOXC.x - boxW / 2 - 460, y: BOXC.y - 480, w: boxW + 920, h: boxH + 740};
 
-  /* the hazy wing */
-  var HZ0 = {x: BOX0.x + BOX_COLS * PX + 480, y: 560};
+  /* the dark drawer: undeveloped frames in a cabinet */
+  var HZC = {x: regions.box.x + regions.box.w + 700, y: floorY - 560};
   var hz = photos.filter(function(p){ return p.state === 'hazy'; })
     .sort(function(a, b){ return a.sort < b.sort ? -1 : 1; });
-  wallText('roomhead dark', HZ0.x + 6, HZ0.y - 210,
-    '<h2>The Hazy Wing</h2><p>seen, too faded to rate. the chemicals never finished; a rewatch is the bath.</p>');
+  wallText('roomhead dark', HZC.x - 380, HZC.y - 400,
+    '<h2>The Dark Drawer</h2><p>seen, too faded to rate. the chemicals never finished; a rewatch is the bath.</p>');
+  var hw = 5;
+  var cabW = hw * (PW * SC_HAZY * .82) + 240;
+  var cabRows = Math.ceil(hz.length / hw);
+  var cabH = cabRows * (PH * SC_HAZY * .66) + 200;
+  arch('cabinet', HZC.x - cabW / 2, HZC.y - 110, cabW, cabH + 150);
+  arch('drawerlip', HZC.x - cabW / 2 + 20, HZC.y + cabH + 60, cabW - 40, 26);
+  arch('pull', HZC.x - 14, HZC.y + cabH + 66, 28, 14);
   hz.forEach(function(p, n){
-    var col = n % HAZY_COLS, row = Math.floor(n / HAZY_COLS);
-    place(p, HZ0.x + col * PX + jit(p.key + 'x', 14),
-             HZ0.y + row * PY + jit(p.key + 'y', 16));
-    p.rankEl.textContent = 'undeveloped';
+    var col = n % hw, row = Math.floor(n / hw);
+    p.sc = SC_HAZY; p.el.style.setProperty('--sc', SC_HAZY);
+    p.el.style.setProperty('--rot', (jit(p.key, 12)).toFixed(2) + 'deg');
+    place(p,
+      HZC.x - cabW / 2 + 66 + col * (PW * SC_HAZY * .82) + jit(p.key + 'hx', 26) - (PW - PW * SC_HAZY) / 2,
+      HZC.y - 50 + row * (PH * SC_HAZY * .66) + jit(p.key + 'hy', 20) - (PH - PH * SC_HAZY) / 2);
+    p.rankEl.textContent = '';
     p.sec.querySelector('.no').textContent = 'undeveloped';
   });
-  var hzRows = Math.ceil(hz.length / HAZY_COLS);
-  regions.hazy = {x: HZ0.x - 60, y: HZ0.y - 250, w: HAZY_COLS * PX + 130, h: hzRows * PY + 340};
-  sizeRegion('regHazy', regions.hazy);
+  regions.hazy = {x: HZC.x - cabW / 2 - 420, y: HZC.y - 460, w: cabW + 840, h: cabH + 720};
 
   /* world extent */
-  var W = regions.hazy.x + regions.hazy.w + 200;
-  var H = Math.max(regions.def.y + regions.def.h, regions.box.y + regions.box.h,
-                   regions.hazy.y + regions.hazy.h) + 200;
+  var W = regions.hazy.x + regions.hazy.w + 240;
+  var H = floorY + 560;
+
+  /* the wall itself, the rail, the baseboard, the floor */
+  arch('wallpanel', 0, 0, W, floorY);
+  arch('rail', 0, EYE - 210, W, 10);
+  arch('baseboard', 0, floorY - 34, W, 34);
+  arch('floor', 0, floorY, W, H - floorY);
+  /* one warm lamp over the Crown */
+  arch('wire', WALL_CX - 1, 0, 2, EYE - 420);
+  arch('shade', WALL_CX - 60, EYE - 420, 120, 66);
+  arch('lamp', WALL_CX - 700, EYE - 360, 1400, 900);
+
   world.style.width = W + 'px'; world.style.height = H + 'px';
   threads.setAttribute('width', W); threads.setAttribute('height', H);
   threads.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -1551,14 +1666,6 @@ function layout(){
 function place(p, x, y){
   p.home.x = x; p.home.y = y;
   p.el.style.left = x + 'px'; p.el.style.top = y + 'px';
-}
-
-function sizeRegion(id, r){
-  var el = document.getElementById(id);
-  if (!el){ el = document.createElement('div'); el.className = 'region'; el.id = id;
-    world.insertBefore(el, world.firstChild); }
-  el.style.left = r.x + 'px'; el.style.top = r.y + 'px';
-  el.style.width = r.w + 'px'; el.style.height = r.h + 'px';
 }
 
 function tally(){
@@ -1586,7 +1693,7 @@ function glideTo(x, y, s){
   cam.x = x; cam.y = y; cam.s = s; setCam();
 }
 world.addEventListener('transitionend', function(e){
-  if (e.propertyName === 'transform') world.classList.remove('glide');
+  if (e.propertyName === 'transform' && e.target === world) world.classList.remove('glide');
 });
 
 function DESK_H(){ var d = document.getElementById('desk'); return (d ? d.offsetHeight : 56) + 6; }
@@ -1609,7 +1716,9 @@ function centerPhoto(p, s){
 var pointers = {};
 var panState = null, moved = false, pinch0 = null;
 
+var downTarget = null;   /* pointer capture retargets click to #viewport; keep the real target */
 viewport.addEventListener('pointerdown', function(e){
+  downTarget = e.target;
   pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
   var keys = Object.keys(pointers);
   world.classList.remove('glide');
@@ -1688,17 +1797,15 @@ var state = {mode: 'wall'};
 var MODE_HINT = {
   wall: 'drag to roam, scroll to zoom, click a photo to step close',
   backs: 'click a photo to flip it and read the back. the handwriting flies you to its kin',
-  const: 'links became distance. the wall reflows; step back and read the regions',
-  thread: 'hold a photo. the light finds its kin. let go and it\'s gone'
+  invest: 'hold a photo and its kin light up. click a lit photo to follow the line. your trail smolders behind you'
 };
 function setMode(m){
   if (state.mode === m) return;
   if (document.body.classList.contains('dived')) closeDive(true);
-  if (state.mode === 'const') exitConst();
+  if (state.mode === 'invest') exitInvest();
   state.mode = m;
   document.body.className = document.body.className.replace(/mode-\S+/, 'mode-' + m) +
     (document.body.className.indexOf('mode-') < 0 ? ' mode-' + m : '');
-  if (m === 'const') enterConst();
   document.getElementById('hint').textContent = MODE_HINT[m];
 }
 
@@ -1714,7 +1821,7 @@ function flipTo(p){
 function dive(p, flip){
   if (!document.body.classList.contains('dived'))
     diveStack.push({x: cam.x, y: cam.y, s: cam.s});
-  var s = Math.min(2.6, ((vh() - DESK_H()) * .92) / PH);
+  var s = Math.min(2.6 / p.sc, ((vh() - DESK_H()) * .92) / (PH * p.sc));
   centerPhoto(p, s);
   document.body.classList.add('dived');
   if (divedP) divedP.el.style.zIndex = '';
@@ -1734,10 +1841,18 @@ document.addEventListener('keydown', function(e){
   if (e.key === 'Escape' && document.body.classList.contains('dived')) closeDive();
 });
 
-/* ---------- the thread ---------- */
+/* ---------- the investigation ---------- */
+/* hold: the light finds its kin. click a lit kin: follow the line, the note
+   flashes up, the trace continues. the walked path smolders as embers until
+   the mode ends. never a standing web: the embers die with the mode. */
 var holdTimer = null, heldPhoto = null, threadLines = [];
+var embers = [];         /* [{a, b, el}] walked segments, alive only in-mode */
+var noteTimer = null;
+
+function ctr(p){ return {x: p.home.x + PW / 2, y: p.home.y + PH / 2}; }
+
 function maybeStartHold(e){
-  if (state.mode !== 'thread') return;
+  if (state.mode !== 'invest') return;
   var pe = e.target.closest && e.target.closest('.photo');
   if (!pe) return;
   var p = byTitle[pe.dataset.key];
@@ -1747,20 +1862,24 @@ function maybeStartHold(e){
 function cancelHold(){ if (holdTimer){ clearTimeout(holdTimer); holdTimer = null; } }
 function releaseHold(){
   cancelHold();
-  if (heldPhoto) dimThread();
+  /* keep the light up if a trace is running: release only dims when nothing was followed */
+  if (heldPhoto && !traceArmed) dimThread();
 }
+var traceArmed = false;   /* true between lighting and following */
 function lightThread(p){
+  if (heldPhoto) dimThread();
   heldPhoto = p;
+  traceArmed = true;
   document.body.classList.add('holding');
-  var cx = p.home.x + PW / 2, cy = p.home.y + PH / 2;
+  var c = ctr(p);
   (adj[p.key] || []).forEach(function(a){
     var k = byTitle[a.kin]; if (!k) return;
-    var kx = k.home.x + PW / 2, ky = k.home.y + PH / 2;
+    var kc = ctr(k);
     var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    ln.setAttribute('x1', cx); ln.setAttribute('y1', cy);
-    ln.setAttribute('x2', kx); ln.setAttribute('y2', ky);
+    ln.setAttribute('x1', c.x); ln.setAttribute('y1', c.y);
+    ln.setAttribute('x2', kc.x); ln.setAttribute('y2', kc.y);
     ln.setAttribute('stroke-width', (a.weight >= 3 ? 3 : a.weight === 2 ? 2.4 : 1.8) / cam.s);
-    var len = Math.hypot(kx - cx, ky - cy);
+    var len = Math.hypot(kc.x - c.x, kc.y - c.y);
     ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len;
     ln.style.opacity = (.4 + a.weight * .14).toFixed(2);
     ln.style.transition = 'stroke-dashoffset .28s ease-out, opacity .18s';
@@ -1772,16 +1891,71 @@ function lightThread(p){
 }
 function dimThread(){
   document.body.classList.remove('holding');
+  traceArmed = false;
   threadLines.forEach(function(ln){ ln.classList.add('fadeout'); });
   var dead = threadLines; threadLines = [];
   setTimeout(function(){ dead.forEach(function(ln){ ln.remove(); }); }, 220);
   photos.forEach(function(p){ p.el.classList.remove('lit'); });
   heldPhoto = null;
 }
+function emberKey(a, b){ return a.key < b.key ? a.key + '|' + b.key : b.key + '|' + a.key; }
+function addEmber(a, b){
+  var kk = emberKey(a, b);
+  if (embers.some(function(e){ return e.k === kk; })) return;
+  var ca = ctr(a), cb = ctr(b);
+  var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  ln.setAttribute('class', 'ember');
+  ln.setAttribute('x1', ca.x); ln.setAttribute('y1', ca.y);
+  ln.setAttribute('x2', cb.x); ln.setAttribute('y2', cb.y);
+  ln.setAttribute('stroke-width', 1.4 / cam.s);
+  ln.style.opacity = '.34';
+  threads.insertBefore(ln, threads.firstChild);
+  embers.push({k: kk, a: a, b: b, el: ln});
+  /* embers cool but never quite die while the mode lives */
+  setTimeout(function(){ ln.style.transition = 'opacity 6s'; ln.style.opacity = '.15'; }, 900);
+}
+function refreshEmbers(){
+  embers.forEach(function(e){
+    var ca = ctr(e.a), cb = ctr(e.b);
+    e.el.setAttribute('x1', ca.x); e.el.setAttribute('y1', ca.y);
+    e.el.setAttribute('x2', cb.x); e.el.setAttribute('y2', cb.y);
+  });
+}
+function flashNote(fromKey, toKey){
+  var l = LINKS.filter(function(x){
+    return (x.from === fromKey && x.to === toKey) ||
+           (x.from === toKey && x.to === fromKey);
+  })[0];
+  if (!l) return;
+  var nc = document.getElementById('notecard');
+  nc.querySelector('.nrel').textContent = l.relation.replace(/-/g, ' ');
+  nc.querySelector('.ntxt').textContent = l.note;
+  nc.classList.add('on');
+  if (noteTimer) clearTimeout(noteTimer);
+  noteTimer = setTimeout(function(){ nc.classList.remove('on'); }, 4200);
+}
+function followTo(p){
+  /* the cop moves: ember behind him, camera flies, the trace re-lights */
+  var from = heldPhoto;
+  addEmber(from, p);
+  flashNote(from.key, p.key);
+  dimThread();
+  var s = Math.max(cam.s, .42);
+  centerPhoto(p, s);
+  if (adj[p.key]) setTimeout(function(){ if (state.mode === 'invest') lightThread(p); }, 700);
+}
+function exitInvest(){
+  dimThread();
+  embers.forEach(function(e){ e.el.remove(); });
+  embers = [];
+  document.getElementById('notecard').classList.remove('on');
+  if (document.body.classList.contains('stepback')) exitStepback();
+}
 
-/* ---------- constellations: links become distance ---------- */
+/* ---------- step back: links become distance (inside the investigation) ---------- */
 var constLabels = [];
-function enterConst(){
+function enterStepback(){
+  document.body.classList.add('stepback');
   var linked = photos.filter(function(p){ return adj[p.key]; })
     .sort(function(a, b){ return a.key < b.key ? -1 : 1; });
   if (!linked.length) return;
@@ -1832,8 +2006,10 @@ function enterConst(){
     p.el.style.left = (ox + (pos[p.key].x - minx) * sc) + 'px';
     p.el.style.top = (oy + (pos[p.key].y - miny) * sc) + 'px';
     p.constXY = {x: ox + (pos[p.key].x - minx) * sc, y: oy + (pos[p.key].y - miny) * sc};
+    p.home.x = p.constXY.x; p.home.y = p.constXY.y;   /* embers + holds track the drift */
   });
   photos.forEach(function(p){ if (!adj[p.key]) p.el.classList.add('dim'); });
+  refreshEmbers();
   /* relation labels at member centroids */
   var rels = {};
   LINKS.forEach(function(l){
@@ -1862,18 +2038,27 @@ function enterConst(){
   });
   fitRect({x: fx0 - 80, y: fy0 - 300, w: fx1 - fx0 + 160, h: fy1 - fy0 + 380});
 }
-function exitConst(){
+function exitStepback(){
+  document.body.classList.remove('stepback');
+  document.getElementById('stepbackChip').classList.remove('on');
   constLabels.forEach(function(l){ l.remove(); }); constLabels = [];
-  photos.forEach(function(p){
-    p.el.classList.remove('dim'); p.constXY = null;
-    p.el.style.left = p.home.x + 'px'; p.el.style.top = p.home.y + 'px';
-  });
+  dimThread();
+  photos.forEach(function(p){ p.el.classList.remove('dim'); });
+  layout();          /* rebuild homes; photos glide back to the hang */
+  refreshEmbers();
 }
+document.getElementById('stepbackChip').addEventListener('click', function(){
+  if (state.mode !== 'invest') return;
+  if (document.body.classList.contains('stepback')) exitStepback();
+  else { this.classList.add('on'); enterStepback(); }
+});
 
 /* ---------- clicks ---------- */
 document.addEventListener('click', function(e){
   if (moved) return;                       /* it was a pan, not a click */
   var t = e.target;
+  /* pointer capture makes clicks inside the world surface as #viewport */
+  if ((t === viewport || t === world || t.id === 'threads') && downTarget) t = downTarget;
   if (t.classList.contains('more-toggle')){
     var m = t.nextElementSibling;
     m.classList.toggle('open');
@@ -1896,6 +2081,12 @@ document.addEventListener('click', function(e){
     var p = byTitle[pe.dataset.key];
     if (!p) return;
     if (pe.classList.contains('flipped')) return;   /* reading; let it be */
+    if (state.mode === 'invest'){
+      if (heldPhoto === p) return;         /* the hold already lit it; ignore the trailing click */
+      if (heldPhoto && pe.classList.contains('lit')){ followTo(p); return; }
+      if (adj[p.key]){ lightThread(p); return; }
+      return;
+    }
     dive(p, state.mode === 'backs');
   }
 });
@@ -1933,10 +2124,15 @@ function certify(p){
   p.sec.querySelector('.cd-n').textContent = v.toFixed(1);
   p.sec.querySelector('.certwrap').classList.add('done');
   p.sec.querySelector('.certwrap').classList.remove('open');
+  var aw = p.el.querySelector('.awaiting'); if (aw) aw.remove();
   paintChin(p);
   syncTray();
   closeDive(true);
+  /* the DNA comes back: the chemicals finish while the print flies to the wall */
+  p.el.classList.add('developing');
+  setTimeout(function(){ p.el.classList.remove('developing'); }, 1300);
   layout();                                   /* it re-ranks in place */
+  refreshEmbers();
   centerPhoto(p, Math.max(cam.s, .5));        /* and scrolls back into view */
 }
 function uncertify(p){
@@ -1950,10 +2146,16 @@ function uncertify(p){
   p.sec.querySelector('.score').innerHTML = back.toFixed(1) + '<small> /10</small>';
   p.sec.querySelector('.meta').innerHTML = 'The Vault · scored from memory · ' + p.sec.dataset.when;
   p.sec.querySelector('.certwrap').classList.remove('done');
+  if (!p.el.querySelector('.awaiting')){
+    var aw = document.createElement('div'); aw.className = 'awaiting';
+    aw.textContent = 'awaiting development';
+    p.el.querySelector('.face.front').appendChild(aw);
+  }
   paintChin(p);
   syncTray();
   if (document.body.classList.contains('dived')) closeDive(true);
   layout();
+  refreshEmbers();
 }
 function syncTray(){
   var keys = Object.keys(pending);

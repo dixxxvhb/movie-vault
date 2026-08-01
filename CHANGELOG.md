@@ -1,5 +1,65 @@
 # Pipeline CHANGELOG
 
+## v3 — 2026-08-01 — The Room (same night as v2; Dixon's escalation)
+
+Dixon's four rulings (recorded from the session): height = rank on a salon
+hang, ember trail in the merged Investigation mode, hybrid front art (SVG
+scenes now, ComfyUI experiments owed for Crown + Nines), open shoebox.
+
+### What structurally changed
+
+- **The wall is a room.** `layout()` paints architecture into `#world`
+  (`.arch` elements): wall paneling, picture rail, baseboard, wood floor, and
+  one hanging lamp over the Crown. Salon hang replaces tier-band grid rows:
+  the Crown alone at the eye line (`EYE`), each band descending toward the
+  baseboard, centered on `WALL_CX`, per-photo deterministic jitter. Rank now
+  reads as height; the tape carries a penciled rank number (`.rank` moved onto
+  the tape).
+- **The Shoebox is an actual open box** on a side table (prints riffled,
+  scaled `--sc:.56`, heavier rotation, no tape) and **the Hazy Wing is now The
+  Dark Drawer**, a cabinet of undeveloped frames (`--sc:.5`). Both are
+  "evidence in waiting": archive fronts render as grayscale contact prints
+  with an "awaiting development" pencil note; no bespoke scene until
+  certification.
+- **The Investigation** replaces Constellations + The Thread as one mode.
+  Hold lights the red lines (unchanged law: thin light, opt-in). NEW: clicking
+  a lit kin follows the line — camera flies, the link's note flashes on a
+  `#notecard` in the handwriting, the trace re-lights from the new photo, and
+  the walked segment stays behind as a faint **ember** (mode-long, cleared on
+  exit; Dixon's "ember trail" ruling, still inside the red-string ban's
+  letter). The old constellation force-reflow survives as the **step back**
+  sub-toggle inside the mode (`#stepbackChip`), links-become-distance, exits
+  back to the hang.
+- **Bespoke fronts.** New `film_ledger_panels.photo_svg` column (migration
+  `add_photo_svg_to_film_ledger_panels`); 24 hand-authored SVG scenes, one per
+  definitive film, built from each film's own palette vars so they inherit
+  panel colors. New build input `photos.json` (pull from DB), new template
+  token `__PHOTOS__`. A slug without a scene falls back to its glyph.
+- **Certification is the DNA coming back**: certify plays a 1.2s development
+  bloom (`.developing`), drops the "awaiting" mark, rescales to 1, and the
+  print flies from the box to its ranked spot on the wall. Undo reverses all
+  of it. CERTIFY tray protocol unchanged.
+- Mode dimming: the room dims in Backs (40%) and fully in the Investigation
+  (`#dimmer`). Newest ledger print gets whiter tape + a bright border
+  (`.fresh`) for one build cycle.
+- `check.py` updated for the v3 layout (salon band ordering, invest mode,
+  step back, fronts present, awaiting/develop cycle); same never-install
+  browser resolution.
+
+### Sync additions
+
+- Step 1.5 of the sync: pull fronts →
+  `select jsonb_object_agg(slug, photo_svg) from film_ledger_panels where photo_svg is not null;`
+  → save as `photos.json`. New scenes are authored per new film (Code side,
+  design grammar in the SVGs themselves: 236x236 viewBox, palette vars only,
+  dead-center subject) and stored in `photo_svg` in the same pass as the panel
+  row.
+
+### Owed / open
+
+- ComfyUI photographic experiments for the Crown + Nines (hybrid ruling).
+- The artifact republish to the stable URL.
+
 ## v2 — 2026-08-01 — The Polaroid Wall (spatial rebuild)
 
 5.0-magnitude redesign of the rendering and build pipeline, executing the
