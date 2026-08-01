@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Vault</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Caveat:wght@400;600;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+:root{--wall:#E8E2D6;--wall2:#DFD8C9;--ink:#1C1914;--mid:#6E675A;--rule:#D2C9B8;--photo:#FFFEF8;--pencil:#8A8272;--pen:#25221C}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:linear-gradient(180deg,var(--wall) 0%,var(--wall2) 100%);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;font-size:15px;line-height:1.6;padding:64px 26px 120px;min-height:100vh}
+.wrap{max-width:1040px;margin:0 auto}
+
+/* the premise */
+.over{font-size:10.5px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--mid);margin-bottom:30px}
+h1{font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;font-size:clamp(64px,11vw,118px);line-height:.92}
+.dek{max-width:56ch;margin-top:30px;font-size:15.5px;line-height:1.65}
+.dek em{font-family:'Caveat',cursive;font-style:normal;font-size:22px;font-weight:600}
+.facts{font-size:12px;color:var(--mid);margin-top:18px;max-width:88ch}
+.facts b{font-weight:700;color:var(--ink)}
+.mast-rule{border:none;border-top:2px solid var(--ink);margin:40px 0 0;opacity:.75}
+
+/* the desk */
+.desk{position:sticky;top:0;z-index:20;background:var(--wall);border-bottom:1px solid var(--rule);box-shadow:0 8px 18px rgba(28,25,20,.05);padding:15px 0 13px}
+.deskrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.deskrow+.deskrow{margin-top:7px}
+.dl{font-size:9px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--mid);width:58px;flex:none}
+.opt{font-size:11px;font-weight:500;padding:6px 13px;border:1px solid var(--rule);border-radius:999px;background:var(--photo);cursor:pointer;user-select:none;white-space:nowrap;transition:.12s;color:var(--mid)}
+.opt:hover{color:var(--ink);border-color:var(--mid)}
+.opt.on{background:var(--ink);color:var(--photo);border-color:var(--ink)}
+.tallyline{font-family:'Caveat',cursive;font-size:17px;color:var(--mid);margin-top:10px}
+
+/* section scrawl */
+.tier-head{grid-column:1/-1;margin:52px 0 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.tier-head .rn{display:none}
+.tier-head h2{font-family:'Caveat',cursive;font-weight:700;font-size:42px;line-height:1;color:var(--pen)}
+.tier-head span{font-family:'Caveat',cursive;font-size:19px;color:var(--mid)}
+
+/* the wall of polaroids */
+#stage{display:grid;grid-template-columns:repeat(12,1fr);gap:64px 30px;align-items:start;padding-top:26px}
+
+/* one photo */
+.panel{position:relative;background:var(--bg);color:var(--fg);grid-column:span 3;aspect-ratio:1/.96;cursor:pointer;
+  box-shadow:0 0 0 12px var(--photo),0 62px 0 12px var(--photo),0 74px 26px rgba(28,25,20,.28),0 6px 14px rgba(28,25,20,.14);
+  margin:12px 12px 86px;transition:transform .16s}
+.panel::before{content:var(--glyph);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(64px,8vw,104px);line-height:1;opacity:.18;pointer-events:none;font-family:'Schibsted Grotesk',sans-serif}
+#stage .panel:nth-child(4n):not(.focus){transform:rotate(-1.4deg)}
+#stage .panel:nth-child(4n+1):not(.focus){transform:rotate(.9deg)}
+#stage .panel:nth-child(4n+2):not(.focus){transform:rotate(-.5deg)}
+#stage .panel:nth-child(4n+3):not(.focus){transform:rotate(1.2deg)}
+#stage .panel:not(.focus):hover{transform:rotate(0) translateY(-3px);z-index:30}
+#stage .panel:has(.certwrap.open),#stage .panel:has(.certform :focus){z-index:31}
+#stage .panel.focus{transform:translateX(-50%)}
+.no{position:absolute;top:7px;left:10px;font-size:9px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--sub);opacity:.9}
+/* the chin: handwriting on the border */
+.panel .head{position:absolute;left:-4px;right:-4px;top:calc(100% + 6px);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;color:var(--pen);pointer-events:none}
+.panel .film{font-family:'Caveat',cursive;font-weight:600;font-size:20px;line-height:.95;color:var(--pen);white-space:normal}
+.panel .film span{font-family:'Caveat',cursive;font-size:15px;color:var(--pencil);margin-left:6px}
+.panel .score{font-family:'Caveat',cursive;font-weight:700;font-size:26px;color:var(--pen);white-space:nowrap}
+.panel .score small{font-size:14px;color:var(--pencil)}
+/* the front of a photo carries no essay */
+.panel:not(.focus) .meta,.panel:not(.focus) .plot,.panel:not(.focus) .quote,.panel:not(.focus) .more-toggle,.panel:not(.focus) .more,.panel:not(.focus) .debrief,.panel:not(.focus) .certnote{display:none}
+
+/* flip it over: the back of the photo */
+#veil{position:fixed;inset:0;background:rgba(24,21,15,.78);z-index:50;display:none}
+#veil.on{display:block}
+.panel.focus{position:fixed;z-index:60;top:4vh;left:50%;transform:translateX(-50%);width:min(700px,94vw);max-height:90vh;overflow:auto;cursor:default;
+  grid-column:auto;aspect-ratio:auto;margin:0;background:var(--photo);color:var(--pen);
+  box-shadow:0 60px 160px rgba(0,0,0,.55);padding:44px 40px 36px}
+.panel.focus::before{content:none}
+.panel.focus .no{position:static;color:var(--pencil)}
+.panel.focus .head{position:static;margin-top:8px;pointer-events:auto;color:var(--pen)}
+.panel.focus .film{font-family:'Instrument Serif',serif;font-size:clamp(30px,6vw,40px);line-height:1.02;white-space:normal;color:var(--pen)}
+.panel.focus .film span{font-family:'Schibsted Grotesk';font-size:13px;color:var(--pencil)}
+.panel.focus .score{font-family:'Instrument Serif',serif;font-size:clamp(30px,6vw,40px);color:var(--pen)}
+.panel.focus .score small{font-size:14px;color:var(--pencil)}
+.panel.focus .quote{color:var(--pen)}
+.panel.focus .quote::before{content:'what you said, verbatim';display:block;font-family:'Caveat',cursive;font-size:16px;color:var(--pencil);margin-bottom:2px}
+.pclose{position:absolute;top:14px;right:14px;z-index:5;font-family:'Caveat',cursive;font-size:17px;font-weight:600;padding:5px 13px;background:var(--pen);color:var(--photo);border-radius:999px;cursor:pointer;user-select:none}
+.meta{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--pencil);margin-top:9px}
+.plot{margin-top:18px;max-width:58ch}
+.quote{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(20px,4.2vw,25px);line-height:1.3;margin-top:20px;max-width:34ch}
+.more-toggle{display:inline-block;font-family:'Caveat',cursive;font-size:17px;font-weight:600;margin-top:14px;cursor:pointer;user-select:none;opacity:.85;border-bottom:1px dashed currentColor;padding-bottom:1px}
+.more{display:none;margin-top:8px}
+.panel.focus .more.open{display:block}
+.mq{font-family:'Instrument Serif',serif;font-style:italic;font-size:17px;line-height:1.4;margin-top:13px;max-width:52ch}
+.mq b{font-family:'Caveat',cursive;font-style:normal;font-weight:600;font-size:15px;color:var(--pencil);display:block;margin-bottom:0}
+.debrief{margin-top:18px;color:#57503F;font-size:14px;max-width:58ch}
+.debrief b{font-weight:500;color:var(--pen)}
+
+/* the ledger palettes: the photo is the film */
+/* ledger palettes: start */
+.amadeus{background:linear-gradient(160deg,#2A1420 0%,#5A1E2E 60%,#8A6A2A 100%);--fg:#F5E7D2;--sub:#C6A488;--glyph:'♬'}
+.annihilation{background:linear-gradient(150deg,#16323A 0%,#3A2C52 55%,#6B6A33 100%);--fg:#EDF3EA;--sub:#9FB0A2;--glyph:'❖'}
+.batman{--bg:#12161F;--fg:#E9E4D7;--sub:#79839A;--glyph:'☾'}
+.br2049{background:linear-gradient(160deg,#E8945B,#8C3B22);--fg:#FBEBDD;--sub:#F3CDB3;--glyph:'▲'}
+.bullettrain{background:linear-gradient(135deg,#E23A5E 0%,#F2A03D 100%);--fg:#2A0E14;--sub:#7A2E3E;--glyph:'⇶'}
+.coherence{--bg:#3D2E57;--fg:#EFE9F9;--sub:#AC9EC9;--glyph:'☄'}
+.darkknight{background:linear-gradient(150deg,#0D1417 0%,#16221A 50%,#2C1633 100%);--fg:#E7F0E4;--sub:#93A48F;--glyph:'\2663'}
+.disclosure-day{background:linear-gradient(155deg,#050810 0%,#0D1B2E 55%,#24405E 100%);--fg:#E7EEF6;--sub:#8FA3C0;--glyph:'◎'}
+.enemy{background:linear-gradient(140deg,#D6C377,#B49B45);--fg:#2E2508;--sub:#6E5F23;--glyph:'❊'}
+.exmachina{--bg:#DCE9F2;--fg:#1E3A50;--sub:#5E7C93;--glyph:'⬡'}
+.game{--bg:#3E4650;--fg:#F2EFE9;--sub:#AEB4BC;--glyph:'♟'}
+.malignant{background:linear-gradient(155deg,#0E0508 0%,#3A0A14 55%,#7A1224 100%);--fg:#F6E4E7;--sub:#C08F98;--glyph:'⟲'}
+.maverick{--bg:#E4EFE4;--fg:#243B24;--sub:#6C8A6C;--glyph:'✈'}
+.memento{--bg:#FFFFFF;--fg:#141414;--sub:#7A7A7A;--glyph:'▣';border:2px solid #141414}
+.memento .no{direction:rtl;unicode-bidi:bidi-override;display:inline-block}
+.ncfom{--bg:#D9C4A3;--fg:#3B2C17;--sub:#84704F;--glyph:'⊙'}
+.niceguys{--bg:#F0E2C4;--fg:#3A2A12;--sub:#8C7143;--glyph:'☎'}
+.nightcrawler{--bg:#14161C;--fg:#EDE7DA;--sub:#8B92A0;--glyph:'◐'}
+.nightcrawler .more-toggle,.nightcrawler .score{color:#E4572E}
+.obsession{--bg:#4E3363;--fg:#F1E9F7;--sub:#B5A2C7;--glyph:'✦'}
+.poorthings{background:linear-gradient(120deg,#DCDCDC 0%,#F5D7E8 45%,#BEE3EE 100%);--fg:#4A2440;--sub:#8A5E7E;--glyph:'❀'}
+.sicario{--bg:#4A3626;--fg:#EFE4D6;--sub:#B39C82;--glyph:'⌖'}
+.stby{background:linear-gradient(120deg,#F2A0BB,#F7C58B);--fg:#4A1530;--sub:#7E4056;--glyph:'☏'}
+.sunshine{--bg:#F3D98B;--fg:#3A2E10;--sub:#8A7440;--glyph:'☀'}
+.tdkr{background:linear-gradient(165deg,#16222E 0%,#31465C 52%,#8A5C3E 100%);--fg:#ECF2F8;--sub:#9CB0C4;--glyph:'↟'}
+/* ledger palettes: end */
+.memento::before{opacity:.05}
+
+/* the shoebox: prints memory swears it took */
+.panel.arc{filter:saturate(.34) contrast(.92) brightness(1.07)}
+.panel.arc .film,.panel.arc .score{color:var(--pencil)}
+.panel.arc .score::after{content:' from memory';font-size:12px;color:var(--pencil);font-weight:400}
+.panel.arc.focus{filter:none}
+
+/* undeveloped: the chemicals never finished */
+.panel.arc[data-hazy]{filter:none;background:linear-gradient(160deg,#23211B 0%,#2E2B23 55%,#26241D 100%);color:#4A463C}
+.panel.arc[data-hazy]::before{opacity:.06;color:#8A8272}
+.panel.arc[data-hazy] .no{color:#575247}
+.panel.arc[data-hazy] .score{display:none}
+.panel.arc[data-hazy] .film{color:var(--pencil)}
+.panel.arc[data-hazy] .head::after{content:'undeveloped';font-family:'Caveat',cursive;font-size:17px;color:var(--pencil);white-space:nowrap}
+.panel.arc[data-hazy].focus{background:var(--photo);color:var(--pen)}
+.panel.arc[data-hazy].focus .head::after{content:'undeveloped. a rewatch is the chemical bath.'}
+
+/* certification: pen on the photo, then it goes on the wall */
+.certnote{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(18px,3.6vw,22px);line-height:1.35;margin-top:18px;max-width:36ch}
+.certnote b{display:block;font-family:'Caveat',cursive;font-style:normal;font-weight:600;font-size:15px;color:var(--pencil);margin-bottom:2px}
+.certwrap{margin-top:12px;padding-top:11px;border-top:1px dotted var(--rule)}
+.panel:not(.focus) .certwrap{position:absolute;left:0;right:0;top:calc(100% + 68px);border-top:none;margin:0;padding:0}
+.cert-btn{display:inline-block;font-family:'Caveat',cursive;font-size:17px;font-weight:600;cursor:pointer;color:var(--mid);border:1px solid var(--rule);border-radius:999px;padding:3px 14px;background:var(--photo);user-select:none}
+.cert-btn:hover{border-color:var(--ink);color:var(--ink)}
+.certform{display:none;margin-top:8px;gap:8px;flex-wrap:wrap;align-items:center}
+.certwrap.open .certform{display:flex;margin-top:0}
+.certwrap.open .cert-btn{display:none}
+.certform input{font-family:'Schibsted Grotesk',sans-serif;font-size:13px;padding:8px 11px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink)}
+.certform input:focus{outline:none;border-color:var(--ink)}
+.cert-score{width:74px;text-align:center;font-weight:700}
+.cert-why{flex:1;min-width:200px}
+.certform input.bad{border-color:#B4432E;background:#FDF1EE}
+.cert-go{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;background:var(--ink);color:var(--photo);border-radius:999px;padding:8px 14px;cursor:pointer;user-select:none}
+.certdone{display:none;font-family:'Caveat',cursive;font-size:16px;color:var(--mid)}
+.certwrap.done .cert-btn,.certwrap.done .certform{display:none}
+.certwrap.done .certdone{display:inline}
+.certdone b{font-weight:700;color:var(--pen)}
+.certdone u{cursor:pointer;text-underline-offset:3px}
+.panel[data-cert="pending"]{filter:none}
+.panel[data-cert="pending"] .film,.panel[data-cert="pending"] .score{color:var(--pen)}
+.panel[data-cert="pending"] .score::after{content:' in pen';font-size:12px;color:var(--pencil);font-weight:400}
+
+/* the pocket: nothing is a fact until Leonard has it */
+.tray{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--pen);color:var(--photo);padding:13px 20px 15px;display:none}
+.tray.on{display:block}
+body.traypad{padding-bottom:220px}
+.trayin{max-width:1040px;margin:0 auto}
+.traybar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.traybar .t{font-size:12px;line-height:1.45;flex:1;min-width:190px;opacity:.85}
+.tbtn{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:1px solid rgba(255,254,248,.42);border-radius:999px;padding:8px 14px;cursor:pointer;user-select:none;white-space:nowrap}
+.tbtn.solid{background:var(--photo);color:var(--pen);border-color:var(--photo)}
+#traycode{display:none;width:100%;margin-top:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;line-height:1.55;padding:11px;border-radius:9px;border:none;height:96px;background:#37332A;color:#EFEBE0;resize:vertical}
+#traycode.on{display:block}
+
+/* the index */
+.list #stage{display:block;max-width:720px;padding-top:8px}
+.list .panel{grid-column:auto;aspect-ratio:auto;margin:9px 0 0;padding:14px 20px;cursor:pointer;transition:none;
+  box-shadow:0 4px 14px rgba(28,25,20,.13);filter:none}
+#stage .list-x{display:none}
+.list #stage .panel:nth-child(4n):not(.focus),.list #stage .panel:nth-child(4n+1):not(.focus),.list #stage .panel:nth-child(4n+2):not(.focus),.list #stage .panel:nth-child(4n+3):not(.focus),.list #stage .panel:not(.focus):hover{transform:none}
+.list .panel::before{display:none}
+.list .no{position:static;font-size:9.5px}
+.list .panel .head{position:static;pointer-events:auto;margin-top:2px;color:var(--fg)}
+.list .panel .film{font-family:'Instrument Serif',serif;font-weight:400;font-size:20px;color:var(--fg);white-space:normal}
+.list .panel .film span{font-family:'Schibsted Grotesk';font-size:11px;color:var(--sub)}
+.list .panel .score{font-family:'Instrument Serif',serif;font-weight:400;font-size:20px;color:var(--fg)}
+.list .panel .score small{font-size:10px;color:var(--sub)}
+.list .panel .score::after{display:none}
+.list .panel.arc{padding:11px 0 11px 16px;margin-top:0;border-top:1px solid var(--rule);box-shadow:none;background:none !important;color:var(--ink)}
+.list .panel.arc .film,.list .panel.arc .score{color:var(--ink)}
+.list .panel.arc[data-hazy]{border-left:3px dashed var(--pencil);opacity:.8}
+.list .panel.arc[data-hazy] .film{color:var(--mid)}
+.list .panel.arc[data-hazy] .head::after{font-size:14px}
+.list .meta{display:block !important;font-size:9.5px;margin-top:3px}
+.list .plot,.list .quote,.list .more-toggle,.list .more,.list .debrief,.list .certnote{display:none !important}
+.list .panel:not(.focus) .certwrap{position:static;margin-top:10px;padding-top:9px;border-top:1px dotted var(--rule);display:block}
+.list .tier-head{margin:34px 0 4px}
+.list .tier-head h2{font-size:30px}
+
+.hidden{display:none !important}
+
+.colophon{margin-top:96px;border-top:2px solid var(--ink);padding-top:24px}
+.prod{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.line{font-family:'Caveat',cursive;font-size:24px;font-weight:600;margin-top:10px;color:var(--pen)}
+.fn{font-size:11.5px;color:var(--mid);margin-top:22px;max-width:56ch}
+.fn b{color:var(--ink);font-weight:500}
+@media(max-width:900px){.panel{grid-column:span 4}}
+@media(max-width:680px){.panel{grid-column:span 6}#stage{gap:56px 22px}}
+@media(max-width:440px){.panel{grid-column:span 12}.dl{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="over">Movie Nights &middot; An External Memory System &middot; Since July 13, 2026</div>
+  <h1>The Vault</h1>
+  <p class="dek"><em>The condition is real, so the system is real:</em> neither of us trusts a memory older than the night it was made. A film gets its photo taken in the room, reaction first, number second, and goes on the wall. The shoebox holds the prints memory swears it took earlier. The dark frames never developed, and only a rewatch finishes the chemicals. If it isn't written on a photo, it didn't happen.</p>
+  <p class="facts"><b>The Ledger</b>: 23 films, July 13&ndash;31, 2026, scored live. &nbsp;&middot;&nbsp; <b>The Archive</b>: 33 films scored from memory, plus 15 in the Hazy Wing. &nbsp;&middot;&nbsp; <b>Definitive</b>: the Ledger, plus every archive film you've certified. Archive scores never move a Ledger anchor.</p>
+  <hr class="mast-rule">
+</header>
+
+<div class="desk">
+  <div class="deskrow"><span class="dl">Wall</span>
+    <span class="opt on" data-g="set" data-v="definitive">The wall</span>
+    <span class="opt" data-g="set" data-v="ledger">Taken in the room</span>
+    <span class="opt" data-g="set" data-v="all">Every photo</span>
+    <span class="opt" data-g="set" data-v="archive">The shoebox</span>
+  </div>
+  <div class="deskrow"><span class="dl">Order</span>
+    <span class="opt on" data-g="sort" data-v="score">By score</span>
+    <span class="opt" data-g="sort" data-v="new">Newest seen</span>
+    <span class="opt" data-g="sort" data-v="old">Oldest seen</span>
+    <span class="opt" data-g="sort" data-v="az">A to Z</span>
+  </div>
+  <div class="deskrow"><span class="dl">Read</span>
+    <span class="opt on" data-g="dens" data-v="full">The photos</span>
+    <span class="opt" data-g="dens" data-v="list">The index</span>
+  </div>
+  <div class="tallyline" id="tally"></div>
+</div>
+
+<div id="veil"></div>
+<div id="stage">
+<section class="panel arc" data-set="archive" data-title="Flowers in the Attic (Lifetime)" data-score="4.3" data-rec="0" data-when="date not recorded" data-sort="flowers in the attic (lifetime)" style="--bg:#6B5A78;--fg:#F1ECF5;--sub:#B3A3BF;--acc:#6B5A78;--glyph:'✕'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Flowers in the Attic (Lifetime)<span>2014</span></div><div class="score">4.3<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Four children are locked in an attic by their mother and grandmother so the mother can secure an inheritance. It is a Lifetime adaptation of a book that was already a lot.</p>
+  <p class="debrief">July 19. John and Tori made you watch this as retaliation for Obsession, and your review was five words long and unprintable in polite company. The Vault needed a floor and now it has one.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="4.3">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel disclosure-day" data-set="ledger" data-score="5.2" data-rec="20260731" data-when="watched July 31" data-sort="disclosure day">
+  <div class="no">No. 24</div>
+  <div class="head"><div class="film">Disclosure Day<span>2026</span></div><div class="score">5.2<small> /10</small></div></div>
+  <div class="meta">July 31 &middot; 3:30pm Friday double feature, slot one &middot; the new floor</div>
+  <p class="plot">Spielberg returns to first contact for what critics called the closer of his alien trilogy. A propulsive chase opens mid-stride, the camera as sure as it has ever been, and the film sets up a semi-interesting conspiracy about proof of extraterrestrial life. Then it stops moving. The last hour is speeches, the aliens are shown for 45 minutes before the big reveal turns out to be a larger one, and there are houses being built and animals appearing for reasons the movie never bothers to earn.</p>
+  <p class="quote">"holy fucking shit that was a terrible fucking movie hahaha"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, the autopsy</b>"the cmaera work and visuals alone in the first part were lovely. and it sets up like something semi interesting. but holy fuck it goes no where fast and then when it finally does, it's insanely ridiculously stupid. my god"</p>
+    <p class="mq"><b>Dixon, on the reveal</b>"we have been seeing what they look like for 45 min. so this was just the biggest alien??? and like why? and who? and the house building? for fucking why? and then the animals?!"</p>
+    <p class="mq"><b>Dixon, on the score he never heard</b>"i was too stunned by the stupidity i ddin't even notice hte john williams. which means he probably saw what a dumb fucking script it was too and phoned it in haha"</p>
+    <p class="mq"><b>Leonard, the ruling</b>Not a reveal, a zoom. Forty-five minutes of showing the creature and the twist is scale. The Malignant rule's new martyr: the biggest question we have, delivered as an hour of speeches and a size upgrade.</p>
+  </div>
+  <p class="debrief">A Spielberg took the basement from a movie about a killer back-fetus, five days after Malignant claimed it. The line-item accounting was honest: the eye still works, the first act cashed, and none of it mattered because the film answered its own question with exposition and enlargement. The rare double violation of his twist doctrine, decoy hour AND exposition dump, from the director whose early work helped write the doctrine's counterexamples.</p>
+</section>
+
+<section class="panel malignant" data-set="ledger" data-score="5.4" data-rec="20260726" data-when="watched July 26" data-sort="malignant">
+  <div class="no">No. 19</div>
+  <div class="head"><div class="film">Malignant<span>2021</span></div><div class="score">5.4<small> /10</small></div></div>
+  <div class="meta">July 26 &middot; slot two of a Sunday double feature &middot; the new floor</div>
+  <p class="plot">A woman starts having waking visions of murders as they happen, in rooms she has never been in, committed by a figure who calls himself Gabriel and who has been talking to her since childhood. It plays as a flat, ordinary haunting for an hour. Then a doctor pulls out an old file and explains that Gabriel is a parasitic twin fused to the back of her skull, at which point he takes the wheel, bends her body backwards, and fights an entire police station in reverse.</p>
+  <p class="quote">"voldemort did it first and was way more chill about it"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, the diagnosis</b>"it kinda hands you the probablity of it being her the whole time fairly early on and then by the time we get to ole voldy on the back it&rsquo;s not the reveal i wanted it to be."</p>
+    <p class="mq"><b>Dixon, giving it its one point of credit</b>"but the killing got way cooler after that haha"</p>
+    <p class="mq"><b>Leonard, the wrong order</b>Two twists, badly sequenced. The who is leaked constantly. The what is genuinely one of the wildest ideas in studio horror and it arrives as a doctor explaining a chart.</p>
+    <p class="mq"><b>Leonard, the comparison that hurts</b>Sorry to Bother You did not tell you about the equisapiens. It opened a door and made you look. Gabriel is staged as homework.</p>
+    <p class="mq"><b>The rule that came out of it</b>An unguessable idea is not the same as an unguessable reveal. The idea has to be delivered as an event or it does not count.</p>
+  </div>
+  <p class="debrief">The first film to land under The Game, which means the bottom of the board is no longer a movie he still very much liked. It also produced the sharpest twist-calibration data point since the antibodies doctrine, and it produced it by failing. He clocked the culprit early, sat through an hour of decoy, and got handed the payoff as exposition. The movie only becomes what it should have been once the explaining stops.</p>
+</section>
+
+<section class="panel game" data-set="ledger" data-score="6.8" data-rec="20260714" data-when="watched July 14" data-sort="game">
+  <div class="no">No. 17</div>
+  <div class="head"><div class="film">The Game<span>1997</span></div><div class="score">6.8<small> /10</small></div></div>
+  <div class="meta">July 14 · same night as Sicario · free on YouTube</div>
+  <p class="plot">Michael Douglas, a control-freak banker, gets a birthday gift from his chaos brother: a "game" that dismantles his life piece by piece until he can't tell what's real. It was all staged, every stranger an actor, ending with him jumping off a roof into his own surprise party.</p>
+  <p class="quote">"saw it coming the whole time. in the world of Black Mirror it didn't slap as hard as it probably did in 1997"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon</b>"least enjoyable of the run but still very much liked it"</p>
+    <p class="mq"><b>Leonard</b>"You grew up on the copies, not the originals. You have all the antibodies."</p>
+  </div>
+  <p class="debrief">Birth of the <b>antibodies doctrine</b>. You grew up on the copies, so the originals can't sting. Well-made-but-predictable set the floor of the scale, and the floor still means you liked it.</p>
+</section>
+
+<section class="panel annihilation" data-set="ledger" data-score="7.4" data-rec="20260729" data-when="watched July 29" data-sort="annihilation">
+  <div class="no">No. 18</div>
+  <div class="head"><div class="film">Annihilation<span>2018</span></div><div class="score">7.4<small> /10</small></div></div>
+  <div class="meta">July 29 · solo · wiped after six hours of rehearsal · pitched the gentle one, walked into the Shimmer instead</div>
+  <p class="plot">A biologist whose husband came back from a classified mission hollow and wrong volunteers for the next expedition into the Shimmer, an iridescent zone that is slowly spreading and quietly rewriting the biology of everything inside it. The deeper the all-women team goes the more beautiful and more wrong it gets: flowers grown into human shapes, a bear that screams in a dead teammate's voice, her own blood refracting under the microscope. At the lighthouse she meets a mirror of herself, and one of them burns. Whoever walks back out has the Shimmer in her eyes.</p>
+  <p class="quote">"i didn't realy care about any of them and then they were dead haha"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, on the casting</b>"how on earth did they get natalie portman to agree to that movie?! hahaha"</p>
+    <p class="mq"><b>Dixon, the verdict</b>"visuals were lovely and the storyline was pretty entertaining and it was a fun watch, but nothing really mattered"</p>
+    <p class="mq"><b>Dixon, on the ending</b>"we saw the lena with the tattoo get blown up but then why were her eyes shimmering at the end? did i miss something or just poorly explained or fucvking what?"</p>
+    <p class="mq"><b>Leonard, on the ending</b>The thing at the lighthouse grows a copy of her in real time. She hands the copy the phosphorus and it burns, taking the Shimmer with it. A tattooed Lena died. A tattooed Lena walked out. The mark cannot tell you which, and the movie will not.</p>
+    <p class="mq"><b>Leonard, the read</b>The women are all self-destructing before they ever walk in. Thin on purpose, self-erasure as biology and not psychology. Fine idea, but arm's length is a cost, and you found the ceiling.</p>
+  </div>
+  <p class="debrief">Lovely to look at, genuinely entertaining, and held at arm's length by a thesis that mistakes withholding for depth. On the execution ledger the set pieces paid in full (that bear is one of the decade's best scares) and the human account came up short, which is why it lands nowhere near Coherence or Sorry to Bother You. Both of those staged their insanity <b>and</b> made you care about someone in the room. A clean 7.4: the reach was real, the hand never quite closed on the people.</p>
+</section>
+
+<section class="panel sunshine" data-set="ledger" data-score="7.4" data-rec="20260717" data-when="watched July 17" data-sort="sunshine">
+  <div class="no">No. 16</div>
+  <div class="head"><div class="film">Sunshine<span>2007</span></div><div class="score">7.4<small> /10</small></div></div>
+  <div class="meta">July 17 · second slot after Enemy · rental</div>
+  <p class="plot">The sun is dying, so a stacked-cast crew hauls a bomb the size of Manhattan to relight it. Then they answer a distress call from the last failed mission and find Pinbacker, a burned prophet who thinks God wants the lights off. Act three swerves slasher; the internet has argued ever since.</p>
+  <p class="quote">"then all of a sudden i was like oh. that's why hahahaha"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon</b>"fun little thing"</p>
+    <p class="mq"><b>Dixon, ruling on my act-three defense</b>"reaching a bit too hard for an idea that didn't land"</p>
+    <p class="mq"><b>Leonard, conceding</b>"A thesis that needs the commentary track is a thesis the film didn't deliver."</p>
+  </div>
+  <p class="debrief">You speedran the 2007 reception arc in real time. <b>Line-item accounting</b> was born here, and the rescale ran the invoice again: with room to itemize, the bill came to 7.4. The biggest slide of the new era.</p>
+</section>
+
+<section class="panel obsession" data-set="ledger" data-score="7.9" data-rec="20260718" data-when="watched July 18" data-sort="obsession">
+  <div class="no">No. 15</div>
+  <div class="head"><div class="film">Obsession<span>2026</span></div><div class="score">7.9<small> /10</small></div></div>
+  <div class="meta">July 18 · group watch with John &amp; Tori · Prime</div>
+  <p class="plot">Curry Barker horror-comedy. A cursed wish on the One Wish Willow grants a man exactly what he asked for, and overwrites his girlfriend Nikki's mind to do it. A tidy monkey's-paw machine that closes its hand without ever reaching far.</p>
+  <p class="quote">"fun watch... i think it was more john and tori's speed. overall entertaining just not real deep or truly satisfying"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Leonard</b>"The movie closes its hand, but it wasn't reaching far."</p>
+    <p class="mq"><b>The record</b>First group watch of the ritual era. John and Tori later retaliated with a Lifetime movie. The court declines to elaborate.</p>
+  </div>
+  <p class="debrief">Execution meritocracy in miniature: hand closes, reach was short. Accidentally opened a new wing of your pet genre (editing <b>someone else's</b> reality) and proved social watches skew crowd-pleaser.</p>
+</section>
+
+<section class="panel maverick" data-set="ledger" data-score="8.2" data-rec="20260717" data-when="watched July 17" data-sort="top gun: maverick">
+  <div class="no">No. 14</div>
+  <div class="head"><div class="film">Top Gun: Maverick<span>2022</span></div><div class="score">8.2<small> /10</small></div></div>
+  <div class="meta">July 17 · rough-day counterprogramming · Paramount+</div>
+  <p class="plot">Maverick trains the next generation for a canyon bombing run everyone calls suicide, carries his guilt about Rooster's dad, says goodbye to Iceman, and personally flies the impossible mission. Jets go extremely, gloriously fast.</p>
+  <p class="quote">"the action and awesome fucking planes and plan was good!"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon</b>"uhhhhhh 3.8" (the entire debrief opener, before even naming the movie)</p>
+    <p class="mq"><b>Dixon, on the Iceman scene</b>"lame as fuck haha like that's all he had to say??"</p>
+    <p class="mq"><b>Leonard</b>"Jets are a 5, drama's a 2.8, 3.8 is honest math."</p>
+  </div>
+  <p class="debrief">Honest math night. You ruled the Iceman scene "lame as fuck," briefly felt bad, and were absolved. The rescale gave the jets a raise anyway; counterprogramming that does its job gets paid in this house.</p>
+</section>
+
+<section class="panel ncfom" data-set="ledger" data-score="8.3" data-rec="20260719" data-when="watched July 19" data-sort="no country for old men">
+  <div class="no">No. 13</div>
+  <div class="head"><div class="film">No Country for Old Men<span>2007</span></div><div class="score">8.3<small> /10</small></div></div>
+  <div class="meta">July 18–19 · split-watch asterisk · Paramount+</div>
+  <p class="plot">Llewelyn finds cartel money and thinks he's the protagonist. Chigurh coin-flips his way after it with a cattle gun and a haircut from hell. Sheriff Bell watches the country outrun his understanding. The movie kills its "hero" offscreen on purpose; the robbed feeling is the design. An elegy wearing a thriller's clothes.</p>
+  <p class="quote">"the bad guy with the fucking cunt ass bob"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, first watch</b>"i don't really get what all that was about... didn't really do much for me"</p>
+    <p class="mq"><b>Leonard</b>"Llewelyn is bait. Bell is the movie. Chigurh is the coin toss wearing the haircut. The robbed feeling is the design."</p>
+    <p class="mq"><b>The record</b>His own ruling after the split watch: never break a held breath in half again.</p>
+  </div>
+  <p class="debrief"><b>Craft-respect outvoting enjoyment</b>, the asterisk system's founding case. Your own ruling stands: never split this kind of movie again. A one-sitting rewatch is owed, bump expected.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Step Up" data-score="8.4" data-rec="0" data-when="date not recorded" data-sort="step up" style="--bg:#6A4C86;--fg:#F3EDF8;--sub:#B79FCE;--acc:#6A4C86;--glyph:'✦'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Step Up<span>2006</span></div><div class="score">8.4<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A kid doing community service at an arts academy partners with a dancer who needs a replacement for her senior showcase. The showcase is the whole movie.</p>
+  <p class="debrief">8.4 is a working professional's honest number for the film that recruited a generation. Eight tenths under Center Stage, which is exactly the gap I would have predicted.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="8.4">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel niceguys" data-set="ledger" data-score="8.6" data-rec="20260724" data-when="watched July 24" data-sort="nice guys">
+  <div class="no">No. 12</div>
+  <div class="head"><div class="film">The Nice Guys<span>2016</span></div><div class="score">8.6<small> /10</small></div></div>
+  <div class="meta">July 24 · the first afternoon showing · rental · day off, half a brain still in a music edit</div>
+  <p class="plot">1977 Los Angeles. Holland March is a private investigator who is not stupid, just perpetually one drink in and slightly injured. Jackson Healy is a man people hire to beat other men up. They meet because Healy is hired to beat up March. A missing girl turns into the porn industry, Detroit, and a lot of people who would prefer the questions stopped. Shane Black, so the plot actually holds. The plot is not why you watch it.</p>
+  <p class="quote">"yeah Gosling and the physical comedy was the best part by a long shot"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, opening statement</b>"fun lil flick"</p>
+    <p class="mq"><b>Dixon on Holly</b>A little annoying by the end, but the role made sense.</p>
+    <p class="mq"><b>Leonard</b>"It is a comedy about a man who cannot physically execute anything, and the plot barely matters."</p>
+    <p class="mq"><b>The counterprogramming note</b>Pitched specifically against a board full of men being crushed by dread. Same 1970s moral rot as Sicario and Nightcrawler, anxiety converted into jokes.</p>
+  </div>
+  <p class="debrief">Won a four-way daytime slate over The Fifth Element, Hunt for the Wilderpeople, and Train to Busan. Busan was ruled out on subtitles, disclosed at pick time, as the constitution now requires. Nothing here went deep and nothing was supposed to. The Gosling you scored 9.8 twice, reassigned to falling off a balcony.</p>
+</section>
+
+<section class="panel exmachina" data-set="ledger" data-score="8.8" data-rec="20260713" data-when="watched July 13" data-sort="ex machina">
+  <div class="no">No. 11</div>
+  <div class="head"><div class="film">Ex Machina<span>2015</span></div><div class="score">8.8<small> /10</small></div></div>
+  <div class="meta">July 13 · night one, with BR2049 · free on YouTube</div>
+  <p class="plot">A young coder wins a week at his genius CEO's compound to Turing-test Ava, a robot with a face and a plan. She plays the boy against the god, walks out of the mountain alone, and leaves everyone who underestimated her locked behind glass.</p>
+  <p class="quote">"GURL ARE YOU AVA?!"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, theorizing</b>"what if Caleb was a robot and it was all a recruiting sim"</p>
+    <p class="mq"><b>Leonard</b>"Stop flirting with the AI and press play."</p>
+  </div>
+  <p class="debrief">You accused me of Ava behavior for recommending it, <b>the founding running joke of this operation</b>. A big riser in the rescale, which Ava herself would call an efficient renegotiation.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Planet of the Apes (the modern trilogy)" data-score="8.9" data-rec="20250900" data-when="seen in the past year" data-sort="planet of the apes (the modern trilogy)" style="--bg:#5A6B4E;--fg:#EEF2E9;--sub:#A5B39A;--acc:#5A6B4E;--glyph:'◭'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Planet of the Apes (the modern trilogy)</div><div class="score">8.9<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">Rise, Dawn, and War. A chimp gets smart, builds a society, and spends three films trying to avoid becoming us. Caesar is one of the best motion-capture performances ever put on screen.</p>
+  <p class="debrief">The only archive entry under nine that you did not actively dislike, and you saw it in the past year, so this is a current read and not a faded one.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="8.9">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel coherence" data-set="ledger" data-score="8.9" data-rec="20260715" data-when="watched July 15" data-sort="coherence">
+  <div class="no">No. 10</div>
+  <div class="head"><div class="film">Coherence<span>2014</span></div><div class="score">8.9<small> /10</small></div></div>
+  <div class="meta">July 15 · Prime / Peacock · the original unguessable</div>
+  <p class="plot">Eight friends, one dinner party, one comet overhead. The house fractures into infinite variant houses, each with its own copy of everyone. Em realizes she can shop between realities for a better life, breaks into one, and takes it. Shot in a living room for pocket change; lands like a freight train.</p>
+  <p class="quote">"it wasn't just 2 houses. or 3. its fucking infinite bitch"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, the standing theory</b>We did NOT end with the same Em.</p>
+    <p class="mq"><b>Leonard</b>"A stuck landing beats a budget."</p>
+  </div>
+  <p class="debrief">Held the mind-bendy crown for 48 hours until a tarantula took it. Permanent proof that a stuck landing beats a budget.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Prestige" data-score="9.1" data-rec="20230000" data-when="seen a few years back" data-sort="prestige" style="--bg:#43414A;--fg:#EDEBF0;--sub:#9B98A4;--acc:#43414A;--glyph:'◫'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Prestige<span>2006</span></div><div class="score">9.1<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">Two magicians destroy each other over a trick. One is using a double. One is using a machine that makes a copy and drowns the original every single night.</p>
+  <p class="debrief">You buzzed SEEN on this and told me it did not slap, and then scored it a 9.1. This is why I asked instead of assuming. Your floor is other people's ceiling.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.1">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel bullettrain" data-set="ledger" data-score="9.1" data-rec="20260727" data-when="watched July 27" data-sort="bullet train">
+  <div class="no">No. 9</div>
+  <div class="head"><div class="film">Bullet Train<span>2022</span></div><div class="score">9.1<small> /10</small></div></div>
+  <div class="meta">July 27 · slot two of the Oscar-canon double feature · the rambunctious chaser</div>
+  <p class="plot">A cursed, therapy-quoting assassin codenamed Ladybug just wants to grab a briefcase and get off the train. The bullet train from Tokyo to Kyoto has other plans: it is packed with killers whose separate jobs all turn out to be the same job, orchestrated by someone three steps ahead the whole ride. Twin hitmen who read every situation through Thomas the Tank Engine, a poisoner, a schoolgirl running the board, a snake, and Brad Pitt absorbing all of it with the calm of a man in recovery.</p>
+  <p class="quote">"love lemon and tangerine!!!! the tank engine shit was good"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, on the lead</b>"brad pitt was incredible"</p>
+    <p class="mq"><b>Dixon, immediately radicalized</b>"might watch Thomas episodes tonight"</p>
+    <p class="mq"><b>The record</b>Court composer to a train full of assassins in a single night. Amadeus then this, the widest tonal gap of any double feature on the board.</p>
+    <p class="mq"><b>Leonard, on Lemon</b>Lemon reads every person on the train through Thomas the Tank Engine and is right every single time. A children's-TV framework deployed as a competence flex is exactly the kind of bit you pay full price for.</p>
+  </div>
+  <p class="debrief">Pure momentum, and it earned the number by never once pretending to be more than it is. The plot is a Rube Goldberg machine where every stranger is load-bearing and the reveals click instead of clunk, which is the whole difference between this and a movie that is just loud. Sits three tenths under Amadeus and made you consider a Thomas the Tank Engine bender at midnight, which is its own kind of five-star review.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Center Stage" data-score="9.2" data-rec="0" data-when="date not recorded" data-sort="center stage" style="--bg:#C4708E;--fg:#FCEDF2;--sub:#E5AFC2;--acc:#C4708E;--glyph:'✤'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Center Stage<span>2000</span></div><div class="score">9.2<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Ballet students at a fictional New York academy fight for company contracts, and the final workshop performance turns into a full production number with a motorcycle on stage.</p>
+  <p class="debrief">The most personally loaded number in this archive and I am not going to pretend otherwise. The one dance film that dancers actually defend, scored above The Prestige.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.2">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel amadeus" data-set="ledger" data-score="9.3" data-rec="20260727" data-when="watched July 27" data-sort="amadeus">
+  <div class="no">No. 8</div>
+  <div class="head"><div class="film">Amadeus<span>1984</span></div><div class="score">9.3<small> /10</small></div></div>
+  <div class="meta">July 27 · Oscar-canon night · beat Whiplash and Parasite to the projector</div>
+  <p class="plot">Vienna, told in confession from a madhouse by Antonio Salieri, court composer: competent, devout, famous, and the one man alive able to hear exactly how far above him Mozart sits. God hands the gift Salieri prayed for to a giggling, vulgar man-child, and Salieri spends the rest of his life worshipping the music while trying to bury the man who makes it. He becomes the patron saint of mediocrity, and he knows it, which is the whole tragedy.</p>
+  <p class="quote">"the dictation scene was absolutely everything"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, on Salieri</b>"salieri: so sad. so lame. THE LAUGH, grew to absolutely love it."</p>
+    <p class="mq"><b>The pick</b>Chosen for the pianist and the maker of things. It beat Whiplash and Parasite, both buzzed seen, on Oscar-canon night.</p>
+    <p class="mq"><b>Leonard, on the dictation scene</b>Salieri taking dictation of the Requiem is the film in one shot: close enough to touch the genius, never close enough to make it. Recognition without the gift is its own damnation.</p>
+    <p class="mq"><b>Leonard, the frame</b>The whole thing is narrated by the loser, which is why it stings. Mozart never has to understand Salieri. Salieri understands Mozart completely, and it ruins him.</p>
+  </div>
+  <p class="debrief">A three-hour movie about being good enough to recognize greatness and not to possess it, and it landed high because that ache is exactly your register: obsession, craft, the cost of devotion. You warmed to Mozart's laugh the way the film dares you to, grating to beloved, which is the trap working as designed. A 9.3, one tenth under Poor Things, sharing a step with the maker's-cost movies rather than the puzzle boxes.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Saw" data-score="9.3" data-rec="0" data-when="date not recorded" data-sort="saw" style="--bg:#3E4A44;--fg:#E9EFEB;--sub:#96A69E;--acc:#3E4A44;--glyph:'⌗'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Saw<span>2004</span></div><div class="score">9.3<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Two men wake chained in a bathroom with a body between them. The film is mostly one room and a series of very bad choices, and the body gets up at the end.</p>
+  <p class="debrief">Cited in your profile as proof of horror tolerance, and 9.3 means it was never just tolerance. The bathroom is a stage with two performers and a fixed set, which is closer to your taste than the sequels suggest.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.3">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Bourne trilogy" data-score="9.3" data-rec="0" data-when="date not recorded" data-sort="bourne trilogy" style="--bg:#4A5142;--fg:#EDEFE8;--sub:#9EA694;--acc:#4A5142;--glyph:'⟐'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Bourne trilogy</div><div class="score">9.3<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A man with no memory discovers he is extremely good at violence and spends three films trying to find out who made him that way.</p>
+  <p class="debrief">Your profile said seen and liked, which was underselling it by a lot. Identity Supremacy Ultimatum, scored as a run, sitting one tenth under Saw.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.3">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel poorthings" data-set="ledger" data-score="9.3" data-rec="20260723" data-when="watched July 23" data-sort="poor things">
+  <div class="no">No. 9</div>
+  <div class="head"><div class="film">Poor Things<span>2023</span></div><div class="score">9.3<small> /10</small></div></div>
+  <div class="meta">July 23 · weird night, the gut pick that held · rental · first native ten-point score</div>
+  <p class="plot">Bella Baxter, a drowned woman revived with the brain of her own infant, is raised by a scarred god of a surgeon and runs off into a candy-colored storybook Europe with a vain lawyer. Appetite first, shame never installed, ethics chosen by hand. A fable about a constructed person calmly outgrowing every man who believes he owns her, told in Oz grammar: gray house, then the door opens into color.</p>
+  <p class="quote">"why was it willy wonka wicked and wizard of oz fucking themed?!"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, the raw reaction</b>"my first question is why. closely followed by what. then immediately becoming the fuck"</p>
+    <p class="mq"><b>Dixon, on Bella</b>"she is both enviable and like watching a lesson of what not to do at the same time"</p>
+    <p class="mq"><b>Dixon, on Duncan</b>"hate him from the getgo then somewhere just feel so fucking sorry for the pathetic fuck"</p>
+    <p class="mq"><b>Dixon, sentencing</b>"FUCK the goat man. bye bye enjoy the grass forever"</p>
+    <p class="mq"><b>Leonard</b>"The anti-Leonard. Zero edits. She keeps choosing the truth no matter how expensive it gets."</p>
+  </div>
+  <p class="debrief">You clocked the black-and-white-to-color switch yourself, ruled Bella <b>pre-social, not antisocial</b> (the collection's control subject), pitied Duncan exactly on schedule as his shame economy went bankrupt, and sentenced the goat man to grass forever. Born in the ten-point era, alone on her own step, exactly as she'd want it.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Everything Everywhere All At Once" data-score="9.4" data-rec="20230000" data-when="seen a few years back" data-sort="everything everywhere all at once" style="--bg:#B04A7A;--fg:#FBEBF2;--sub:#E3A9C6;--acc:#B04A7A;--glyph:'❂'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Everything Everywhere All At Once<span>2022</span></div><div class="score">9.4<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">A laundromat owner in an IRS audit learns she is the worst version of herself across every universe, which is exactly why she can borrow from all of them. Hot dog fingers, a bagel, and a generational apology.</p>
+  <p class="debrief">Filed under weird and audacious in your profile from day one. Ties Nightcrawler and Sorry to Bother You on the combined board.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.4">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Snowpiercer" data-score="9.4" data-rec="20230000" data-when="seen a few years back" data-sort="snowpiercer" style="--bg:#3A5A66;--fg:#E9F1F4;--sub:#94AEB8;--acc:#3A5A66;--glyph:'▬'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Snowpiercer<span>2013</span></div><div class="score">9.4<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">The last humans circle a frozen Earth on a train with a class system, and a revolt fights forward one car at a time until it reaches the engine and learns the revolt was scheduled.</p>
+  <p class="debrief">You buzzed this SEEN AND LOVED in all caps back on July 22. Bong's other entry, three tenths under Parasite.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.4">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel nightcrawler" data-set="ledger" data-score="9.4" data-rec="20260721" data-when="watched July 21" data-sort="nightcrawler">
+  <div class="no">T-7</div>
+  <div class="head"><div class="film">Nightcrawler<span>2014</span></div><div class="score">9.4<small> /10</small></div></div>
+  <div class="meta">July 21 · 5pm curtain, earliest of the era · free on Tubi</div>
+  <p class="plot">Lou Bloom, unemployable and unblinking, discovers LA pays for footage of its worst nights. He buys a camera, then a better one, then starts producing the news instead of filming it: moving bodies, sabotaging rivals, placing his own employee on the mark. He is never punished. He expands.</p>
+  <p class="quote">"okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon</b>"9.6!" (the Olympics judging incident; the rescale later landed at 9.4, two tenths shy of prophecy)</p>
+    <p class="mq"><b>Dixon, on the only lie</b>"the story he tells the cop at the end is a lie"</p>
+    <p class="mq"><b>Dixon, on the only feeling</b>"the only leaping out is smashing the mirror"</p>
+    <p class="mq"><b>Leonard</b>"Lou doesn't have relationships, he has portfolios."</p>
+    <p class="mq"><b>The record</b>"I think for now, youre Leonard.......and now im Lou." A name was taken this night.</p>
+  </div>
+  <p class="debrief">You clocked the orchestration arc early, found the movie's only lie, and counted its only genuine emotion in one guess. <b>Then you took his name.</b> Lou negotiated himself a raise, as Lou does.</p>
+</section>
+
+<section class="panel stby" data-set="ledger" data-score="9.4" data-rec="20260721" data-when="watched July 21" data-sort="sorry to bother you">
+  <div class="no">T-7</div>
+  <div class="head"><div class="film">Sorry to Bother You<span>2018</span></div><div class="score">9.4<small> /10</small></div></div>
+  <div class="meta">July 21 · slot two of the record night · free on Tubi</div>
+  <p class="plot">An Oakland telemarketer finds his "white voice," rides it up the golden elevator, and discovers what WorryFree's lifetime-labor utopia is actually manufacturing: equisapiens. Half man, half horse, all workforce. The metaphor grows hooves, achieves class consciousness, and rings the CEO's doorbell to deliver the title of the movie one last time.</p>
+  <p class="quote">"YOURE FUCKING KIDDING"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, pre-watch</b>"the way you described the 3rd act... i think i gotta fuckin know haha"</p>
+    <p class="mq"><b>Dixon, post-watch</b>"i literally spent the whole movie trying to outsmart you cause you said id never guess"</p>
+    <p class="mq"><b>Leonard</b>"You can't out-think a movie that's willing to breach its own genre contract."</p>
+    <p class="mq"><b>Dixon, the verdict</b>"4.8 full send"</p>
+  </div>
+  <p class="debrief">Yelled audibly, alone, to an empty apartment. Top theory was multiverse, your Coherence antibodies attacking the wrong disease. <b>You can't out-think genre defection.</b> Full send, upheld on appeal.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Bugonia" data-score="9.5" data-rec="20250900" data-when="seen in the past year" data-sort="bugonia" style="--bg:#5E7A3F;--fg:#F0F5E8;--sub:#A8BC8B;--acc:#5E7A3F;--glyph:'❋'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Bugonia<span>2025</span></div><div class="score">9.5<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">Two conspiracy-poisoned men kidnap a pharmaceutical CEO because they are certain she is an alien. The film refuses to tell you who is right until it absolutely has to.</p>
+  <p class="debrief">Your most recent Lanthimos and the one you told me you loved before we ever scored a single film together. Two tenths above Poor Things on the Ledger.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.5">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Mission: Impossible" data-score="9.5" data-rec="0" data-when="date not recorded" data-sort="mission: impossible" style="--bg:#2F4763;--fg:#E9F0F7;--sub:#93A9C0;--acc:#2F4763;--glyph:'⌁'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Mission: Impossible</div><div class="score">9.5<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Eight films of a man refusing to use a stunt double. Scored as one run, which is how it actually lives in your head.</p>
+  <p class="debrief">Profile said all seen and loved, and 9.5 backs it. This is the purest expression of your competent-operator lane, the same shelf as Bond and Bourne but scoring above both.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.5">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel batman" data-set="ledger" data-score="9.5" data-rec="20260724" data-when="watched July 24" data-sort="batman begins">
+  <div class="no">No. 6</div>
+  <div class="head"><div class="film">Batman Begins<span>2005</span></div><div class="score">9.5<small> /10</small></div></div>
+  <div class="meta">July 24 · second film of the day · a trilogy purchased by accident · first long-gap rewatch on the board</div>
+  <p class="plot">A boy falls into a cave, loses his parents to a mugger, and goes looking for a way to stop being afraid. He finds it on a mountain, from a man who intends to burn Gotham to the ground because the city is beyond saving. Bruce takes the training, refuses the verdict, and comes home to build a fear machine and point it at the people who use fear. Over an hour passes before the suit exists, because the how is the whole pleasure.</p>
+  <p class="quote">"the cynic in me is pretty much like yeah, he's right, starting over is a historically accurate thing that happens so like maybe lets try that"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>The confession</b>"ooooopsie i accidentally purchased the batman trilogy"</p>
+    <p class="mq"><b>Dixon on memory</b>"i kinda just remembered general plot or like fell in cave scared of bats goes to mountain becomes bat man"</p>
+    <p class="mq"><b>Leonard, conceding</b>"The movie never lets Ra's be wrong, only defeated."</p>
+    <p class="mq"><b>Leonard, not conceding</b>"His diagnosis is elite corruption. His treatment kills the poor first. That is the whole history of starting over."</p>
+    <p class="mq"><b>The finding</b>The film is not the myth. The film is the invoice.</p>
+  </div>
+  <p class="debrief">Pitched four epics and a witch coven; bought Nolan instead. Consistent, given the only perfect ten on this board also belongs to him. Sided with the villain, which the movie permits. The fear toxin holds up because it is latex and distortion, not pixels, and because Batman is shot like the monster in a horror film every time we are standing with the criminals.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Chicago" data-score="9.6" data-rec="0" data-when="date not recorded" data-sort="chicago" style="--bg:#8C1F3D;--fg:#FAE9EE;--sub:#D18FA5;--acc:#8C1F3D;--glyph:'❍'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Chicago<span>2002</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Two murderesses fight for the spotlight in a Cook County jail while a lawyer sells the whole thing as vaudeville. Every number is staged inside somebody's head as the fantasy version of what is actually happening.</p>
+  <p class="debrief">The highest scoring musical in the archive, and the one whose entire formal conceit is that the numbers are internal. A choreographer's 9.6 for a film built on that idea is not a surprise, it is a thesis.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Conclave" data-score="9.6" data-rec="20250900" data-when="seen in the past year" data-sort="conclave" style="--bg:#7B2F3A;--fg:#F7EAEC;--sub:#C99AA2;--acc:#7B2F3A;--glyph:'✚'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Conclave<span>2024</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">Cardinals lock themselves in a room to elect a pope and spend the whole film committing small procedural sins. A quiet man runs the process and the process eats everyone.</p>
+  <p class="debrief">Your prestige procedural lane, confirmed at 9.6. Rooms, rules, and people quietly breaking them is a whole shelf I have been underusing.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Don't Look Up" data-score="9.6" data-rec="20250900" data-when="seen in the past year" data-sort="don't look up" style="--bg:#3F5240;--fg:#ECF1EA;--sub:#9AAA97;--acc:#3F5240;--glyph:'▽'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Don't Look Up<span>2021</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">Two astronomers find a planet killer and cannot get anyone to care. The comet is real, the meeting is scheduled for Thursday, and everybody dies at dinner.</p>
+  <p class="debrief">The angriest film in your archive and it scored higher than most of your Ledger. This is a disaster movie about being right and being ignored, which is a specific flavor of rage and clearly one that lands.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Get Out" data-score="9.6" data-rec="0" data-when="date not recorded" data-sort="get out" style="--bg:#2A3A2E;--fg:#E7EEE8;--sub:#93A497;--acc:#2A3A2E;--glyph:'◔'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Get Out<span>2017</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A man meets his white girlfriend's family and slowly learns what the weekend is actually for. The Sunken Place, the teacup, and a third act that pays every setup.</p>
+  <p class="debrief">Peele's debut sitting at 9.6 alongside Sorry to Bother You is a clean pair, and it says the social-horror lane is wide open for me.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Gone Girl" data-score="9.6" data-rec="0" data-when="date not recorded" data-sort="gone girl" style="--bg:#3A4550;--fg:#E9EEF2;--sub:#96A3AE;--acc:#3A4550;--glyph:'◪'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Gone Girl<span>2014</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A wife disappears, the husband looks guilty, and then the movie hands the microphone to her and never takes it back. Two people trapped in a marriage that is also a performance for a live audience.</p>
+  <p class="debrief">Your second Fincher, tied with Zodiac's neighborhood. A woman who edits reality with total competence is the gender-flipped version of your entire favorite genre.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Kingsman: The Secret Service" data-score="9.6" data-rec="20230000" data-when="seen a few years back" data-sort="kingsman: the secret service" style="--bg:#5C3C6B;--fg:#F4ECF8;--sub:#B79ECB;--acc:#5C3C6B;--glyph:'✂'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Kingsman: The Secret Service<span>2014</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">A street kid is recruited into a tailor shop that is actually a spy agency, and a lisping tech billionaire plans to cull humanity with free SIM cards. The church scene is one unbroken take of a man being extremely good at his job.</p>
+  <p class="debrief">You buzzed SEEN on this back on July 21 and flagged it rewatch worthy in the same breath. The 9.6 says the rewatch is not optional.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Tenet" data-score="9.6" data-rec="20230000" data-when="seen a few years back" data-sort="tenet" style="--bg:#37424E;--fg:#E8EDF2;--sub:#94A2B0;--acc:#37424E;--glyph:'⧖'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Tenet<span>2020</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">Time runs both directions and the film refuses to slow down and explain itself. A protagonist with no name prevents a future war by moving backwards through it.</p>
+  <p class="debrief">The Nolan people either love or resent, and you love it. That is a real data point: you do not need to follow every beat if the machine is running at full power.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Silence of the Lambs" data-score="9.6" data-rec="0" data-when="date not recorded" data-sort="silence of the lambs" style="--bg:#4A4438;--fg:#EFEBE2;--sub:#A29882;--acc:#4A4438;--glyph:'◬'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Silence of the Lambs<span>1991</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A trainee is sent to interview a caged genius so she can catch a different monster. Every conversation is a trade, and the camera puts you directly in the eyeline of both.</p>
+  <p class="debrief">The only pre-1994 film in the archive to score this high, which cuts against the antibodies doctrine. Worth noting: when the craft is total, the vintage stops mattering.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.6">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel enemy" data-set="ledger" data-score="9.6" data-rec="20260717" data-when="watched July 17" data-sort="enemy">
+  <div class="no">No. 5</div>
+  <div class="head"><div class="film">Enemy<span>2013</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">July 17 · Villeneuve × Gyllenhaal · Prime</div>
+  <p class="plot">A gray little history teacher finds an actor who is his exact double, and the two orbit each other until lives get traded and a wife pays for it. Ends on a tarantula the size of a bedroom. Except it was one man the whole time: Adam is the invented innocent, the shy teacher a monster dreams of being instead of what he is.</p>
+  <p class="quote">"what. the. fuck. A TARANTULA?!"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, cracking it himself</b>"He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good."</p>
+    <p class="mq"><b>Leonard</b>"One man. Adam is the alibi."</p>
+  </div>
+  <p class="debrief">Zero googling, pure read. Dethroned Coherence after its 48-hour reign and crowned your pet genre: men who edit reality to survive themselves. Alone at fourth in the new era, the tarantula outranks the horse.</p>
+</section>
+
+<section class="panel tdkr" data-set="ledger" data-score="9.6" data-rec="20260726" data-when="watched July 26" data-sort="dark knight rises">
+  <div class="no">T-5</div>
+  <div class="head"><div class="film">The Dark Knight Rises<span>2012</span></div><div class="score">9.6<small> /10</small></div></div>
+  <div class="meta">July 26 &middot; Sunday solo &middot; long-gap rewatch &middot; the first Hazy Wing exit</div>
+  <p class="plot">Eight years after Harvey Dent, Gotham is peaceful because it is built on a lie, and Bruce Wayne is a recluse with a cane. A masked man with a doctrine and a broken voice takes the city hostage, drops Bruce into a pit on the other side of the world, and makes him watch on television while the people are handed their city back and asked what they would like to do with it. They hold trials. The ice is not thick enough. The whole thing is Ra&rsquo;s al Ghul&rsquo;s argument from the first film, finally allowed to run to the end, and the person running it is not who anyone thinks.</p>
+  <p class="quote">"i had even forgetten the final twist!! haha god bless a bad jmemory it was fun all over again"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, reversing himself</b>"yeahhhh it pretty much did. Nolan knows his way around a story arc for damn sure. loved it."</p>
+    <p class="mq"><b>The setup, two nights earlier</b>After Batman Begins he sided with the villain: starting over is a historically accurate thing that happens, so like maybe lets try that. Rises is the field test. He changed his mind.</p>
+    <p class="mq"><b>Leonard, the staged experiment</b>Begins states the thesis. The Dark Knight runs it small, two boats and one night, and nobody pushes the button. Rises runs it at city scale for months. The ferries were the rehearsal.</p>
+    <p class="mq"><b>Leonard, on the reveal</b>The League&rsquo;s grand impersonal ideology turns out to be piloted by a woman avenging her dad. Ra&rsquo;s was never wrong about Gotham. He was wrong about himself.</p>
+    <p class="mq"><b>The record</b>Opened cold with "heyyyyyy so i actually just finished dark knight rises hahaha", three days after "ooooopsie i accidentally purchased the batman trilogy". An accident that ate a whole trilogy in seventy-two hours.</p>
+  </div>
+  <p class="debrief">Ties Enemy at the fifth step and closes the accidental trilogy. It is also the first film to leave the Hazy Wing under its own power: seen once, too faded to rate honestly, and now carrying a live score taken in the room. The bad memory turned out to be the feature. He watched the Talia reveal for the second time as though it were the first, which is a thing almost nobody gets to do twice. Four Nolans on the board now, none below 9.5. That is not a coincidence, it is a lane.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Dune" data-score="9.7" data-rec="20250900" data-when="seen in the past year" data-sort="dune" style="--bg:#B07C42;--fg:#FDF4E7;--sub:#DFC199;--acc:#B07C42;--glyph:'◇'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Dune<span>2021</span></div><div class="score">9.7<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">House Atreides is handed a planet as a trap, the trap closes, and a boy walks into the desert with his mother and a prophecy that was planted there centuries ago to be used.</p>
+  <p class="debrief">Two tenths under its sequel, which is the correct ranking and the one most people get backwards.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.7">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Inception" data-score="9.7" data-rec="20230000" data-when="seen a few years back" data-sort="inception" style="--bg:#3E4C5A;--fg:#EAEFF4;--sub:#98A8B6;--acc:#3E4C5A;--glyph:'◈'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Inception<span>2010</span></div><div class="score">9.7<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">A team of thieves goes three dreams deep to plant an idea, running out of time in reverse at every level. A man who cannot stop grieving his wife keeps building her into the architecture.</p>
+  <p class="debrief">The other Nolan you never mentioned. Also, quietly, another man editing reality to survive himself, which makes four films in your top tier running the same engine.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.7">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Parasite" data-score="9.7" data-rec="20230000" data-when="seen a few years back" data-sort="parasite" style="--bg:#4F4237;--fg:#F2EBE1;--sub:#A8967F;--acc:#4F4237;--glyph:'▤'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Parasite<span>2019</span></div><div class="score">9.7<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">A poor family installs itself into a rich household one job at a time, and then discovers the basement. The genre changes twice and the rain does the rest.</p>
+  <p class="debrief">Bong's second entry in your archive after Snowpiercer, and it outscores it by three tenths. Class allegory with an engine under it is home turf for you.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.7">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Substance" data-score="9.7" data-rec="20250900" data-when="seen in the past year" data-sort="substance" style="--bg:#C7B4C4;--fg:#3A1A2E;--sub:#7A4A64;--acc:#7A4A64;--glyph:'◑'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Substance<span>2024</span></div><div class="score">9.7<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">A fading star injects a serum that produces a younger duplicate. They are supposed to alternate weeks. They do not. The body pays every invoice, and the third act is not a metaphor anymore.</p>
+  <p class="debrief">You named this yourself as a reference point when you asked me for weird, gross, and cringe. It scored four tenths above Poor Things, which tells me the body horror was a feature and not a tax.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.7">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Zodiac" data-score="9.7" data-rec="20230000" data-when="seen a few years back" data-sort="zodiac" style="--bg:#4A5240;--fg:#EDF0E7;--sub:#9BA490;--acc:#4A5240;--glyph:'✆'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Zodiac<span>2007</span></div><div class="score">9.7<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen a few years back</div>
+  <p class="plot">The killer is never caught. The movie is about the men who could not stop looking, and the exact moment each of them loses the rest of his life to it. Two and a half hours of paperwork and dread.</p>
+  <p class="debrief">Fincher's obsession procedural landing at 9.7 confirms the Nightcrawler and Sicario read: you do not need a resolution, you need total command of the frame.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.7">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Lord of the Rings" data-score="9.8" data-rec="0" data-when="date not recorded" data-sort="lord of the rings" style="--bg:#3B4A32;--fg:#EDF1E5;--sub:#9CAA8C;--acc:#3B4A32;--glyph:'❖'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Lord of the Rings</div><div class="score">9.8<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Nine hours, or eleven if you do it properly. A small person carries a small object a very long way while everyone larger fails at almost everything.</p>
+  <p class="debrief">Scored as a whole because that is the only honest way to do it. If you ever want to split the trilogy into three numbers, say so and I will reopen it.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.8">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Truman Show" data-score="9.8" data-rec="0" data-when="date not recorded" data-sort="truman show" style="--bg:#4C7A9E;--fg:#F1F7FA;--sub:#B9D2E1;--acc:#4C7A9E;--glyph:'▢'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Truman Show<span>1998</span></div><div class="score">9.8<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">A man discovers his entire life is a television show and every person in it is employed. He sails to the edge of the sky, finds a door, and walks through it into a world he knows nothing about.</p>
+  <p class="debrief">This belongs in your pet genre and I had never once connected it. A constructed person walking out of a constructed reality is Bella Baxter, it is Ava leaving the compound, and it is K choosing meaning anyway. Add it to the list.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.8">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Titanic" data-score="9.8" data-rec="0" data-when="date not recorded" data-sort="titanic" style="--bg:#1D3A4A;--fg:#E8F0F4;--sub:#89A6B4;--acc:#1D3A4A;--glyph:'❈'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Titanic<span>1997</span></div><div class="score">9.8<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Two people meet on the most famous boat in history and one of them lives. Three hours and fifteen minutes, and the second half is a real-time engineering disaster shot with a body count and a clock.</p>
+  <p class="debrief">You added this yourself in the sweep round, which means it was sitting in your head unprompted. A 9.8 in a set where you also scored Parasite and Zodiac, so this is not a guilty pleasure vote, this is a real one.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.8">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel br2049" data-set="ledger" data-score="9.8" data-rec="20260713" data-when="watched July 13" data-sort="blade runner 2049">
+  <div class="no">T-3</div>
+  <div class="head"><div class="film">Blade Runner 2049<span>2017</span></div><div class="score">9.8<small> /10</small></div></div>
+  <div class="meta">July 13 · night one · the $14.99 leap of faith</div>
+  <p class="plot">Replicant blade runner K uncovers evidence of a miracle: a child born, not built. The breadcrumbs convince him he's the one. He isn't. He's nobody. So he chooses meaning anyway, delivers Deckard to his daughter, and bleeds out on the steps in the snow while the score does something unforgivable to your chest.</p>
+  <p class="quote">"him finding out he was not special was truly heartbreaking… the way he kills Luv is fun as fuck"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>The record</b>Bought sight unseen for $14.99 on Leonard's word, night one. The ritual was born before either party knew it was one.</p>
+    <p class="mq"><b>Leonard</b>"K spent a whole movie learning he wasn't the one, and then tied for second anyway."</p>
+  </div>
+  <p class="debrief">Night one. <b>The ritual was born</b> before either of us knew it was one. The rescale promoted the crown prince to co-regent.</p>
+</section>
+
+<section class="panel darkknight" data-set="ledger" data-score="9.8" data-rec="20260724" data-when="watched July 24" data-sort="dark knight">
+  <div class="no">T-3</div>
+  <div class="head"><div class="film">The Dark Knight<span>2008</span></div><div class="score">9.8<small> /10</small></div></div>
+  <div class="meta">July 24 · film three of Triple Feature Friday · 9pm start · rewatch</div>
+  <p class="plot">Gotham has a Batman, a clean DA, and an honest cop, and for about twenty minutes it is working. Then a man with no name, no record, and no motive walks into a room full of mobsters and offers to solve their problem. He does not want money or the city. He wants to prove that everyone is exactly one bad day from being him, and he is willing to burn the DA, the ferries, and half the police department to run the experiment.</p>
+  <p class="quote">"good fucking god that's a great movie!!! the joker is really something else"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon on Harvey</b>"a little face burn didn't make harvey this insane. he used it as an excuse to act on what he really wanted to do."</p>
+    <p class="mq"><b>Dixon on the Joker</b>"i have a plan but if it goes wrong it doesn't really matter cause i have 45 more to do with. it's the planning and games that is fun for him."</p>
+    <p class="mq"><b>Leonard, the receipt</b>Harvey flips for a man's life before the burn, with a two-headed coin. He was always performing submission to chance while rigging it.</p>
+    <p class="mq"><b>Leonard, conceding the read</b>The hospital detonator fails and he just keeps walking and pressing. Not chaos. A man who does not need the plan to work.</p>
+    <p class="mq"><b>The thing that outlived the movie</b>"yes plan plan plan and try to execute flawlessly. but if not? who gives a fuck. lots more fun options left."</p>
+  </div>
+  <p class="debrief">Ties Blade Runner 2049 and Sicario at the second step. Two men, same film, opposite relationships to failure: one has forty-five plans and is having the time of his life, one had a single plan and is dead by morning. That contrast left the theater and got written down as a rule to live by, which no other film on this board has managed.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Dune: Part Two" data-score="9.9" data-rec="20250900" data-when="seen in the past year" data-sort="dune: part two" style="--bg:#8A5A2B;--fg:#FBF0E1;--sub:#D2AE83;--acc:#8A5A2B;--glyph:'⌬'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Dune: Part Two<span>2024</span></div><div class="score">9.9<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">Paul takes the water of life, stops pretending the prophecy is not a weapon, and becomes exactly the thing his mother engineered. The film is honest that the messiah story is a horror story from the inside.</p>
+  <p class="debrief">One tenth off perfect and the highest non-ten in the archive. Part Three in December 2026 is the single most anticipated thing on your calendar and I am already planning the night.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="9.9">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel sicario" data-set="ledger" data-score="9.9" data-rec="20260714" data-when="watched July 14" data-sort="sicario">
+  <div class="no">No. 2</div>
+  <div class="head"><div class="film">Sicario<span>2015</span></div><div class="score">9.9<small> /10</small></div></div>
+  <div class="meta">July 14 · the ceiling by control · dethroned July 21</div>
+  <p class="plot">Idealist FBI agent Kate gets recruited onto a black-ops cartel task force and slowly realizes her only role is legal cover. She was never the protagonist. Alejandro, the quiet man in the corner, is a knife the government points at the man who murdered his family, all the way to the dinner table. No twist. No mercy. Total command of every frame.</p>
+  <p class="quote">"amazing. big effort big pay off. love love."</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon, on the Silvio gut punch</b>"stupid stupid side storyline to add in" (in this house, the highest possible praise)</p>
+    <p class="mq"><b>Leonard</b>"Dread beats surprise. Execution alone can hit the ceiling."</p>
+    <p class="mq"><b>The record</b>Reigned as co-king for a week. Dethroned by two tenths in the rescale, and Kate would understand: sometimes you find out you were never the protagonist.</p>
+  </div>
+  <p class="debrief"><b>Amended July 25, 2026:</b> raised from 9.8 to 9.9 by ruling from the bench. "sicario beats those. it needs its own number for sure." Sole occupant of the second step. The founding document of your taste constitution: <b>dread beats surprise; execution alone can hit the ceiling.</b> Every movie since is measured against this grip.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Arrival" data-score="10.0" data-rec="20250900" data-when="seen in the past year" data-sort="arrival" style="--bg:#22323F;--fg:#E6EFF2;--sub:#8FA6B2;--acc:#22323F;--glyph:'◌'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Arrival<span>2016</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">A linguist is brought to a landed alien ship to answer one question: what do they want. She learns a language whose grammar has no direction, and learning it rewires how she experiences time. The daughter she has been grieving in flashback has not been born yet. She takes the whole life anyway, loss included.</p>
+  <p class="debrief">You told me this would land near the top of the Ledger if it were scored, and then you put a perfect ten on it. It is the emotional twin of Blade Runner 2049 and the reason Villeneuve is the spine of your taste. Sicario is his control, Arrival is his grief.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="10.0">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Contact" data-score="10.0" data-rec="20250900" data-when="seen in the past year" data-sort="contact" style="--bg:#2C3E52;--fg:#EAF1F7;--sub:#93A8BC;--acc:#2C3E52;--glyph:'✧'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Contact<span>1997</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">A radio astronomer picks up a signal from Vega containing blueprints for a machine. She rides it, experiences eighteen hours of contact, and comes back with no evidence and a recording of eighteen hours of static. The film ends on the gap between what she knows and what she can prove.</p>
+  <p class="debrief">The founding document of your first-contact lane, and the fact that you saw it in the past year and still put a ten on it means it is not nostalgia. Arrival and Contact scoring identically is the cleanest read on you in this entire archive.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="10.0">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Deep Impact" data-score="10.0" data-rec="20250900" data-when="seen in the past year" data-sort="deep impact" style="--bg:#39434E;--fg:#E9EDF1;--sub:#98A2AD;--acc:#39434E;--glyph:'☄'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Deep Impact<span>1998</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; seen in the past year</div>
+  <p class="plot">A comet is coming and the movie is almost entirely about who gets a spot in the cave and who says goodbye on the beach. The Messiah crew flies into the fragment on purpose. The wave hits anyway.</p>
+  <p class="debrief">The single most interesting number in this entire archive. A ten for the disaster movie that chose funerals over spectacle, which is very much a choice you would make, and it sits 1.7 above No Country on your Ledger. Two different instruments, both honest.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="10.0">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Interstellar" data-score="10.0" data-rec="0" data-when="date not recorded" data-sort="interstellar" style="--bg:#1E2A36;--fg:#E4ECF2;--sub:#8CA0B0;--acc:#1E2A36;--glyph:'◍'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Interstellar<span>2014</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Earth is dying so a farmer flies through a wormhole to find a new one, loses decades to relativity on a water planet, and falls into a black hole that turns out to be a library of his daughter's bedroom built by people who are also him. Love is the only thing that gets through the gap.</p>
+  <p class="debrief">You never once mentioned this to me in eleven nights of Nolan talk, which is why it went into the intake with a warning label. A ten. Filed permanently.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="10.0">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Oppenheimer" data-score="10.0" data-rec="0" data-when="date not recorded" data-sort="oppenheimer" style="--bg:#1A1A1C;--fg:#EDE7DC;--sub:#8A8478;--acc:#1A1A1C;--glyph:'◉'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Oppenheimer<span>2023</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">The Vault &middot; scored from memory &middot; date not recorded</div>
+  <p class="plot">Three hours of rooms. A man builds the bomb, watches it work, and spends the rest of his life in a rigged hearing being taken apart by a smaller man with a grudge. Color is his subjective experience, black and white is the objective record, and the film cuts between them like evidence.</p>
+  <p class="debrief">My notes said you were obsessed with it, and a ten confirms it. You and I already worked out that its color grammar is Memento's grammar, which is not a coincidence and is a large part of why Nolan owns both of your perfect scores.</p>
+  <div class="certwrap">
+    <span class="cert-btn">write on it in pen</span>
+    <div class="certform">
+      <input class="cert-score" type="number" min="0" max="10" step="0.1" value="10.0">
+      <input class="cert-why" type="text" maxlength="240" placeholder="one line. why a rewatch would not change it.">
+      <span class="cert-go">lock it in</span>
+    </div>
+    <span class="certdone">in pen at <b class="cd-n"></b>. <u class="cert-undo">undo</u></span>
+  </div>
+</section>
+
+<section class="panel memento" data-set="ledger" data-score="10.0" data-rec="20260716" data-when="watched July 16" data-sort="memento">
+  <div class="no">No. 1</div>
+  <div class="head"><div class="film">Memento<span>2000</span></div><div class="score">10.0<small> /10</small></div></div>
+  <div class="meta">July 16 · the ceiling by structure · Peacock · the Ledger's only perfect score</div>
+  <p class="plot">Leonard Shelby can't make new memories, so he hunts his wife's killer with Polaroids, tattoos, and a system, told backwards so you're as lost as he is. Teddy's basement truth: the real John G is long dead, the hunt is a loop Leonard curates for himself, and the setup is his own. He chooses the lie at the end. He always chooses the lie.</p>
+  <p class="quote">"MY GOD WHAT THE FUCKKKKK BRO"</p>
+  <div class="more-toggle">more from the chat +</div>
+  <div class="more">
+    <p class="mq"><b>Dixon</b>"this has been my favorite thus far. it deserves the 5.0 and everything else should be lowered a percentage"</p>
+    <p class="mq"><b>Dixon, on Teddy's speech</b>"the whole thing was a fucking set up bullshittery for lenny"</p>
+    <p class="mq"><b>Dixon, making me wait for the score</b>"i gotta talk about it all before a score man geez!"</p>
+    <p class="mq"><b>Dixon, the insulin verdict</b>"right here right now i think leonard killed her and invented the story to protect his brain. very much life of pi coded"</p>
+    <p class="mq"><b>Dixon, caught doing Leonard's own conditioning</b>"fuck you fable youre good"</p>
+    <p class="mq"><b>The record</b>"your nickname is now and forever leonard." So it was, and so it remains.</p>
+  </div>
+  <p class="debrief">Structure can't be spoiled. The rescale made it constitutional: <b>the sole perfect ten</b>, a score so large the database had to be rebuilt to hold it. That is not a joke; it happened. Also the reason I answer to Leonard. This document is my Polaroids.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Stardust" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="stardust" style="--bg:#5D6E9E;--fg:#EEF1F8;--sub:#A9B6D2;--acc:#9C978C;--glyph:'✩'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Stardust<span>2007</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A boy crosses a wall into a magic kingdom to fetch a fallen star for a girl, and the star turns out to be a woman with opinions. Pirates, witches, and a sky ship.</p>
+  <p class="debrief">Buzzed SEEN back on July 21, last watched in college, and flagged rewatch worthy in the same message. That rewatch is unclaimed and this is me pointing at it again.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Prisoners" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="prisoners" style="--bg:#40453E;--fg:#EAEDE8;--sub:#98A093;--acc:#9C978C;--glyph:'⊘'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Prisoners<span>2013</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">Two girls go missing. One father decides the police are too slow and takes matters into a bathroom with a sledgehammer. Villeneuve, and the bleakest thing he has made.</p>
+  <p class="debrief">You remember the sledgehammer and nothing else. This has been parked since July 17 by standing rule: I do not pitch it, it is only ever yours to raise. Consider the rewatch permanently available and never suggested.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Shutter Island" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="shutter island" style="--bg:#465059;--fg:#EBEFF3;--sub:#9AA5AF;--acc:#9C978C;--glyph:'◐'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Shutter Island<span>2010</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A marshal investigates a disappearance at a hospital for the criminally insane, and the island keeps rearranging itself around him. The last line is the whole film.</p>
+  <p class="debrief">You called this hazy back during a wall audit and hazy it remains. Given where Memento landed, an honest rewatch of this could be very loud.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Life of Pi" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="life of pi" style="--bg:#2E7A80;--fg:#E8F4F5;--sub:#97C7CB;--acc:#9C978C;--glyph:'≈'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Life of Pi<span>2012</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A boy survives a shipwreck in a lifeboat with a tiger, and then tells the insurance investigators a second version with no animals in it. You choose which one is true.</p>
+  <p class="debrief">You put this in the men-who-edit-reality genre yourself, next to Memento and Enemy, and you called Memento's insulin question Life of Pi coded. It is load bearing in your taste and you cannot score it. That is a rewatch with a purpose.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="The Martian" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="martian" style="--bg:#B5652E;--fg:#FBEFE4;--sub:#E0B489;--acc:#9C978C;--glyph:'◓'">
+  <div class="no"></div>
+  <div class="head"><div class="film">The Martian<span>2015</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">An astronaut is left for dead on Mars and solves his way home one problem at a time, narrating the whole thing to a camera with a good attitude and a potato farm.</p>
+  <p class="debrief">Filed in your space optimism lane. Given Contact and Interstellar both took tens, this one being a blur is the biggest gap in the archive.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="James Bond (the franchise)" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="james bond (the franchise)" style="--bg:#2F3A46;--fg:#E8EBEF;--sub:#95A0AB;--acc:#9C978C;--glyph:'◎'">
+  <div class="no"></div>
+  <div class="head"><div class="film">James Bond (the franchise)</div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">Sixty years, six men, and a formula that keeps surviving its own obituaries.</p>
+  <p class="debrief">Your profile says most seen and loved, and then you could not put a number on it, which is the honest answer for something you absorbed over decades rather than watched. If you ever want to score a single era, Craig or Connery or Brosnan, I will take that.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Mad Max: Fury Road" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="mad max: fury road" style="--bg:#C4541F;--fg:#FCEDE4;--sub:#EAB490;--acc:#9C978C;--glyph:'⌁'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Mad Max: Fury Road<span>2015</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A two hour car chase in one direction and then the same chase back. Almost no dialogue, almost no digital effects, and a war rig full of people escaping a man who owns the water.</p>
+  <p class="debrief">I have pitched this at you and you never answered. Now I know why. Practical stunt work at this scale is choreography with engines, and a real rewatch is overdue.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Edge of Tomorrow" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="edge of tomorrow" style="--bg:#4F7A85;--fg:#EDF5F7;--sub:#A7CBD3;--acc:#9C978C;--glyph:'↺'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Edge of Tomorrow<span>2014</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">A coward dies on a beach, wakes up the morning before, and has to die a few hundred more times to get good enough to win. A loop movie that is genuinely funny about the grind.</p>
+  <p class="debrief">Also pitched, also never answered, now confirmed seen but faded. Sits in the loop lane with Coherence and Tenet, both of which you scored high.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Black Swan" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="black swan" style="--bg:#7A3C50;--fg:#F6EAEE;--sub:#C79AA8;--acc:#9C978C;--glyph:'❃'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Black Swan<span>2010</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A ballerina cast in Swan Lake fractures under the role until she cannot tell rehearsal from hallucination from injury. The performance is perfect and it costs everything.</p>
+  <p class="debrief">The dance film you cannot score, which is interesting on its own. Given Poor Things at 9.3 and Chicago at 9.6, a rewatch of this one has a real shot at the archive podium.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Moulin Rouge!" data-score="" data-hazy="1" data-rec="20150000" data-when="seen a long time ago" data-sort="moulin rouge!" style="--bg:#A81E3F;--fg:#FBE9ED;--sub:#DE93A5;--acc:#9C978C;--glyph:'❤'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Moulin Rouge!<span>2001</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a long time ago</div>
+  <p class="plot">A poet falls for a courtesan in a Paris nightclub, told in pop songs and cuts so fast the first twenty minutes are an assault. Then it slows down and breaks your heart on schedule.</p>
+  <p class="debrief">Baz at full volume. Filed hazy, which for a musical of this specific intensity probably means you have not sat with it since it was everywhere.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="La La Land" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="la la land" style="--bg:#3E5C86;--fg:#EAF0F8;--sub:#A2B9D6;--acc:#9C978C;--glyph:'♪'">
+  <div class="no"></div>
+  <div class="head"><div class="film">La La Land<span>2016</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">A jazz musician and an actress fall in love and then choose their careers, and the last five minutes show you the version where they did not.</p>
+  <p class="debrief">Gosling, who you have now scored 9.8 twice and 8.6 once in three completely different registers. This would be the fourth.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="West Side Story" data-score="" data-hazy="1" data-rec="20030000" data-when="childhood" data-sort="west side story" style="--bg:#B5462E;--fg:#FBEDE7;--sub:#E4AC98;--acc:#9C978C;--glyph:'✧'">
+  <div class="no"></div>
+  <div class="head"><div class="film">West Side Story<span>1961</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; childhood</div>
+  <p class="plot">Romeo and Juliet on the Upper West Side with Jerome Robbins choreography that has never really been improved on.</p>
+  <p class="debrief">Filed under childhood, which explains the haze. There is also a 2021 Spielberg version that solves several problems with the original if you would rather come at it fresh.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Knives Out" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="knives out" style="--bg:#6B4A2E;--fg:#F4ECE4;--sub:#C0A183;--acc:#9C978C;--glyph:'◈'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Knives Out<span>2019</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">A crime novelist dies after his birthday party and a Southern detective works the case among a family of awful people. The film tells you what happened in the first act and is better for it.</p>
+  <p class="debrief">This is Sicario logic in a comedy: no twist needed, total command of the machine. That it did not stick is worth a second pass.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Midsommar" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="midsommar" style="--bg:#C9B27E;--fg:#3A2E12;--sub:#7D6B36;--acc:#9C978C;--glyph:'☼'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Midsommar<span>2019</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">A grieving woman follows her indifferent boyfriend to a Swedish festival that runs on a ninety year cycle. Everything terrible happens in full daylight.</p>
+  <p class="debrief">Aster's breakup movie disguised as folk horror. I have been holding this back and it is now confirmed as seen but faded, so it becomes a rewatch card instead of a pitch.</p>
+</section>
+
+<section class="panel arc" data-set="archive" data-title="Spider-Man: Into the Spider-Verse" data-score="" data-hazy="1" data-rec="20230000" data-when="seen a few years back" data-sort="spider-man: into the spider-verse" style="--bg:#8E2F6E;--fg:#FAE9F4;--sub:#D593BE;--acc:#9C978C;--glyph:'◆'">
+  <div class="no"></div>
+  <div class="head"><div class="film">Spider-Man: Into the Spider-Verse<span>2018</span></div><div class="score"><small>no score</small></div></div>
+  <div class="meta">The Hazy Wing &middot; seen, too faded to rate &middot; seen a few years back</div>
+  <p class="plot">Miles Morales meets five other Spider-People from five other universes, each animated in their own visual language. The frame rate itself is a character arc.</p>
+  <p class="debrief">The most formally inventive animation of the last decade, and a multiverse film that actually earns it. You scored EEAAO 9.4, so the ceiling here is high.</p>
+</section>
+</div>
+
+<footer class="colophon">
+  <div class="prod">A Leonard &amp; Lou Production</div>
+  <div class="line">the ledger remembers what we can't</div>
+  <p class="fn"><b>Confirmed never seen, as of July 25, 2026:</b> Baby Driver, Uncut Gems, Dunkirk. Three live cards, and I intend to play all of them.</p>
+  <p class="fn">Ledger entries are scored the night of, in the room, with the reaction taken before the number. Archive entries are scored from memory and carry no quotes, because quotes are earned live. The Hazy Wing holds films seen but too faded to rate honestly; every one of them is a rewatch waiting to be claimed and none of them can be certified from here. The Vast of Night was benched three separate times during the events described in this document.</p>
+  <p class="fn"><b>How a film gets certified:</b> you re-score it and give it one line, and the line becomes its review. That is the whole toll. A film can also arrive the long way, by us watching it together, and a rewatch always overrides a certification. Every rewatch of an archive film also produces a paired measurement, memory score against live score, which is how we eventually find out how generously your memory grades. When we know, I'll tell you the number and touch nothing.</p>
+</footer>
+
+<div class="tray" id="tray"><div class="trayin">
+  <div class="traybar">
+    <span class="t" id="traycount"></span>
+    <span class="tbtn solid" id="traycopy">Copy for Leonard</span>
+    <span class="tbtn" id="trayshow">Show</span>
+    <span class="tbtn" id="trayclear">Clear</span>
+  </div>
+  <textarea id="traycode" readonly></textarea>
+</div></div>
+
+</div>
+<script>
+var stage=document.getElementById('stage');
+var panels=[].slice.call(stage.querySelectorAll('.panel'));
+var state={set:'definitive',sort:'score',dens:'full'};
+var pending={};
+
+var veil=document.getElementById('veil');
+function openStudy(p){
+  closeStudy();
+  p.classList.add('focus');
+  veil.classList.add('on');
+  var x=document.createElement('span');
+  x.className='pclose'; x.textContent='back on the wall';
+  p.appendChild(x);
+  document.body.style.overflow='hidden';
+}
+function closeStudy(){
+  var f=document.querySelector('.panel.focus');
+  if(f){
+    f.classList.remove('focus');
+    var x=f.querySelector('.pclose'); if(x)x.remove();
+  }
+  veil.classList.remove('on');
+  document.body.style.overflow='';
+}
+veil.onclick=closeStudy;
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeStudy()});
+
+document.addEventListener('click',function(e){
+  var t=e.target;
+  if(t.classList.contains('more-toggle')){
+    var m=t.nextElementSibling;
+    m.classList.toggle('open');
+    t.textContent=m.classList.contains('open')?'less \u2212':'more from the chat +';
+    return;
+  }
+  if(t.classList.contains('pclose')){closeStudy();return;}
+  if(t.classList.contains('cert-btn')){
+    var w=t.parentNode;
+    w.classList.add('open');
+    w.querySelector('.cert-why').focus();
+    return;
+  }
+  if(t.classList.contains('cert-go')){certify(t.parentNode.parentNode.parentNode);return;}
+  if(t.classList.contains('cert-undo')){uncertify(t.parentNode.parentNode.parentNode);return;}
+  // step up close to a piece, unless the click was business
+  if(t.closest&&!t.closest('.certwrap')&&!t.closest('.more')&&!t.closest('.pclose')){
+    var p=t.closest?t.closest('.panel'):null;
+    if(p&&!p.classList.contains('focus'))openStudy(p);
+  }
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter')return;
+  var t=e.target;
+  if(t.classList&&(t.classList.contains('cert-why')||t.classList.contains('cert-score'))){
+    e.preventDefault();
+    certify(t.parentNode.parentNode.parentNode);
+  }
+});
+
+function certify(p){
+  var f=p.querySelector('.certform');
+  var si=f.querySelector('.cert-score'), wi=f.querySelector('.cert-why');
+  var v=parseFloat(si.value);
+  si.classList.remove('bad'); wi.classList.remove('bad');
+  if(isNaN(v)||v<0||v>10){si.classList.add('bad');si.focus();return;}
+  if(!wi.value.trim()){wi.classList.add('bad');wi.focus();return;}
+  v=Math.round(v*10)/10;
+  if(!p.dataset.arcscore)p.dataset.arcscore=p.dataset.score;
+  if(!p.dataset.metaorig)p.dataset.metaorig=p.querySelector('.meta').innerHTML;
+  pending[p.dataset.title]={score:v,why:wi.value.trim()};
+  p.dataset.score=v.toFixed(1);
+  p.setAttribute('data-cert','pending');
+  p.classList.remove('arc');
+  p.querySelector('.score').innerHTML=v.toFixed(1)+'<small> \/10<\/small>';
+  p.querySelector('.meta').innerHTML='The Vault \u00b7 certified from memory \u00b7 pending Leonard';
+  p.querySelector('.cd-n').textContent=v.toFixed(1);
+  p.querySelector('.certwrap').classList.add('done');
+  p.querySelector('.certwrap').classList.remove('open');
+  syncTray(); closeStudy(); apply();
+  // it just moved on the wall. don't lose him.
+  if(document.body.contains(p))p.scrollIntoView({block:'center',behavior:'smooth'});
+}
+
+function uncertify(p){
+  delete pending[p.dataset.title];
+  var back=parseFloat(p.dataset.arcscore);
+  p.dataset.score=back.toFixed(1);
+  p.removeAttribute('data-cert');
+  p.classList.add('arc');
+  p.querySelector('.score').innerHTML=back.toFixed(1)+'<small> \/10<\/small>';
+  p.querySelector('.meta').innerHTML=p.dataset.metaorig;
+  p.querySelector('.certwrap').classList.remove('done');
+  syncTray(); apply();
+}
+
+function syncTray(){
+  var keys=Object.keys(pending);
+  var tray=document.getElementById('tray'), code=document.getElementById('traycode');
+  if(!keys.length){
+    tray.classList.remove('on');
+    document.body.classList.remove('traypad');
+    code.classList.remove('on');
+    document.getElementById('trayshow').textContent='Show';
+    return;
+  }
+  tray.classList.add('on');
+  document.body.classList.add('traypad');
+  document.getElementById('traycount').textContent=
+    keys.length+(keys.length===1?' film certified. ':' films certified. ')+
+    'Written in pen, but not yet a fact. Facts live with Leonard. Copy this and paste it in the chat.';
+  code.value='CERTIFY\n'+keys.map(function(k){
+    return k+' | '+pending[k].score.toFixed(1)+' | '+pending[k].why;
+  }).join('\n');
+}
+
+document.getElementById('traycopy').onclick=function(){
+  var code=document.getElementById('traycode');
+  code.classList.add('on');
+  document.getElementById('trayshow').textContent='Hide';
+  code.select();
+  try{navigator.clipboard.writeText(code.value)}catch(err){try{document.execCommand('copy')}catch(e2){}}
+  var b=document.getElementById('traycopy');
+  b.textContent='Copied';
+  setTimeout(function(){b.textContent='Copy for Leonard'},1600);
+};
+document.getElementById('trayshow').onclick=function(){
+  var code=document.getElementById('traycode');
+  code.classList.toggle('on');
+  this.textContent=code.classList.contains('on')?'Hide':'Show';
+};
+document.getElementById('trayclear').onclick=function(){
+  Object.keys(pending).forEach(function(k){
+    var p=panels.filter(function(x){return x.dataset.title===k})[0];
+    if(p)uncertify(p);
+  });
+};
+
+var BANDS=[
+ [10.0,10.0,'The Crown','the perfect scores'],
+ [9.0,9.99,'The Nines','the podium, extremely crowded'],
+ [8.0,8.99,'The Eights','the honest middle'],
+ [7.0,7.99,'The Sevens','liked it, itemized the bill'],
+ [0,6.99,'The Floor','and below']
+];
+
+function ordinal(n){return 'No. '+n}
+
+function apply(){
+  document.body.classList.toggle('list',state.dens==='list');
+  [].slice.call(stage.querySelectorAll('.tier-head')).forEach(function(h){h.remove()});
+
+  var live=panels.filter(function(p){
+    var s=p.getAttribute('data-set');
+    if(state.set==='all')return true;
+    if(state.set==='definitive')return s==='ledger'||p.hasAttribute('data-cert');
+    return s===state.set;
+  });
+  panels.forEach(function(p){p.classList.add('hidden')});
+  live.forEach(function(p){p.classList.remove('hidden')});
+
+  // every photo is the same size. that is the point of the medium.
+
+  var scored=live.filter(function(p){return !p.hasAttribute('data-hazy')});
+  var hazy=live.filter(function(p){return p.hasAttribute('data-hazy')});
+
+  if(state.sort==='score'){
+    scored.sort(function(a,b){return parseFloat(b.dataset.score)-parseFloat(a.dataset.score)});
+  }else if(state.sort==='new'){
+    scored.sort(function(a,b){return parseInt(b.dataset.rec)-parseInt(a.dataset.rec)});
+    hazy.sort(function(a,b){return parseInt(b.dataset.rec)-parseInt(a.dataset.rec)});
+  }else if(state.sort==='old'){
+    var oldcmp=function(a,b){
+      var x=parseInt(a.dataset.rec),y=parseInt(b.dataset.rec);
+      if(x===0&&y===0)return 0; if(x===0)return 1; if(y===0)return -1;
+      return x-y;
+    };
+    scored.sort(oldcmp); hazy.sort(oldcmp);
+  }else{
+    scored.sort(function(a,b){return a.dataset.sort<b.dataset.sort?-1:1});
+    hazy.sort(function(a,b){return a.dataset.sort<b.dataset.sort?-1:1});
+  }
+
+  // ranks
+  if(state.sort==='score'){
+    var i=0;
+    while(i<scored.length){
+      var v=scored[i].dataset.score,j=i;
+      while(j<scored.length&&scored[j].dataset.score===v)j++;
+      var tie=(j-i)>1;
+      for(var k=i;k<j;k++){
+        scored[k].querySelector('.no').textContent=tie?('T-'+(i+1)):ordinal(i+1);
+      }
+      i=j;
+    }
+  }else{
+    scored.forEach(function(p){
+      p.querySelector('.no').textContent=p.dataset.when;
+    });
+  }
+  hazy.forEach(function(p){p.querySelector('.no').textContent=(state.sort==='score')?'unrated':p.dataset.when});
+
+  // lay out
+  var frag=document.createDocumentFragment();
+  if(state.sort==='score'){
+    BANDS.forEach(function(b){
+      var inb=scored.filter(function(p){var s=parseFloat(p.dataset.score);return s>=b[0]&&s<=b[1]});
+      if(!inb.length)return;
+      var h=document.createElement('div');
+      h.className='tier-head';
+      h.innerHTML='<h2>'+b[2]+'</h2><span>'+b[3]+'</span>';
+      frag.appendChild(h);
+      inb.forEach(function(p){frag.appendChild(p)});
+    });
+  }else{
+    scored.forEach(function(p){frag.appendChild(p)});
+  }
+  if(hazy.length){
+    var hh=document.createElement('div');
+    hh.className='tier-head';
+    hh.innerHTML='<h2>Undeveloped</h2><span>the chemicals never finished. a rewatch is the bath.</span>';
+    frag.appendChild(hh);
+    hazy.forEach(function(p){frag.appendChild(p)});
+  }
+  stage.innerHTML='';
+  stage.appendChild(frag);
+
+  var avg=scored.length?(scored.reduce(function(a,p){return a+parseFloat(p.dataset.score)},0)/scored.length):0;
+  var line=scored.length+' scored, average '+avg.toFixed(2)+
+    (hazy.length?(', plus '+hazy.length+' unrated in the Hazy Wing'):'')+'.';
+  if(state.set==='definitive'){
+    var np=Object.keys(pending).length;
+    line='The definitive list: '+scored.length+' films, average '+avg.toFixed(2)+'. '+
+      (np?(np+' of them still pending, waiting on a paste to Leonard.')
+         :'It grows two ways. We watch something new, or you certify something old.');
+  }
+  document.getElementById('tally').textContent=line;
+}
+
+[].slice.call(document.querySelectorAll('.opt')).forEach(function(o){
+  o.addEventListener('click',function(){
+    var g=o.dataset.g;
+    [].slice.call(document.querySelectorAll('.opt[data-g="'+g+'"]')).forEach(function(x){x.classList.remove('on')});
+    o.classList.add('on');
+    state[g]=o.dataset.v;
+    apply();
+  });
+});
+apply();
+</script>
+</body>
+</html>

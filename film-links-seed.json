@@ -1,0 +1,229 @@
+{
+  "_readme": "Seed for the film_links table. Authored by Leonard (chat side) from film_lessons and film_session_notes on 2026-08-01. Films referenced by title+year; resolve to film_titles ids at insert time and fail loudly on any miss. All rows source=hand-authored. weight: 3=strong named bloodline, 2=solid, 1=soft. directional=true means the note reads from->to only. The note text is the see-also line rendered on the back of the 'from' photo; keep it verbatim, it is written in the ritual's voice. No em dashes anywhere in notes, ever.",
+  "links": [
+    {
+      "from": {"title": "Sicario", "year": 2015},
+      "to": {"title": "No Country for Old Men", "year": 2007},
+      "relation": "execution-meritocracy",
+      "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
+      "weight": 3,
+      "directional": false
+    },
+    {
+      "from": {"title": "Sicario", "year": 2015},
+      "to": {"title": "Sicario: Day of the Soldado", "year": 2018},
+      "relation": "sequel",
+      "note": "The sequel, queued with expectations pre-lowered. No Villeneuve, no Kate.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Malignant", "year": 2021},
+      "to": {"title": "Sorry to Bother You", "year": 2018},
+      "relation": "reveal-as-event",
+      "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
+      "weight": 3,
+      "directional": false
+    },
+    {
+      "from": {"title": "Disclosure Day", "year": 2026},
+      "to": {"title": "Malignant", "year": 2021},
+      "relation": "reveal-as-event",
+      "note": "A Malignant-rule double violation: decoy hour plus exposition dump. Not a reveal, a zoom. Took the floor at 5.2.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "Annihilation", "year": 2018},
+      "to": {"title": "Coherence", "year": 2014},
+      "relation": "thin-ensemble",
+      "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "Annihilation", "year": 2018},
+      "to": {"title": "Sorry to Bother You", "year": 2018},
+      "relation": "thin-ensemble",
+      "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Annihilation", "year": 2018},
+      "to": {"title": "Sunshine", "year": 2007},
+      "relation": "gorgeous-and-cold",
+      "note": "Neighbors in The Sevens. Idea-forward, visually lovely, ensemble kept deliberately thin, and he docks for it every time.",
+      "weight": 3,
+      "directional": false
+    },
+    {
+      "from": {"title": "The Game", "year": 1997},
+      "to": {"title": "Memento", "year": 2000},
+      "relation": "antibodies",
+      "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "Batman Begins", "year": 2005},
+      "to": {"title": "The Dark Knight", "year": 2008},
+      "relation": "nolan-arc",
+      "note": "Begins states the Ra's thesis. The two ferries run the small experiment.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "The Dark Knight", "year": 2008},
+      "to": {"title": "The Dark Knight Rises", "year": 2012},
+      "relation": "nolan-arc",
+      "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "The Dark Knight Rises", "year": 2012},
+      "to": {"title": "Batman Begins", "year": 2005},
+      "relation": "nolan-arc",
+      "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
+      "weight": 3,
+      "directional": true
+    },
+    {
+      "from": {"title": "The Dark Knight Rises", "year": 2012},
+      "to": {"title": "Memento", "year": 2000},
+      "relation": "bad-memory-asset",
+      "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Blade Runner 2049", "year": 2017},
+      "to": {"title": "Sicario", "year": 2015},
+      "relation": "villeneuve",
+      "note": "The Villeneuve spine. Two registers, same total control, tied and adjacent at the top of the board.",
+      "weight": 3,
+      "directional": false
+    },
+    {
+      "from": {"title": "Enemy", "year": 2013},
+      "to": {"title": "Blade Runner 2049", "year": 2017},
+      "relation": "villeneuve",
+      "note": "Villeneuve's small strange one against his colossus. Same director, opposite scale.",
+      "weight": 2,
+      "directional": false
+    },
+    {
+      "from": {"title": "Ex Machina", "year": 2015},
+      "to": {"title": "Annihilation", "year": 2018},
+      "relation": "garland",
+      "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
+      "weight": 3,
+      "directional": false
+    },
+    {
+      "from": {"title": "Ex Machina", "year": 2015},
+      "to": {"title": "Her", "year": 2013},
+      "relation": "ai-feelings",
+      "note": "Her completes the AI-feelings trilogy in the queue. The cold half and the warm half of the same question.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Coherence", "year": 2014},
+      "to": {"title": "The Vast of Night", "year": 2019},
+      "relation": "low-budget-wonder",
+      "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Memento", "year": 2000},
+      "to": {"title": "Run Lola Run", "year": 1998},
+      "relation": "structure-as-stimulation",
+      "note": "Same family: structure as the stimulant. Three sprints at the same twenty minutes. Tabled by the sovereign; only he raises it.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Nightcrawler", "year": 2014},
+      "to": {"title": "Sicario", "year": 2015},
+      "relation": "execution-meritocracy",
+      "note": "Two operators who never miss. One is the system working, one is a man feeding on it.",
+      "weight": 2,
+      "directional": false
+    },
+    {
+      "from": {"title": "The Nice Guys", "year": 2016},
+      "to": {"title": "Bullet Train", "year": 2022},
+      "relation": "fun-shelf",
+      "note": "The fun shelf, proven understocked and then stocked. Failure as the funniest material versus mayhem as choreography.",
+      "weight": 2,
+      "directional": false
+    },
+    {
+      "from": {"title": "The Nice Guys", "year": 2016},
+      "to": {"title": "Nightcrawler", "year": 2014},
+      "relation": "counterprogramming",
+      "note": "Los Angeles twice: once as a punchline, once as a predator. The pick that proved counterprogramming his dread lane works.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Under the Silver Lake", "year": 2018},
+      "to": {"title": "Memento", "year": 2000},
+      "relation": "unreliable-search",
+      "note": "A man builds a system of meaning to avoid what he already knows. Sam's conspiracy and Leonard's notes are the same machine. The owl woman memory test proved it within twelve hours.",
+      "weight": 2,
+      "directional": true
+    },
+    {
+      "from": {"title": "Under the Silver Lake", "year": 2018},
+      "to": {"title": "Annihilation", "year": 2018},
+      "relation": "discussion-not-score",
+      "note": "The two great-conversation mid-scores. Rich debriefs, ambient sprawl, hands that never fully close. Discussion value and rating are separate currencies.",
+      "weight": 2,
+      "directional": false
+    },
+    {
+      "from": {"title": "Amadeus", "year": 1984},
+      "to": {"title": "The Dark Knight", "year": 2008},
+      "relation": "obsession-with-a-rival",
+      "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
+      "weight": 1,
+      "directional": false
+    },
+    {
+      "from": {"title": "Top Gun: Maverick", "year": 2022},
+      "to": {"title": "Bullet Train", "year": 2022},
+      "relation": "craft-blockbuster",
+      "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
+      "weight": 1,
+      "directional": false
+    },
+    {
+      "from": {"title": "Poor Things", "year": 2023},
+      "to": {"title": "Sorry to Bother You", "year": 2018},
+      "relation": "audacity",
+      "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.",
+      "weight": 2,
+      "directional": false
+    },
+    {
+      "from": {"title": "Obsession", "year": 2026},
+      "to": {"title": "The Nice Guys", "year": 2016},
+      "relation": "guest-context",
+      "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
+      "weight": 1,
+      "directional": true
+    },
+    {
+      "from": {"title": "No Country for Old Men", "year": 2007},
+      "to": {"title": "Sicario", "year": 2015},
+      "relation": "split-watch-asterisk",
+      "note": "The 8.3 carries the split-watch asterisk. Never split a tension movie across two nights; the held breath breaks. His lesson, stated by him.",
+      "weight": 2,
+      "directional": true
+    }
+  ]
+}
