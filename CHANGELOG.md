@@ -1,5 +1,172 @@
 # Pipeline CHANGELOG
 
+## v5.1 — 2026-08-02 — box/drawer stop hiding the room; the turn gets a mid-room beat
+
+Two architect-flagged fixes to v5's disclosed deviations 3 and 4 (see below).
+Nothing else changed; still `python vault.py` -> `the-vault.html`, 23 checks.
+
+**Fix 1 — box/drawer no longer black out the room (deviation 3 rejected).**
+`#boxPlane`/`#drawerPlane` were tilted trays (`rotateX(-9deg)`/`rotateX(-7deg)`)
+that interleaved in depth with the rest of the room from the camera's point
+of view; Chromium didn't reliably z-sort that against the huge front wall
+plane, so the fallback was to hide every plane except the one matching
+`facing` (`updateVisibility()`) -- which meant the room vanished behind the
+box/drawer prints (a black void, not the intended "hovering tray over real
+furniture"). Root-fixed instead of worked around: **`#boxPlane`/`#drawerPlane`
+are now PARALLEL to the front wall (zero tilt)**, positioned head-on above
+the open shoebox / nightstand drawer at their own distinct z (still
+`TBL_Z-40` / `NS_Z-30`, strictly between `FRONT_Z` and the engaged camera's
+typical range, and distinct from every other furniture plane's z). Parallel
+planes occupy one z each and never interleave in depth with the rest of the
+room, so preserve-3d's ordinary depth sort handles them correctly with
+nothing hidden. Because the plane is now parallel and head-on, its engaged
+derivation is IDENTICAL to the 'front' facing with a different origin --
+`tiltedPose()`'s sin/cos tilt math and the `BOX_TILT`/`DRAWER_TILT` constants
+are deleted outright, replaced by `parallelPose(region, O, wcx, wcy, dist)`.
+`updateVisibility()` and every call to it are gone; `#frontWall`/`#backswall`/
+`#boxPlane`/`#drawerPlane` stay at their default CSS visibility (visible)
+always, like real geometry. Verified: `mounted-box.png`/`mounted-drawer.png`
+(`_experiments/v5-proof/`) show walls, floor, table/nightstand, and the rail
+plainly visible behind/around the readable prints -- no void. check.py's
+check 19 (per-facing render) gained a floor-band sample (`bandstats()`,
+y 80%-96% of frame) specifically for the box/drawer screenshots, asserting
+mean luminance > 8 there -- proof the room, not just the tray's own prints,
+is painting. Check 9 (mode switching) no longer asserts either wall's
+`visibility` toggles; it asserts both stay `visible` and that `facing`
+(the derivation-layer state, not a DOM hide) reports the engaged wall.
+
+**Fix 2 — the wall<->backs turn gets a mid-room waypoint (deviation 4
+dropped, now implemented).** v5 shipped a direct eye-space tween between the
+two derived poses (front <-> backs) because getting the fancier flight
+right wasn't worth the risk to the 0.00px mapping-exactness result at the
+time. Implemented now: `flyToPlane()` detects a front<->backs turn
+specifically (box/drawer flights are untouched, still a single tween) and
+inserts one mid-flight waypoint -- eye pulled back toward room center
+(`z: 0`, i.e. between `FRONT_Z` and `BACK_Z`, widening the dolly distance
+from either wall) while yaw sweeps to the halfway point of the
+yaw-shortest-path turn, so the side walls, the doorway neon, and the window
+visibly sweep past instead of punching straight through the furniture.
+`tick()` now tweens flights with an optional `mid` waypoint as two
+independently-eased segments (`from->mid`, `mid->to`, same `ease()` curve
+each half) instead of always assuming a single lerp; box/drawer flights
+(`flight.mid === null`) fall through to the original single-tween path
+unchanged. Total duration for a turn is `max(dur, 1600)`ms (was a flat
+1400ms), within the requested 1.4-1.8s band. check.py's mode-switch waits
+that follow a wall<->backs click were bumped from 1500-1600ms to 1900ms to
+give the longer flight room to land before the next assertion.
+
+23 checks, all green (mapping-exactness worst-case still 0.00px on both the
+front and backs wall, and after the turn flight).
+
+## v5 — 2026-08-02 — the wall mounted into a real preserve-3d room
+
+Merged `v5-room-proof.html` (the screenshot-verified true preserve-3d motel
+room rig, commit 94a58b9) with `wall_template.html` (v4, the polaroid wall +
+all interaction). v4's copy archived to `legacy-v4/`.
+
+**The core move (why this works):** v4 kept `#world`'s own `translate+scale`
+transform while nesting it in a 3D graph -- that's what made it fragile
+(black backs wall, edge-on slivers). v5 inverts it: `#world`/`#backsInner`
+carry NO transform at all, ever. `#room`'s camera does everything. The
+existing 2D pan/zoom state (`cam.x/y/s`) is unchanged in every call site
+(fitRect, centerPhoto, wheel anchor zoom, drag pan, pinch, dive, certify,
+step-back, the investigation) -- every frame, `derivePose(facing, cam)`
+converts it into the exactly-equivalent 3D eye pose for whichever plane is
+"facing" the camera. When that plane is viewed head-on, CSS perspective
+projects it as the same uniform 2D similarity `cam.x/y/s` always produced,
+so the 2D interaction math never had to be touched, only re-rendered through
+a camera instead of a transform on the plane. Verified to 0.00px on the new
+engaged-mapping-exactness check (3 known photos, front and backs).
+
+**What moved into real 3D:**
+- `#frontWall`/`#backswall` are now true opposite-facing planes of one
+  `preserve-3d` box (mounted at `FRONT_Z`/`BACK_Z`, backs `rotateY(180deg)`),
+  built each `layout()` by `buildRoom()`. Floor, ceiling, side walls,
+  door+neon, window+curtains, rails/baseboards, the lamp, and simple table/
+  nightstand furniture are real geometry transplanted from the proof, not
+  fixed 2D viewport dressing.
+- The shoebox and the dark drawer are real tilted planes (`#boxPlane`/
+  `#drawerPlane`) hovering over the table/nightstand, hosting the actual
+  `.photo` elements (`buildRoom()` re-parents them each layout() run,
+  offsetting the tray's container by `-region.x/-region.y` so their existing
+  wall-px `left/top` from `place()` need no remapping). Click either lid:
+  the prints reveal (same `body.box-closed`/`drawer-closed` opacity gate as
+  v4) and the room camera flies to face that plane head-on.
+- Cold open is now a real eye-space flight from a doorway pose into the
+  derived seated front-wall pose, not a CSS-transitioned `roomCam`.
+
+**What died:** `#roomShell` and all its CSS/JS (`rsCeiling`, `rsFloor`,
+`rsWindow`, `rsLamp`, etc. -- the fixed-2D "always renders, cheap to
+screenshot" room dressing v4 fell back to after true 3D turning proved
+fragile). `layout()`'s painted-room `arch()` calls (`wallpanel`, `rail`,
+`baseboard`, `floor`, `wire`, `shade`, `lamp`, `boxwall`, `boxlid`,
+`boxlabel`, `table`, `tableleg`, `cabinet`, `drawerfront2`, `drawerlip`,
+`pull`) -- replaced by real geometry. `turnSwing`/`seatedParallax`/
+`Z_SEATED`/`roomCam`/`setRoomCam` -- superseded by the derivation-layer
+camera (`tick()`, `applyCam()`, `flyToPlane()`). The `.glide` CSS transitions
+on `#world`/`#backsInner` -- `glideTo()` is now an rAF tween of `cam` itself
+(same .85s ease), since there's no transform on those elements to transition.
+
+**Deviations from the handoff spec (disclosed, not silent):**
+1. **`WALL_TOP` is `(ROOM_H - H) / 2`, not the spec's literal
+   `(-220-EYE)-CEIL_Y`.** That fixed-eye-line formula assumes wall content
+   roughly the size of a domestic room; this salon wall (several thousand px
+   tall, many score bands) is much taller than `ROOM_H`'s minimum, and the
+   literal formula placed `#world` mostly below `#frontWall`'s own bottom
+   edge (void where the wall should be). Centering keeps the same
+   derivation contract -- `wallRoomY` still reflects wherever `#world`
+   actually sits -- while guaranteeing the content is inside the plane it's
+   mounted to.
+2. **Box/drawer tilt is -9°/-7°, not the spec's suggested -62°/gentler-than-
+   that.** At a steep tilt, the tilted-plane eye offset (`dist` along the
+   plane's normal) has a large y-component, and for any reasonable `cam.s`
+   the derived eye ends up meters below the floor. A shallow tilt keeps the
+   eye inside the room at every zoom level. Box/drawer are explicitly NOT
+   covered by the engaged-mapping-exactness check (only front/backs are),
+   so this doesn't cost any test coverage.
+3. **Only the plane matching the current `facing` is visible when the
+   camera is settled** (`updateVisibility()`, both planes show during a
+   flight so a turn never blacks out mid-transition). Confirmed by a debug
+   pass (colored planes, `getBoundingClientRect` matched the derived camera
+   exactly) that Chromium does not reliably z-sort this scene's nested
+   preserve-3d planes when a huge one (front wall) and a small one (a tray)
+   share the same view frustum -- the salon wall painted through an opaque,
+   nearer tray. front/backs never needed this in practice (the far one is
+   always behind the eye, never in the same frustum) but box/drawer sit
+   close enough to the front wall that they are. This is the one place v5
+   falls back to a v4-style "only the relevant plane renders" rule, and it's
+   why check 9's old visibility assertions still pass unmodified.
+4. Dropped the spec's fancier "pull back to mid-room, yaw through ±90 past
+   the side walls" flourish for the wall<->backs turn; it's a direct
+   eye-space tween between the two derived poses at the same `cam`. Simpler,
+   and it's what made the 0.00px mapping-exactness result possible to nail
+   down with confidence in the time available.
+5. Box/drawer lids lost the hinge-open animation (`rotateX` tween) the spec
+   describes -- they're a straight opacity/visibility swap on click, same
+   mechanism as v4's cover reveal. Everything downstream (prints becoming
+   visible and interactive, camera flying to face the tray) works.
+
+**check.py:** the 4 v4 pixel checks (backs-renders / room-shell-paints /
+salon-wide-span / cold-open) are replaced with 4 new ones per the handoff:
+(19) per-facing render check for all four facings, (20) engaged-mapping
+exactness on 3 known photos on both front and backs, (21) cold-open
+completion + landing pose, (22) the wall<->backs turn flight, pixel-verified
+and mapping-exact after settling. Check 8 (camera) now asserts `#world`/
+`#backsInner` carry no transform of their own instead of comparing their
+(now nonexistent) transforms. Check 9's visibility assertions needed no
+change (see deviation 3). Checks 1-7, 10-18, 23 are unchanged in substance,
+routed through the same public functions, with wait times bumped where a
+mode switch now triggers a real 1.4s eye-space flight instead of an instant
+CSS-visibility swap. 23 checks, all green.
+
+**Known traps hit again while building this (all in the handoff, all real):**
+`transform-origin` must be `0 0` on placed planes -- `50%` displaced the
+frontWall/backswall mount by half their size before that was caught. The
+`translateZ(PERSP)` prefix in `applyCam()` is what makes rotation a head
+turn; the box/drawer pitch formula was wrong twice before landing on
+`pitch = theta` (verified by hand against the front-wall calibration case,
+`theta=0 -> pitch=0`, before trusting it for the tilted planes).
+
 ## v4.3 — 2026-08-01 — backs-mode floor/wall fix (same night as v4/v4.1/v4.2)
 
 - **Floor no longer floods the backs-mode frame.** `#rsFloorWrap` was a fixed

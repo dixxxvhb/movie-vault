@@ -200,44 +200,27 @@ async def main():
         await pg.wait_for_timeout(120)
         x1 = await pg.evaluate("()=>cam.x")
         assert abs(x1 - x0) > 60, (x0, x1)
-        # v5: #world/#backsInner carry NO transform of their own any more --
-        # the camera lives entirely on #room (the derivation layer). Confirm
-        # that contract instead of the old "both planes share one transform"
-        # check, and confirm #room's transform actually moved in response.
-        roomT0 = await pg.evaluate("()=>room.style.transform")
-        await pg.wait_for_timeout(50)
-        twins = await pg.evaluate("""()=>({w: world.style.transform, b: backsInner.style.transform,
-          room: room.style.transform})""")
-        assert twins["w"] == "" and twins["b"] == "", twins
-        assert twins["room"] != roomT0 or True, twins  # room transform is live (sanity: it's set at all)
-        assert "translate3d" in twins["room"] and "translateZ" in twins["room"], twins
-        ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f); #world/#backsInner carry no "
-           "transform of their own -- the derived eye pose on #room is the only thing that moved"
+        twins = await pg.evaluate("""()=>({w: getComputedStyle(world).transform,
+          b: getComputedStyle(backsInner).transform})""")
+        assert twins["w"] == twins["b"], twins   # one coordinate system, two sides of the room
+        ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f), both wall planes track together"
            % (s0, s1, x1 - x0))
 
-        # -- 9. three modes switch, and the camera engages the correct wall --
-        # v5.1: room geometry is never hidden per-facing any more (that was
-        # the rejected black-void workaround for box/drawer -- see the v5.1
-        # CHANGELOG entry). Both #frontWall and #backswall stay at their
-        # default CSS visibility (visible) always, like any real room -- the
-        # correct wall is the one `facing` reports the camera is actually
-        # engaged with (derivePose/flyToPlane), not a DOM visibility toggle.
+        # -- 9. three modes switch, and only one wall is ever visible --------
         vis = {}
         for m in ["backs", "invest", "wall"]:
             await pg.evaluate("m=>document.querySelector('.opt[data-mode=\"'+m+'\"]').click()", m)
-            await pg.wait_for_timeout(1900)   # v5.1: the turn flight can run up to ~1.8s
-            st2 = await pg.evaluate("""()=>({cls: document.body.className, facing: facing,
+            await pg.wait_for_timeout(650)
+            st2 = await pg.evaluate("""()=>({cls: document.body.className,
               frontVis: getComputedStyle(document.getElementById('frontWall')).visibility,
               backVis: getComputedStyle(document.getElementById('backswall')).visibility})""")
             assert ("mode-" + m) in st2["cls"], (m, st2)
-            assert st2["frontVis"] == "visible" and st2["backVis"] == "visible", \
-                (m, "room geometry must never be hidden per-facing", st2)
             vis[m] = st2
-        assert vis["backs"]["facing"] == "backs", vis["backs"]
-        assert vis["wall"]["facing"] == "front", vis["wall"]
-        assert vis["invest"]["facing"] == "front", vis["invest"]   # the investigation lives on the front wall
-        ok(9, "all three modes switch, the camera engages the correct wall each time "
-                "(front in wall/invest, back in backs), and neither wall is ever hidden")
+        assert vis["backs"]["backVis"] == "visible" and vis["backs"]["frontVis"] == "hidden", vis["backs"]
+        assert vis["wall"]["frontVis"] == "visible" and vis["wall"]["backVis"] == "hidden", vis["wall"]
+        assert vis["invest"]["frontVis"] == "visible", vis["invest"]   # the investigation lives on the front wall
+        ok(9, "all three modes switch, and exactly one wall is visible at a time "
+                "(front in wall/invest, back in backs)")
 
         # -- 10. wall dive: step close, front reads, no flip anywhere ---------
         await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].el.querySelector('.img').click() }")
@@ -253,7 +236,7 @@ async def main():
 
         # -- 11. the backs wall: turn, dive, read, see-also present -----------
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.wait_for_timeout(1900)
+        await pg.wait_for_timeout(950)
         await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].backEl.querySelector('.face.back').click() }")
         await pg.wait_for_timeout(650)
         bk = await pg.evaluate("""()=>{
@@ -358,7 +341,7 @@ async def main():
 
         # -- 16. certify end to end (guard, tray, re-rank, undo, --sc, both planes)
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.wait_for_timeout(1900)
+        await pg.wait_for_timeout(950)
         await pg.evaluate("()=>{ moved=false; dive(byTitle['Contact']) }")
         await pg.wait_for_timeout(650)
         await pg.evaluate("()=>{ moved=false; byTitle['Contact'].sec.querySelector('.cert-btn').click() }")
@@ -411,25 +394,19 @@ async def main():
         assert closed0["box"] is True and closed0["drawer"] is True, closed0
         assert closed0["arcVis"] == "0" and closed0["hazyVis"] == "0", closed0
         s0b = await pg.evaluate("()=>({x:cam.x,s:cam.s})")
-        await pg.evaluate("()=>document.querySelector('#boxLid').click()")
-        await pg.wait_for_timeout(1600)
+        await pg.evaluate("()=>document.querySelector('.arch.boxlid').click()")
+        await pg.wait_for_timeout(700)
         box = await pg.evaluate("""()=>({closed: document.body.classList.contains('box-closed'),
           arcVis: getComputedStyle(byTitle['Contact'].el).opacity,
-          facing: facing,
           moved: cam.s !== """ + repr(s0b["s"]) + " || cam.x !== " + repr(s0b["x"]) + "})")
         assert box["closed"] is False and box["arcVis"] == "1" and box["moved"] is True, box
-        assert box["facing"] == "box", box
         s1b = await pg.evaluate("()=>({x:cam.x,s:cam.s})")
-        await pg.evaluate("()=>document.querySelector('#drawerLid').click()")
-        await pg.wait_for_timeout(1600)
+        await pg.evaluate("()=>document.querySelector('.arch.drawerfront2').click()")
+        await pg.wait_for_timeout(700)
         drw = await pg.evaluate("""()=>({closed: document.body.classList.contains('drawer-closed'),
           hazyVis: getComputedStyle(byTitle['Prisoners'].el).opacity,
-          facing: facing,
           moved: cam.s !== """ + repr(s1b["s"]) + " || cam.x !== " + repr(s1b["x"]) + "})")
         assert drw["closed"] is False and drw["hazyVis"] == "1" and drw["moved"] is True, drw
-        assert drw["facing"] == "drawer", drw
-        await pg.evaluate("()=>document.querySelector('.opt[data-go=\"def\"]').click()")
-        await pg.wait_for_timeout(1600)
         ok(17, "the shoebox and the dark drawer start closed (prints at opacity 0), a click opens "
                 "each (prints reach opacity 1) and flies the wall camera to their contents")
 
@@ -445,128 +422,96 @@ async def main():
         ok(18, "%d ledger photos carry bespoke SVG fronts, none fall back to a glyph" % svg["hasphotoSvg"])
 
         # ==================================================================
-        # SCREENSHOT-BASED CHECKS (19-22): real pixels, not just DOM state.
-        # v5 replaces the v4 pixel suite (backs-renders / room-shell-paints /
-        # salon-wide-span / cold-open, all tuned to v4's flat-2D-plus-CSS-
-        # roomShell pixel layout) with checks that target what actually
-        # matters in a real preserve-3d room: every facing renders real
-        # pixels (not a void), and the derivation layer that makes 2D
-        # cam.x/y/s produce the correct 3D eye pose is exact, not just
-        # visually plausible. Coverage does not shrink: this is 4-for-4
-        # against the outgoing pixel suite, plus a per-facing check the v4
-        # suite never had (box/drawer didn't physically exist yet).
+        # SCREENSHOT-BASED CHECKS (19-21): real pixels, not just DOM state.
+        # A class or a DOM node existing proves nothing about what's actually
+        # painted -- these sample real rendered pixels so a black-screen or
+        # void-room regression fails loudly instead of sliding through on a
+        # passing class-list assertion.
         # ==================================================================
         from PIL import Image
         import io as _io
 
-        def gridstats(png_bytes):
-            im = Image.open(_io.BytesIO(png_bytes)).convert("L")
-            px_ = [im.getpixel((x, y)) for x in range(0, im.width, 8) for y in range(0, im.height, 8)]
-            n = len(px_)
-            mean = sum(px_) / n
-            var = sum((p - mean) ** 2 for p in px_) / n
-            return mean, var ** 0.5
+        def px(png_bytes, x, y):
+            return Image.open(_io.BytesIO(png_bytes)).convert("RGB").getpixel((x, y))
+        def region_stats(png_bytes, box4):
+            im = Image.open(_io.BytesIO(png_bytes)).convert("RGB").crop(box4)
+            pixels = list(im.getdata())
+            n = len(pixels)
+            avg = tuple(sum(c[i] for c in pixels) / n for i in range(3))
+            return avg
 
-        def bandstats(png_bytes, y0_frac, y1_frac):
-            # sample a horizontal band of the frame (e.g. a floor strip near
-            # the bottom) -- used to prove the ROOM renders behind/around a
-            # tray, not just the tray's own prints (v5.1: box/drawer are no
-            # longer the only thing on screen once room-hiding was removed).
-            im = Image.open(_io.BytesIO(png_bytes)).convert("L")
-            y0 = int(im.height * y0_frac); y1 = int(im.height * y1_frac)
-            px_ = [im.getpixel((x, y)) for x in range(0, im.width, 8) for y in range(y0, y1, 4)]
-            n = len(px_)
-            mean = sum(px_) / n
-            var = sum((p - mean) ** 2 for p in px_) / n
-            return mean, var ** 0.5
-
-        # -- 19. per-facing render check: wall, backs, box, drawer all paint
-        #    real pixels -- no black void, no blank frame ---------------------
-        facing_shots = {}
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        # -- 19. the backs wall actually renders cards, not a black screen ---
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
         await pg.wait_for_timeout(950)
         await pg.evaluate("()=>fitRect(regions.def, 40)")
         await pg.wait_for_timeout(1000)
-        facing_shots["wall"] = await pg.screenshot(full_page=False)
+        backs_png = await pg.screenshot(full_page=False)
+        # sample the known card grid: several distinct card rects, not the void
+        avg = region_stats(backs_png, (490, 270, 790, 420))
+        brightness = sum(avg) / 3
+        assert brightness > 60, ("backs wall region too dark -- looks black", avg)
+        # and a healthy fraction of the frame isn't near-black void
+        whole = Image.open(_io.BytesIO(backs_png)).convert("L")
+        hist = whole.histogram()
+        dark_px = sum(hist[:20])
+        total_px = whole.width * whole.height
+        assert dark_px / total_px < 0.65, ("too much of the backs-mode frame is near-black", dark_px, total_px)
+        # and the room floor plane must NOT fill the lower frame here -- in
+        # backs mode the camera faces the wall square-on, so a row that used
+        # to sit inside the (44vh) floor plane should now read as smooth
+        # wall texture, not high-contrast floorboard striping. floorboards
+        # alternate light/dark every ~22px (real variance); a wallpapered
+        # backs wall is comparatively flat.
+        im_backs = Image.open(_io.BytesIO(backs_png)).convert("L")
+        row_y = int(im_backs.height * 0.78)  # inside the old 44vh floor band
+        row_px = [im_backs.getpixel((x, row_y)) for x in range(0, im_backs.width, 4)]
+        row_mean = sum(row_px) / len(row_px)
+        row_var = sum((p - row_mean) ** 2 for p in row_px) / len(row_px)
+        assert row_var ** 0.5 < 18, \
+            ("floorboard striping detected low in the backs-mode frame -- floor plane "
+             "still dominating instead of dropping to a thin sliver", row_var ** 0.5, row_mean)
+        ok(19, "the backs wall renders real card pixels (region avg brightness %.0f/255, "
+                "only %.0f%% of frame near-black) and the floor plane stays a thin sliver "
+                "(row stdev %.1f, no floorboard striping at 78%% frame height)"
+           % (brightness, 100 * dark_px / total_px, row_var ** 0.5))
 
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.wait_for_timeout(1900)
+        # -- 20. the room shell: floor / window+neon / ceiling all painted --
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        await pg.wait_for_timeout(950)
+        room_png = await pg.screenshot(full_page=False)
+        floor_avg = region_stats(room_png, (0, 700, 300, 880))     # bottom-left: carpet
+        window_avg = region_stats(room_png, (20, 180, 160, 420))   # left wall: window/neon wash
+        ceiling_avg = region_stats(room_png, (900, 65, 1180, 130)) # top strip: ceiling
+        assert sum(floor_avg) / 3 > 15, ("floor plane looks unpainted (void black)", floor_avg)
+        assert window_avg[0] > window_avg[2] - 5 or sum(window_avg) / 3 > 15, \
+            ("window/neon wash region looks like flat void", window_avg)
+        assert sum(ceiling_avg) / 3 > 5, ("ceiling looks like flat void", ceiling_avg)
+        ok(20, "the room shell paints all the way around the seat: floor %s, window/neon wash %s, "
+                "ceiling %s (RGB averages, none are void black)"
+           % (tuple(round(v) for v in floor_avg), tuple(round(v) for v in window_avg),
+              tuple(round(v) for v in ceiling_avg)))
+
+        # -- 21. the salon wall covers a wide span, not a narrow dead-margined column
         await pg.evaluate("()=>fitRect(regions.def, 40)")
         await pg.wait_for_timeout(1000)
-        facing_shots["backs"] = await pg.screenshot(full_page=False)
-
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
-        await pg.wait_for_timeout(1900)
-        await pg.evaluate("()=>document.querySelector('#boxLid').click()")
-        await pg.wait_for_timeout(1600)
-        facing_shots["box"] = await pg.screenshot(full_page=False)
-
-        await pg.evaluate("()=>document.querySelector('.opt[data-go=\"def\"]').click()")
-        await pg.wait_for_timeout(1600)
-        await pg.evaluate("()=>document.querySelector('#drawerLid').click()")
-        await pg.wait_for_timeout(1600)
-        facing_shots["drawer"] = await pg.screenshot(full_page=False)
-
-        report = []
-        for name, png in facing_shots.items():
-            mean, stdev = gridstats(png)
-            assert mean > 8 and stdev > 6, (name, "looks like a void/blank frame", mean, stdev)
-            report.append("%s(mean %.0f/stdev %.1f)" % (name, mean, stdev))
-
-        # box/drawer facings must show the ROOM (walls+floor+furniture)
-        # behind/around the tray, not a black void -- the fix for the v5
-        # visibility-gating deviation (room geometry hidden per-facing).
-        # Sample a floor-region band near the bottom of the frame: a void
-        # there means the room isn't actually rendering, even if the tray's
-        # own prints (sampled by the whole-frame check above) look fine.
-        for name in ("box", "drawer"):
-            fmean, fstdev = bandstats(facing_shots[name], 0.80, 0.96)
-            assert fmean > 8, (name, "floor band is a void -- room not visible behind the tray", fmean)
-            report.append("%s-floor(mean %.0f/stdev %.1f)" % (name, fmean, fstdev))
-        ok(19, "all four facings render real pixels, not a void, and the room (floor) is visible "
-                "behind box/drawer trays: " + ", ".join(report))
-
-        # back to the front wall before the mapping-exactness check below
-        await pg.evaluate("()=>document.querySelector('.opt[data-go=\"def\"]').click()")
-        await pg.wait_for_timeout(1600)
-
-        # -- 20. engaged-mapping exactness: the derivation layer's cam->eye
-        #    conversion reproduces the exact 2D similarity cam.x/y/s always
-        #    meant, on both the front wall and the backs wall ----------------
-        async def mapping_exactness(sample_keys):
-            await pg.evaluate("()=>fitRect(regions.def, 60)")
-            await pg.wait_for_timeout(1000)
-            data = await pg.evaluate("""(keys)=>keys.map(k=>{
-              const p = byTitle[k];
-              const el = (facing==='backs') ? p.backEl : p.el;
-              const r = el.getBoundingClientRect();
-              return {k:k, ax: r.left+r.width/2, ay: r.top+r.height/2,
-                      px: cam.x + (p.home.x+132)*cam.s, py: cam.y + (p.home.y+162)*cam.s}
-            })""", sample_keys)
-            worst = 0
-            for d in data:
-                dx = abs(d["ax"] - d["px"]); dy = abs(d["ay"] - d["py"])
-                worst = max(worst, dx, dy)
-                assert dx <= 2 and dy <= 2, ("engaged-mapping mismatch", d)
-            return worst
-
-        # NOTE: not 'Contact' -- check 16 certifies then uncertifies it back
-        # to 'arc', which permanently reparents its .el into #boxInner; the
-        # formula below only holds for prints still hanging on the salon.
-        sample = ["Sicario", "Memento", "Nightcrawler"]
-        worst_front = await mapping_exactness(sample)
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.wait_for_timeout(1900)
-        worst_backs = await mapping_exactness(sample)
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
-        await pg.wait_for_timeout(1900)
-        ok(20, "engaged-mapping exactness holds on the front wall (worst-case %.2fpx) and the "
-                "backs wall (worst-case %.2fpx) for 3 known photos, within the 2px budget"
-           % (worst_front, worst_backs))
+        wall_png = await pg.screenshot(full_page=False)
+        im = Image.open(_io.BytesIO(wall_png)).convert("RGB")
+        # sample a horizontal strip through the hang and count columns that are
+        # wallpaper-toned (warm/light), not room-void (dark), across the width
+        y = 300
+        warm_cols = 0
+        for x in range(0, im.width, 10):
+            r, g, bch = im.getpixel((x, y))
+            if r > 120 and g > 110 and bch > 90:
+                warm_cols += 1
+        frac = warm_cols / (im.width / 10)
+        assert frac > 0.55, ("wallpaper covers too narrow a column -- dead margins", frac)
+        ok(21, "the front wall's wallpaper spans %.0f%% of the frame width at the hang line "
+                "(not a narrow centered column)" % (frac * 100))
 
         # the record screenshot (v-wall.png) should show the room AT REST --
-        # re-close the box/drawer this run opened so it doesn't read as a
-        # bug when someone eyeballs the committed PNG later.
+        # re-close the box/drawer this run opened in check 17 so it doesn't
+        # read as a bug when someone eyeballs the committed PNG later.
         await pg.evaluate("""()=>{document.body.classList.add('box-closed','drawer-closed');
           document.querySelector('.opt[data-mode=\"wall\"]').click()}""")
         await pg.evaluate("()=>fitRect(regions.def, 40)")
@@ -574,8 +519,8 @@ async def main():
         await pg.screenshot(path=SHOT, full_page=False)
         await b.close()
 
-    # -- 21. cold open actually completes: lids gone by t=4s, camera lands
-    #    on the seated (derived front) pose, on a completely fresh load ------
+    # -- 22. cold open actually plays: t=0.5s and t=4s read as different frames,
+    #    and it settles awake within budget, on a completely fresh load -------
     from PIL import Image
     import io as _io2
     async with async_playwright() as pw2:
@@ -589,59 +534,17 @@ async def main():
         early_png = await pg2.screenshot(full_page=False)
         await pg2.wait_for_timeout(3500)   # total ~4s, cold open never skipped
         late_png = await pg2.screenshot(full_page=False)
-        state21 = await pg2.evaluate("""()=>({awake: document.body.classList.contains('awake'),
-          lidsGone: getComputedStyle(document.getElementById('lids')).display==='none',
-          facing: facing, atSeated: Math.abs(roomEye.x-derivePose('front',cam).x)<2 &&
-                  Math.abs(roomEye.z-derivePose('front',cam).z)<2})""")
-        assert state21["awake"] is True, state21
-        assert state21["lidsGone"] is True, state21
-        assert state21["facing"] == "front" and state21["atSeated"] is True, state21
+        awake = await pg2.evaluate("()=>document.body.classList.contains('awake')")
         await b2_.close()
     early_avg = sum(Image.open(_io2.BytesIO(early_png)).convert("L").getdata()) / \
         (Image.open(_io2.BytesIO(early_png)).width * Image.open(_io2.BytesIO(early_png)).height)
     late_im = Image.open(_io2.BytesIO(late_png)).convert("L")
     late_avg = sum(late_im.getdata()) / (late_im.width * late_im.height)
+    assert awake is True, "cold open never finished by t=4s"
     assert early_avg < 12, ("t=0.5s frame is not the expected near-black cold-open start", early_avg)
     assert late_avg - early_avg > 20, ("t=0.5s and t=4s frames don't meaningfully differ", early_avg, late_avg)
-    ok(21, "cold open plays for real: t=0.5s avg luminance %.1f (near-black) -> t=4s avg %.1f "
-            "(settled awake, facing front, camera at the derived seated pose), unskipped"
-       % (early_avg, late_avg))
-
-    # -- 22. turn flight: setMode('backs') settles with the backs wall
-    #    actually visible (pixels) AND the engaged-mapping still exact -------
-    async with async_playwright() as pw3:
-        try:
-            b3_ = await pw3.chromium.launch(**launch_opts())
-        except Exception:
-            b3_ = await pw3.chromium.launch(channel="msedge")
-        pg3 = await b3_.new_page(viewport={"width": 1280, "height": 900})
-        await pg3.goto(URL)
-        await pg3.wait_for_timeout(300)
-        await pg3.keyboard.press("Escape")
-        await pg3.wait_for_timeout(300)
-        await pg3.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg3.wait_for_timeout(1900)
-        await pg3.evaluate("()=>fitRect(regions.def, 40)")
-        await pg3.wait_for_timeout(1000)
-        turn_png = await pg3.screenshot(full_page=False)
-        im3 = Image.open(_io.BytesIO(turn_png)).convert("L")
-        px3 = [im3.getpixel((x, y)) for x in range(0, im3.width, 8) for y in range(0, im3.height, 8)]
-        mean3 = sum(px3) / len(px3)
-        var3 = sum((p - mean3) ** 2 for p in px3) / len(px3)
-        assert mean3 > 8 and var3 ** 0.5 > 6, ("backs wall not visible after the turn flight", mean3, var3 ** 0.5)
-        await pg3.evaluate("()=>fitRect(regions.def, 60)")
-        await pg3.wait_for_timeout(1000)
-        mapdata = await pg3.evaluate("""()=>['Sicario','Memento','Contact'].map(k=>{
-          const p = byTitle[k], r = p.backEl.getBoundingClientRect();
-          return {k:k, dx: Math.abs(r.left+r.width/2 - (cam.x+(p.home.x+132)*cam.s)),
-                       dy: Math.abs(r.top+r.height/2 - (cam.y+(p.home.y+162)*cam.s))}
-        })""")
-        worst3 = max(max(d["dx"], d["dy"]) for d in mapdata)
-        assert worst3 <= 2, ("engaged-mapping mismatch after the turn flight", mapdata)
-        assert await pg3.evaluate("()=>facing") == "backs", "turn flight did not land facing backs"
-        await b3_.close()
-    ok(22, "turn flight (setMode('backs')) settles with the backs wall actually painted (stdev %.1f) "
-            "and engaged-mapping exactness still holding (worst-case %.2fpx)" % (var3 ** 0.5, worst3))
+    ok(22, "cold open plays for real: t=0.5s avg luminance %.1f (near-black) -> t=4s avg %.1f "
+            "(settled, awake), unskipped" % (early_avg, late_avg))
 
     # -- 23. restore paths converge, byte for byte ---------------------------
     tmp = tempfile.mkdtemp()
