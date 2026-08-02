@@ -55,10 +55,12 @@ scenes now, ComfyUI experiments owed for Crown + Nines), open shoebox.
   dead-center subject) and stored in `photo_svg` in the same pass as the panel
   row.
 
-### Owed / open
+### Closed same night
 
-- ComfyUI photographic experiments for the Crown + Nines (hybrid ruling).
-- The artifact republish to the stable URL.
+- ComfyUI photographic experiments: run (4 renders, `_experiments/`), Dixon
+  ruled 2026-08-01 to stay all-SVG for now. Fronts are SVG scenes, period.
+- Artifact republished to the stable URL (v3 live there; Dixon has more
+  upgrades planned, future republishes reuse the same URL).
 
 ## v2 — 2026-08-01 — The Polaroid Wall (spatial rebuild)
 
