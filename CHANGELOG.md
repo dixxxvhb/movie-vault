@@ -1,5 +1,33 @@
 # Pipeline CHANGELOG
 
+## v4.3 — 2026-08-01 — backs-mode floor/wall fix (same night as v4/v4.1/v4.2)
+
+- **Floor no longer floods the backs-mode frame.** `#rsFloorWrap` was a fixed
+  44vh regardless of mode -- fine when seated at an angle over a table in
+  wall mode, wrong when the camera turns square-on to face the backs wall.
+  `body.mode-backs` now drops it to a 9vh sliver and fades what's left
+  harder, so back-cards read as hanging on a wall, not lying on floorboards.
+- **The backs wall gets its own wall surface.** `#backsInner` had no
+  background at all -- cards floated on near-black void. Gave it the same
+  aged-wallpaper family as the front wall (corner staining, damask stripe,
+  four-edge vignette) shifted a shade darker/colder, since it's the
+  "evidence backs" side of the room.
+- **Confirmed the corner shoebox/drawer clumps were a proof-script artifact,
+  not a bug.** Direct computed-style check on a fresh load with only the
+  mode switched to backs (box/drawer never opened): `#frontWall` (and every
+  `.arch` child, including `.boxlid`) is `visibility:hidden`, opacity
+  unaffected. The exposed clumps in the previous `backs.png` only appeared
+  because that proof run had explicitly opened the box and drawer earlier
+  in the same session before switching modes -- correct behavior given that
+  history, just a misleading screenshot order. Regenerated `backs.png` from
+  a fresh load with the box/drawer left closed.
+- Extended check 19 (`the backs wall renders real card pixels`) with a
+  floorboard-striping assertion: samples a row at 78% frame height in
+  backs mode and asserts low variance (no repeating light/dark planking) --
+  proof the floor plane actually shrank instead of just moving off-screen
+  by coincidence.
+- 23 checks, all green (row stdev 16.9, well under the 18 threshold).
+
 ## v4.2 — 2026-08-01 — final polish (same night as v4/v4.1)
 
 - **Shoebox/drawer "still visible when closed" — false alarm, traced and

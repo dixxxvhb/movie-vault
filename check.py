@@ -456,8 +456,24 @@ async def main():
         dark_px = sum(hist[:20])
         total_px = whole.width * whole.height
         assert dark_px / total_px < 0.65, ("too much of the backs-mode frame is near-black", dark_px, total_px)
+        # and the room floor plane must NOT fill the lower frame here -- in
+        # backs mode the camera faces the wall square-on, so a row that used
+        # to sit inside the (44vh) floor plane should now read as smooth
+        # wall texture, not high-contrast floorboard striping. floorboards
+        # alternate light/dark every ~22px (real variance); a wallpapered
+        # backs wall is comparatively flat.
+        im_backs = Image.open(_io.BytesIO(backs_png)).convert("L")
+        row_y = int(im_backs.height * 0.78)  # inside the old 44vh floor band
+        row_px = [im_backs.getpixel((x, row_y)) for x in range(0, im_backs.width, 4)]
+        row_mean = sum(row_px) / len(row_px)
+        row_var = sum((p - row_mean) ** 2 for p in row_px) / len(row_px)
+        assert row_var ** 0.5 < 18, \
+            ("floorboard striping detected low in the backs-mode frame -- floor plane "
+             "still dominating instead of dropping to a thin sliver", row_var ** 0.5, row_mean)
         ok(19, "the backs wall renders real card pixels (region avg brightness %.0f/255, "
-                "only %.0f%% of frame near-black)" % (brightness, 100 * dark_px / total_px))
+                "only %.0f%% of frame near-black) and the floor plane stays a thin sliver "
+                "(row stdev %.1f, no floorboard striping at 78%% frame height)"
+           % (brightness, 100 * dark_px / total_px, row_var ** 0.5))
 
         # -- 20. the room shell: floor / window+neon / ceiling all painted --
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
