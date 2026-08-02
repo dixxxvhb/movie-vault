@@ -1,5 +1,56 @@
 # Pipeline CHANGELOG
 
+## v4.1 — 2026-08-01 — visual QA fixes (same night as v4)
+
+A real-browser eyeball pass on the freshly-built v4 found the check.py-green
+render was badly broken visually. Root causes and fixes:
+
+- **Backs mode was a black screen.** The nested-preserve-3d approach (both
+  walls sharing one room anchor, each with a per-mode Z that was supposed to
+  exactly cancel its own depth push-back) was mathematically sound in
+  isolation but fragile in composition — in practice it rendered the backs
+  wall as a foreshortened sliver (or nothing). Fix: `#frontWall` and
+  `#backswall` are now both plain flat 2D layers at the same depth (no
+  rotation, no Z math to get subtly wrong); only one is ever visible
+  (`visibility`, driven by `body.mode-backs`). The "turn" is now a short,
+  honest, but purely decorative yaw swing on `#room` (`turnSwing()`) timed to
+  the visibility swap, not the thing the correctness of the view depends on.
+- **The room was a flat wall floating in a void.** Two bugs: `#viewport` had
+  an opaque background painting over the room dressing beneath it, and the
+  dressing itself (`#floor`/`#ceiling`/`#leftwall`/`#foreground`) was wired
+  into the same fragile 3D graph as the walls, at a physical scale that
+  didn't relate to the huge salon-wall content plane, so it rendered off in
+  space or fully occluded. Fix: floor, ceiling, left wall (window + animated
+  neon wash), free-standing lamp glow, and foreground silhouette are now
+  `#roomShell` — fixed, viewport-relative 2D dressing that sits behind
+  `#viewport` (now transparent) and always renders correctly regardless of
+  camera state. Also gave the wallpaper (`.arch.wallpanel`) a full opaque
+  aged-ivory base with a peeling seam and stains instead of a highlight that
+  faded to void after 14% of the wall's height — this also fixed the
+  "narrow centered column, big dead margins" complaint, which was really the
+  same wall-plane-in-a-3D-graph distortion as the black-screen bug.
+- **Shoebox and nightstand weren't objects.** The literal free-floating 3D
+  furniture (`#shoebox`/`#nightstand`, positioned in an unrelated physical
+  scale from the wall content) is gone. In its place: the box and the
+  cabinet drawer are drawn where they always were (on the front wall, same
+  salon-plane coordinates as v3's `boxwall`/`cabinet` arch elements), but now
+  carry a real **closed cover** (`.arch.boxlid`, `.arch.drawerfront2`) that
+  fully hides every print underneath (`body.box-closed` / `.drawer-closed`
+  set opacity 0 on every `.st-arc`/`.st-hazy` photo) until clicked — then the
+  cover animates away and the wall camera flies to the reveal.
+- **Stale v3 hint text.** `MODE_HINT.backs` still said "flip it" and didn't
+  mention turning; rewritten for all three modes to describe v4 interactions
+  (turning to face the backs wall, diving to read in place, opening the
+  shoebox/drawer from the wall hint).
+- **check.py was green while all of the above was broken** because every
+  check asserted DOM state (classes, computed styles) and none of it looked
+  at actual pixels. Added checks 19-22: real `page.screenshot()` +
+  Pillow pixel/region sampling for the backs wall (not near-black), the room
+  shell (floor/window-neon/ceiling regions all painted), wall framing
+  (wallpaper spans a wide fraction of the frame, not a narrow column), and
+  the cold open (t=0.5s vs t=4s frames genuinely differ, and it's awake by
+  budget) on a completely fresh, unskipped load. 23 checks total, up from 19.
+
 ## v4 — 2026-08-01 — The Motel Room (first-person, CSS 3D shell)
 
 The wall was a room painted in 2D. Now the viewer is actually inside one:

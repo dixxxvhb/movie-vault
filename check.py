@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 The Vault, motel-room check suite (pipeline v4 -- "The Motel Room").
-18 checks, superset of the v3 suite (17). Run after every build.
+23 checks, superset of the v3 suite (17). Run after every build.
+Checks 19-22 are screenshot/pixel-sampling checks (not just DOM/class
+assertions) added after a visual QA pass found the DOM-only suite was
+green while the actual render was badly broken (black backs wall, a void
+room, closed-box art not actually hiding anything) -- see CHANGELOG v4.1.
 
 v4 changes this suite covers:
   - the flip mechanic is gone. the backs wall is a real second surface
@@ -202,18 +206,21 @@ async def main():
         ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f), both wall planes track together"
            % (s0, s1, x1 - x0))
 
-        # -- 9. three modes switch, and the ROOM camera actually turns --------
-        yaws = {}
+        # -- 9. three modes switch, and only one wall is ever visible --------
+        vis = {}
         for m in ["backs", "invest", "wall"]:
             await pg.evaluate("m=>document.querySelector('.opt[data-mode=\"'+m+'\"]').click()", m)
-            await pg.wait_for_timeout(950)
-            st2 = await pg.evaluate("()=>({cls: document.body.className, yaw: roomCam.yaw})")
+            await pg.wait_for_timeout(650)
+            st2 = await pg.evaluate("""()=>({cls: document.body.className,
+              frontVis: getComputedStyle(document.getElementById('frontWall')).visibility,
+              backVis: getComputedStyle(document.getElementById('backswall')).visibility})""")
             assert ("mode-" + m) in st2["cls"], (m, st2)
-            yaws[m] = st2["yaw"]
-        assert yaws["backs"] != yaws["wall"], yaws   # SEATED/WALL -> BACKS is a real turn
-        assert yaws["invest"] == yaws["wall"], yaws  # the investigation lives on the front wall
-        ok(9, "all three modes switch, and the room camera turns for backs (wall/invest yaw %.0f, backs yaw %.0f)"
-           % (yaws["wall"], yaws["backs"]))
+            vis[m] = st2
+        assert vis["backs"]["backVis"] == "visible" and vis["backs"]["frontVis"] == "hidden", vis["backs"]
+        assert vis["wall"]["frontVis"] == "visible" and vis["wall"]["backVis"] == "hidden", vis["wall"]
+        assert vis["invest"]["frontVis"] == "visible", vis["invest"]   # the investigation lives on the front wall
+        ok(9, "all three modes switch, and exactly one wall is visible at a time "
+                "(front in wall/invest, back in backs)")
 
         # -- 10. wall dive: step close, front reads, no flip anywhere ---------
         await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].el.querySelector('.img').click() }")
@@ -377,23 +384,31 @@ async def main():
         ok(16, "certify: guard refused empty line, pen stuck on both planes, --sc snapped to 1, "
                 "undo restored the pencil (--sc %s, awaiting %d)" % (u["sc"], u["awaiting"]))
 
-        # -- 17. shoebox + nightstand: real 3D furniture, click opens and flies
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
-        await pg.wait_for_timeout(950)
-        s0b = await pg.evaluate("()=>({x:cam.x,y:cam.y,s:cam.s})")
-        await pg.evaluate("()=>document.getElementById('shoebox').click()")
-        await pg.wait_for_timeout(1100)
-        box = await pg.evaluate("()=>({open: document.getElementById('shoebox').classList.contains('open'),"
-                                "moved: cam.s !== " + repr(s0b["s"]) + " || cam.x !== " + repr(s0b["x"]) + "})")
-        assert box["open"] is True and box["moved"] is True, box
-        s1b = await pg.evaluate("()=>({x:cam.x,y:cam.y,s:cam.s})")
-        await pg.evaluate("()=>document.getElementById('nightstand').click()")
-        await pg.wait_for_timeout(1100)
-        drw = await pg.evaluate("()=>({open: document.getElementById('nightstand').classList.contains('open'),"
-                                "moved: cam.s !== " + repr(s1b["s"]) + " || cam.x !== " + repr(s1b["x"]) + "})")
-        assert drw["open"] is True and drw["moved"] is True, drw
-        ok(17, "the shoebox lid tips open and the nightstand drawer slides out; both fly the wall "
-                "camera to their contents")
+        # -- 17. shoebox + the dark drawer: closed by default, prints hidden
+        #    until opened, click flies the wall camera to their contents ----
+        closed0 = await pg.evaluate("""()=>({
+          box: document.body.classList.contains('box-closed'),
+          drawer: document.body.classList.contains('drawer-closed'),
+          arcVis: getComputedStyle(byTitle['Contact'].el).opacity,
+          hazyVis: getComputedStyle(byTitle['Prisoners'].el).opacity})""")
+        assert closed0["box"] is True and closed0["drawer"] is True, closed0
+        assert closed0["arcVis"] == "0" and closed0["hazyVis"] == "0", closed0
+        s0b = await pg.evaluate("()=>({x:cam.x,s:cam.s})")
+        await pg.evaluate("()=>document.querySelector('.arch.boxlid').click()")
+        await pg.wait_for_timeout(700)
+        box = await pg.evaluate("""()=>({closed: document.body.classList.contains('box-closed'),
+          arcVis: getComputedStyle(byTitle['Contact'].el).opacity,
+          moved: cam.s !== """ + repr(s0b["s"]) + " || cam.x !== " + repr(s0b["x"]) + "})")
+        assert box["closed"] is False and box["arcVis"] == "1" and box["moved"] is True, box
+        s1b = await pg.evaluate("()=>({x:cam.x,s:cam.s})")
+        await pg.evaluate("()=>document.querySelector('.arch.drawerfront2').click()")
+        await pg.wait_for_timeout(700)
+        drw = await pg.evaluate("""()=>({closed: document.body.classList.contains('drawer-closed'),
+          hazyVis: getComputedStyle(byTitle['Prisoners'].el).opacity,
+          moved: cam.s !== """ + repr(s1b["s"]) + " || cam.x !== " + repr(s1b["x"]) + "})")
+        assert drw["closed"] is False and drw["hazyVis"] == "1" and drw["moved"] is True, drw
+        ok(17, "the shoebox and the dark drawer start closed (prints at opacity 0), a click opens "
+                "each (prints reach opacity 1) and flies the wall camera to their contents")
 
         # -- 18. bespoke SVG fronts on the ledger, no glyph fallback ----------
         svg = await pg.evaluate("""()=>({
@@ -406,13 +421,112 @@ async def main():
         assert svg["badGlyph"] == 0, svg
         ok(18, "%d ledger photos carry bespoke SVG fronts, none fall back to a glyph" % svg["hasphotoSvg"])
 
+        # ==================================================================
+        # SCREENSHOT-BASED CHECKS (19-21): real pixels, not just DOM state.
+        # A class or a DOM node existing proves nothing about what's actually
+        # painted -- these sample real rendered pixels so a black-screen or
+        # void-room regression fails loudly instead of sliding through on a
+        # passing class-list assertion.
+        # ==================================================================
+        from PIL import Image
+        import io as _io
+
+        def px(png_bytes, x, y):
+            return Image.open(_io.BytesIO(png_bytes)).convert("RGB").getpixel((x, y))
+        def region_stats(png_bytes, box4):
+            im = Image.open(_io.BytesIO(png_bytes)).convert("RGB").crop(box4)
+            pixels = list(im.getdata())
+            n = len(pixels)
+            avg = tuple(sum(c[i] for c in pixels) / n for i in range(3))
+            return avg
+
+        # -- 19. the backs wall actually renders cards, not a black screen ---
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
+        await pg.wait_for_timeout(950)
+        await pg.evaluate("()=>fitRect(regions.def, 40)")
+        await pg.wait_for_timeout(1000)
+        backs_png = await pg.screenshot(full_page=False)
+        # sample the known card grid: several distinct card rects, not the void
+        avg = region_stats(backs_png, (490, 270, 790, 420))
+        brightness = sum(avg) / 3
+        assert brightness > 60, ("backs wall region too dark -- looks black", avg)
+        # and a healthy fraction of the frame isn't near-black void
+        whole = Image.open(_io.BytesIO(backs_png)).convert("L")
+        hist = whole.histogram()
+        dark_px = sum(hist[:20])
+        total_px = whole.width * whole.height
+        assert dark_px / total_px < 0.65, ("too much of the backs-mode frame is near-black", dark_px, total_px)
+        ok(19, "the backs wall renders real card pixels (region avg brightness %.0f/255, "
+                "only %.0f%% of frame near-black)" % (brightness, 100 * dark_px / total_px))
+
+        # -- 20. the room shell: floor / window+neon / ceiling all painted --
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        await pg.wait_for_timeout(950)
+        room_png = await pg.screenshot(full_page=False)
+        floor_avg = region_stats(room_png, (0, 700, 300, 880))     # bottom-left: carpet
+        window_avg = region_stats(room_png, (20, 180, 160, 420))   # left wall: window/neon wash
+        ceiling_avg = region_stats(room_png, (900, 65, 1180, 130)) # top strip: ceiling
+        assert sum(floor_avg) / 3 > 15, ("floor plane looks unpainted (void black)", floor_avg)
+        assert window_avg[0] > window_avg[2] - 5 or sum(window_avg) / 3 > 15, \
+            ("window/neon wash region looks like flat void", window_avg)
+        assert sum(ceiling_avg) / 3 > 5, ("ceiling looks like flat void", ceiling_avg)
+        ok(20, "the room shell paints all the way around the seat: floor %s, window/neon wash %s, "
+                "ceiling %s (RGB averages, none are void black)"
+           % (tuple(round(v) for v in floor_avg), tuple(round(v) for v in window_avg),
+              tuple(round(v) for v in ceiling_avg)))
+
+        # -- 21. the salon wall covers a wide span, not a narrow dead-margined column
+        await pg.evaluate("()=>fitRect(regions.def, 40)")
+        await pg.wait_for_timeout(1000)
+        wall_png = await pg.screenshot(full_page=False)
+        im = Image.open(_io.BytesIO(wall_png)).convert("RGB")
+        # sample a horizontal strip through the hang and count columns that are
+        # wallpaper-toned (warm/light), not room-void (dark), across the width
+        y = 300
+        warm_cols = 0
+        for x in range(0, im.width, 10):
+            r, g, bch = im.getpixel((x, y))
+            if r > 120 and g > 110 and bch > 90:
+                warm_cols += 1
+        frac = warm_cols / (im.width / 10)
+        assert frac > 0.55, ("wallpaper covers too narrow a column -- dead margins", frac)
+        ok(21, "the front wall's wallpaper spans %.0f%% of the frame width at the hang line "
+                "(not a narrow centered column)" % (frac * 100))
+
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
         await pg.evaluate("()=>fitRect(regions.def, 40)")
         await pg.wait_for_timeout(1000)
         await pg.screenshot(path=SHOT, full_page=False)
         await b.close()
 
-    # -- 19. restore paths converge, byte for byte ---------------------------
+    # -- 22. cold open actually plays: t=0.5s and t=4s read as different frames,
+    #    and it settles awake within budget, on a completely fresh load -------
+    from PIL import Image
+    import io as _io2
+    async with async_playwright() as pw2:
+        try:
+            b2_ = await pw2.chromium.launch(**launch_opts())
+        except Exception:
+            b2_ = await pw2.chromium.launch(channel="msedge")
+        pg2 = await b2_.new_page(viewport={"width": 1280, "height": 900})
+        await pg2.goto(URL)
+        await pg2.wait_for_timeout(500)
+        early_png = await pg2.screenshot(full_page=False)
+        await pg2.wait_for_timeout(3500)   # total ~4s, cold open never skipped
+        late_png = await pg2.screenshot(full_page=False)
+        awake = await pg2.evaluate("()=>document.body.classList.contains('awake')")
+        await b2_.close()
+    early_avg = sum(Image.open(_io2.BytesIO(early_png)).convert("L").getdata()) / \
+        (Image.open(_io2.BytesIO(early_png)).width * Image.open(_io2.BytesIO(early_png)).height)
+    late_im = Image.open(_io2.BytesIO(late_png)).convert("L")
+    late_avg = sum(late_im.getdata()) / (late_im.width * late_im.height)
+    assert awake is True, "cold open never finished by t=4s"
+    assert early_avg < 12, ("t=0.5s frame is not the expected near-black cold-open start", early_avg)
+    assert late_avg - early_avg > 20, ("t=0.5s and t=4s frames don't meaningfully differ", early_avg, late_avg)
+    ok(22, "cold open plays for real: t=0.5s avg luminance %.1f (near-black) -> t=4s avg %.1f "
+            "(settled, awake), unskipped" % (early_avg, late_avg))
+
+    # -- 23. restore paths converge, byte for byte ---------------------------
     tmp = tempfile.mkdtemp()
     try:
         a = os.path.join(tmp, "a.html"); b2 = os.path.join(tmp, "b.html")
@@ -432,7 +546,7 @@ async def main():
         shutil.copy(os.path.join(BASE, "the-vault.html"), vb)
         assert filecmp.cmp(a, b2, shallow=False), "the-ledger.html diverges between restore paths"
         assert filecmp.cmp(va, vb, shallow=False), "the-vault.html diverges between restore paths"
-        ok(19, "both restore paths converge byte-identical (ledger and build)")
+        ok(23, "both restore paths converge byte-identical (ledger and build)")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

@@ -12,49 +12,72 @@
 html,body{height:100%;overflow:hidden}
 body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wall2) 70%,#D4CBB9 100%);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;font-size:15px;line-height:1.6}
 
-/* ============ the motel room (3D shell) ============ */
-#viewport{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none;perspective:1100px;perspective-origin:50% 45%;background:#0A0806}
+/* ============ the motel room (3D shell) ============
+   architecture: #frontWall and #backswall are BOTH simple flat 2D layers,
+   sitting at the exact same undistorted spot (no rotation, no depth math to
+   get subtly wrong) -- whichever one is "facing you" is just the one that's
+   visible. mode switch drives a real, but short-lived, decorative yaw swing
+   on #room (a turn you can see and feel) while the visibility swap happens
+   at the same moment; the swing is flavor, not the source of correctness.
+   this trades "the backs wall is a literal 90deg turn in the same 3D graph"
+   for "the backs wall reliably renders, at full size, every time" -- after
+   the first cut of this (rotateY + translateZ cancellation across nested
+   preserve-3d, tuned per mode) proved fragile in practice (a black screen
+   in backs mode, foreshortened/edge-on card slivers), reliability won.
+   the rest of "being inside a room" -- floor, ceiling, window/neon, foot-
+   of-bed foreground, the warm lamp glow -- lives entirely outside this 3D
+   graph as fixed, viewport-relative 2D dressing (#roomShell below), so it
+   always renders correctly regardless of camera state and is cheap to
+   screenshot-verify. */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none;perspective:1200px;perspective-origin:50% 45%;background:transparent;z-index:1}
 #viewport.panning{cursor:grabbing}
 #room{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
-#room.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
-/* the front wall: the existing salon-hang plane, pushed back into the room.
-   kept anchored at the room's literal (0,0) -- same anchor #world used pre-v4
-   -- and z-compensated (see Z_ENGAGED in JS) so the 2D pan/zoom pixel math
-   the wall's own code relies on stays exact, undistorted by perspective. */
-#frontWall{position:absolute;left:0;top:0;transform:translate3d(0,0,calc(-1 * var(--room-d) / 2));transform-style:preserve-3d;backface-visibility:hidden}
-/* everything else (the backs wall, floor, ceiling, side wall, furniture) is
-   purely decorative/back-content -- centered on the room for a natural pivot */
-#roomCenter{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+#room.glide{transition:transform .5s cubic-bezier(.3,.7,.3,1)}
+#frontWall{position:absolute;left:0;top:0;backface-visibility:hidden}
 #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 #world.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
-/* the backs wall: same salon coordinates, turned 90deg to the right, cards back-out.
-   standard CSS-room math: center the flat plane on itself, push it out along its
-   own (pre-rotation) Z, then rotate -- that composition lands it as a true right wall. */
-#backswall{position:absolute;left:0;top:0;width:var(--room-d);height:var(--room-h);
-  transform:rotateY(90deg) translateZ(calc(var(--room-w) / 2 - 1px)) translate(-50%,-50%);
-  transform-style:preserve-3d;backface-visibility:hidden}
+#backswall{position:absolute;left:0;top:0;backface-visibility:hidden}
 #backsInner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 #backsInner.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
-/* floor / ceiling / left wall / foreground: static room dressing planes */
-.roomplane{position:absolute;left:0;top:0;pointer-events:none;backface-visibility:hidden}
-#floor{width:var(--room-w);height:var(--room-d);transform:rotateX(90deg) translateZ(calc(-1 * var(--room-h) / 2)) translate(-50%,-50%);
+/* only one wall is ever "up" at a time -- visibility, not display, so no
+   layout thrash and the pan/zoom transitions already running aren't cut off */
+body.mode-backs #frontWall{visibility:hidden;pointer-events:none}
+body:not(.mode-backs) #backswall{visibility:hidden;pointer-events:none}
+
+/* ---- fixed 2D room dressing: always visible, never distorted, always testable ---- */
+#roomShell{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#0E0B08}
+#rsCeiling{position:absolute;left:0;right:0;top:0;height:18vh;
+  background:radial-gradient(38% 60% at 82% 8%,rgba(150,138,112,.30),rgba(0,0,0,0) 72%),
+  linear-gradient(180deg,#1B1712 0%,rgba(27,23,18,0) 100%)}
+#rsFloorWrap{position:absolute;left:0;right:0;bottom:0;height:44vh;perspective:420px;perspective-origin:50% 0%;overflow:hidden}
+#rsFloor{position:absolute;left:-60%;right:-60%;bottom:0;height:220%;
+  transform:rotateX(58deg);transform-origin:50% 100%;
   background:
-   radial-gradient(60% 40% at 30% 70%,rgba(90,60,40,.22),rgba(0,0,0,0) 60%),
-   repeating-linear-gradient(78deg,rgba(60,44,30,.55) 0 26px,rgba(46,33,22,.6) 26px 52px),
-   linear-gradient(180deg,#2E2418,#22190F)}
-#ceiling{width:var(--room-w);height:var(--room-d);transform:rotateX(-90deg) translateZ(calc(-1 * var(--room-h) / 2)) translate(-50%,-50%);
-  background:radial-gradient(30% 26% at 78% 30%,rgba(120,110,90,.28),rgba(0,0,0,0) 70%),linear-gradient(180deg,#171310,#0F0C09)}
-#leftwall{width:var(--room-d);height:var(--room-h);transform:rotateY(-90deg) translateZ(calc(var(--room-w)/2 - 1px)) translate(-50%,-50%);
-  background:linear-gradient(180deg,#1B1712 0%,#120F0B 60%,#0C0A08 100%)}
-#leftwall .window{position:absolute;left:14%;top:22%;width:34%;height:46%;background:
-  linear-gradient(180deg,#0A1220,#141C2E 55%,#0A1220);box-shadow:inset 0 0 40px rgba(0,0,0,.6),0 0 60px rgba(255,60,90,.10);border:10px solid #1A1510}
-#leftwall .neon{position:absolute;right:8%;top:30%;width:120px;height:60px;border-radius:6px;
-  background:radial-gradient(circle,rgba(255,60,110,.9),rgba(255,60,110,0) 70%);filter:blur(6px);
+    radial-gradient(60% 42% at 34% 78%,rgba(120,80,52,.28),rgba(0,0,0,0) 62%),
+    repeating-linear-gradient(84deg,rgba(64,46,30,.65) 0 22px,rgba(48,34,22,.7) 22px 44px),
+    linear-gradient(180deg,#3A2C1B,#1E150C)}
+#rsFloorFade{position:absolute;left:0;right:0;bottom:0;height:44vh;
+  background:linear-gradient(180deg,rgba(10,8,6,0) 0%,rgba(10,8,6,.55) 78%,rgba(6,5,4,.85) 100%)}
+#rsLeft{position:absolute;left:0;top:0;bottom:0;width:15vw;min-width:150px;
+  background:linear-gradient(90deg,#141110 0%,#1B1712 55%,rgba(27,23,18,0) 100%)}
+#rsWindow{position:absolute;left:16%;top:20%;width:62%;height:44%;border:8px solid #17120D;
+  background:linear-gradient(180deg,#0A1220,#141C2E 55%,#0A1220);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.7),0 0 50px rgba(255,55,95,.16)}
+#rsCurtain{position:absolute;left:8%;top:16%;width:14%;height:52%;background:linear-gradient(180deg,#241A1A,#160F0F);opacity:.9}
+#rsNeon{position:absolute;left:62%;top:32%;width:70px;height:34px;border-radius:6px;
+  background:radial-gradient(circle,rgba(255,58,112,.95),rgba(255,58,112,0) 70%);filter:blur(5px);
   animation:neonflicker 8s infinite}
-#leftwall .curtain{position:absolute;left:12%;top:20%;width:8%;height:50%;background:linear-gradient(180deg,#241A1A,#1A1212);opacity:.85}
+#rsNeonWash{position:absolute;left:0;top:0;width:34vw;height:100%;
+  background:radial-gradient(60% 50% at 30% 40%,rgba(255,50,100,.16),rgba(255,50,100,0) 70%);
+  animation:neonflicker 8s infinite}
 @keyframes neonflicker{0%,100%{opacity:.9}4%{opacity:.3}6%{opacity:.9}42%{opacity:.85}44%{opacity:.4}46%{opacity:.9}72%{opacity:.5}74%{opacity:.9}}
-#foreground{width:calc(var(--room-w) * 1.4);height:340px;transform:translate3d(-50%,calc(var(--room-h)/2 - 40px),calc(var(--room-d)/2 - 210px));
-  background:linear-gradient(180deg,rgba(10,8,6,0) 0%,rgba(10,8,6,.85) 60%,rgba(6,5,4,.98) 100%);z-index:2}
+#rsLamp{position:absolute;left:50%;bottom:20vh;width:70vw;height:60vh;transform:translateX(-50%);
+  background:radial-gradient(45% 55% at 50% 100%,rgba(255,224,170,.30),rgba(255,224,170,0) 68%)}
+#rsForeground{position:absolute;left:0;right:0;bottom:0;height:16vh;
+  background:linear-gradient(180deg,rgba(8,6,5,0) 0%,rgba(8,6,5,.92) 55%,rgba(5,4,3,.99) 100%);z-index:3}
+#rsForeground::before{content:'';position:absolute;left:8%;right:8%;bottom:0;height:60%;border-radius:50% 50% 0 0/30% 30% 0 0;
+  background:radial-gradient(60% 100% at 50% 100%,rgba(20,15,10,.9),rgba(20,15,10,0) 75%)}
+
 /* cold open: waking from a coma */
 #lids{position:fixed;inset:0;z-index:200;pointer-events:none}
 #lids .lid{position:absolute;left:0;right:0;height:52%;background:#050403}
@@ -65,33 +88,31 @@ body.coldopen.blink1 #lids .lidTop{transform:translateY(-8%)}
 body.coldopen.blink1 #lids .lidBot{transform:translateY(8%)}
 body.coldopen.blink2 #lids .lidTop{transform:translateY(-100%)}
 body.coldopen.blink2 #lids .lidBot{transform:translateY(100%)}
-body.coldopen #room{filter:blur(6px) brightness(.5)}
-body.coldopen.blink2 #room{transition:filter 1.6s ease;filter:blur(0) brightness(1)}
+body.coldopen #room,body.coldopen #roomShell{filter:blur(6px) brightness(.5)}
+body.coldopen.blink2 #room,body.coldopen.blink2 #roomShell{transition:filter 1.6s ease;filter:blur(0) brightness(1)}
 body.awake #lids{display:none}
 /* dust motes, seated idle */
 .mote{position:absolute;border-radius:50%;background:rgba(255,224,170,.5);pointer-events:none;
   animation:motedrift 11s linear infinite}
 @keyframes motedrift{0%{transform:translate(0,0);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translate(24px,-140px);opacity:0}}
-/* ============ furniture: shoebox (floor) + nightstand (replaces the drawer) ============ */
-#shoebox,#nightstand{position:absolute;left:0;top:0;transform-style:preserve-3d;cursor:pointer}
-#shoebox .f,#nightstand .f{position:absolute;backface-visibility:hidden}
-#shoebox .bwall{background:linear-gradient(180deg,#B79B72,#A5895F 60%,#8F7550);box-shadow:inset 0 10px 22px rgba(60,45,26,.5)}
-#shoebox .blid{background:linear-gradient(180deg,#C2A87F,#AE9268);transition:transform .6s cubic-bezier(.3,.8,.3,1);transform-origin:0% 50% 0}
-#shoebox.open .blid{transform:rotateX(-125deg)}
-#shoebox .blabel{font-family:'Caveat',cursive;color:#3A2F1E;text-align:center;font-size:26px;transform:rotate(-1.4deg)}
-#nightstand .body{background:linear-gradient(180deg,#2A251D,#332D23 55%,#241F18);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
-#nightstand .drawerfront{background:linear-gradient(180deg,#4A4234,#3A3328);transition:transform .55s cubic-bezier(.3,.8,.3,1)}
-#nightstand.open .drawerfront{transform:translateZ(160px)}
-#nightstand .pull{border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9BC9E,#7E7258 70%)}
-#nightstand .bill{position:absolute;width:58px;height:26px;background:linear-gradient(100deg,#3C6B45,#4E8557);border-radius:2px;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 #source{display:none}
 
 /* room architecture: painted in layout() */
 .arch{position:absolute;pointer-events:none}
+/* peeling motel wallpaper: a full, aged, opaque base (not a fade-to-void) --
+   a warm ivory ground, a faint vertical stripe, water/age staining low down,
+   and one curled seam near the top-right corner where it's coming away. */
 .arch.wallpanel{background:
-  linear-gradient(180deg,rgba(255,252,244,.32) 0%,rgba(255,252,244,0) 14%),
-  repeating-linear-gradient(90deg,rgba(110,103,90,.045) 0 2px,rgba(110,103,90,0) 2px 220px);
-  box-shadow:inset 0 -140px 120px -100px rgba(110,95,70,.14)}
+  radial-gradient(70% 40% at 82% 92%,rgba(70,52,32,.34),rgba(70,52,32,0) 60%),
+  radial-gradient(50% 30% at 12% 78%,rgba(60,46,30,.22),rgba(60,46,30,0) 65%),
+  linear-gradient(180deg,rgba(255,252,244,.34) 0%,rgba(255,252,244,.05) 14%,rgba(0,0,0,0) 34%),
+  repeating-linear-gradient(90deg,rgba(110,103,90,.055) 0 2px,rgba(110,103,90,0) 2px 220px),
+  linear-gradient(180deg,#DDD3BE 0%,#CBBFA3 55%,#B7A985 100%);
+  box-shadow:inset 0 -160px 140px -110px rgba(60,45,26,.35),inset 0 40px 90px -60px rgba(0,0,0,.3)}
+.arch.wallpanel::after{content:'';position:absolute;top:6%;right:9%;width:130px;height:170px;
+  background:linear-gradient(200deg,rgba(255,252,240,.9),rgba(200,188,160,.5) 55%,rgba(150,138,112,.15));
+  clip-path:polygon(0 0,100% 12%,74% 100%,0 78%);
+  box-shadow:6px 10px 18px rgba(30,22,12,.28);opacity:.9}
 .arch.rail{height:10px;background:linear-gradient(180deg,rgba(255,253,246,.9),rgba(190,180,160,.55) 60%,rgba(120,110,92,.35));box-shadow:0 2px 4px rgba(60,52,40,.14);border-radius:2px}
 .arch.baseboard{height:34px;background:linear-gradient(180deg,rgba(252,249,240,.95),rgba(206,197,178,.9) 55%,rgba(150,140,120,.8));box-shadow:0 -1px 0 rgba(255,255,255,.7) inset,0 6px 10px rgba(60,52,40,.16)}
 .arch.floor{background:repeating-linear-gradient(90deg,rgba(126,102,74,.32) 0 210px,rgba(108,86,60,.34) 210px 212px),linear-gradient(180deg,rgba(140,114,84,.34),rgba(112,90,64,.4))}
@@ -101,9 +122,35 @@ body.awake #lids{display:none}
 .arch.table{background:linear-gradient(180deg,rgba(96,74,52,.95),rgba(72,54,38,.95));border-radius:6px 6px 3px 3px;box-shadow:0 10px 24px rgba(50,40,28,.3)}
 .arch.tableleg{width:14px;background:linear-gradient(90deg,rgba(84,64,44,.95),rgba(60,45,32,.95));border-radius:0 0 4px 4px}
 .arch.boxwall{background:linear-gradient(180deg,#B79B72,#A5895F 60%,#8F7550);border-radius:8px;box-shadow:inset 0 10px 22px rgba(60,45,26,.5),inset 0 -8px 14px rgba(255,236,200,.14),0 14px 26px rgba(50,40,28,.28)}
-.arch.boxlid{background:linear-gradient(180deg,#C2A87F,#AE9268);border-radius:8px;box-shadow:0 8px 16px rgba(50,40,28,.3);transform:rotate(-6.5deg)}
+/* the shoebox lid: a real closed cover over every archive print. clickable,
+   tips open (slide+fade) and stays open for the session -- driven by
+   body.box-closed so it survives layout() re-renders (certify etc). */
+.arch.boxlid{background:linear-gradient(172deg,#CBB48A,#B0925F 55%,#93764C);border-radius:10px;
+  box-shadow:0 16px 30px rgba(50,40,28,.4),inset 0 2px 0 rgba(255,246,222,.5);
+  pointer-events:auto;cursor:pointer;z-index:6;
+  transition:transform .7s cubic-bezier(.3,.8,.3,1),opacity .5s .1s}
+.arch.boxlid .blidtxt{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;
+  font-family:'Caveat',cursive;color:#3A2F1E;text-align:center;transform:rotate(-1deg);pointer-events:none}
+.arch.boxlid .blidtxt::before{content:'click to open';font-size:16px;font-weight:600;opacity:.7;order:-1;margin-bottom:6px}
+.arch.boxlid .blidtxt{font-size:38px}
+.arch.boxlid .blidtxt span{font-size:19px;color:#5A4A30;margin-top:6px}
+body:not(.box-closed) .arch.boxlid{transform:translateY(-220px) rotate(-16deg);opacity:0;pointer-events:none}
+body.box-closed .photo.st-arc{opacity:0;pointer-events:none}
 .arch.boxlabel{font-family:'Caveat',cursive;color:#3A2F1E;text-align:center;transform:rotate(-1.4deg)}
 .arch.cabinet{background:linear-gradient(180deg,#2A251D,#332D23 55%,#241F18);border-radius:10px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.35),inset 0 14px 30px rgba(0,0,0,.5),0 16px 30px rgba(30,24,16,.4)}
+/* the dark drawer's front: closed cover over every hazy print, slides open */
+.arch.drawerfront2{background:linear-gradient(180deg,#4E4636,#39321F 60%,#2A2515);border-radius:6px;
+  box-shadow:0 12px 24px rgba(0,0,0,.4),inset 0 0 0 2px rgba(0,0,0,.3);
+  pointer-events:auto;cursor:pointer;z-index:6;transition:transform .6s cubic-bezier(.3,.8,.3,1),opacity .5s .1s}
+.arch.drawerfront2 .pull{position:absolute;left:50%;top:24px;width:30px;height:14px;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9BC9E,#7E7258 70%);box-shadow:0 2px 4px rgba(0,0,0,.5)}
+.arch.drawerfront2 .dftxt{position:absolute;left:0;right:0;top:52px;text-align:center;
+  font-family:'Caveat',cursive;color:#D8CDB4;pointer-events:none}
+.arch.drawerfront2 .dftxt::before{content:'click to open';display:block;font-size:14px;font-weight:600;opacity:.7}
+.arch.drawerfront2 .dftxt{font-size:32px}
+.arch.drawerfront2 .dftxt span{display:block;font-size:16px;color:#A89C82;margin-top:4px}
+body:not(.drawer-closed) .arch.drawerfront2{transform:translateY(70px);opacity:0;pointer-events:none}
+body.drawer-closed .photo.st-hazy{opacity:0;pointer-events:none}
 .arch.drawerlip{background:linear-gradient(180deg,#4A4234,#3A3328);border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.4)}
 .arch.pull{border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9BC9E,#7E7258 70%);box-shadow:0 2px 4px rgba(0,0,0,.5)}
 
@@ -312,7 +359,7 @@ __PALETTES__
 }
 </style>
 </head>
-<body class="mode-wall">
+<body class="mode-wall box-closed drawer-closed">
 
 <div id="source">
 
@@ -322,21 +369,22 @@ __SECTIONS__
 
 <div id="lids"><div class="lid lidTop"></div><div class="lid lidBot"></div></div>
 
+<div id="roomShell">
+  <div id="rsCeiling"></div>
+  <div id="rsLeft">
+    <div id="rsCurtain"></div><div id="rsWindow"></div><div id="rsNeon"></div><div id="rsNeonWash"></div>
+  </div>
+  <div id="rsLamp"></div>
+  <div id="rsFloorWrap"><div id="rsFloor"></div></div>
+  <div id="rsFloorFade"></div>
+  <div id="rsForeground"></div>
+</div>
+
 <div id="viewport"><div id="room">
   <div id="frontWall"><div id="world">
     <svg id="threads"></svg>
   </div></div>
-  <div id="roomCenter">
-    <div id="backswall"><div id="backsInner"></div></div>
-    <div id="floor" class="roomplane"></div>
-    <div id="ceiling" class="roomplane"></div>
-    <div id="leftwall" class="roomplane">
-      <div class="curtain"></div><div class="window"></div><div class="neon"></div>
-    </div>
-    <div id="foreground" class="roomplane"></div>
-    <div id="shoebox"></div>
-    <div id="nightstand"></div>
-  </div>
+  <div id="backswall"><div id="backsInner"></div></div>
 </div></div>
 <div id="dimmer"></div>
 
@@ -615,7 +663,10 @@ function layout(){
   var boxRows = Math.ceil(arcs.length / bw);
   var boxH = boxRows * (PH * SC_BOX * .62) + 220;
   arch('boxwall', BOXC.x - boxW / 2, BOXC.y - 120, boxW, boxH + 140);
-  arch('boxlid', BOXC.x + boxW / 2 - 90, BOXC.y - 240, boxW * .82, 120);
+  /* the closed lid: a real cover over the whole riffle, not a small flap --
+     hides every archive print until it tips open (body.box-closed removed) */
+  arch('boxlid', BOXC.x - boxW / 2 - 8, BOXC.y - 128, boxW + 16, boxH + 156,
+       '<div class="blidtxt">the shoebox<span>' + arcs.length + ' prints, half evidence</span></div>');
   arch('boxlabel', BOXC.x - boxW / 2 + 30, BOXC.y + boxH + 34, boxW - 60, 60,
        '<div style="font-size:34px">the shoebox &middot; ' + arcs.length + ' prints</div>');
   arcs.forEach(function(p, n){
@@ -645,6 +696,9 @@ function layout(){
   var cabRows = Math.ceil(hz.length / hw);
   var cabH = cabRows * (PH * SC_HAZY * .66) + 200;
   arch('cabinet', HZC.x - cabW / 2, HZC.y - 110, cabW, cabH + 150);
+  /* the closed drawer front: covers every hazy frame until it slides open */
+  arch('drawerfront2', HZC.x - cabW / 2 + 10, HZC.y - 100, cabW - 20, cabH + 130,
+       '<div class="pull"></div><div class="dftxt">the dark drawer<span>' + hz.length + ' undeveloped frames</span></div>');
   arch('drawerlip', HZC.x - cabW / 2 + 20, HZC.y + cabH + 60, cabW - 40, 26);
   arch('pull', HZC.x - 14, HZC.y + cabH + 66, 28, 14);
   hz.forEach(function(p, n){
@@ -678,7 +732,6 @@ function layout(){
   threads.setAttribute('width', W); threads.setAttribute('height', H);
   threads.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
   regions.all = {x: 0, y: 0, w: W, h: H};
-  placeFurniture();
   tally();
 }
 
@@ -698,48 +751,22 @@ function setRot(p, deg){
   p.backEl.style.setProperty('--rot', v);
 }
 
-/* ---------- shoebox + nightstand: real 3D furniture near the seated spot ----------
-   positioned in the room's own physical scale (ROOM_*), independent of the huge
-   salon-wall content plane -- these are just floor objects you look at and click
-   to fly the WALL camera over to regions.box / regions.hazy. */
-var ROOM_W = 2100, ROOM_H = 1300, ROOM_D = 1700;
-function placeFurniture(){
-  var box = document.getElementById('shoebox');
-  var bx = 260, by = 210, bd = 170;
-  box.innerHTML =
-    '<div class="f bwall" style="width:' + bx + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,' + (bd / 2) + 'px)"></div>' +
-    '<div class="f bwall" style="width:' + bd + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(' + (bx / 2) + 'px)"></div>' +
-    '<div class="f bwall" style="width:' + bd + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(-' + (bx / 2) + 'px)"></div>' +
-    '<div class="f blid" style="width:' + bx + 'px;height:' + bd + 'px;transform:translate3d(-50%,-100%,' + (bd / 2) + 'px) rotateX(90deg)"></div>' +
-    '<div class="f blabel" style="width:' + bx + 'px;height:26px;transform:translate3d(-50%,-100%,' + (bd / 2 + 1) + 'px);padding-top:4px">the shoebox</div>';
-  box.style.transform = 'translate3d(' + (-ROOM_W * .18) + 'px,' + (ROOM_H / 2) + 'px,' + (ROOM_D * .3) + 'px)';
-
-  var ns = document.getElementById('nightstand');
-  var nx = 220, ny = 300, nd = 200;
-  ns.innerHTML =
-    '<div class="f body" style="width:' + nx + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,' + (nd / 2) + 'px)"></div>' +
-    '<div class="f body" style="width:' + nd + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(' + (nx / 2) + 'px)"></div>' +
-    '<div class="f body" style="width:' + nd + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(-' + (nx / 2) + 'px)"></div>' +
-    '<div class="f drawerfront" style="width:' + (nx - 20) + 'px;height:70px;transform:translate3d(-50%,-124px,' + (nd / 2 - 1) + 'px)"></div>' +
-    '<div class="f pull" style="width:22px;height:10px;transform:translate3d(-50%,-124px,' + (nd / 2 + 1) + 'px)"></div>' +
-    '<div class="f bill" style="transform:translate3d(-70%,-' + (ny + 6) + 'px,' + (nd / 2 - 40) + 'px) rotate(-8deg)"></div>' +
-    '<div class="f bill" style="transform:translate3d(10%,-' + (ny + 14) + 'px,' + (nd / 2 - 70) + 'px) rotate(6deg)"></div>';
-  ns.style.transform = 'translate3d(' + (ROOM_W * .22) + 'px,' + (ROOM_H / 2) + 'px,' + (ROOM_D * .32) + 'px)';
-}
-document.getElementById('shoebox').addEventListener('click', function(e){
-  e.stopPropagation();
-  var b = this;
-  b.classList.add('open');
+/* ---------- shoebox + nightstand ----------
+   real furniture rendered as part of the front wall itself (see arch()
+   'boxlid'/'drawerfront2' in layout()): a closed cover over each stash of
+   prints, at the same salon-plane coordinates and scale as v3's box/cabinet.
+   click either cover to tip it open (CSS-driven, body.box-closed /
+   body.drawer-closed) and fly the wall camera over to its contents. */
+function openBox(){
+  document.body.classList.remove('box-closed');
   if (document.body.classList.contains('dived')) closeDive(true);
-  setTimeout(function(){ fitRect(regions.box, 60); }, 260);
-});
-document.getElementById('nightstand').addEventListener('click', function(e){
-  e.stopPropagation();
-  var b = this;
-  b.classList.add('open');
+  setTimeout(function(){ fitRect(regions.box, 60); }, 300);
+}
+function openDrawer(){
+  document.body.classList.remove('drawer-closed');
   if (document.body.classList.contains('dived')) closeDive(true);
   setTimeout(function(){ fitRect(regions.hazy, 60); }, 260);
-});
+}
 
 function tally(){
   var defs = defSet();
@@ -781,24 +808,32 @@ backsInner.addEventListener('transitionend', function(e){
   if (e.propertyName === 'transform' && e.target === backsInner) backsInner.classList.remove('glide');
 });
 
-/* ---------- room camera: the 3D turn, WAKE -> SEATED -> WALL/BACKS ---------- */
+/* ---------- room camera: WAKE -> SEATED, plus a decorative turn ----------
+   #frontWall and #backswall are flat 2D layers at the same depth (see the
+   CSS comment above) -- roomCam here only drives the cold-open settle and a
+   short yaw SWING that plays every time the wall/backs visibility swaps, so
+   turning to the other wall still reads as a real head-turn, not a jump cut. */
 var room = document.getElementById('room');
 var roomCam = {yaw: 0, pitch: 0, z: 0};
-var YAW = {wall: 0, invest: 0, backs: -90};
-/* Z_ENGAGED exactly cancels #frontWall's own -room-d/2 push-back, so the wall
-   plane lands flat at the perspective reference depth -- zero distortion,
-   the 2D pan/zoom math (cam.x/y/s) stays screen-accurate, exactly like v3. */
-var Z_ENGAGED = 850, Z_SEATED = Z_ENGAGED + 480;
+var Z_SEATED = 480;
 function setRoomCam(){
   room.style.transform = 'translate3d(0,0,' + roomCam.z + 'px) rotateX(' + roomCam.pitch + 'deg) rotateY(' + roomCam.yaw + 'deg)';
-}
-function roomGlideTo(yaw, z){
-  room.classList.add('glide');
-  roomCam.yaw = yaw; roomCam.z = z; setRoomCam();
 }
 room.addEventListener('transitionend', function(e){
   if (e.propertyName === 'transform' && e.target === room) room.classList.remove('glide');
 });
+/* swing the head one way then settle back to 0 -- called right as the mode
+   (and the CSS visibility swap it drives) changes, so the moment of swap is
+   buried inside the turn instead of being a visible pop. */
+function turnSwing(toBacks){
+  var mid = toBacks ? -46 : 46;
+  room.classList.add('glide');
+  roomCam.yaw = mid; roomCam.pitch = -2; setRoomCam();
+  setTimeout(function(){
+    room.classList.add('glide');
+    roomCam.yaw = 0; roomCam.pitch = 0; setRoomCam();
+  }, 260);
+}
 /* seated idle parallax: a couple degrees of look-around, never enough to see
    past the set (clamped, and suspended once the viewer has actually engaged) */
 var seatedParallax = true;
@@ -908,20 +943,21 @@ viewport.addEventListener('wheel', function(e){
 /* ---------- modes ---------- */
 var state = {mode: 'wall'};
 var MODE_HINT = {
-  wall: 'drag to roam, scroll to zoom, click a photo to step close',
-  backs: 'click a photo to flip it and read the back. the handwriting flies you to its kin',
+  wall: 'drag to roam, scroll to zoom, click a photo to step close. click the shoebox or the dark drawer to open them',
+  backs: 'you have turned to face the backs wall. drag to roam, click a card to read it in place. the handwriting flies you to its kin',
   invest: 'hold a photo and its kin light up. click a lit photo to follow the line. your trail smolders behind you'
 };
 function setMode(m){
   if (state.mode === m) return;
   if (document.body.classList.contains('dived')) closeDive(true);
   if (state.mode === 'invest') exitInvest();
+  var wasBacks = state.mode === 'backs', toBacks = m === 'backs';
   state.mode = m;
   document.body.className = document.body.className.replace(/mode-\S+/, 'mode-' + m) +
     (document.body.className.indexOf('mode-') < 0 ? ' mode-' + m : '');
   document.getElementById('hint').textContent = MODE_HINT[m];
   seatedParallax = false;
-  roomGlideTo(YAW[m], Z_ENGAGED);
+  if (wasBacks !== toBacks) turnSwing(toBacks);   /* a real turn between the two walls */
 }
 
 /* ---------- dive (step close, either wall) ----------
@@ -1176,6 +1212,8 @@ document.addEventListener('click', function(e){
   var t = e.target;
   /* pointer capture makes clicks inside the world surface as #viewport */
   if ((t === viewport || t === world || t.id === 'threads') && downTarget) t = downTarget;
+  if (t.closest && t.closest('.arch.boxlid')){ openBox(); return; }
+  if (t.closest && t.closest('.arch.drawerfront2')){ openDrawer(); return; }
   if (t.classList.contains('more-toggle')){
     var m = t.nextElementSibling;
     m.classList.toggle('open');
@@ -1322,10 +1360,10 @@ document.getElementById('trayclear').onclick = function(){
 });
 [].slice.call(document.querySelectorAll('.opt[data-go]')).forEach(function(o){
   o.addEventListener('click', function(){
+    if (o.dataset.go === 'box'){ openBox(); return; }
+    if (o.dataset.go === 'hazy'){ openDrawer(); return; }
     if (document.body.classList.contains('dived')) closeDive(true);
-    fitRect(regions[o.dataset.go === 'all' ? 'all' :
-            o.dataset.go === 'box' ? 'box' :
-            o.dataset.go === 'hazy' ? 'hazy' : 'def']);
+    fitRect(regions[o.dataset.go === 'all' ? 'all' : 'def']);
   });
 });
 
@@ -1352,13 +1390,13 @@ function finishColdOpen(){
   coldOpenDone = true;
   document.body.classList.remove('coldopen', 'blink1', 'blink2');
   document.body.classList.add('awake');
-  roomCam.pitch = 0; roomCam.yaw = YAW.wall; roomCam.z = Z_ENGAGED;
+  roomCam.pitch = 0; roomCam.yaw = 0; roomCam.z = 0;
   room.classList.remove('glide'); setRoomCam();
   seatedParallax = true;
 }
 (function coldOpen(){
   document.body.classList.add('coldopen');
-  roomCam.yaw = YAW.wall + 9; roomCam.pitch = -7; roomCam.z = Z_SEATED;
+  roomCam.yaw = 9; roomCam.pitch = -7; roomCam.z = Z_SEATED;
   seatedParallax = false;
   setRoomCam();
   var t = [];
@@ -1366,9 +1404,9 @@ function finishColdOpen(){
   t.push(setTimeout(function(){ document.body.classList.remove('blink1'); }, 620));
   t.push(setTimeout(function(){ document.body.classList.add('blink2'); }, 780));
   t.push(setTimeout(function(){
-    /* the camera unsteadily rights itself and dollies in to the wall */
+    /* the camera unsteadily rights itself and settles into SEATED */
     room.classList.add('glide');
-    roomCam.yaw = YAW.wall; roomCam.pitch = 0; roomCam.z = Z_ENGAGED;
+    roomCam.yaw = 0; roomCam.pitch = 0; roomCam.z = 0;
     setRoomCam();
   }, 1200));
   t.push(setTimeout(finishColdOpen, 3900));
@@ -1379,7 +1417,7 @@ function finishColdOpen(){
 
 /* ---------- dust motes: seated idle, cheap CSS drift ---------- */
 (function motes(){
-  var host = document.getElementById('foreground');
+  var host = document.getElementById('rsForeground');
   for (var i = 0; i < 14; i++){
     var m = document.createElement('div'); m.className = 'mote';
     var sz = 2 + Math.random() * 3;
