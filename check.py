@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 The Vault, motel-room check suite (pipeline v4 -- "The Motel Room").
-23 checks, superset of the v3 suite (17). Run after every build.
+24 checks, superset of the v3 suite (17). Run after every build. The whole
+suite now runs at device_scale_factor=2 (v5.2) -- this is the permanent
+baseline; the old DPR-1-only run is what let the SH-less v5 room ship
+blank at any Windows display scaling >=125%. Check 24 is the dedicated
+DPR-2 regression guard.
 Checks 19-22 are screenshot/pixel-sampling checks (not just DOM/class
 assertions) added after a visual QA pass found the DOM-only suite was
 green while the actual render was badly broken (black backs wall, a void
@@ -79,7 +83,7 @@ async def main():
             b = await pw.chromium.launch(**launch_opts())
         except Exception:
             b = await pw.chromium.launch(channel="msedge")
-        pg = await b.new_page(viewport={"width": 1280, "height": 900})
+        pg = await b.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2)
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
         await pg.goto(URL)
@@ -200,20 +204,25 @@ async def main():
         await pg.wait_for_timeout(120)
         x1 = await pg.evaluate("()=>cam.x")
         assert abs(x1 - x0) > 60, (x0, x1)
-        # v5: #world/#backsInner carry NO transform of their own any more --
-        # the camera lives entirely on #room (the derivation layer). Confirm
-        # that contract instead of the old "both planes share one transform"
-        # check, and confirm #room's transform actually moved in response.
+        # v5: #world/#backsInner carry no LIVE transform of their own -- the
+        # camera lives entirely on #room (the derivation layer). v5.2 adds
+        # one CONSTANT transform to #world/#backsInner (scale(SH), the
+        # DPR-2 texture-cap fix) that is set once at load and never touched
+        # again by the camera code, so confirm it's exactly that constant
+        # (same before/after this pan+zoom) rather than empty, and confirm
+        # #room's transform actually moved in response.
         roomT0 = await pg.evaluate("()=>room.style.transform")
+        twinsT0 = await pg.evaluate("()=>({w: world.style.transform, b: backsInner.style.transform})")
         await pg.wait_for_timeout(50)
         twins = await pg.evaluate("""()=>({w: world.style.transform, b: backsInner.style.transform,
-          room: room.style.transform})""")
-        assert twins["w"] == "" and twins["b"] == "", twins
+          room: room.style.transform, sh: SH})""")
+        assert twins["w"] == twinsT0["w"] and twins["b"] == twinsT0["b"], twins  # constant, unmoved by the pan/zoom
+        assert twins["w"] == ("scale(" + str(twins["sh"]) + ")") and twins["b"] == twins["w"], twins
         assert twins["room"] != roomT0 or True, twins  # room transform is live (sanity: it's set at all)
         assert "translate3d" in twins["room"] and "translateZ" in twins["room"], twins
-        ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f); #world/#backsInner carry no "
-           "transform of their own -- the derived eye pose on #room is the only thing that moved"
-           % (s0, s1, x1 - x0))
+        ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f); #world/#backsInner carry only the "
+           "constant SH=%.1f scale (unmoved by the pan/zoom) -- the derived eye pose on #room is the "
+           "only thing that moved" % (s0, s1, x1 - x0, twins["sh"]))
 
         # -- 9. three modes switch, and the camera engages the correct wall --
         # v5.1: room geometry is never hidden per-facing any more (that was
@@ -583,7 +592,7 @@ async def main():
             b2_ = await pw2.chromium.launch(**launch_opts())
         except Exception:
             b2_ = await pw2.chromium.launch(channel="msedge")
-        pg2 = await b2_.new_page(viewport={"width": 1280, "height": 900})
+        pg2 = await b2_.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2)
         await pg2.goto(URL)
         await pg2.wait_for_timeout(500)
         early_png = await pg2.screenshot(full_page=False)
@@ -614,7 +623,7 @@ async def main():
             b3_ = await pw3.chromium.launch(**launch_opts())
         except Exception:
             b3_ = await pw3.chromium.launch(channel="msedge")
-        pg3 = await b3_.new_page(viewport={"width": 1280, "height": 900})
+        pg3 = await b3_.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2)
         await pg3.goto(URL)
         await pg3.wait_for_timeout(300)
         await pg3.keyboard.press("Escape")
@@ -666,6 +675,62 @@ async def main():
         ok(23, "both restore paths converge byte-identical (ledger and build)")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+    # -- 24. DPR-2 texture-cap regression guard: at device_scale_factor=2,
+    #    the initial wall view AND a dived/read view must both actually
+    #    paint (not the SH=0.5 bug's silently-dropped-layer blank/murky
+    #    screen), and a known photo must land on-screen in the dived view.
+    #    v5.2: this whole suite now runs at DPR 2 (see the new_page() calls
+    #    above) -- this check is the one that would have caught the bug the
+    #    DPR-1-only suite let ship. ------------------------------------------
+    async with async_playwright() as pw4:
+        try:
+            b4_ = await pw4.chromium.launch(**launch_opts())
+        except Exception:
+            b4_ = await pw4.chromium.launch(channel="msedge")
+        pg4 = await b4_.new_page(viewport={"width": 1280, "height": 900}, device_scale_factor=2)
+        assert (await pg4.evaluate("()=>window.devicePixelRatio")) == 2, "page did not launch at DPR 2"
+        await pg4.goto(URL)
+        await pg4.wait_for_timeout(300)
+        await pg4.keyboard.press("Escape")
+        await pg4.wait_for_timeout(150)
+        await pg4.wait_for_timeout(2200)
+        await pg4.evaluate("()=>fitRect(regions.def, 40)")
+        await pg4.wait_for_timeout(1000)
+        initial_png = await pg4.screenshot(full_page=False)
+
+        await pg4.evaluate("()=>{const p = byTitle['Sicario']; p.el.click();}")
+        await pg4.wait_for_timeout(1600)
+        dived_png = await pg4.screenshot(full_page=False)
+        dived_rect = await pg4.evaluate("""()=>{
+          const p = byTitle['Sicario'];
+          const el = (facing==='backs') ? p.backEl : p.el;
+          const r = el.getBoundingClientRect();
+          return {left: r.left, top: r.top, right: r.right, bottom: r.bottom,
+                  vw: window.innerWidth, vh: window.innerHeight};
+        }""")
+        await b4_.close()
+
+    def _stats(png_bytes):
+        im = Image.open(_io2.BytesIO(png_bytes)).convert("L")
+        px_ = [im.getpixel((x, y)) for x in range(0, im.width, 8) for y in range(0, im.height, 8)]
+        n = len(px_)
+        mean = sum(px_) / n
+        var = sum((p - mean) ** 2 for p in px_) / n
+        return mean, var ** 0.5
+
+    imean, istdev = _stats(initial_png)
+    dmean, dstdev = _stats(dived_png)
+    assert imean > 8 and istdev > 6, ("DPR-2 initial wall view is a void/blank frame", imean, istdev)
+    assert dmean > 8 and dstdev > 6, ("DPR-2 dived/read view is a void/blank frame", dmean, dstdev)
+    assert dived_rect["right"] > 0 and dived_rect["left"] < dived_rect["vw"] and \
+        dived_rect["bottom"] > 0 and dived_rect["top"] < dived_rect["vh"], \
+        ("known photo rect is off-screen at DPR 2", dived_rect)
+    ok(24, "at DPR 2, the initial wall view (mean %.0f/stdev %.1f) and a dived/read view "
+            "(mean %.0f/stdev %.1f) both render real pixels, and 'Sicario' lands on-screen "
+            "(rect L%.0f T%.0f R%.0f B%.0f in a %dx%d viewport)"
+       % (imean, istdev, dmean, dstdev, dived_rect["left"], dived_rect["top"],
+          dived_rect["right"], dived_rect["bottom"], dived_rect["vw"], dived_rect["vh"]))
 
     real = [e for e in errs if not any(n in e for n in FONT_NOISE)]
     if real:

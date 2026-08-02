@@ -442,12 +442,30 @@ var stray = [];   /* wall-text + architecture rebuilt each layout */
    -- for how cam.x/y/s (2D, untouched) becomes a 3D eye pose every frame.
    ===================================================================== */
 var PERSP = 1000;                 /* must match #viewport's perspective */
+/* SH: constant shrink factor applied to #world/#backsInner via a CSS
+   transform (never animated, never touched again after this). Fixes the
+   DPR-2 blank-room bug: at devicePixelRatio 2, Chromium rasterizes 3D
+   -transformed layers at (CSS px * DPR), and any plane over the ~16384px
+   GPU texture cap gets silently dropped. ROOM_W (which the wall's full W
+   drives, up to ~11000 CSS px at DPR 1) blew past that cap at DPR 2.
+   Shrinking the wall content visually by SH lets buildRoom() use SH*W/SH*H
+   (WS/HS) for every physical plane that touches the wall extent, while
+   ALL wall-content coordinates and the entire 2D interaction engine
+   (cam{x,y,s}, fitRect, place(), etc.) stay in unchanged, unscaled wall
+   px -- only the derivation layer (wallRoomX/wallRoomY/derivePose) knows
+   about SH. */
+var SH = 0.5;
 var FLOOR_Y = 1040;
 var room = document.getElementById('room');
 var frontWall = document.getElementById('frontWall');
 var backswall = document.getElementById('backswall');
 var ROOM = null;                  /* filled by buildRoom() each layout() */
 var roomFurniture = [];           /* plane/box els rebuilt each buildRoom() */
+
+/* constant scale-down of the wall content layers -- set once, here, so SH
+   lives in exactly one place. Never touched again by any other code path. */
+world.style.transform = backsInner.style.transform = 'scale(' + SH + ')';
+world.style.transformOrigin = backsInner.style.transformOrigin = '0 0';
 
 function at(x, y, z){ return 'translate3d(' + x + 'px,' + y + 'px,' + z + 'px)'; }
 /* plane(w,h,t,id,cls,parent): local (0,0) is the div's own top-left;
@@ -479,8 +497,8 @@ function box(cx, cy, cz, w, h, d, skins, parent){
 /* wall-coord (wx,wy, in the same px space as place()) -> room-coord helpers,
    used only by the camera derivation -- the salon layout itself never
    changes units. */
-function wallRoomX(wx){ return wx - ROOM.wallW / 2; }
-function wallRoomY(wy){ return ROOM.CEIL_Y + ROOM.WALL_TOP + wy; }
+function wallRoomX(wx){ return SH*wx - (ROOM.wallW * SH) / 2; }
+function wallRoomY(wy){ return ROOM.CEIL_Y + ROOM.WALL_TOP + SH*wy; }
 
 /* parallel-plane basis for the shoebox tray / drawer tray: a plane with NO
    tilt (zero rotation, same orientation as #frontWall) mounted at room-space
@@ -496,7 +514,7 @@ function wallRoomY(wy){ return ROOM.CEIL_Y + ROOM.WALL_TOP + wy; }
    Parallel planes never interleave (they occupy one distinct z each), so
    nothing needs to be hidden; see updateVisibility() below. */
 function parallelPose(region, O, wcx, wcy, dist){
-  var lx = wcx - region.x - region.w / 2, ly = wcy - region.y - region.h / 2;
+  var lx = SH*(wcx - region.x - region.w / 2), ly = SH*(wcy - region.y - region.h / 2);
   return {x: O.x + lx, y: O.y + ly, z: O.z + dist, yaw: 0, pitch: 0};
 }
 
@@ -504,7 +522,7 @@ function parallelPose(region, O, wcx, wcy, dist){
    table idea in the handoff -- front/backs/box/drawer are all "some flat
    plane, viewed head-on from dist=PERSP/s". */
 function derivePose(facingName, camv){
-  var s = camv.s, dist = PERSP / s;
+  var s = camv.s, dist = SH * PERSP / s;
   var wcx = (vw() / 2 - camv.x) / s, wcy = (vh() / 2 - camv.y) / s;
   if (facingName === 'backs')
     return {x: -wallRoomX(wcx), y: wallRoomY(wcy), z: ROOM.BACK_Z - dist, yaw: 180, pitch: 0};
@@ -524,8 +542,14 @@ function derivePose(facingName, camv){
    and repositioned. */
 function buildRoom(W, H, arcs, hz){
   roomFurniture.forEach(function(e){ e.remove(); }); roomFurniture = [];
-  var ROOM_W = Math.max(5600, W + 800);
-  var ROOM_H = Math.max(2600, H + 300);
+  /* WS/HS: the wall extent as it actually appears after the constant
+     scale(SH) on #world/#backsInner -- every physical plane that meets
+     the wall (ROOM_W/ROOM_H and anything derived from them) must be sized
+     off THIS, not the raw wall-px W/H, or it blows the DPR-2 GPU texture
+     cap again. */
+  var WS = W * SH, HS = H * SH;
+  var ROOM_W = Math.max(5600, WS + 800);
+  var ROOM_H = Math.max(2600, HS + 300);
   var ROOM_D = Math.round(ROOM_W * 0.78);
   var CEIL_Y = FLOOR_Y - ROOM_H;
   var FRONT_Z = -ROOM_D / 2, BACK_Z = ROOM_D / 2;
@@ -540,7 +564,7 @@ function buildRoom(W, H, arcs, hz){
      still computed from the real DOM offset, so mapping exactness is
      unaffected either way) while guaranteeing the content actually sits
      inside the plane it's mounted to. */
-  var WALL_TOP = (ROOM_H - H) / 2;
+  var WALL_TOP = (ROOM_H - HS) / 2;
   ROOM = {W: ROOM_W, H: ROOM_H, D: ROOM_D, CEIL_Y: CEIL_Y, FRONT_Z: FRONT_Z, BACK_Z: BACK_Z,
           LEFT_X: LEFT_X, RIGHT_X: RIGHT_X, WALL_TOP: WALL_TOP, wallW: W, wallH: H};
 
@@ -551,8 +575,8 @@ function buildRoom(W, H, arcs, hz){
   backswall.style.width = ROOM_W + 'px'; backswall.style.height = ROOM_H + 'px';
   backswall.style.transform = at(0, CEIL_Y + ROOM_H / 2, BACK_Z) + ' rotateY(180deg) translate(-50%,-50%)';
   backswall.style.transformOrigin = '0 0';
-  world.style.left = ((ROOM_W - W) / 2) + 'px'; world.style.top = WALL_TOP + 'px';
-  backsInner.style.left = ((ROOM_W - W) / 2) + 'px'; backsInner.style.top = WALL_TOP + 'px';
+  world.style.left = ((ROOM_W - WS) / 2) + 'px'; world.style.top = WALL_TOP + 'px';
+  backsInner.style.left = ((ROOM_W - WS) / 2) + 'px'; backsInner.style.top = WALL_TOP + 'px';
 
   /* the box + the six shell faces */
   plane(ROOM_D, ROOM_H, at(LEFT_X, CEIL_Y + ROOM_H / 2, 0) + ' rotateY(90deg)', 'wLeft');
@@ -596,11 +620,12 @@ function buildRoom(W, H, arcs, hz){
      range, distinct from every other furniture plane's z. */
   var boxCX = TBL_X, boxCY = TBL_TOP - 260, boxCZ = TBL_Z - 40;
   ROOM.BOX_O = {x: boxCX, y: boxCY, z: boxCZ};
-  var boxPlane = plane(regions.box.w, regions.box.h,
+  var boxPlane = plane(regions.box.w * SH, regions.box.h * SH,
     at(boxCX, boxCY, boxCZ), 'boxPlane');
   var boxInner = document.createElement('div');
   boxInner.id = 'boxInner'; boxInner.style.position = 'absolute';
-  boxInner.style.left = (-regions.box.x) + 'px'; boxInner.style.top = (-regions.box.y) + 'px';
+  boxInner.style.left = (-regions.box.x * SH) + 'px'; boxInner.style.top = (-regions.box.y * SH) + 'px';
+  boxInner.style.transform = 'scale(' + SH + ')'; boxInner.style.transformOrigin = '0 0';
   boxPlane.appendChild(boxInner);
   arcs.forEach(function(p){ boxInner.appendChild(p.el); });
   var boxLid = document.createElement('div');
@@ -611,11 +636,12 @@ function buildRoom(W, H, arcs, hz){
 
   var drCX = NS_X, drCY = NS_TOP - 220, drCZ = NS_Z - 30;
   ROOM.DRAWER_O = {x: drCX, y: drCY, z: drCZ};
-  var drawerPlane = plane(regions.hazy.w, regions.hazy.h,
+  var drawerPlane = plane(regions.hazy.w * SH, regions.hazy.h * SH,
     at(drCX, drCY, drCZ), 'drawerPlane');
   var drawerInner = document.createElement('div');
   drawerInner.id = 'drawerInner'; drawerInner.style.position = 'absolute';
-  drawerInner.style.left = (-regions.hazy.x) + 'px'; drawerInner.style.top = (-regions.hazy.y) + 'px';
+  drawerInner.style.left = (-regions.hazy.x * SH) + 'px'; drawerInner.style.top = (-regions.hazy.y * SH) + 'px';
+  drawerInner.style.transform = 'scale(' + SH + ')'; drawerInner.style.transformOrigin = '0 0';
   drawerPlane.appendChild(drawerInner);
   hz.forEach(function(p){ drawerInner.appendChild(p.el); });
   var drawerLid = document.createElement('div');

@@ -1,5 +1,72 @@
 # Pipeline CHANGELOG
 
+## v5.2 — 2026-08-02 — DPR-2 texture-cap fix: the room went blank at Windows display scaling >=125%
+
+**Diagnosis.** The v5 room (a real `preserve-3d` box) rendered fine at
+`devicePixelRatio` 1 but went blank/murky at DPR 2 -- i.e. on any Windows
+display at 125%+ scaling, which is most of them. Chromium rasterizes
+3D-transformed layers at `CSS px * DPR`; the big planes that meet the wall
+extent (`#frontWall`/`#backswall`/`#wFloor`/`#wCeil`, sized off `ROOM_W`,
+which followed the wall's full width -- up to ~11000 CSS px for this
+photo count) rasterize past the ~16384px GPU texture cap at DPR 2 and get
+silently dropped: no error, no console warning, just a blank layer.
+`check.py` stayed green throughout because Playwright pages default to
+DPR 1, so the DOM/class assertions and even the v4.1/v5.1 pixel-sampling
+checks never actually exercised the failure mode. Repro:
+`_experiments/v5-proof/artifact-repro.png` (DPR 1, fine) vs the pre-fix
+`artifact-repro-dpr2.png` (DPR 2, blank) made the cause undeniable once
+captured side by side.
+
+**Fix -- a single constant shrink factor, `var SH = 0.5`.** `#world`/
+`#backsInner` (the flat photo layers) get one CSS `scale(SH)` transform,
+set once at load and never touched again (not by the camera code, not
+per-frame) -- literally the one new line of "animation" in this whole fix
+is that there isn't one. Wall-content coordinates and the entire 2D
+interaction engine (`cam{x,y,s}`, `fitRect`, `place()`, etc.) stay in
+unchanged, unscaled wall px; only `buildRoom()` and the derivation layer
+(`wallRoomX`/`wallRoomY`/`derivePose`/`parallelPose`) know `SH` exists:
+- `buildRoom()`: `WS = W*SH, HS = H*SH` -- every physical plane that meets
+  the wall extent (`ROOM_W`, `ROOM_H`, `WALL_TOP`, `#world`/`#backsInner`'s
+  `left` offset) is now sized off `WS`/`HS`, not the raw wall-px `W`/`H`.
+  `#world`/`#backsInner` themselves keep their unscaled `width`/`height`
+  (the CSS transform shrinks them visually).
+- `wallRoomX(wx) = SH*wx - (ROOM.wallW*SH)/2`, `wallRoomY(wy) = ROOM.CEIL_Y
+  + ROOM.WALL_TOP + SH*wy`, `derivePose`'s `dist = SH*PERSP/s` (the
+  compensation term -- screen scale works out to `SH*PERSP/dist = s`,
+  same as before SH existed), `parallelPose`'s local offset scaled by
+  `SH`. `wcx`/`wcy` themselves are untouched (still wall px).
+- box/drawer trays: `regions.box.w*SH`/`h*SH` (same for hazy) for the
+  plane size; `#boxInner`/`#drawerInner` get their own `scale(SH)` with
+  `left`/`top` set to `-region.x*SH`/`-region.y*SH` so the `.photo`
+  children keep their ordinary wall-px `place()` coordinates, no
+  per-photo remapping.
+
+Verified plane sizes post-fix (24-film ledger, this build): `ROOM_W` 5600,
+`ROOM_H` 2922, `ROOM_D` 4368, box tray 878x874, drawer tray 811x620 --
+every physical plane comfortably under the ~6500 CSS px budget (and under
+the 16384px cap even at DPR 2). Furniture/door/window constants were
+already well under 2000 and untouched.
+
+**check.py: DPR 2 is now the permanent baseline, not an add-on.** All
+three `new_page()` calls in the suite now pass `device_scale_factor=2` --
+this is the change that makes the suite able to catch this class of bug
+at all; the old DPR-1-only run is exactly what let it ship. All 23
+existing checks still pass at DPR 2 unmodified except check 8, whose
+assertion that `#world`/`#backsInner` carry `transform: ""` predates SH
+and had to be updated to expect the constant `scale(SH)` instead (still
+asserts it's *constant* -- unmoved by a pan/zoom -- so the "camera lives
+only on `#room`" contract check 8 exists for still holds). New **check 24**:
+at DPR 2, screenshots the initial wall view and a dived/read view (clicks
+a known photo), asserts both are non-void (grid-sample mean > 8, stdev >
+6 -- the same void-detection heuristic checks 19/21/22 already use) and
+that the known photo (`Sicario`) has an on-screen `getBoundingClientRect`
+in the dived view. `python vault.py && python check.py` -> 24/24 green.
+
+Re-shot at DPR 2 post-fix: `_experiments/v5-proof/artifact-repro-dpr2.png`
+(wrapped-artifact repro, now shows the full wall with photos, was blank),
+plus `dpr2-mounted-wall.png`, `dpr2-backs.png`, `dpr2-box.png`,
+`dpr2-drawer.png` -- all in `_experiments/v5-proof/`.
+
 ## v5.1 — 2026-08-02 — box/drawer stop hiding the room; the turn gets a mid-room beat
 
 Two architect-flagged fixes to v5's disclosed deviations 3 and 4 (see below).
