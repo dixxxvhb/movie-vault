@@ -1,5 +1,32 @@
 # Pipeline CHANGELOG
 
+## v4.2 — 2026-08-01 — final polish (same night as v4/v4.1)
+
+- **Shoebox/drawer "still visible when closed" — false alarm, traced and
+  closed.** Investigated the flagged `v-wall.png`: on a genuinely fresh load
+  the covers ARE opaque and every archive/hazy print IS at opacity 0
+  (confirmed directly via computed style). The committed screenshot showed
+  them open because check.py's own test flow (check 17) opens both before
+  the final record screenshot and nothing re-closed them first. Fixed
+  check.py to re-add `box-closed`/`drawer-closed` right before the `v-wall.png`
+  screenshot, so the committed "at rest" proof shot actually shows the room
+  at rest.
+- **Run-down pass.** `.arch.wallpanel` now carries a full vignette (darkens
+  toward all four edges, not just the bottom), a damask-depth double stripe,
+  four uneven corner stains, one water-run streak, and the existing peeling
+  seam. `.arch.baseboard` gets five scuff blotches at varied opacity/position.
+  `.arch.lamp` is a real warm light cone thrown onto the wall (`screen`
+  blend, three-stop falloff) instead of a flat blob; `.arch.shade` is a
+  visible two-tone lampshade with a rod, not a gray rectangle. Kept subtle
+  per instruction — the polaroids stay the visual anchor.
+- **Proof screenshots** (1280x900, fresh renders) saved to
+  `_experiments/v4-proof/`: `seated-room.png`, `wall.png`, `backs.png`,
+  `box-closed.png`, `box-open.png`, `drawer-open.png`, `coldopen-t05.png`.
+  `.gitignore` widened (`_experiments/**/*.png`) to actually cover that
+  nested path — the existing `_experiments/*.png` rule only matched direct
+  children.
+- 23 checks, all still green, zero page errors.
+
 ## v4.1 — 2026-08-01 — visual QA fixes (same night as v4)
 
 A real-browser eyeball pass on the freshly-built v4 found the check.py-green

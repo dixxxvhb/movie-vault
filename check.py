@@ -493,7 +493,11 @@ async def main():
         ok(21, "the front wall's wallpaper spans %.0f%% of the frame width at the hang line "
                 "(not a narrow centered column)" % (frac * 100))
 
-        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        # the record screenshot (v-wall.png) should show the room AT REST --
+        # re-close the box/drawer this run opened in check 17 so it doesn't
+        # read as a bug when someone eyeballs the committed PNG later.
+        await pg.evaluate("""()=>{document.body.classList.add('box-closed','drawer-closed');
+          document.querySelector('.opt[data-mode=\"wall\"]').click()}""")
         await pg.evaluate("()=>fitRect(regions.def, 40)")
         await pg.wait_for_timeout(1000)
         await pg.screenshot(path=SHOT, full_page=False)

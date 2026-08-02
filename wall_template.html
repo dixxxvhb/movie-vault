@@ -100,25 +100,54 @@ body.awake #lids{display:none}
 /* room architecture: painted in layout() */
 .arch{position:absolute;pointer-events:none}
 /* peeling motel wallpaper: a full, aged, opaque base (not a fade-to-void) --
-   a warm ivory ground, a faint vertical stripe, water/age staining low down,
-   and one curled seam near the top-right corner where it's coming away. */
+   a damask-ish double stripe, corner staining at all four corners, a water-
+   run streak, and a vignette that darkens toward every edge so the polaroids
+   (bright, clean, in-focus) read as the only thing in the room that isn't
+   decades past its prime. everything here is percentage/repeating so it
+   scales correctly whether the wall is 3000px or 30000px wide. */
 .arch.wallpanel{background:
-  radial-gradient(70% 40% at 82% 92%,rgba(70,52,32,.34),rgba(70,52,32,0) 60%),
-  radial-gradient(50% 30% at 12% 78%,rgba(60,46,30,.22),rgba(60,46,30,0) 65%),
+  /* the water-run streak: one narrow vertical drip, upper-right of center */
+  linear-gradient(178deg,transparent 0%,transparent 4%,rgba(94,84,52,.30) 4.4%,rgba(94,84,52,.16) 30%,transparent 46%) no-repeat,
+  /* corner staining, all four corners, uneven sizes so it doesn't read as symmetric */
+  radial-gradient(30% 22% at 96% 3%,rgba(80,62,36,.24),rgba(80,62,36,0) 70%),
+  radial-gradient(26% 34% at 3% 4%,rgba(70,55,32,.20),rgba(70,55,32,0) 70%),
+  radial-gradient(38% 26% at 88% 97%,rgba(70,52,32,.36),rgba(70,52,32,0) 62%),
+  radial-gradient(30% 30% at 8% 90%,rgba(60,46,30,.26),rgba(60,46,30,0) 65%),
+  /* faint damask: a wide stripe plus a thinner interior stripe for pattern depth */
+  repeating-linear-gradient(90deg,rgba(110,103,90,.07) 0 3px,rgba(110,103,90,0) 3px 110px,rgba(110,103,90,.035) 110px 113px,rgba(110,103,90,0) 113px 220px),
   linear-gradient(180deg,rgba(255,252,244,.34) 0%,rgba(255,252,244,.05) 14%,rgba(0,0,0,0) 34%),
-  repeating-linear-gradient(90deg,rgba(110,103,90,.055) 0 2px,rgba(110,103,90,0) 2px 220px),
   linear-gradient(180deg,#DDD3BE 0%,#CBBFA3 55%,#B7A985 100%);
-  box-shadow:inset 0 -160px 140px -110px rgba(60,45,26,.35),inset 0 40px 90px -60px rgba(0,0,0,.3)}
-.arch.wallpanel::after{content:'';position:absolute;top:6%;right:9%;width:130px;height:170px;
-  background:linear-gradient(200deg,rgba(255,252,240,.9),rgba(200,188,160,.5) 55%,rgba(150,138,112,.15));
+  /* vignette: darken toward all four edges, not just the bottom */
+  box-shadow:
+    inset 220px 0 180px -170px rgba(20,15,10,.45),
+    inset -220px 0 180px -170px rgba(20,15,10,.45),
+    inset 0 160px 140px -110px rgba(20,15,10,.4),
+    inset 0 -220px 180px -140px rgba(40,30,18,.5)}
+/* one curled/peeling seam where the paper is actually coming away */
+.arch.wallpanel::after{content:'';position:absolute;top:5.5%;right:8%;width:2.4%;min-width:70px;max-width:180px;
+  aspect-ratio:.72;background:linear-gradient(200deg,rgba(255,252,240,.92),rgba(200,188,160,.55) 55%,rgba(150,138,112,.18));
   clip-path:polygon(0 0,100% 12%,74% 100%,0 78%);
-  box-shadow:6px 10px 18px rgba(30,22,12,.28);opacity:.9}
+  box-shadow:6px 10px 18px rgba(30,22,12,.3);opacity:.92}
 .arch.rail{height:10px;background:linear-gradient(180deg,rgba(255,253,246,.9),rgba(190,180,160,.55) 60%,rgba(120,110,92,.35));box-shadow:0 2px 4px rgba(60,52,40,.14);border-radius:2px}
-.arch.baseboard{height:34px;background:linear-gradient(180deg,rgba(252,249,240,.95),rgba(206,197,178,.9) 55%,rgba(150,140,120,.8));box-shadow:0 -1px 0 rgba(255,255,255,.7) inset,0 6px 10px rgba(60,52,40,.16)}
+/* scuffed baseboard: base coat plus a handful of dark scuff blotches */
+.arch.baseboard{height:34px;background:
+  radial-gradient(2% 60% at 6% 50%,rgba(40,32,22,.4),rgba(40,32,22,0) 90%),
+  radial-gradient(1.4% 60% at 23% 50%,rgba(40,32,22,.3),rgba(40,32,22,0) 90%),
+  radial-gradient(2.4% 60% at 61% 50%,rgba(40,32,22,.42),rgba(40,32,22,0) 90%),
+  radial-gradient(1.6% 60% at 79% 50%,rgba(40,32,22,.28),rgba(40,32,22,0) 90%),
+  radial-gradient(2% 60% at 93% 50%,rgba(40,32,22,.36),rgba(40,32,22,0) 90%),
+  linear-gradient(180deg,rgba(252,249,240,.95),rgba(206,197,178,.9) 55%,rgba(150,140,120,.8));
+  box-shadow:0 -1px 0 rgba(255,255,255,.7) inset,0 6px 10px rgba(60,52,40,.16)}
 .arch.floor{background:repeating-linear-gradient(90deg,rgba(126,102,74,.32) 0 210px,rgba(108,86,60,.34) 210px 212px),linear-gradient(180deg,rgba(140,114,84,.34),rgba(112,90,64,.4))}
-.arch.lamp{background:radial-gradient(50% 90% at 50% 0%,rgba(255,241,205,.5),rgba(255,241,205,0) 70%)}
+/* the lamp: a real warm cone of light thrown onto the wall, not a blob */
+.arch.lamp{background:
+  radial-gradient(46% 100% at 50% 0%,rgba(255,224,160,.55) 0%,rgba(255,214,150,.30) 34%,rgba(255,204,140,.10) 62%,rgba(255,204,140,0) 82%);
+  mix-blend-mode:screen}
 .arch.wire{width:2px;background:linear-gradient(180deg,rgba(70,62,50,.5),rgba(70,62,50,.25))}
-.arch.shade{background:linear-gradient(180deg,#3A342A,#57503F);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);border-radius:3px}
+.arch.shade{background:linear-gradient(180deg,#4A4030,#6B6047 55%,#4A4030);clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);
+  border-radius:2px 2px 4px 4px;box-shadow:0 6px 16px rgba(0,0,0,.4),inset 0 -6px 10px rgba(0,0,0,.25),inset 0 3px 4px rgba(255,240,210,.35)}
+.arch.shade::before{content:'';position:absolute;left:50%;bottom:-14px;width:3px;height:14px;transform:translateX(-50%);
+  background:linear-gradient(180deg,#2A241A,#3A3226)}
 .arch.table{background:linear-gradient(180deg,rgba(96,74,52,.95),rgba(72,54,38,.95));border-radius:6px 6px 3px 3px;box-shadow:0 10px 24px rgba(50,40,28,.3)}
 .arch.tableleg{width:14px;background:linear-gradient(90deg,rgba(84,64,44,.95),rgba(60,45,32,.95));border-radius:0 0 4px 4px}
 .arch.boxwall{background:linear-gradient(180deg,#B79B72,#A5895F 60%,#8F7550);border-radius:8px;box-shadow:inset 0 10px 22px rgba(60,45,26,.5),inset 0 -8px 14px rgba(255,236,200,.14),0 14px 26px rgba(50,40,28,.28)}
