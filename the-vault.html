@@ -6,16 +6,84 @@
 <title>The Vault</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Caveat:wght@400;600;700&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400&display=swap');
-:root{--wall:#E8E2D6;--wall2:#DCD4C4;--ink:#1C1914;--mid:#6E675A;--rule:#D2C9B8;--photo:#FFFEF8;--pencil:#8A8272;--pen:#25221C;--thread:#C42B2B}
+:root{--wall:#E8E2D6;--wall2:#DCD4C4;--ink:#1C1914;--mid:#6E675A;--rule:#D2C9B8;--photo:#FFFEF8;--pencil:#8A8272;--pen:#25221C;--thread:#C42B2B;
+  --room-w:2100px;--room-h:1300px;--room-d:1700px}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wall2) 70%,#D4CBB9 100%);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;font-size:15px;line-height:1.6}
 
-/* ============ the room ============ */
-#viewport{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none}
+/* ============ the motel room (3D shell) ============ */
+#viewport{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none;perspective:1100px;perspective-origin:50% 45%;background:#0A0806}
 #viewport.panning{cursor:grabbing}
+#room{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+#room.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
+/* the front wall: the existing salon-hang plane, pushed back into the room.
+   kept anchored at the room's literal (0,0) -- same anchor #world used pre-v4
+   -- and z-compensated (see Z_ENGAGED in JS) so the 2D pan/zoom pixel math
+   the wall's own code relies on stays exact, undistorted by perspective. */
+#frontWall{position:absolute;left:0;top:0;transform:translate3d(0,0,calc(-1 * var(--room-d) / 2));transform-style:preserve-3d;backface-visibility:hidden}
+/* everything else (the backs wall, floor, ceiling, side wall, furniture) is
+   purely decorative/back-content -- centered on the room for a natural pivot */
+#roomCenter{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
 #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 #world.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
+/* the backs wall: same salon coordinates, turned 90deg to the right, cards back-out.
+   standard CSS-room math: center the flat plane on itself, push it out along its
+   own (pre-rotation) Z, then rotate -- that composition lands it as a true right wall. */
+#backswall{position:absolute;left:0;top:0;width:var(--room-d);height:var(--room-h);
+  transform:rotateY(90deg) translateZ(calc(var(--room-w) / 2 - 1px)) translate(-50%,-50%);
+  transform-style:preserve-3d;backface-visibility:hidden}
+#backsInner{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#backsInner.glide{transition:transform .85s cubic-bezier(.22,.9,.24,1)}
+/* floor / ceiling / left wall / foreground: static room dressing planes */
+.roomplane{position:absolute;left:0;top:0;pointer-events:none;backface-visibility:hidden}
+#floor{width:var(--room-w);height:var(--room-d);transform:rotateX(90deg) translateZ(calc(-1 * var(--room-h) / 2)) translate(-50%,-50%);
+  background:
+   radial-gradient(60% 40% at 30% 70%,rgba(90,60,40,.22),rgba(0,0,0,0) 60%),
+   repeating-linear-gradient(78deg,rgba(60,44,30,.55) 0 26px,rgba(46,33,22,.6) 26px 52px),
+   linear-gradient(180deg,#2E2418,#22190F)}
+#ceiling{width:var(--room-w);height:var(--room-d);transform:rotateX(-90deg) translateZ(calc(-1 * var(--room-h) / 2)) translate(-50%,-50%);
+  background:radial-gradient(30% 26% at 78% 30%,rgba(120,110,90,.28),rgba(0,0,0,0) 70%),linear-gradient(180deg,#171310,#0F0C09)}
+#leftwall{width:var(--room-d);height:var(--room-h);transform:rotateY(-90deg) translateZ(calc(var(--room-w)/2 - 1px)) translate(-50%,-50%);
+  background:linear-gradient(180deg,#1B1712 0%,#120F0B 60%,#0C0A08 100%)}
+#leftwall .window{position:absolute;left:14%;top:22%;width:34%;height:46%;background:
+  linear-gradient(180deg,#0A1220,#141C2E 55%,#0A1220);box-shadow:inset 0 0 40px rgba(0,0,0,.6),0 0 60px rgba(255,60,90,.10);border:10px solid #1A1510}
+#leftwall .neon{position:absolute;right:8%;top:30%;width:120px;height:60px;border-radius:6px;
+  background:radial-gradient(circle,rgba(255,60,110,.9),rgba(255,60,110,0) 70%);filter:blur(6px);
+  animation:neonflicker 8s infinite}
+#leftwall .curtain{position:absolute;left:12%;top:20%;width:8%;height:50%;background:linear-gradient(180deg,#241A1A,#1A1212);opacity:.85}
+@keyframes neonflicker{0%,100%{opacity:.9}4%{opacity:.3}6%{opacity:.9}42%{opacity:.85}44%{opacity:.4}46%{opacity:.9}72%{opacity:.5}74%{opacity:.9}}
+#foreground{width:calc(var(--room-w) * 1.4);height:340px;transform:translate3d(-50%,calc(var(--room-h)/2 - 40px),calc(var(--room-d)/2 - 210px));
+  background:linear-gradient(180deg,rgba(10,8,6,0) 0%,rgba(10,8,6,.85) 60%,rgba(6,5,4,.98) 100%);z-index:2}
+/* cold open: waking from a coma */
+#lids{position:fixed;inset:0;z-index:200;pointer-events:none}
+#lids .lid{position:absolute;left:0;right:0;height:52%;background:#050403}
+#lids .lidTop{top:0}
+#lids .lidBot{bottom:0}
+body.coldopen #lids .lid{transition:transform 1.4s cubic-bezier(.6,0,.2,1)}
+body.coldopen.blink1 #lids .lidTop{transform:translateY(-8%)}
+body.coldopen.blink1 #lids .lidBot{transform:translateY(8%)}
+body.coldopen.blink2 #lids .lidTop{transform:translateY(-100%)}
+body.coldopen.blink2 #lids .lidBot{transform:translateY(100%)}
+body.coldopen #room{filter:blur(6px) brightness(.5)}
+body.coldopen.blink2 #room{transition:filter 1.6s ease;filter:blur(0) brightness(1)}
+body.awake #lids{display:none}
+/* dust motes, seated idle */
+.mote{position:absolute;border-radius:50%;background:rgba(255,224,170,.5);pointer-events:none;
+  animation:motedrift 11s linear infinite}
+@keyframes motedrift{0%{transform:translate(0,0);opacity:0}10%{opacity:.6}90%{opacity:.4}100%{transform:translate(24px,-140px);opacity:0}}
+/* ============ furniture: shoebox (floor) + nightstand (replaces the drawer) ============ */
+#shoebox,#nightstand{position:absolute;left:0;top:0;transform-style:preserve-3d;cursor:pointer}
+#shoebox .f,#nightstand .f{position:absolute;backface-visibility:hidden}
+#shoebox .bwall{background:linear-gradient(180deg,#B79B72,#A5895F 60%,#8F7550);box-shadow:inset 0 10px 22px rgba(60,45,26,.5)}
+#shoebox .blid{background:linear-gradient(180deg,#C2A87F,#AE9268);transition:transform .6s cubic-bezier(.3,.8,.3,1);transform-origin:0% 50% 0}
+#shoebox.open .blid{transform:rotateX(-125deg)}
+#shoebox .blabel{font-family:'Caveat',cursive;color:#3A2F1E;text-align:center;font-size:26px;transform:rotate(-1.4deg)}
+#nightstand .body{background:linear-gradient(180deg,#2A251D,#332D23 55%,#241F18);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+#nightstand .drawerfront{background:linear-gradient(180deg,#4A4234,#3A3328);transition:transform .55s cubic-bezier(.3,.8,.3,1)}
+#nightstand.open .drawerfront{transform:translateZ(160px)}
+#nightstand .pull{border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9BC9E,#7E7258 70%)}
+#nightstand .bill{position:absolute;width:58px;height:26px;background:linear-gradient(100deg,#3C6B45,#4E8557);border-radius:2px;box-shadow:0 2px 5px rgba(0,0,0,.4)}
 #source{display:none}
 
 /* room architecture: painted in layout() */
@@ -64,7 +132,7 @@ body{background:radial-gradient(1400px 900px at 30% 10%,var(--wall) 0%,var(--wal
 /* ============ one photo ============ */
 .photo{position:absolute;width:264px;height:324px;cursor:pointer;transition:left .7s cubic-bezier(.3,.8,.3,1),top .7s cubic-bezier(.3,.8,.3,1),transform .7s cubic-bezier(.3,.8,.3,1),opacity .45s;transform:rotate(var(--rot,0deg)) scale(var(--sc,1));transform-origin:50% 50%}
 .photo:hover{z-index:40}
-.photo.flipped{z-index:60}
+.photo.read{z-index:60}
 body.noanim .photo{transition:none !important}
 body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) scale(var(--sc,1)) translateY(-4px)}
 .photo.dim{opacity:.16;pointer-events:none}
@@ -76,11 +144,12 @@ body.mode-wall .photo:hover,body.mode-backs .photo:hover{transform:rotate(0deg) 
 .photo.fresh::before{background:linear-gradient(100deg,rgba(255,253,246,.94),rgba(250,246,232,.86));box-shadow:0 1px 4px rgba(28,25,20,.2)}
 .photo.fresh .card{box-shadow:0 18px 34px rgba(28,25,20,.26),0 4px 10px rgba(28,25,20,.16),0 0 0 2px rgba(255,252,240,.9)}
 .rank{position:absolute;top:-11px;left:50%;transform:translateX(-50%) rotate(-2deg);z-index:6;font-family:'Caveat',cursive;font-size:16px;font-weight:600;color:var(--pencil);pointer-events:none;white-space:nowrap}
-.card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.35,.7,.3,1);box-shadow:0 18px 34px rgba(28,25,20,.26),0 4px 10px rgba(28,25,20,.16);background:var(--photo);border-radius:2px}
-.photo.flipped .card{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--photo);border-radius:2px}
-.face.back{transform:rotateY(180deg);overflow:hidden}
+.card{position:relative;width:100%;height:100%;box-shadow:0 18px 34px rgba(28,25,20,.26),0 4px 10px rgba(28,25,20,.16);background:var(--photo);border-radius:2px}
+.face{position:absolute;inset:0;background:var(--photo);border-radius:2px}
 .face.front::after{content:'';position:absolute;right:0;bottom:0;width:34px;height:34px;background:linear-gradient(315deg,rgba(28,25,20,.10),rgba(28,25,20,0) 55%);border-radius:0 0 2px 0}
+/* backs wall: the same card shell, but its whole face is the back content */
+.face.back{overflow:hidden}
+.photo.read .card{box-shadow:0 24px 50px rgba(0,0,0,.4),0 0 0 3px rgba(255,252,240,.9)}
 
 /* the image field */
 .img{position:absolute;top:14px;left:14px;width:236px;height:236px;background:var(--bg);color:var(--fg);overflow:hidden}
@@ -1331,8 +1400,23 @@ body.dived #tally,body.dived #hint{display:none}
 
 </div>
 
-<div id="viewport"><div id="world">
-  <svg id="threads"></svg>
+<div id="lids"><div class="lid lidTop"></div><div class="lid lidBot"></div></div>
+
+<div id="viewport"><div id="room">
+  <div id="frontWall"><div id="world">
+    <svg id="threads"></svg>
+  </div></div>
+  <div id="roomCenter">
+    <div id="backswall"><div id="backsInner"></div></div>
+    <div id="floor" class="roomplane"></div>
+    <div id="ceiling" class="roomplane"></div>
+    <div id="leftwall" class="roomplane">
+      <div class="curtain"></div><div class="window"></div><div class="neon"></div>
+    </div>
+    <div id="foreground" class="roomplane"></div>
+    <div id="shoebox"></div>
+    <div id="nightstand"></div>
+  </div>
 </div></div>
 <div id="dimmer"></div>
 
@@ -1388,6 +1472,7 @@ var BANDS = [
 var BAND_COLS = [1, 5, 4, 3, 4];
 
 var world = document.getElementById('world');
+var backsInner = document.getElementById('backsInner');
 var viewport = document.getElementById('viewport');
 var threads = document.getElementById('threads');
 var stray = [];   /* wall-text + architecture rebuilt each layout */
@@ -1439,15 +1524,27 @@ function buildPhotos(){
       front.appendChild(aw);
     }
 
+    card.appendChild(front);
+    el.appendChild(rank); el.appendChild(card);
+    world.appendChild(el);
+
+    /* the back wall: same card shell, mounted on the other plane, back-out.
+       flip is gone -- this is a real second surface, not a rotated face. */
+    var backEl = document.createElement('div');
+    backEl.className = 'photo st-' + state;
+    backEl.dataset.key = title;
+    if (slug) backEl.dataset.slug = slug;
+    backEl.style.setProperty('--rot', (jit(title, 3.4)).toFixed(2) + 'deg');
+    var backCard = document.createElement('div'); backCard.className = 'card';
     var back = document.createElement('div'); back.className = 'face back';
     var bs = document.createElement('div'); bs.className = 'backscale';
     bs.appendChild(sec);            /* the hand-authored panel IS the back */
     back.appendChild(bs);
-    card.appendChild(front); card.appendChild(back);
-    el.appendChild(rank); el.appendChild(card);
-    world.appendChild(el);
+    backCard.appendChild(back);
+    backEl.appendChild(backCard);
+    backsInner.appendChild(backEl);
 
-    var p = {el: el, sec: sec, img: img, chinScore: cs, rankEl: rank,
+    var p = {el: el, backEl: backEl, sec: sec, img: img, chinScore: cs, rankEl: rank,
              key: title, slug: slug, state: state, score: score, sc: 1,
              rec: parseInt(sec.dataset.rec || '0', 10),
              sort: sec.dataset.sort || title.toLowerCase(),
@@ -1494,7 +1591,7 @@ function resolveLinks(){
         kinEl + '. <span class="nt">' + l.note + '</span>';
       sa.appendChild(line);
     });
-    p.el.querySelector('.backscale').appendChild(sa);
+    p.backEl.querySelector('.backscale').appendChild(sa);
   });
 }
 
@@ -1563,7 +1660,7 @@ function layout(){
       var x = WALL_CX - (inRow * pitchX) / 2 + col * pitchX + (pitchX - PW) / 2
               + jit(p.key + 'x', 40);
       var yy = y + row * pitchY + n * 5 + jit(p.key + 'y', 52);
-      p.sc = 1; p.el.style.setProperty('--sc', '1');
+      setSc(p, 1);
       place(p, x, yy);
       p.rankEl.textContent = p.rankTxt;
       p.sec.querySelector('.no').textContent = p.rankTxt;
@@ -1603,8 +1700,8 @@ function layout(){
        '<div style="font-size:34px">the shoebox &middot; ' + arcs.length + ' prints</div>');
   arcs.forEach(function(p, n){
     var col = n % bw, row = Math.floor(n / bw);
-    p.sc = SC_BOX; p.el.style.setProperty('--sc', SC_BOX);
-    p.el.style.setProperty('--rot', (jit(p.key, 16)).toFixed(2) + 'deg');
+    setSc(p, SC_BOX);
+    setRot(p, jit(p.key, 16));
     place(p,
       BOXC.x - boxW / 2 + 60 + col * (PW * SC_BOX * .78) + jit(p.key + 'bx', 34) - (PW - PW * SC_BOX) / 2,
       BOXC.y - 60 + row * (PH * SC_BOX * .62) + jit(p.key + 'by', 26) - (PH - PH * SC_BOX) / 2);
@@ -1632,8 +1729,8 @@ function layout(){
   arch('pull', HZC.x - 14, HZC.y + cabH + 66, 28, 14);
   hz.forEach(function(p, n){
     var col = n % hw, row = Math.floor(n / hw);
-    p.sc = SC_HAZY; p.el.style.setProperty('--sc', SC_HAZY);
-    p.el.style.setProperty('--rot', (jit(p.key, 12)).toFixed(2) + 'deg');
+    setSc(p, SC_HAZY);
+    setRot(p, jit(p.key, 12));
     place(p,
       HZC.x - cabW / 2 + 66 + col * (PW * SC_HAZY * .82) + jit(p.key + 'hx', 26) - (PW - PW * SC_HAZY) / 2,
       HZC.y - 50 + row * (PH * SC_HAZY * .66) + jit(p.key + 'hy', 20) - (PH - PH * SC_HAZY) / 2);
@@ -1657,16 +1754,72 @@ function layout(){
   arch('lamp', WALL_CX - 700, EYE - 360, 1400, 900);
 
   world.style.width = W + 'px'; world.style.height = H + 'px';
+  backsInner.style.width = W + 'px'; backsInner.style.height = H + 'px';
   threads.setAttribute('width', W); threads.setAttribute('height', H);
   threads.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
   regions.all = {x: 0, y: 0, w: W, h: H};
+  placeFurniture();
   tally();
 }
 
 function place(p, x, y){
   p.home.x = x; p.home.y = y;
   p.el.style.left = x + 'px'; p.el.style.top = y + 'px';
+  p.backEl.style.left = x + 'px'; p.backEl.style.top = y + 'px';
 }
+function setSc(p, sc){
+  p.sc = sc;
+  p.el.style.setProperty('--sc', sc);
+  p.backEl.style.setProperty('--sc', sc);
+}
+function setRot(p, deg){
+  var v = deg.toFixed(2) + 'deg';
+  p.el.style.setProperty('--rot', v);
+  p.backEl.style.setProperty('--rot', v);
+}
+
+/* ---------- shoebox + nightstand: real 3D furniture near the seated spot ----------
+   positioned in the room's own physical scale (ROOM_*), independent of the huge
+   salon-wall content plane -- these are just floor objects you look at and click
+   to fly the WALL camera over to regions.box / regions.hazy. */
+var ROOM_W = 2100, ROOM_H = 1300, ROOM_D = 1700;
+function placeFurniture(){
+  var box = document.getElementById('shoebox');
+  var bx = 260, by = 210, bd = 170;
+  box.innerHTML =
+    '<div class="f bwall" style="width:' + bx + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,' + (bd / 2) + 'px)"></div>' +
+    '<div class="f bwall" style="width:' + bd + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(' + (bx / 2) + 'px)"></div>' +
+    '<div class="f bwall" style="width:' + bd + 'px;height:' + by + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(-' + (bx / 2) + 'px)"></div>' +
+    '<div class="f blid" style="width:' + bx + 'px;height:' + bd + 'px;transform:translate3d(-50%,-100%,' + (bd / 2) + 'px) rotateX(90deg)"></div>' +
+    '<div class="f blabel" style="width:' + bx + 'px;height:26px;transform:translate3d(-50%,-100%,' + (bd / 2 + 1) + 'px);padding-top:4px">the shoebox</div>';
+  box.style.transform = 'translate3d(' + (-ROOM_W * .18) + 'px,' + (ROOM_H / 2) + 'px,' + (ROOM_D * .3) + 'px)';
+
+  var ns = document.getElementById('nightstand');
+  var nx = 220, ny = 300, nd = 200;
+  ns.innerHTML =
+    '<div class="f body" style="width:' + nx + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,' + (nd / 2) + 'px)"></div>' +
+    '<div class="f body" style="width:' + nd + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(' + (nx / 2) + 'px)"></div>' +
+    '<div class="f body" style="width:' + nd + 'px;height:' + ny + 'px;transform:translate3d(-50%,-100%,0) rotateY(90deg) translateX(-' + (nx / 2) + 'px)"></div>' +
+    '<div class="f drawerfront" style="width:' + (nx - 20) + 'px;height:70px;transform:translate3d(-50%,-124px,' + (nd / 2 - 1) + 'px)"></div>' +
+    '<div class="f pull" style="width:22px;height:10px;transform:translate3d(-50%,-124px,' + (nd / 2 + 1) + 'px)"></div>' +
+    '<div class="f bill" style="transform:translate3d(-70%,-' + (ny + 6) + 'px,' + (nd / 2 - 40) + 'px) rotate(-8deg)"></div>' +
+    '<div class="f bill" style="transform:translate3d(10%,-' + (ny + 14) + 'px,' + (nd / 2 - 70) + 'px) rotate(6deg)"></div>';
+  ns.style.transform = 'translate3d(' + (ROOM_W * .22) + 'px,' + (ROOM_H / 2) + 'px,' + (ROOM_D * .32) + 'px)';
+}
+document.getElementById('shoebox').addEventListener('click', function(e){
+  e.stopPropagation();
+  var b = this;
+  b.classList.add('open');
+  if (document.body.classList.contains('dived')) closeDive(true);
+  setTimeout(function(){ fitRect(regions.box, 60); }, 260);
+});
+document.getElementById('nightstand').addEventListener('click', function(e){
+  e.stopPropagation();
+  var b = this;
+  b.classList.add('open');
+  if (document.body.classList.contains('dived')) closeDive(true);
+  setTimeout(function(){ fitRect(regions.hazy, 60); }, 260);
+});
 
 function tally(){
   var defs = defSet();
@@ -1681,19 +1834,59 @@ function tally(){
     arcsN + ' in the shoebox, ' + hazyN + ' undeveloped.';
 }
 
-/* ---------- camera ---------- */
+/* ---------- camera ----------
+   the wall's own 2D pan/zoom (cam.x/y/s) is unchanged from v3 and is applied
+   identically to both #world (front wall) and #backsInner (backs wall) -- the
+   two planes share one coordinate system, they are just two sides of the same
+   room. the 3D ROOM camera (yaw, a turn to the right for the backs wall) is a
+   separate transform on #room, driven by camera mode below. */
 var cam = {x: 0, y: 0, s: 1};
-function setCam(){ world.style.transform = 'translate(' + cam.x + 'px,' + cam.y + 'px) scale(' + cam.s + ')'; }
+function setCam(){
+  var t = 'translate(' + cam.x + 'px,' + cam.y + 'px) scale(' + cam.s + ')';
+  world.style.transform = t;
+  backsInner.style.transform = t;
+}
 function vw(){ return viewport.clientWidth; }
 function vh(){ return viewport.clientHeight; }
 function clampS(s){ return Math.max(.05, Math.min(3, s)); }
 
 function glideTo(x, y, s){
-  world.classList.add('glide');
+  world.classList.add('glide'); backsInner.classList.add('glide');
   cam.x = x; cam.y = y; cam.s = s; setCam();
 }
 world.addEventListener('transitionend', function(e){
   if (e.propertyName === 'transform' && e.target === world) world.classList.remove('glide');
+});
+backsInner.addEventListener('transitionend', function(e){
+  if (e.propertyName === 'transform' && e.target === backsInner) backsInner.classList.remove('glide');
+});
+
+/* ---------- room camera: the 3D turn, WAKE -> SEATED -> WALL/BACKS ---------- */
+var room = document.getElementById('room');
+var roomCam = {yaw: 0, pitch: 0, z: 0};
+var YAW = {wall: 0, invest: 0, backs: -90};
+/* Z_ENGAGED exactly cancels #frontWall's own -room-d/2 push-back, so the wall
+   plane lands flat at the perspective reference depth -- zero distortion,
+   the 2D pan/zoom math (cam.x/y/s) stays screen-accurate, exactly like v3. */
+var Z_ENGAGED = 850, Z_SEATED = Z_ENGAGED + 480;
+function setRoomCam(){
+  room.style.transform = 'translate3d(0,0,' + roomCam.z + 'px) rotateX(' + roomCam.pitch + 'deg) rotateY(' + roomCam.yaw + 'deg)';
+}
+function roomGlideTo(yaw, z){
+  room.classList.add('glide');
+  roomCam.yaw = yaw; roomCam.z = z; setRoomCam();
+}
+room.addEventListener('transitionend', function(e){
+  if (e.propertyName === 'transform' && e.target === room) room.classList.remove('glide');
+});
+/* seated idle parallax: a couple degrees of look-around, never enough to see
+   past the set (clamped, and suspended once the viewer has actually engaged) */
+var seatedParallax = true;
+document.addEventListener('mousemove', function(e){
+  if (!seatedParallax || document.body.classList.contains('coldopen')) return;
+  var nx = (e.clientX / vw() - .5), ny = (e.clientY / vh() - .5);
+  room.style.transform = 'translate3d(0,0,' + roomCam.z + 'px) '
+    + 'rotateX(' + (roomCam.pitch - ny * 2.4) + 'deg) rotateY(' + (roomCam.yaw + nx * 2.6) + 'deg)';
 });
 
 function DESK_H(){ var d = document.getElementById('desk'); return (d ? d.offsetHeight : 56) + 6; }
@@ -1721,7 +1914,7 @@ viewport.addEventListener('pointerdown', function(e){
   downTarget = e.target;
   pointers[e.pointerId] = {x: e.clientX, y: e.clientY};
   var keys = Object.keys(pointers);
-  world.classList.remove('glide');
+  world.classList.remove('glide'); backsInner.classList.remove('glide');
   if (keys.length === 1){
     panState = {px: e.clientX, py: e.clientY, cx: cam.x, cy: cam.y};
     moved = false;
@@ -1775,16 +1968,16 @@ viewport.addEventListener('wheel', function(){ interacted = true; });
 window.addEventListener('resize', function(){
   if (!interacted && !document.body.classList.contains('dived')){
     fitRect(regions.def, 40);
-    world.classList.remove('glide'); setCam();
+    world.classList.remove('glide'); backsInner.classList.remove('glide'); setCam();
   }
 });
 
 viewport.addEventListener('wheel', function(e){
-  /* reading a flipped back while dived: let it scroll */
-  var bs = e.target.closest && e.target.closest('.photo.flipped .backscale');
+  /* reading a back while dived: let it scroll */
+  var bs = e.target.closest && e.target.closest('.photo.read .backscale');
   if (bs && document.body.classList.contains('dived')) return;
   e.preventDefault();
-  world.classList.remove('glide');
+  world.classList.remove('glide'); backsInner.classList.remove('glide');
   var f = Math.exp(-e.deltaY * 0.0016);
   var s2 = clampS(cam.s * f);
   cam.x = e.clientX - (e.clientX - cam.x) * (s2 / cam.s);
@@ -1807,33 +2000,37 @@ function setMode(m){
   document.body.className = document.body.className.replace(/mode-\S+/, 'mode-' + m) +
     (document.body.className.indexOf('mode-') < 0 ? ' mode-' + m : '');
   document.getElementById('hint').textContent = MODE_HINT[m];
+  seatedParallax = false;
+  roomGlideTo(YAW[m], Z_ENGAGED);
 }
 
-/* ---------- dive (step close) ---------- */
+/* ---------- dive (step close, either wall) ----------
+   the flip mechanic is gone: the backs wall is a real second surface, so
+   "diving" always just centers the plane that is currently facing the camera
+   (front wall in mode wall/invest, backs wall in mode backs). no rotateY. */
 var diveStack = [];
-var flippedP = null, divedP = null;
+var readEl = null, divedP = null;
 
-function flipTo(p){
-  if (flippedP && flippedP !== p) flippedP.el.classList.remove('flipped');
-  flippedP = p;
-  if (p) p.el.classList.add('flipped');
-}
-function dive(p, flip){
+function activeEl(p){ return state.mode === 'backs' ? p.backEl : p.el; }
+function dive(p){
   if (!document.body.classList.contains('dived'))
     diveStack.push({x: cam.x, y: cam.y, s: cam.s});
   var s = Math.min(2.6 / p.sc, ((vh() - DESK_H()) * .92) / (PH * p.sc));
   centerPhoto(p, s);
   document.body.classList.add('dived');
-  if (divedP) divedP.el.style.zIndex = '';
-  divedP = p; p.el.style.zIndex = 70;
-  if (flip) flipTo(p); else flipTo(null);
+  if (readEl) readEl.style.zIndex = '';
+  if (readEl) readEl.classList.remove('read');
+  divedP = p;
+  readEl = activeEl(p);
+  readEl.style.zIndex = 70;
+  readEl.classList.add('read');
 }
 function closeDive(instant){
-  flipTo(null);
-  if (divedP){ divedP.el.style.zIndex = ''; divedP = null; }
+  if (readEl){ readEl.style.zIndex = ''; readEl.classList.remove('read'); readEl = null; }
+  divedP = null;
   document.body.classList.remove('dived');
   var c = diveStack.pop();
-  if (c){ if (instant){ world.classList.remove('glide'); cam = c; setCam(); }
+  if (c){ if (instant){ world.classList.remove('glide'); backsInner.classList.remove('glide'); cam = c; setCam(); }
           else glideTo(c.x, c.y, c.s); }
 }
 document.getElementById('offwall').addEventListener('click', function(){ closeDive(); });
@@ -2067,7 +2264,7 @@ document.addEventListener('click', function(e){
   }
   if (t.classList.contains('goto')){
     var kin = byTitle[t.dataset.goto];
-    if (kin){ dive(kin, true); }
+    if (kin){ dive(kin); }
     return;
   }
   if (t.classList.contains('cert-btn')){
@@ -2080,14 +2277,14 @@ document.addEventListener('click', function(e){
   if (pe){
     var p = byTitle[pe.dataset.key];
     if (!p) return;
-    if (pe.classList.contains('flipped')) return;   /* reading; let it be */
+    if (pe.classList.contains('read')) return;   /* reading; let it be */
     if (state.mode === 'invest'){
       if (heldPhoto === p) return;         /* the hold already lit it; ignore the trailing click */
       if (heldPhoto && pe.classList.contains('lit')){ followTo(p); return; }
       if (adj[p.key]){ lightThread(p); return; }
       return;
     }
-    dive(p, state.mode === 'backs');
+    dive(p);
   }
 });
 function photoOf(el){
@@ -2218,12 +2415,62 @@ buildPhotos();
 resolveLinks();
 layout();
 fitRect(regions.def, 40);
-world.classList.remove('glide');
+world.classList.remove('glide'); backsInner.classList.remove('glide');
 setCam();
 requestAnimationFrame(function(){ requestAnimationFrame(function(){
   document.body.classList.remove('noanim');
 }); });
 document.getElementById('hint').textContent = MODE_HINT.wall;
+
+/* ---------- cold open: waking from a coma ----------
+   black -> two blurred blinks -> the lamp buzzes on mid-second-blink -> the
+   camera starts askew/low and unsteadily rights itself into SEATED, then
+   settles onto the wall. total <=4s, skippable on click or key, runs once. */
+var coldOpenDone = false;
+function finishColdOpen(){
+  if (coldOpenDone) return;
+  coldOpenDone = true;
+  document.body.classList.remove('coldopen', 'blink1', 'blink2');
+  document.body.classList.add('awake');
+  roomCam.pitch = 0; roomCam.yaw = YAW.wall; roomCam.z = Z_ENGAGED;
+  room.classList.remove('glide'); setRoomCam();
+  seatedParallax = true;
+}
+(function coldOpen(){
+  document.body.classList.add('coldopen');
+  roomCam.yaw = YAW.wall + 9; roomCam.pitch = -7; roomCam.z = Z_SEATED;
+  seatedParallax = false;
+  setRoomCam();
+  var t = [];
+  t.push(setTimeout(function(){ document.body.classList.add('blink1'); }, 260));
+  t.push(setTimeout(function(){ document.body.classList.remove('blink1'); }, 620));
+  t.push(setTimeout(function(){ document.body.classList.add('blink2'); }, 780));
+  t.push(setTimeout(function(){
+    /* the camera unsteadily rights itself and dollies in to the wall */
+    room.classList.add('glide');
+    roomCam.yaw = YAW.wall; roomCam.pitch = 0; roomCam.z = Z_ENGAGED;
+    setRoomCam();
+  }, 1200));
+  t.push(setTimeout(finishColdOpen, 3900));
+  function skip(){ t.forEach(clearTimeout); finishColdOpen(); }
+  document.addEventListener('click', skip, {once: true, capture: true});
+  document.addEventListener('keydown', skip, {once: true, capture: true});
+})();
+
+/* ---------- dust motes: seated idle, cheap CSS drift ---------- */
+(function motes(){
+  var host = document.getElementById('foreground');
+  for (var i = 0; i < 14; i++){
+    var m = document.createElement('div'); m.className = 'mote';
+    var sz = 2 + Math.random() * 3;
+    m.style.width = sz + 'px'; m.style.height = sz + 'px';
+    m.style.left = (10 + Math.random() * 80) + '%';
+    m.style.bottom = (10 + Math.random() * 60) + '%';
+    m.style.animationDelay = (Math.random() * 11) + 's';
+    m.style.animationDuration = (9 + Math.random() * 6) + 's';
+    host.appendChild(m);
+  }
+})();
 
 /* the chemicals: photos develop in on arrival */
 var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

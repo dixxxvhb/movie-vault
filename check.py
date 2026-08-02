@@ -1,22 +1,30 @@
 # -*- coding: utf-8 -*-
 """
-The Vault, salon-wall check suite (pipeline v3).
-17 checks, superset of the old v2 suite. Run after every build.
+The Vault, motel-room check suite (pipeline v4 -- "The Motel Room").
+18 checks, superset of the v3 suite (17). Run after every build.
 
-v3 changes this suite covers:
-  - modes collapsed to wall / backs / invest (const + thread are gone)
-  - The Investigation: hold to light kin, click a lit kin to traverse
-    (ember trail), notecard flashes the link note, re-lights from the
-    new photo. Leaving the mode clears every ember + thread line.
-  - "step back" is a sub-toggle inside invest mode (not its own mode)
-  - the wall is a salon hang, not grid rows: verify distinct positions
-    and band-descending vertical order instead of row/col math
-  - archive/hazy photos scale via --sc (.56 / .5) and lose their tape
-  - archive photos carry an .awaiting element until certified, which
-    also snaps --sc back to 1; undo restores .awaiting and --sc .56
-  - go-to chips are def/box/hazy/all -> "The wall" / "The shoebox" /
-    "The dark drawer" / "The room"
-  - 24 ledger photos have bespoke SVG fronts (.img.hasphoto > svg)
+v4 changes this suite covers:
+  - the flip mechanic is gone. the backs wall is a real second surface
+    (#backswall / #backsInner), mounted with its own set of .photo elements
+    (p.backEl) that carry the panel content (p.sec) inside their own
+    .backscale. reading = camera dives to the plane that is currently
+    facing you (front wall in mode wall/invest, backs wall in mode backs),
+    and the read affordance is a `.read` class on whichever element (front
+    or back) is centered -- never a rotateY(180deg) flip.
+  - camera is now two layers: the 2D pan/zoom (cam.x/y/s), applied
+    identically to #world and #backsInner (one coordinate system, two
+    sides of the same room), and the 3D room camera (roomCam.yaw/z),
+    applied to #room, which turns to face the front wall or the backs wall.
+  - cold open (wake from a coma) runs once on load and is skippable by a
+    click or keypress; this suite skips it immediately so every other
+    check runs against a settled scene.
+  - shoebox (floor) and nightstand (replacing the dark drawer's cabinet)
+    are real 3D furniture; clicking either opens it and flies the wall
+    camera to its region (regions.box / regions.hazy).
+  - panels, ranks, salon hang, states, certify/uncertify, links, the
+    investigation and step-back are otherwise UNCHANGED from v3 and are
+    verified the same way, just reached through p.sec instead of p.el
+    wherever the content moved wall.
 
 Browser resolution order:
   1. /opt/pw-browsers/chromium (the skill sandbox; never run `playwright install`)
@@ -71,23 +79,39 @@ async def main():
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
         await pg.goto(URL)
-        await pg.wait_for_timeout(2400)   # let the chemicals develop
+        await pg.wait_for_timeout(300)
 
-        # -- 1. every panel became a photo; counts per state ------------------
+        # -- 1. cold open: runs, and a keypress skips it straight to awake ----
+        pre = await pg.evaluate("()=>({coldopen: document.body.classList.contains('coldopen'), done: coldOpenDone})")
+        assert pre["coldopen"] is True and pre["done"] is False, pre
+        await pg.keyboard.press("Escape")
+        await pg.wait_for_timeout(150)
+        post = await pg.evaluate("""()=>({awake: document.body.classList.contains('awake'),
+          coldopen: document.body.classList.contains('coldopen'), done: coldOpenDone,
+          lidsHidden: getComputedStyle(document.getElementById('lids')).display==='none'})""")
+        assert post["awake"] is True and post["coldopen"] is False and post["done"] is True, post
+        assert post["lidsHidden"] is True, post
+        ok(1, "cold open runs on load and a keypress skips it straight to awake")
+
+        await pg.wait_for_timeout(2200)   # let the chemicals develop
+
+        # -- 2. every panel became a photo; counts per state ------------------
         counts = await pg.evaluate("""()=>({
           sections: document.querySelectorAll('#source section.panel, .backscale section.panel').length,
           photos: photos.length,
+          backs: document.querySelectorAll('#backsInner .photo').length,
           ledger: photos.filter(p=>p.state==='ledger').length,
           arc: photos.filter(p=>p.state==='arc').length,
           cert: photos.filter(p=>p.state==='cert').length,
           hazy: photos.filter(p=>p.state==='hazy').length})""")
         assert counts["photos"] == counts["sections"], counts
+        assert counts["backs"] == counts["photos"], counts   # every photo has a mounted back, no flip needed
         assert counts["ledger"] == 24, counts
         assert counts["arc"] == 33 and counts["hazy"] == 15, counts
-        ok(1, "all %d films render: %d ledger / %d archive / %d certified / %d hazy"
-           % (counts["photos"], counts["ledger"], counts["arc"], counts["cert"], counts["hazy"]))
+        ok(2, "all %d films render on the front wall AND the backs wall (%d ledger / %d archive / "
+           "%d certified / %d hazy)" % (counts["photos"], counts["ledger"], counts["arc"], counts["cert"], counts["hazy"]))
 
-        # -- 2. the salon hang: distinct positions, bands descend -------------
+        # -- 3. the salon hang: distinct positions, bands descend -------------
         rows = await pg.evaluate("""()=>photos
           .filter(p=>p.state==='ledger'||p.state==='cert')
           .map(p=>({key:p.key, score:p.score,
@@ -105,10 +129,10 @@ async def main():
                 worst_gap = min(lo_top - hi_top
                                  for hi_top in byband[hi_band] for lo_top in byband[lo_band])
                 assert worst_gap > 100, (hi_band, lo_band, worst_gap)
-        ok(2, "salon hang: %d ledger+cert photos at distinct spots, %d bands descend correctly"
+        ok(3, "salon hang: %d ledger+cert photos at distinct spots, %d bands descend correctly"
            % (len(rows), len(present)))
 
-        # -- 3. three states visually distinct --------------------------------
+        # -- 4. three states visually distinct --------------------------------
         st = await pg.evaluate("""()=>{
           const f = t => getComputedStyle(byTitle[t].img);
           return {ledger: f('Sicario').filter, arc: f('Contact').filter,
@@ -119,28 +143,31 @@ async def main():
         assert "grayscale" in st["arc"], st
         assert "gradient" in st["hazyBg"], st
         assert st["hazyScore"] == "undeveloped", st
-        ok(3, "states styled distinctly (loud / penciled fade / undeveloped)")
+        ok(4, "states styled distinctly (loud / penciled fade / undeveloped)")
 
-        # -- 4. hazy offers no certify affordance -----------------------------
+        # -- 5. hazy offers no certify affordance -----------------------------
         h = await pg.evaluate(
             "()=>photos.filter(p=>p.state==='hazy')"
-            ".reduce((a,p)=>a+p.el.querySelectorAll('.cert-btn,.certform').length,0)")
+            ".reduce((a,p)=>a+p.sec.querySelectorAll('.cert-btn,.certform').length,0)")
         assert h == 0, h
-        ok(4, "the Hazy Wing cannot certify (no affordance rendered)")
+        ok(5, "the Hazy Wing cannot certify (no affordance rendered)")
 
-        # -- 5. archive/hazy scale down (--sc) and lose their tape ------------
+        # -- 6. archive/hazy scale down (--sc) and lose their tape ------------
         sc = await pg.evaluate("""()=>{
           const scOf = t => getComputedStyle(byTitle[t].el).getPropertyValue('--sc').trim();
+          const scBackOf = t => getComputedStyle(byTitle[t].backEl).getPropertyValue('--sc').trim();
           const tapeOf = t => getComputedStyle(byTitle[t].el, '::before').display;
           return {ledgerSc: scOf('Sicario'), arcSc: scOf('Contact'), hazySc: scOf('Prisoners'),
+                  arcBackSc: scBackOf('Contact'),
                   arcTape: tapeOf('Contact'), hazyTape: tapeOf('Prisoners')}}""")
         assert sc["ledgerSc"] == "1", sc
-        assert sc["arcSc"] == "0.56", sc
+        assert sc["arcSc"] == "0.56" and sc["arcBackSc"] == "0.56", sc
         assert sc["hazySc"] == "0.5", sc
         assert sc["arcTape"] == "none" and sc["hazyTape"] == "none", sc
-        ok(5, "archive scales to %s, hazy to %s, neither carries tape" % (sc["arcSc"], sc["hazySc"]))
+        ok(6, "archive scales to %s (front AND back), hazy to %s, neither carries tape"
+           % (sc["arcSc"], sc["hazySc"]))
 
-        # -- 6. ranks: order matches scores, ties share T- --------------------
+        # -- 7. ranks: order matches scores, ties share T- --------------------
         ranks = await pg.evaluate("""()=>{
           const defs = photos.filter(p=>p.state==='ledger'||p.state==='cert')
             .sort((a,b)=>b.score-a.score||(a.sort<b.sort?-1:1));
@@ -154,9 +181,9 @@ async def main():
         for r in ranks:
             if prev is not None: assert r["s"] <= prev, r
             prev = r["s"]
-        ok(6, "ranks descend correctly, %d tied entries share T- numbers" % seen)
+        ok(7, "ranks descend correctly, %d tied entries share T- numbers" % seen)
 
-        # -- 7. camera: wheel zooms, drag pans --------------------------------
+        # -- 8. camera: wheel zooms, drag pans (both planes track together) ---
         s0 = await pg.evaluate("()=>cam.s")
         await pg.mouse.move(640, 500)
         await pg.mouse.wheel(0, -400)
@@ -169,64 +196,78 @@ async def main():
         await pg.wait_for_timeout(120)
         x1 = await pg.evaluate("()=>cam.x")
         assert abs(x1 - x0) > 60, (x0, x1)
-        ok(7, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f)" % (s0, s1, x1 - x0))
+        twins = await pg.evaluate("""()=>({w: getComputedStyle(world).transform,
+          b: getComputedStyle(backsInner).transform})""")
+        assert twins["w"] == twins["b"], twins   # one coordinate system, two sides of the room
+        ok(8, "camera pans and zooms (s %.2f -> %.2f, x moved %.0f), both wall planes track together"
+           % (s0, s1, x1 - x0))
 
-        # -- 8. three modes switch ---------------------------------------------
+        # -- 9. three modes switch, and the ROOM camera actually turns --------
+        yaws = {}
         for m in ["backs", "invest", "wall"]:
             await pg.evaluate("m=>document.querySelector('.opt[data-mode=\"'+m+'\"]').click()", m)
-            await pg.wait_for_timeout(150)
-            cls = await pg.evaluate("()=>document.body.className")
-            assert ("mode-" + m) in cls, (m, cls)
-        ok(8, "all three modes switch (wall / backs / the investigation)")
+            await pg.wait_for_timeout(950)
+            st2 = await pg.evaluate("()=>({cls: document.body.className, yaw: roomCam.yaw})")
+            assert ("mode-" + m) in st2["cls"], (m, st2)
+            yaws[m] = st2["yaw"]
+        assert yaws["backs"] != yaws["wall"], yaws   # SEATED/WALL -> BACKS is a real turn
+        assert yaws["invest"] == yaws["wall"], yaws  # the investigation lives on the front wall
+        ok(9, "all three modes switch, and the room camera turns for backs (wall/invest yaw %.0f, backs yaw %.0f)"
+           % (yaws["wall"], yaws["backs"]))
 
-        # -- 9. wall dive: step close, front stays front ----------------------
+        # -- 10. wall dive: step close, front reads, no flip anywhere ---------
         await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].el.querySelector('.img').click() }")
         await pg.wait_for_timeout(300)
-        dv = await pg.evaluate("()=>({d:document.body.classList.contains('dived'),"
-                               "f:document.querySelectorAll('.photo.flipped').length})")
-        assert dv["d"] is True and dv["f"] == 0, dv
+        dv = await pg.evaluate("""()=>({d:document.body.classList.contains('dived'),
+          read: byTitle['Sicario'].el.classList.contains('read'),
+          anyFlipClass: document.querySelectorAll('.photo.flipped').length})""")
+        assert dv["d"] is True and dv["read"] is True and dv["anyFlipClass"] == 0, dv
         await pg.evaluate("()=>document.getElementById('offwall').click()")
         await pg.wait_for_timeout(200)
         assert not await pg.evaluate("()=>document.body.classList.contains('dived')")
-        ok(9, "wall mode dives to the print and comes back, no flip")
+        ok(10, "wall mode dives to the front print and reads it in place, comes back, no flip mechanic exists")
 
-        # -- 10. the backs: flip, read, see-also present -----------------------
+        # -- 11. the backs wall: turn, dive, read, see-also present -----------
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].el.querySelector('.img').click() }")
+        await pg.wait_for_timeout(950)
+        await pg.evaluate("()=>{ moved=false; byTitle['Sicario'].backEl.querySelector('.face.back').click() }")
         await pg.wait_for_timeout(650)
         bk = await pg.evaluate("""()=>{
-          const p = byTitle['Sicario'].el;
-          return {flipped: p.classList.contains('flipped'),
-                  plotVisible: !!p.querySelector('.plot') && p.querySelector('.plot').offsetParent!==null,
-                  sa: p.querySelectorAll('.saline').length,
-                  nopho: p.querySelectorAll('.nopho').length}}""")
-        assert bk["flipped"] and bk["plotVisible"], bk
+          const p = byTitle['Sicario'];
+          return {read: p.backEl.classList.contains('read'),
+                  plotVisible: !!p.sec.querySelector('.plot') && p.sec.querySelector('.plot').offsetParent!==null,
+                  sa: p.backEl.querySelectorAll('.saline').length,
+                  nopho: p.backEl.querySelectorAll('.nopho').length}}""")
+        assert bk["read"] and bk["plotVisible"], bk
         assert bk["sa"] >= 4 and bk["nopho"] >= 1, bk
-        ok(10, "backs flip and carry %d see-also lines (%d marked no-photo-yet)" % (bk["sa"], bk["nopho"]))
+        ok(11, "the backs wall turns, dives, and reads (%d see-also lines, %d marked no-photo-yet)"
+           % (bk["sa"], bk["nopho"]))
 
-        # -- 11. see-also respects direction -----------------------------------
+        # -- 12. see-also respects direction -----------------------------------
         d = await pg.evaluate("""()=>{
-          const txt = t => [].map.call(byTitle[t].el.querySelectorAll('.saline .rel'), e=>e.textContent);
+          const txt = t => [].map.call(byTitle[t].backEl.querySelectorAll('.saline .rel'), e=>e.textContent);
           return {memento: txt('Memento'), usl: txt('Under the Silver Lake')}}""")
         assert "unreliable search" not in d["memento"], d
         assert "unreliable search" in d["usl"], d
-        ok(11, "directional links render one-way (USL back carries the line, Memento's does not)")
+        ok(12, "directional links render one-way (USL back carries the line, Memento's does not)")
 
-        # -- 12. the handwriting flies you to its kin -------------------------
+        # -- 13. the handwriting flies you to its kin -------------------------
         await pg.evaluate("()=>{ moved=false; document.querySelector("
                           "'.photo[data-key=\"Sicario\"] .saline .goto').click() }")
         await pg.wait_for_timeout(650)
-        fl = await pg.evaluate("()=>({sic: byTitle['Sicario'].el.classList.contains('flipped'),"
-                               "now: document.querySelector('.photo.flipped').dataset.key})")
+        fl = await pg.evaluate("""()=>({sic: byTitle['Sicario'].backEl.classList.contains('read'),
+          now: document.querySelector('.photo.read').dataset.key})""")
         assert fl["sic"] is False and fl["now"] != "Sicario", fl
         await pg.evaluate("()=>document.getElementById('offwall').click()")
         await pg.wait_for_timeout(200)
-        ok(12, "goto flight: previous back closed, camera flew to " + fl["now"])
+        ok(13, "goto flight: previous back closed, camera flew to " + fl["now"])
 
-        # -- 13. step back: sub-toggle inside the investigation, reflows and restores
+        # -- 14. step back: sub-toggle inside the investigation, reflows and restores
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        await pg.wait_for_timeout(950)
         home = await pg.evaluate("()=>byTitle['Sicario'].home")
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"invest\"]').click()")
-        await pg.wait_for_timeout(150)
+        await pg.wait_for_timeout(950)
         chipVis = await pg.evaluate(
             "()=>getComputedStyle(document.getElementById('stepbackChip')).display")
         assert chipVis != "none", chipVis
@@ -246,14 +287,16 @@ async def main():
                                  "stepback: document.body.classList.contains('stepback')})")
         assert back["stepback"] is False, back
         assert abs(back["left"] - home["x"]) < .5 and back["dims"] == 0, (back, home)
-        ok(13, "step back reflows (%d dimmed, %d region labels) and drifts home on exit"
+        ok(14, "step back reflows (%d dimmed, %d region labels) and drifts home on exit"
            % (cx["dims"], cx["labels"]))
 
-        # -- 14. the investigation: hold lights kin, click traverses, exit clears
+        # -- 15. the investigation: hold lights kin, click traverses, exit clears
         await pg.evaluate("()=>fitRect({x: byTitle['Memento'].home.x-500, y: byTitle['Memento'].home.y-400, w: 1300, h: 1100})")
         await pg.wait_for_timeout(1000)
-        pt = await pg.evaluate("""()=>{const p=byTitle['Memento'];
-          return {x:(p.home.x+132)*cam.s+cam.x, y:(p.home.y+162)*cam.s+cam.y}}""")
+        # ground truth from the real box (perspective-projected), not the flat
+        # cam formula -- the wall now lives inside a 3D room, so trust the DOM.
+        pt = await pg.evaluate("""()=>{const r=byTitle['Memento'].el.getBoundingClientRect();
+          return {x:r.left+r.width/2, y:r.top+r.height/2}}""")
         await pg.mouse.move(pt["x"], pt["y"])
         await pg.mouse.down()
         await pg.wait_for_timeout(420)
@@ -267,10 +310,6 @@ async def main():
         stillLit = await pg.evaluate("()=>document.querySelectorAll('#threads line').length")
         assert stillLit == 3, stillLit   # released but still armed: lines persist
 
-        # click a lit kin: use the same direct .click() pattern as the rest of the
-        # suite (dive/goto tests), not simulated mouse coordinates. A real mouse
-        # click here would retarget to #viewport, which calls setPointerCapture on
-        # every pointerdown -- that's a click(), not the followTo() the template runs.
         kinKey = await pg.evaluate("""()=>{
           const held = heldPhoto.key;
           const k = [].find.call(document.querySelectorAll('.photo.lit'), p=>p.dataset.key!==held);
@@ -287,24 +326,25 @@ async def main():
         relit = await pg.evaluate("()=>document.querySelectorAll('#threads line:not(.ember)').length")
         assert relit >= 1, relit   # the trace re-lit from the new photo
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
-        await pg.wait_for_timeout(400)
+        await pg.wait_for_timeout(950)
         gone = await pg.evaluate("()=>document.querySelectorAll('#threads line').length")
         assert gone == 0, gone
-        ok(14, "the investigation lights kin, traversal leaves %d ember(s) and a note, "
+        ok(15, "the investigation lights kin, traversal leaves %d ember(s) and a note, "
            "leaving the mode clears every thread" % tr["ember"])
 
-        # -- 15. certify end to end (guard, tray, re-rank, undo, --sc) --------
+        # -- 16. certify end to end (guard, tray, re-rank, undo, --sc, both planes)
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"backs\"]').click()")
-        await pg.evaluate("()=>{ moved=false; dive(byTitle['Contact'], true) }")
+        await pg.wait_for_timeout(950)
+        await pg.evaluate("()=>{ moved=false; dive(byTitle['Contact']) }")
         await pg.wait_for_timeout(650)
-        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].el.querySelector('.cert-btn').click() }")
+        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].sec.querySelector('.cert-btn').click() }")
         # empty line must be refused
-        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].el.querySelector('.cert-go').click() }")
+        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].sec.querySelector('.cert-go').click() }")
         await pg.wait_for_timeout(150)
-        g = await pg.evaluate("""()=>({bad: byTitle['Contact'].el.querySelector('.cert-why').classList.contains('bad'),
+        g = await pg.evaluate("""()=>({bad: byTitle['Contact'].sec.querySelector('.cert-why').classList.contains('bad'),
           tray: document.getElementById('tray').classList.contains('on')})""")
         assert g["bad"] is True and g["tray"] is False, g
-        await pg.evaluate("""()=>{const p=byTitle['Contact'].el;
+        await pg.evaluate("""()=>{const p=byTitle['Contact'].sec;
           p.querySelector('.cert-score').value='9.4';
           p.querySelector('.cert-why').value='the eighteen seconds of static. I have never needed to see it again.';
           moved=false; p.querySelector('.cert-go').click()}""")
@@ -316,13 +356,14 @@ async def main():
             defs:photos.filter(x=>x.state==='ledger'||x.state==='cert').length,
             rank:p.rankEl.textContent,
             sc:getComputedStyle(p.el).getPropertyValue('--sc').trim(),
+            scBack:getComputedStyle(p.backEl).getPropertyValue('--sc').trim(),
             awaiting:p.el.querySelectorAll('.awaiting').length}}""")
         assert c["state"] == "cert" and c["score"] == 9.4 and c["arcscore"] == "10.0", c
         assert "in pen" in c["chin"] and c["tray"] is True, c
         assert c["code"].startswith("CERTIFY\n") and "Contact | 9.4 | the eighteen seconds" in c["code"], c
         assert c["defs"] == 25 and c["rank"].startswith(("No.", "T-")), c
-        assert c["sc"] == "1" and c["awaiting"] == 0, c
-        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].el.querySelector('.cert-undo').click() }")
+        assert c["sc"] == "1" and c["scBack"] == "1" and c["awaiting"] == 0, c
+        await pg.evaluate("()=>{ moved=false; byTitle['Contact'].sec.querySelector('.cert-undo').click() }")
         await pg.wait_for_timeout(900)
         u = await pg.evaluate("""()=>{const p=byTitle['Contact'];
           return {state:p.state, score:p.score, tray:document.getElementById('tray').classList.contains('on'),
@@ -333,10 +374,28 @@ async def main():
         assert u["state"] == "arc" and u["score"] == 10.0 and u["tray"] is False, u
         assert u["defs"] == 24 and "grayscale" in u["fade"], u
         assert u["sc"] == "0.56" and u["awaiting"] == 1, u
-        ok(15, "certify: guard refused empty line, pen stuck, --sc snapped to 1, "
+        ok(16, "certify: guard refused empty line, pen stuck on both planes, --sc snapped to 1, "
                 "undo restored the pencil (--sc %s, awaiting %d)" % (u["sc"], u["awaiting"]))
 
-        # -- 16. bespoke SVG fronts on the ledger, no glyph fallback ----------
+        # -- 17. shoebox + nightstand: real 3D furniture, click opens and flies
+        await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
+        await pg.wait_for_timeout(950)
+        s0b = await pg.evaluate("()=>({x:cam.x,y:cam.y,s:cam.s})")
+        await pg.evaluate("()=>document.getElementById('shoebox').click()")
+        await pg.wait_for_timeout(1100)
+        box = await pg.evaluate("()=>({open: document.getElementById('shoebox').classList.contains('open'),"
+                                "moved: cam.s !== " + repr(s0b["s"]) + " || cam.x !== " + repr(s0b["x"]) + "})")
+        assert box["open"] is True and box["moved"] is True, box
+        s1b = await pg.evaluate("()=>({x:cam.x,y:cam.y,s:cam.s})")
+        await pg.evaluate("()=>document.getElementById('nightstand').click()")
+        await pg.wait_for_timeout(1100)
+        drw = await pg.evaluate("()=>({open: document.getElementById('nightstand').classList.contains('open'),"
+                                "moved: cam.s !== " + repr(s1b["s"]) + " || cam.x !== " + repr(s1b["x"]) + "})")
+        assert drw["open"] is True and drw["moved"] is True, drw
+        ok(17, "the shoebox lid tips open and the nightstand drawer slides out; both fly the wall "
+                "camera to their contents")
+
+        # -- 18. bespoke SVG fronts on the ledger, no glyph fallback ----------
         svg = await pg.evaluate("""()=>({
           ledgerPanels: document.querySelectorAll('section.panel[data-set="ledger"]').length,
           hasphotoSvg: document.querySelectorAll('.img.hasphoto svg').length,
@@ -345,7 +404,7 @@ async def main():
         assert svg["ledgerPanels"] > 0, svg
         assert svg["hasphotoSvg"] == svg["ledgerPanels"], svg
         assert svg["badGlyph"] == 0, svg
-        ok(16, "%d ledger photos carry bespoke SVG fronts, none fall back to a glyph" % svg["hasphotoSvg"])
+        ok(18, "%d ledger photos carry bespoke SVG fronts, none fall back to a glyph" % svg["hasphotoSvg"])
 
         await pg.evaluate("()=>document.querySelector('.opt[data-mode=\"wall\"]').click()")
         await pg.evaluate("()=>fitRect(regions.def, 40)")
@@ -353,7 +412,7 @@ async def main():
         await pg.screenshot(path=SHOT, full_page=False)
         await b.close()
 
-    # -- 17. restore paths converge, byte for byte ---------------------------
+    # -- 19. restore paths converge, byte for byte ---------------------------
     tmp = tempfile.mkdtemp()
     try:
         a = os.path.join(tmp, "a.html"); b2 = os.path.join(tmp, "b.html")
@@ -373,7 +432,7 @@ async def main():
         shutil.copy(os.path.join(BASE, "the-vault.html"), vb)
         assert filecmp.cmp(a, b2, shallow=False), "the-ledger.html diverges between restore paths"
         assert filecmp.cmp(va, vb, shallow=False), "the-vault.html diverges between restore paths"
-        ok(17, "both restore paths converge byte-identical (ledger and build)")
+        ok(19, "both restore paths converge byte-identical (ledger and build)")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

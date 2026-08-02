@@ -1,5 +1,69 @@
 # Pipeline CHANGELOG
 
+## v4 — 2026-08-01 — The Motel Room (first-person, CSS 3D shell)
+
+The wall was a room painted in 2D. Now the viewer is actually inside one:
+first-person, waking from a coma, in a run-down motel room. Full spec in
+`VAULT-V4-HANDOFF.md`. `vault.py`'s token contract is untouched; the whole
+transformation lives in `wall_template.html`. v3 is archived at
+`legacy-v3/wall_template.html`.
+
+### What structurally changed
+
+- **`#viewport` now has real 3D perspective** (`perspective:1100px;
+  perspective-origin:50% 45%`). A new `#room` (`transform-style:preserve-3d`)
+  is the scene root; a single camera object (`roomCam.{yaw,pitch,z}`) drives
+  its transform, eased with the same glide feel as the old 2D camera.
+- **The flip mechanic is gone, for good.** The salon wall (`#world`, all its
+  existing layout/salon/threads/Investigation code, reused verbatim) is now
+  the **front wall**, pushed back into the room on `#frontWall`
+  (`translateZ`). A brand new **backs wall** (`#backswall` / `#backsInner`,
+  turned 90° via `rotateY`) carries a second, independent set of `.photo`
+  elements (`p.backEl`) mounted back-out — the panel content (`p.sec`) lives
+  there, not behind a `rotateY(180deg)` card flip. Reading a card is just the
+  camera diving to whichever wall is currently facing it; a `.read` class
+  (not `.flipped`) marks the centered element on either plane.
+- **One 2D coordinate system, two sides of the same room.** The existing
+  pan/zoom/pinch camera (`cam.x/y/s`) is applied identically to `#world` and
+  `#backsInner` — turning to the backs wall doesn't reset your place in the
+  hang. `Z_ENGAGED` is picked to exactly cancel `#frontWall`'s own depth
+  offset, so the front wall renders at zero perspective distortion and all
+  the wall's existing screen-pixel math (`fitRect`, `centerPhoto`, dive)
+  keeps working unchanged.
+- **The room shell**: floor (worn carpet, repeating gradients), ceiling
+  (water-stain bloom), a left wall with a night window and a flickering neon
+  sign washing pink light in (`@keyframes neonflicker`, CSS-only), and a
+  foreground silhouette plane low in frame to sell "I'm sitting here." All
+  `.arch`-style gradient divs, no images.
+- **Furniture, not painted regions.** The Shoebox and the Dark Drawer's
+  cabinet are now real 3D boxes (`#shoebox`, `#nightstand`, a handful of
+  `.f` planes each) sitting on the floor between the viewer and the wall.
+  Clicking either tips the lid / slides the drawer (`.open` class) and flies
+  the *wall* camera over to `regions.box` / `regions.hazy` — same content,
+  same salon-plane coordinates as v3, now reached through a piece of
+  furniture instead of a chip alone.
+- **Cold open**: page loads black, two blurred blinks, the room brightens
+  mid-second-blink (the lamp buzzing on), and the camera rights itself from
+  an askew/low start into SEATED over ~2.5s. Skippable on any click or
+  keypress (`finishColdOpen()`), runs once, ≤4s total. Seated idle carries a
+  couple degrees of mouse-parallax and a handful of CSS dust motes.
+- **Modes are unchanged in meaning**: Wall / Backs (now a literal turn, via
+  `roomCam.yaw`) / The Investigation (still front-wall-only, still hold to
+  light kin / click to follow / ember trail / step back — none of that code
+  moved). Go-to chips (def/box/hazy/all) still `fitRect` within the wall's
+  own plane.
+
+### check.py
+
+Rewritten for the new reality (19 checks, up from 17): cold-open skip,
+front+back mount counts, `.read` instead of `.flipped` everywhere (reached
+via `p.sec`/`p.backEl` since panel content no longer lives under `p.el`),
+room-camera yaw actually turning for backs vs. wall/invest, shoebox/nightstand
+open+fly behavior, `--sc` checked on both planes for archive/hazy. Ranks,
+salon hang, states, links, Investigation, step back, certify/undo, SVG
+fronts, and the restore-path convergence check are unchanged in intent, just
+re-pointed at the new DOM.
+
 ## v3 — 2026-08-01 — The Room (same night as v2; Dixon's escalation)
 
 Dixon's four rulings (recorded from the session): height = rank on a salon
