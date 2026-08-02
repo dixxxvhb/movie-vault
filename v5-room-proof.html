@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V5 ROOM PROOF — EMPTY</title>
+<style>
+/* ============================================================
+   VAULT v5 — EMPTY ROOM PROOF
+   One unit system: WALL PIXELS. Every plane, every piece of
+   furniture, and the camera all live in the same wall-px space.
+   Real preserve-3d box. Camera = inverse transform on #room:
+   rotateX(-pitch) rotateY(-yaw) translate3d(-x,-y,-z).
+   Zoom is a DOLLY (camera z), never a scale() hack.
+   ============================================================ */
+:root{
+  --ink:#0b0a09; --paper:#e8ddc8; --wallp:#4a3f33; --wallp2:#3a3128;
+  --neon:#ff5fa2; --lamp:#ffd9a0; --wood:#2e2118;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#050403;font-family:Georgia,serif}
+
+#viewport{
+  position:fixed; inset:0;
+  perspective:1000px;
+  perspective-origin:50% 46%;
+  background:#050403;
+  overflow:hidden;
+}
+#room{
+  position:absolute; left:50%; top:46%;
+  width:0; height:0;
+  transform-style:preserve-3d;
+}
+/* every plane shares this */
+.plane{
+  position:absolute; left:0; top:0;
+  transform-style:preserve-3d;
+  /* NO backface-visibility:hidden — inside a box you always face the
+     back of half the planes; culling them is what black-voided v4. */
+}
+
+/* ---------- ROOM GEOMETRY (set in JS, sizes here for art) ---------- */
+/* Front wall: aged wallpaper, stains, vignette */
+#wFront{
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 20%, rgba(0,0,0,.28), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 82% 75%, rgba(20,10,0,.35), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,240,210,.045) 0 3px, transparent 3px 96px),
+    repeating-linear-gradient(90deg, transparent 0 46px, rgba(0,0,0,.06) 46px 50px, transparent 50px 96px),
+    linear-gradient(180deg, #574a3b 0%, var(--wallp) 40%, #40372c 100%);
+  box-shadow: inset 0 0 380px 120px rgba(0,0,0,.55);
+}
+/* Backs wall (behind you): darker cousin of the same paper */
+#wBack{
+  background:
+    radial-gradient(ellipse 50% 45% at 60% 30%, rgba(0,0,0,.35), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,240,210,.03) 0 3px, transparent 3px 96px),
+    linear-gradient(180deg, #453a2e 0%, var(--wallp2) 45%, #302820 100%);
+  box-shadow: inset 0 0 380px 140px rgba(0,0,0,.65);
+}
+/* Side walls */
+#wLeft,#wRight{
+  background:
+    repeating-linear-gradient(90deg, rgba(255,240,210,.035) 0 3px, transparent 3px 96px),
+    linear-gradient(180deg, #4e4235 0%, #423829 55%, #362e24 100%);
+  box-shadow: inset 0 0 320px 110px rgba(0,0,0,.6);
+}
+/* Floor: worn wood boards */
+#wFloor{
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 40%, rgba(255,214,160,.10), transparent 70%),
+    repeating-linear-gradient(90deg, #241a12 0 6px, #2e2118 6px 170px, #201811 170px 176px, #2a1f16 176px 340px),
+    linear-gradient(180deg, #241a12, #1a130d);
+  box-shadow: inset 0 0 420px 160px rgba(0,0,0,.72);
+}
+/* Ceiling: water stain over plaster */
+#wCeil{
+  background:
+    radial-gradient(ellipse 34% 40% at 68% 42%, rgba(90,70,40,.5), rgba(60,45,25,.25) 55%, transparent 75%),
+    linear-gradient(180deg, #2c261e, #221d17);
+  box-shadow: inset 0 0 380px 150px rgba(0,0,0,.7);
+}
+
+/* rail + baseboard strips on the two content walls */
+.rail{ background:linear-gradient(180deg,#6b5a44,#4f4232 60%,#3a3126); box-shadow:0 6px 18px rgba(0,0,0,.5); }
+.baseboard{ background:linear-gradient(180deg,#3d3325,#2b241b); box-shadow:0 -4px 14px rgba(0,0,0,.4); }
+
+/* ---------- LEFT WALL: doorway + pink neon bleed ---------- */
+#doorFrame{ background:#171310; box-shadow: inset 0 0 60px 20px #000; }
+#doorGlow{
+  background: radial-gradient(ellipse 60% 90% at 50% 55%, rgba(255,95,162,.55), rgba(255,95,162,.18) 55%, transparent 78%);
+  filter: blur(6px);
+  animation: neon 7.5s infinite;
+}
+#doorJambL,#doorJambR,#doorHead{ background:linear-gradient(90deg,#241c14,#171310); }
+@keyframes neon{
+  0%,86%,90%,100%{opacity:1}
+  87%,89%{opacity:.35}
+  47%{opacity:.85}
+}
+/* neon wash spilling onto the floor near the door */
+#neonWash{
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, rgba(255,95,162,.22), transparent 72%);
+  filter: blur(10px);
+}
+
+/* ---------- RIGHT WALL: curtained night window ---------- */
+#winNight{ background: linear-gradient(180deg,#0a1226 0%, #101b36 55%, #0a0f1e 100%);
+  box-shadow: inset 0 0 90px 20px rgba(0,0,0,.8); }
+#winMoon{ background: radial-gradient(circle at 50% 50%, rgba(210,225,255,.9), rgba(210,225,255,.15) 45%, transparent 70%); filter:blur(2px); }
+.curtain{ background:
+  repeating-linear-gradient(90deg, #3a2c2a 0 34px, #2c211f 34px 68px),
+  linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5));
+  box-shadow: 0 0 40px rgba(0,0,0,.6); }
+
+/* ---------- LAMP (on nightstand, front-left) ---------- */
+#lampShade{ background: linear-gradient(180deg, #f0d9ae, #c9a86f); border-radius:14% 14% 30% 30%/22% 22% 60% 60%;
+  box-shadow: 0 0 90px 30px rgba(255,217,160,.35), inset 0 -20px 40px rgba(120,80,20,.4); }
+#lampStem{ background: linear-gradient(90deg,#4a3a26,#6b563a,#4a3a26); }
+#lampGlowWall{
+  background: radial-gradient(ellipse 55% 65% at 50% 62%, rgba(255,217,160,.34), rgba(255,190,120,.12) 55%, transparent 78%);
+  filter: blur(8px);
+}
+#lampPoolFloor{
+  background: radial-gradient(ellipse 50% 55% at 50% 50%, rgba(255,217,160,.26), transparent 70%);
+  filter: blur(12px);
+}
+
+/* ---------- FURNITURE: flat-shaded box faces ---------- */
+.wood1{ background:linear-gradient(180deg,#3b2b1d,#2e2118); }
+.wood2{ background:linear-gradient(180deg,#33251a,#271c13); }
+.wood3{ background:#1f1710; }
+.cardb1{ background:linear-gradient(180deg,#8a744f,#6f5c3e); }
+.cardb2{ background:linear-gradient(180deg,#7a6645,#5f4e34); }
+.cardbTop{ background:linear-gradient(135deg,#937c55,#775f3e);
+  box-shadow: inset 0 0 30px rgba(0,0,0,.25); }
+#boxLabel{ font-family:Georgia,serif; color:#2b2013; font-size:44px; letter-spacing:.14em;
+  display:flex; align-items:center; justify-content:center; background:rgba(232,221,200,.85);
+  border:3px solid #6f5c3e; text-transform:uppercase; }
+#drawerPull{ background:radial-gradient(circle at 40% 35%, #c9b070, #6f5a30 70%); border-radius:50%; }
+.shadowBlob{ background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0,0,0,.55), transparent 70%); filter:blur(8px); }
+
+/* ---------- DUST MOTES (in 3D, tiny planes) ---------- */
+.mote{ transform-style:preserve-3d }
+.mote > i{ display:block; width:100%; height:100%;
+  background:radial-gradient(circle,#ffe9c8,transparent 70%); border-radius:50%; opacity:.5;
+  animation: drift 14s linear infinite; }
+@keyframes drift{
+  0%{ transform: translate3d(0,0,0) }
+  50%{ transform: translate3d(40px,-120px,60px) }
+  100%{ transform: translate3d(0,0,0) }
+}
+
+/* ---------- COLD OPEN: coma blink ---------- */
+#lids{ position:fixed; inset:0; z-index:200; pointer-events:none; }
+#lidT,#lidB{ position:absolute; left:0; width:100%; height:52%; background:#000; }
+#lidT{ top:-2% } #lidB{ bottom:-2% }
+.wake #lidT{ animation: blinkT 3.2s ease-in-out forwards }
+.wake #lidB{ animation: blinkB 3.2s ease-in-out forwards }
+@keyframes blinkT{ 0%{transform:none} 18%{transform:translateY(-70%)} 30%{transform:translateY(-8%)} 46%{transform:translateY(-86%)} 58%{transform:translateY(-30%)} 100%{transform:translateY(-102%)} }
+@keyframes blinkB{ 0%{transform:none} 18%{transform:translateY(70%)} 30%{transform:translateY(8%)} 46%{transform:translateY(86%)} 58%{transform:translateY(30%)} 100%{transform:translateY(102%)} }
+#lids.done{display:none}
+
+/* ---------- HUD ---------- */
+#hud{ position:fixed; left:0; right:0; bottom:18px; z-index:100; display:flex; gap:10px; justify-content:center; }
+#hud button{
+  font-family:Georgia,serif; font-size:13px; letter-spacing:.12em; text-transform:uppercase;
+  color:#cbb896; background:rgba(20,15,10,.72); border:1px solid #5a4a34; padding:8px 16px; cursor:pointer;
+  backdrop-filter: blur(4px);
+}
+#hud button:hover{ color:#f0e2c4; border-color:#8a744f }
+#hud button.on{ color:#0b0a09; background:#cbb896 }
+#tag{ position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:100;
+  color:#7a6a52; font-size:11px; letter-spacing:.3em; text-transform:uppercase; }
+#hint{ position:fixed; top:36px; left:50%; transform:translateX(-50%); z-index:100;
+  color:#544737; font-size:11px; letter-spacing:.14em; }
+</style>
+</head>
+<body>
+
+<div id="viewport"><div id="room"></div></div>
+
+<div id="lids"><div id="lidT"></div><div id="lidB"></div></div>
+
+<div id="tag">VAULT V5 · ROOM PROOF · EMPTY</div>
+<div id="hint">drag to look · wheel to walk · 1–5 stations</div>
+<div id="hud">
+  <button data-st="seated" class="on">1 · The Wall</button>
+  <button data-st="wallclose">2 · Lean In</button>
+  <button data-st="turn">3 · Turn Around</button>
+  <button data-st="table">4 · The Shoebox</button>
+  <button data-st="stand">5 · Nightstand</button>
+</div>
+
+<script>
+/* =============================================================
+   GEOMETRY — everything in wall px. Y grows DOWN (CSS).
+   Origin = room center at eye height.
+   ============================================================= */
+var ROOM_W = 5600;   // x: -2800 .. +2800
+var ROOM_H = 2600;   // y: -1560 (ceiling) .. +1040 (floor)
+var ROOM_D = 4400;   // z: -2200 (front wall) .. +2200 (backs wall)
+var CEIL_Y  = -1560;
+var FLOOR_Y = 1040;
+var FRONT_Z = -2200;
+var BACK_Z  = 2200;
+var LEFT_X  = -2800;
+var RIGHT_X = 2800;
+var PERSP = 1000;    // must match #viewport perspective (wide lens — the room must read as a room)
+
+var room = document.getElementById('room');
+
+/* plane(w,h, transform, id, cls) — a rectangle whose OWN top-left is
+   at local (0,0); the transform places its CENTER via translate3d then
+   rotates, so we pre-offset by -w/2,-h/2. */
+function plane(w,h,t,id,cls,parent){
+  var el = document.createElement('div');
+  el.className = 'plane' + (cls? ' '+cls : '');
+  if(id) el.id = id;
+  el.style.width = w+'px'; el.style.height = h+'px';
+  /* origin 0 0: transforms compose left-to-right — move to point,
+     rotate the frame, then center the plane in its OWN rotated frame.
+     origin 50% 50% silently displaced every rotated plane by half its
+     size (the v5 debug-color session's finding). */
+  el.style.transform = t + ' translate(-50%,-50%)';
+  el.style.transformOrigin = '0 0';
+  (parent||room).appendChild(el);
+  return el;
+}
+function at(x,y,z){ return 'translate3d('+x+'px,'+y+'px,'+z+'px)'; }
+
+/* ---------- the box ---------- */
+plane(ROOM_W, ROOM_H, at(0, CEIL_Y+ROOM_H/2, FRONT_Z), 'wFront');                                  // faces +z (camera)
+plane(ROOM_W, ROOM_H, at(0, CEIL_Y+ROOM_H/2, BACK_Z)+' rotateY(180deg)', 'wBack');
+plane(ROOM_D, ROOM_H, at(LEFT_X, CEIL_Y+ROOM_H/2, 0)+' rotateY(90deg)',  'wLeft');
+plane(ROOM_D, ROOM_H, at(RIGHT_X,CEIL_Y+ROOM_H/2, 0)+' rotateY(-90deg)', 'wRight');
+plane(ROOM_W, ROOM_D, at(0, FLOOR_Y, 0)+' rotateX(90deg)',  'wFloor');
+plane(ROOM_W, ROOM_D, at(0, CEIL_Y, 0)+' rotateX(-90deg)',  'wCeil');
+
+/* rails + baseboards hugging front and back walls (pulled 6px off the wall) */
+plane(ROOM_W, 46,  at(0, -520, FRONT_Z+6), null, 'rail');
+plane(ROOM_W, 90,  at(0, FLOOR_Y-45, FRONT_Z+6), null, 'baseboard');
+plane(ROOM_W, 46,  at(0, -520, BACK_Z-6)+' rotateY(180deg)', null, 'rail');
+plane(ROOM_W, 90,  at(0, FLOOR_Y-45, BACK_Z-6)+' rotateY(180deg)', null, 'baseboard');
+
+/* ---------- left wall: doorway + neon ---------- */
+var DOOR_W=760, DOOR_H=1700, DOOR_Z=-400; // position along the left wall
+plane(DOOR_W, DOOR_H, at(LEFT_X+4, FLOOR_Y-DOOR_H/2, DOOR_Z)+' rotateY(90deg)', 'doorFrame');
+plane(DOOR_W+180, DOOR_H+140, at(LEFT_X+8, FLOOR_Y-DOOR_H/2-40, DOOR_Z)+' rotateY(90deg)', 'doorGlow');
+plane(70, DOOR_H, at(LEFT_X+10, FLOOR_Y-DOOR_H/2, DOOR_Z-DOOR_W/2-35)+' rotateY(90deg)', 'doorJambL');
+plane(70, DOOR_H, at(LEFT_X+10, FLOOR_Y-DOOR_H/2, DOOR_Z+DOOR_W/2+35)+' rotateY(90deg)', 'doorJambR');
+plane(DOOR_W+140, 70, at(LEFT_X+10, FLOOR_Y-DOOR_H-35, DOOR_Z)+' rotateY(90deg)', 'doorHead');
+plane(1400, 1100, at(LEFT_X+700, FLOOR_Y-2, DOOR_Z)+' rotateX(90deg)', 'neonWash');
+
+/* ---------- right wall: window ---------- */
+var WIN_W=900, WIN_H=1000, WIN_Z=-300;
+plane(WIN_W, WIN_H, at(RIGHT_X-4, -350, WIN_Z)+' rotateY(-90deg)', 'winNight');
+plane(300, 300, at(RIGHT_X-8, -520, WIN_Z-160)+' rotateY(-90deg)', 'winMoon');
+plane(340, WIN_H+260, at(RIGHT_X-12, -350, WIN_Z-WIN_W/2-60)+' rotateY(-90deg)', null, 'curtain');
+plane(340, WIN_H+260, at(RIGHT_X-12, -350, WIN_Z+WIN_W/2+60)+' rotateY(-90deg)', null, 'curtain');
+
+/* =============================================================
+   FURNITURE — box(): six flat-shaded faces in wall px
+   ============================================================= */
+function box(cx,cy,cz,w,h,d,skins){
+  // cy = center y. skins = {front,side,top} css classes
+  plane(w,h, at(cx,cy,cz+d/2), null, skins.front);
+  plane(w,h, at(cx,cy,cz-d/2)+' rotateY(180deg)', null, skins.front);
+  plane(d,h, at(cx-w/2,cy,cz)+' rotateY(-90deg)', null, skins.side);
+  plane(d,h, at(cx+w/2,cy,cz)+' rotateY(90deg)',  null, skins.side);
+  plane(w,d, at(cx,cy-h/2,cz)+' rotateX(90deg)',  null, skins.top);
+  return {x:cx,y:cy,z:cz};
+}
+
+/* table (right side, mid-room) + shoebox on it */
+var TBL_X=1500, TBL_Z=600, TBL_TOP=FLOOR_Y-620;
+box(TBL_X, TBL_TOP+30, TBL_Z, 1100, 60, 700, {front:'wood1',side:'wood2',top:'wood1'});      // slab
+box(TBL_X-480, (TBL_TOP+60+FLOOR_Y)/2, TBL_Z-280, 70, FLOOR_Y-TBL_TOP-60, 70, {front:'wood3',side:'wood3',top:'wood3'});
+box(TBL_X+480, (TBL_TOP+60+FLOOR_Y)/2, TBL_Z-280, 70, FLOOR_Y-TBL_TOP-60, 70, {front:'wood3',side:'wood3',top:'wood3'});
+box(TBL_X-480, (TBL_TOP+60+FLOOR_Y)/2, TBL_Z+280, 70, FLOOR_Y-TBL_TOP-60, 70, {front:'wood3',side:'wood3',top:'wood3'});
+box(TBL_X+480, (TBL_TOP+60+FLOOR_Y)/2, TBL_Z+280, 70, FLOOR_Y-TBL_TOP-60, 70, {front:'wood3',side:'wood3',top:'wood3'});
+plane(1300, 900, at(TBL_X, FLOOR_Y-2, TBL_Z)+' rotateX(90deg)', null, 'shadowBlob');
+/* shoebox (closed) */
+var BOX_Y = TBL_TOP - 130;
+box(TBL_X, BOX_Y+10, TBL_Z, 560, 260, 380, {front:'cardb1',side:'cardb2',top:'cardbTop'});
+var lbl = plane(300, 90, at(TBL_X, BOX_Y+15, TBL_Z+192), 'boxLabel');
+lbl.textContent = 'UNDEVELOPED';
+
+/* nightstand (front-left, against front wall) + drawer + lamp */
+var NS_X=-1700, NS_Z=FRONT_Z+430, NS_TOP=FLOOR_Y-780;
+box(NS_X, (NS_TOP+FLOOR_Y)/2, NS_Z, 760, FLOOR_Y-NS_TOP, 560, {front:'wood1',side:'wood2',top:'wood1'});
+plane(560, 300, at(NS_X, NS_TOP+260, NS_Z+282), null, 'wood2');          // drawer front
+plane(60, 60, at(NS_X, NS_TOP+260, NS_Z+286), 'drawerPull');
+plane(1000, 760, at(NS_X, FLOOR_Y-2, NS_Z)+' rotateX(90deg)', null, 'shadowBlob');
+/* lamp */
+plane(60, 340, at(NS_X, NS_TOP-170, NS_Z), 'lampStem');
+plane(360, 300, at(NS_X, NS_TOP-420, NS_Z), 'lampShade');
+plane(1500, 1300, at(NS_X, NS_TOP-520, FRONT_Z+10), 'lampGlowWall');
+plane(1300, 1000, at(NS_X, FLOOR_Y-4, NS_Z+150)+' rotateX(90deg)', 'lampPoolFloor');
+
+/* dust motes floating mid-room */
+for(var i=0;i<14;i++){
+  var m = plane(10+Math.floor(i%3)*6, 10+Math.floor(i%3)*6,
+    at(-1800+ (i*271)%3600, -900 + (i*173)%1500, -1600 + (i*397)%2800), null, 'mote');
+  var mi = document.createElement('i'); m.appendChild(mi);
+  mi.style.animationDelay = (-i*1.7)+'s';
+  mi.style.animationDuration = (11+ (i%5)*2.3)+'s';
+}
+
+/* =============================================================
+   CAMERA — the only transform that ever changes.
+   room.transform = rotateX(-pitch) rotateY(-yaw) translate3d(-x,-y,-z)
+   ============================================================= */
+var cam    = {x:0, y:-160, z:1500, yaw:0, pitch:0};
+var target = {x:0, y:-160, z:1500, yaw:0, pitch:0};
+var lookYaw=0, lookPitch=0;   // drag look offset, decays into target on station change
+
+function applyCam(){
+  /* true first-person view matrix: translateZ(PERSP) puts the pivot at
+     the CSS eye (which sits PERSP px in front of the screen plane), so
+     rotation is a head-turn, not an orbit, and cam.x/y/z is the eye's
+     literal position in room space. Omitting it is why the first debug
+     pass rendered the backs wall over everything. */
+  room.style.transform =
+    'translateZ('+PERSP+'px) '+
+    'rotateX('+(-(cam.pitch+lookPitch))+'deg) rotateY('+(-(cam.yaw+lookYaw))+'deg) '+
+    'translate3d('+(-cam.x)+'px,'+(-cam.y)+'px,'+(-cam.z)+'px)';
+}
+
+/* authored stations — I write the camera */
+var STATIONS = {
+  seated:    {x:0,      y:-220, z:1800,  yaw:0,    pitch:0},
+  wallclose: {x:0,      y:-300, z:-400,  yaw:0,    pitch:0},
+  turn:      {x:0,      y:-220, z:-400,  yaw:180,  pitch:6},
+  table:     {x:600,    y:-60,  z:1800,  yaw:-37,  pitch:13},
+  stand:     {x:-1150,  y:-100, z:-900,  yaw:34,   pitch:26},
+  door:      {x:-1500,  y:-100, z:1400,  yaw:38,   pitch:-2}
+};
+
+/* eased flight, rAF-driven (no CSS transitions — that's what
+   composed badly in v4). Yaw takes the short way around. */
+var flight = null;
+function flyTo(name, dur){
+  var s = STATIONS[name]; if(!s) return;
+  var from = {x:cam.x,y:cam.y,z:cam.z,yaw:cam.yaw+lookYaw,pitch:cam.pitch+lookPitch};
+  lookYaw=0; lookPitch=0;
+  var dyaw = ((s.yaw - from.yaw + 540) % 360) - 180;
+  flight = { t0: performance.now(), dur: dur||1900, from: from,
+             to: {x:s.x,y:s.y,z:s.z,yaw:from.yaw+dyaw,pitch:s.pitch} };
+  document.querySelectorAll('#hud button').forEach(function(b){
+    b.classList.toggle('on', b.dataset.st===name);
+  });
+}
+function ease(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+function tick(now){
+  if(flight){
+    var k = Math.min(1,(now-flight.t0)/flight.dur), e = ease(k);
+    ['x','y','z','yaw','pitch'].forEach(function(a){
+      cam[a] = flight.from[a] + (flight.to[a]-flight.from[a])*e;
+    });
+    if(k>=1){ cam.yaw = ((cam.yaw%360)+360)%360; if(cam.yaw>180) cam.yaw-=360; flight=null; }
+  }
+  applyCam();
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* drag look */
+var dragging=false, lx=0, ly=0;
+addEventListener('pointerdown', function(e){ if(e.target.closest('#hud'))return; dragging=true; lx=e.clientX; ly=e.clientY; });
+addEventListener('pointermove', function(e){
+  if(!dragging) return;
+  lookYaw   = Math.max(-70, Math.min(70, lookYaw   + (e.clientX-lx)*0.14));
+  lookPitch = Math.max(-40, Math.min(40, lookPitch - (e.clientY-ly)*0.12));
+  lx=e.clientX; ly=e.clientY;
+});
+addEventListener('pointerup', function(){ dragging=false; });
+/* wheel = walk forward/back along the look direction */
+addEventListener('wheel', function(e){
+  e.preventDefault();
+  var rad = (cam.yaw+lookYaw)*Math.PI/180;
+  var step = e.deltaY * 1.6;
+  cam.z += Math.cos(rad)*step;
+  cam.x -= Math.sin(rad)*step;
+  cam.z = Math.max(FRONT_Z+260, Math.min(BACK_Z-260, cam.z));
+  cam.x = Math.max(LEFT_X+260,  Math.min(RIGHT_X-260, cam.x));
+}, {passive:false});
+
+/* HUD + keys */
+document.getElementById('hud').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(b) flyTo(b.dataset.st);
+});
+addEventListener('keydown', function(e){
+  var map={ '1':'seated','2':'wallclose','3':'turn','4':'table','5':'stand' };
+  if(map[e.key]) flyTo(map[e.key]);
+});
+
+/* ?debug — flat unique colors per wall so every plane is identifiable */
+if(location.search.indexOf('debug')>=0){
+  var dbg={wFront:'#c0392b',wBack:'#2980b9',wLeft:'#27ae60',wRight:'#f1c40f',wFloor:'#8e44ad',wCeil:'#16a085'};
+  Object.keys(dbg).forEach(function(k){
+    var el=document.getElementById(k);
+    el.style.background=dbg[k]; el.style.boxShadow='none';
+  });
+  document.getElementById('lids').classList.add('done');
+}
+
+/* cold open: wake up mid-room near the door, blink, drift to seated */
+var lids = document.getElementById('lids');
+cam = Object.assign({}, STATIONS.door); target = Object.assign({}, STATIONS.door);
+applyCam();
+document.body.classList.add('wake');
+setTimeout(function(){ flyTo('seated', 2600); }, 900);
+setTimeout(function(){ lids.classList.add('done'); }, 3300);
+addEventListener('pointerdown', function skip(){ lids.classList.add('done'); removeEventListener('pointerdown', skip); }, {once:true});
+</script>
+</body>
+</html>
