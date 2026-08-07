@@ -20,10 +20,13 @@ OUT = os.path.join(OUT_DIR, "vault-data.json")
 
 
 def load(name):
-    p = os.path.join(BASE, name)
+    p = os.path.join(BASE, "data", name)
     return json.load(io.open(p, encoding="utf-8"))
 
 
+# data/ holds the Supabase-derived film data (pulled from project
+# swjqlfcqvcrnydpyjyog). Refresh flow: re-pull these from Supabase, then
+# `npm run data` to rebuild public/vault-data.json, then commit + redeploy.
 META = load("ledger_meta.json")          # slug -> [date, score, title]
 PANELS = load("ledger_panels.json")      # [{slug, palette_css, panel_html}]
 PHOTOS = load("photos.json")             # slug -> svg (vars unresolved)
