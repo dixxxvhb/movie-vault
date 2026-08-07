@@ -43,8 +43,7 @@ Auto-deploy on push is set up in `ci/deploy.yml` but needs the `gh` token's
 `.github/workflows/`. Until then, deploy is the gh-pages branch:
 
 ```bash
-npm run build
-# publish dist/ to the gh-pages branch (served at the live URL above)
+npm run deploy   # builds + publishes dist/ to the gh-pages branch (live URL above)
 ```
 
 ## Milestones

@@ -8,7 +8,8 @@
     "data": "python scripts/emit_vault_data.py",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "node scripts/deploy-ghpages.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
