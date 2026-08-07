@@ -48,9 +48,12 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, selec
           the room's dramatic lamp light. toneMapped off = exact canvas colors. */}
       <mesh>
         <planeGeometry args={[CARD_W, CARD_H]} />
+        {/* key flips when the texture arrives so three rebuilds the material
+            WITH the map compiled into the shader (swapping map on an existing
+            material doesn't enable USE_MAP without a recompile). */}
         {tex
-          ? <meshBasicMaterial map={tex} toneMapped={false} />
-          : <meshBasicMaterial color="#FFFEF8" toneMapped={false} />}
+          ? <meshBasicMaterial key="mapped" map={tex} toneMapped={false} />
+          : <meshBasicMaterial key="blank" color="#FFFEF8" toneMapped={false} />}
       </mesh>
     </group>
   )
