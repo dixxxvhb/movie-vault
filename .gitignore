@@ -1,2 +1,6 @@
+node_modules/
+dist/
+*.local
+.DS_Store
 _experiments/*.png
 _experiments/**/*.png

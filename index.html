@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Vault</title>
+    <style>
+      html, body, #root { margin: 0; height: 100%; background: #0b0906; overflow: hidden; }
+      #boot {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+        color: #b9ae98; font: 300 15px/1.5 -apple-system, system-ui, sans-serif;
+        letter-spacing: .06em; background: #0b0906; z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div id="boot">entering the vault&hellip;</div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
