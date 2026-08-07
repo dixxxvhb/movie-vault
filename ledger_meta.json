@@ -1,98 +1,103 @@
 {
- "game": [
-  "2026-07-14",
-  6.8,
-  "The Game"
- ],
- "stby": [
-  "2026-07-21",
-  9.4,
-  "Sorry to Bother You"
- ],
- "tdkr": [
+ "malignant": [
   "2026-07-26",
-  9.6,
-  "The Dark Knight Rises"
- ],
- "enemy": [
-  "2026-07-17",
-  9.6,
-  "Enemy"
- ],
- "ncfom": [
-  "2026-07-19",
-  8.3,
-  "No Country for Old Men"
+  5.4,
+  "Malignant"
  ],
  "batman": [
   "2026-07-24",
   9.5,
   "Batman Begins"
  ],
- "br2049": [
-  "2026-07-13",
+ "darkknight": [
+  "2026-07-24",
   9.8,
-  "Blade Runner 2049"
- ],
- "amadeus": [
-  "2026-07-27",
-  9.3,
-  "Amadeus"
- ],
- "memento": [
-  "2026-07-16",
-  10.0,
-  "Memento"
+  "The Dark Knight"
  ],
  "sicario": [
   "2026-07-14",
   9.9,
   "Sicario"
  ],
- "maverick": [
-  "2026-07-17",
-  8.2,
-  "Top Gun: Maverick"
- ],
- "niceguys": [
-  "2026-07-24",
-  8.6,
-  "The Nice Guys"
+ "game": [
+  "2026-07-14",
+  6.8,
+  "The Game"
  ],
  "sunshine": [
   "2026-07-17",
   7.4,
   "Sunshine"
  ],
- "coherence": [
-  "2026-07-15",
-  8.9,
-  "Coherence"
+ "obsession": [
+  "2026-07-18",
+  7.9,
+  "Obsession"
+ ],
+ "maverick": [
+  "2026-07-17",
+  8.2,
+  "Top Gun: Maverick"
+ ],
+ "ncfom": [
+  "2026-07-19",
+  8.3,
+  "No Country for Old Men"
+ ],
+ "niceguys": [
+  "2026-07-24",
+  8.6,
+  "The Nice Guys"
  ],
  "exmachina": [
   "2026-07-13",
   8.8,
   "Ex Machina"
  ],
- "malignant": [
-  "2026-07-26",
-  5.4,
-  "Malignant"
- ],
- "obsession": [
-  "2026-07-18",
-  7.9,
-  "Obsession"
- ],
- "darkknight": [
-  "2026-07-24",
-  9.8,
-  "The Dark Knight"
+ "coherence": [
+  "2026-07-15",
+  8.9,
+  "Coherence"
  ],
  "poorthings": [
   "2026-07-23",
   9.3,
   "Poor Things"
+ ],
+ "nightcrawler": [
+  "2026-07-21",
+  9.4,
+  "Nightcrawler"
+ ],
+ "stby": [
+  "2026-07-21",
+  9.4,
+  "Sorry to Bother You"
+ ],
+ "enemy": [
+  "2026-07-17",
+  9.6,
+  "Enemy"
+ ],
+ "tdkr": [
+  "2026-07-26",
+  9.6,
+  "The Dark Knight Rises"
+ ],
+ "br2049": [
+  "2026-07-13",
+  9.8,
+  "Blade Runner 2049"
+ ],
+ "memento": [
+  "2026-07-16",
+  10.0,
+  "Memento"
+ ],
+ "amadeus": [
+  "2026-07-27",
+  9.3,
+  "Amadeus"
  ],
  "bullettrain": [
   "2026-07-27",
@@ -104,11 +109,6 @@
   7.4,
   "Annihilation"
  ],
- "nightcrawler": [
-  "2026-07-21",
-  9.4,
-  "Nightcrawler"
- ],
  "disclosure-day": [
   "2026-07-31",
   5.2,
@@ -118,5 +118,40 @@
   "2026-07-30",
   6.7,
   "Under the Silver Lake"
+ ],
+ "the-sting": [
+  "2026-08-01",
+  9.6,
+  "The Sting"
+ ],
+ "moon": [
+  "2026-08-06",
+  8.1,
+  "Moon"
+ ],
+ "cmiyc": [
+  "2026-08-02",
+  9.3,
+  "Catch Me If You Can"
+ ],
+ "stardust": [
+  "2026-08-02",
+  9.0,
+  "Stardust"
+ ],
+ "triangle": [
+  "2026-08-03",
+  7.9,
+  "Triangle"
+ ],
+ "pressure": [
+  "2026-08-04",
+  7.7,
+  "Pressure"
+ ],
+ "matrix": [
+  "2026-08-04",
+  9.9,
+  "The Matrix"
  ]
 }

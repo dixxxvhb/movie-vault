@@ -180,9 +180,8 @@ A = [
 ]
 
 HAZY = [
-("Stardust", 2007, "L", "#5D6E9E", "#EEF1F8", "#A9B6D2", "✩",
- "A boy crosses a wall into a magic kingdom to fetch a fallen star for a girl, and the star turns out to be a woman with opinions. Pirates, witches, and a sky ship.",
- "Buzzed SEEN back on July 21, last watched in college, and flagged rewatch worthy in the same message. That rewatch is unclaimed and this is me pointing at it again."),
+# Stardust graduated to the Ledger (watched live 2026-08-02, 9.0). Removed from
+# HAZY by the drift guard's own rule; its panel now lives in film_ledger_panels.
 ("Prisoners", 2013, "F", "#40453E", "#EAEDE8", "#98A093", "⊘",
  "Two girls go missing. One father decides the police are too slow and takes matters into a bathroom with a sledgehammer. Villeneuve, and the bleakest thing he has made.",
  "You remember the sledgehammer and nothing else. This has been parked since July 17 by standing rule: I do not pitch it, it is only ever yours to raise. Consider the rewatch permanently available and never suggested."),

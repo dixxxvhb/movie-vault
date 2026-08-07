@@ -114,8 +114,8 @@ async def main():
           hazy: photos.filter(p=>p.state==='hazy').length})""")
         assert counts["photos"] == counts["sections"], counts
         assert counts["backs"] == counts["photos"], counts   # every photo has a mounted back, no flip needed
-        assert counts["ledger"] == 24, counts
-        assert counts["arc"] == 33 and counts["hazy"] == 15, counts
+        assert counts["ledger"] == 31, counts
+        assert counts["arc"] == 33 and counts["hazy"] == 14, counts
         ok(2, "all %d films render on the front wall AND the backs wall (%d ledger / %d archive / "
            "%d certified / %d hazy)" % (counts["photos"], counts["ledger"], counts["arc"], counts["cert"], counts["hazy"]))
 
@@ -394,7 +394,7 @@ async def main():
         assert c["state"] == "cert" and c["score"] == 9.4 and c["arcscore"] == "10.0", c
         assert "in pen" in c["chin"] and c["tray"] is True, c
         assert c["code"].startswith("CERTIFY\n") and "Contact | 9.4 | the eighteen seconds" in c["code"], c
-        assert c["defs"] == 25 and c["rank"].startswith(("No.", "T-")), c
+        assert c["defs"] == 32 and c["rank"].startswith(("No.", "T-")), c
         assert c["sc"] == "1" and c["scBack"] == "1" and c["awaiting"] == 0, c
         await pg.evaluate("()=>{ moved=false; byTitle['Contact'].sec.querySelector('.cert-undo').click() }")
         await pg.wait_for_timeout(900)
@@ -405,7 +405,7 @@ async def main():
             sc:getComputedStyle(p.el).getPropertyValue('--sc').trim(),
             awaiting:p.el.querySelectorAll('.awaiting').length}}""")
         assert u["state"] == "arc" and u["score"] == 10.0 and u["tray"] is False, u
-        assert u["defs"] == 24 and "grayscale" in u["fade"], u
+        assert u["defs"] == 31 and "grayscale" in u["fade"], u
         assert u["sc"] == "0.56" and u["awaiting"] == 1, u
         ok(16, "certify: guard refused empty line, pen stuck on both planes, --sc snapped to 1, "
                 "undo restored the pencil (--sc %s, awaiting %d)" % (u["sc"], u["awaiting"]))
