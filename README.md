@@ -17,8 +17,6 @@ data/           Supabase-derived film data (the source of truth, pulled from
                 project swjqlfcqvcrnydpyjyog)
 scripts/        emit_vault_data.py — data/ -> public/vault-data.json
 public/         static assets incl. the emitted vault-data.json the app fetches
-ci/deploy.yml   the Pages auto-deploy workflow, parked until the gh token has
-                `workflow` scope (then move it to .github/workflows/)
 ```
 
 ## Develop
@@ -38,13 +36,8 @@ npm run data         # rebuilds public/vault-data.json from data/
 
 ## Deploy
 
-Auto-deploy on push is set up in `ci/deploy.yml` but needs the `gh` token's
-`workflow` scope (`gh auth refresh -s workflow`) before it can live under
-`.github/workflows/`. Until then, deploy is the gh-pages branch:
-
-```bash
-npm run deploy   # builds + publishes dist/ to the gh-pages branch (live URL above)
-```
+Push to `master`. The GitHub Action (`.github/workflows/deploy.yml`) builds
+and deploys to Pages automatically.
 
 ## Milestones
 
