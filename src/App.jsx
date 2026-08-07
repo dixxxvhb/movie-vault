@@ -91,11 +91,11 @@ export default function App() {
         <color attach="background" args={['#0b0906']} />
         <fog attach="fog" args={['#0b0906', 14, 40]} />
 
-        <ambientLight intensity={0.42} color="#f2e6cf" />
-        {/* the hanging lamp: a warm wash over the wall */}
-        <spotLight position={[0, 11.5, 7]} angle={0.62} penumbra={0.7} intensity={220} color="#ffd9a0" distance={0} decay={0} />
-        <pointLight position={[-8, 6, 8]} intensity={30} color="#ffe6c2" decay={2} />
-        <pointLight position={[8, 3, 8]} intensity={18} color="#ffdca8" decay={2} />
+        {/* room lighting only affects the walls/floor now — the polaroid faces
+            are unlit so they stay readable. Kept low + warm for a moody vault. */}
+        <ambientLight intensity={0.55} color="#f2e6cf" />
+        <spotLight position={[0, 11.5, 7]} angle={0.7} penumbra={0.8} intensity={12} color="#ffd9a0" decay={0.4} />
+        <pointLight position={[-8, 6, 9]} intensity={16} color="#ffe6c2" decay={2} />
 
         <Room />
 

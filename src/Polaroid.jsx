@@ -44,11 +44,13 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, selec
         <planeGeometry args={[CARD_W, CARD_H]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.22} />
       </mesh>
-      <mesh castShadow>
+      {/* unlit face: the photo + handwriting read at true value regardless of
+          the room's dramatic lamp light. toneMapped off = exact canvas colors. */}
+      <mesh>
         <planeGeometry args={[CARD_W, CARD_H]} />
         {tex
-          ? <meshStandardMaterial map={tex} roughness={0.85} metalness={0} />
-          : <meshStandardMaterial color="#FFFEF8" roughness={0.9} />}
+          ? <meshBasicMaterial map={tex} toneMapped={false} />
+          : <meshBasicMaterial color="#FFFEF8" toneMapped={false} />}
       </mesh>
     </group>
   )
