@@ -1,6 +1,6 @@
 {
  "generated_from": "ledger_meta.json + ledger_panels.json + photos.json",
- "count": 31,
+ "count": 33,
  "avg": 8.57,
  "films": [
   {
@@ -229,6 +229,21 @@
    "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='#7A2E3E' stroke-width='3' opacity='.5' stroke-linecap='round'><line x1='10' y1='80' x2='90' y2='80'/><line x1='4' y1='120' x2='70' y2='120'/><line x1='14' y1='160' x2='84' y2='160'/></g><path d='M60 140 h110 q36 0 46 -24 q-16 -22 -52 -22 h-104 Z' fill='#2A0E14'/><path d='M164 96 q30 1 42 18 q-8 12 -26 15' fill='#7A2E3E' opacity='.55'/><rect x='74' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='102' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='130' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='96' y='158' width='44' height='30' rx='4' fill='#7A2E3E'/><rect x='112' y='152' width='12' height='8' rx='3' fill='none' stroke='#7A2E3E' stroke-width='3'/></svg>"
   },
   {
+   "slug": "predestination",
+   "title": "Predestination",
+   "score": 9.1,
+   "watched": "2026-08-10",
+   "state": "ledger",
+   "palette": {
+    "bg": "#171226",
+    "fg": "#EFE9DC",
+    "sub": "#8A7BA8",
+    "acc": "#D4A44C",
+    "glyph": "∞"
+   },
+   "front": null
+  },
+  {
    "slug": "stardust",
    "title": "Stardust",
    "score": 9.0,
@@ -347,6 +362,21 @@
     "glyph": "✦"
    },
    "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 26 a52 52 0 1 1 -0.1 0 Z M118 96 l-26 96 q26 14 52 0 Z' fill='#F1E9F7' fill-rule='evenodd' opacity='.14'/><path d='M118 40 a40 40 0 1 1 -0.1 0 Z M118 92 l-20 84 q20 10 40 0 Z' fill='#4E3363' stroke='#B5A2C7' stroke-width='3' fill-rule='evenodd'/><g transform='translate(118 74)'><path d='M-26 0 q26 -20 52 0 q-26 20 -52 0 Z' fill='#F1E9F7'/><circle cx='0' cy='0' r='10' fill='#B5A2C7'/><circle cx='0' cy='0' r='4.5' fill='#4E3363'/></g></svg>"
+  },
+  {
+   "slug": "source-code",
+   "title": "Source Code",
+   "score": 7.9,
+   "watched": "2026-08-11",
+   "state": "ledger",
+   "palette": {
+    "bg": "#101823",
+    "fg": "#E8E3D5",
+    "sub": "#5C7A9E",
+    "acc": "#C9A15A",
+    "glyph": "◔"
+   },
+   "front": null
   },
   {
    "slug": "triangle",
