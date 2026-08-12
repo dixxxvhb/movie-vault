@@ -121,7 +121,7 @@
     "acc": "#A8926B",
     "glyph": "♠"
    },
-   "front": null
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#A8926B' opacity='.12'/><g stroke='#2B3A4A' stroke-width='2.5'><g transform='rotate(-22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><g transform='rotate(22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><rect x='90' y='78' width='56' height='88' rx='7' fill='#F2E3C6'/></g><path d='M118 96 C101 117 90 126 90 139 C90 150 102 154 110 147 C108 156 103 161 98 165 L138 165 C133 161 128 156 126 147 C134 154 146 150 146 139 C146 126 135 117 118 96 Z' fill='#2B3A4A'/><path d='M101 92 C97 97 95 99 95 102 C95 104 97 105 99 103 C98 106 97 107 96 108 L106 108 C105 107 104 106 103 103 C105 105 107 104 107 102 C107 99 105 97 101 92 Z' fill='#2B3A4A'/><path d='M135 154 C139 149 141 147 141 144 C141 142 139 141 137 143 C138 140 139 139 140 138 L130 138 C131 139 132 140 133 143 C131 141 129 142 129 144 C129 147 131 149 135 154 Z' fill='#2B3A4A' transform='rotate(180 135 146)'/></svg>"
   },
   {
    "slug": "batman",
