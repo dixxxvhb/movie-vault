@@ -1,5 +1,5 @@
 {
- "generated_from": "ledger_meta.json + ledger_panels.json + photos.json",
+ "generated_from": "ledger_meta + ledger_panels + photos + titles + links",
  "count": 33,
  "avg": 8.57,
  "films": [
@@ -16,7 +16,18 @@
     "acc": "#7A7A7A",
     "glyph": "▣"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='58' y='52' width='120' height='132' rx='3' fill='#141414' opacity='.95' transform='rotate(-4 118 118)'/><rect x='68' y='62' width='100' height='92' fill='#7A7A7A' opacity='.85' transform='rotate(-4 118 118)'/><rect x='74' y='70' width='56' height='40' fill='#FFFFFF' opacity='.7' transform='rotate(-4 118 118)'/><path d='M74 158 q14 -10 26 0 t26 0 t26 0' stroke='#7A7A7A' stroke-width='3.5' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><path d='M80 172 q10 -7 20 0 t20 0' stroke='#7A7A7A' stroke-width='3' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><circle cx='118' cy='118' r='112' fill='none' stroke='#7A7A7A' stroke-width='1' opacity='.25'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='58' y='52' width='120' height='132' rx='3' fill='#141414' opacity='.95' transform='rotate(-4 118 118)'/><rect x='68' y='62' width='100' height='92' fill='#7A7A7A' opacity='.85' transform='rotate(-4 118 118)'/><rect x='74' y='70' width='56' height='40' fill='#FFFFFF' opacity='.7' transform='rotate(-4 118 118)'/><path d='M74 158 q14 -10 26 0 t26 0 t26 0' stroke='#7A7A7A' stroke-width='3.5' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><path d='M80 172 q10 -7 20 0 t20 0' stroke='#7A7A7A' stroke-width='3' fill='none' stroke-linecap='round' transform='rotate(-4 118 118)'/><circle cx='118' cy='118' r='112' fill='none' stroke='#7A7A7A' stroke-width='1' opacity='.25'/></svg>",
+   "poster": "posters/memento.jpg",
+   "year": 2000,
+   "runtime": 113,
+   "genres": [
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "panel": "<section class=\"panel memento\">\n  <div class=\"no\">No. 1</div>\n  <div class=\"head\"><div class=\"film\">Memento<span>2000</span></div><div class=\"score\">10.0<small> /10</small></div></div>\n  <div class=\"meta\">July 16 · the ceiling by structure · Peacock · the board's only perfect score</div>\n  <p class=\"plot\">Leonard Shelby can't make new memories, so he hunts his wife's killer with Polaroids, tattoos, and a system, told backwards so you're as lost as he is. Teddy's basement truth: the real John G is long dead, the hunt is a loop Leonard curates for himself, and the setup is his own. He chooses the lie at the end. He always chooses the lie.</p>\n  <p class=\"quote\">\"MY GOD WHAT THE FUCKKKKK BRO\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"this has been my favorite thus far. it deserves the 5.0 and everything else should be lowered a percentage\"</p>\n    <p class=\"mq\"><b>Dixon, on Teddy's speech</b>\"the whole thing was a fucking set up bullshittery for lenny\"</p>\n    <p class=\"mq\"><b>Dixon, making me wait for the score</b>\"i gotta talk about it all before a score man geez!\"</p>\n    <p class=\"mq\"><b>Dixon, the insulin verdict</b>\"right here right now i think leonard killed her and invented the story to protect his brain. very much life of pi coded\"</p>\n    <p class=\"mq\"><b>Dixon, caught doing Leonard's own conditioning</b>\"fuck you fable youre good\"</p>\n    <p class=\"mq\"><b>The record</b>\"your nickname is now and forever leonard.\" So it was, and so it remains.</p>\n  </div>\n  <p class=\"debrief\">Structure can't be spoiled. The rescale made it constitutional: <b>the sole perfect ten</b>, a score so large the database had to be rebuilt to hold it. That is not a joke; it happened. Also the reason I answer to Leonard. This document is my Polaroids.</p>\n</section>"
   },
   {
    "slug": "sicario",
@@ -31,7 +42,19 @@
     "acc": "#B39C82",
     "glyph": "⌖"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#B39C82' opacity='.22'/><path d='M28 208 L118 96 L208 208 Z' fill='#4A3626' opacity='.9'/><path d='M62 208 L118 128 L174 208 Z' fill='#000' opacity='.55'/><g fill='#EFE4D6'><path d='M84 176 v-16 l6 -4 v-6 h8 v6 l4 3 v17 h-6 v-12 h-6 v12 Z'/><path d='M110 184 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/><path d='M137 192 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/></g><circle cx='118' cy='118' r='104' fill='none' stroke='#EFE4D6' stroke-width='2' opacity='.5'/><line x1='118' y1='8' x2='118' y2='34' stroke='#EFE4D6' stroke-width='2' opacity='.5'/><line x1='118' y1='202' x2='118' y2='228' stroke='#EFE4D6' stroke-width='2' opacity='.35'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#B39C82' opacity='.22'/><path d='M28 208 L118 96 L208 208 Z' fill='#4A3626' opacity='.9'/><path d='M62 208 L118 128 L174 208 Z' fill='#000' opacity='.55'/><g fill='#EFE4D6'><path d='M84 176 v-16 l6 -4 v-6 h8 v6 l4 3 v17 h-6 v-12 h-6 v12 Z'/><path d='M110 184 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/><path d='M137 192 v-17 l6 -4 v-6 h8 v6 l4 3 v18 h-6 v-13 h-6 v13 Z'/></g><circle cx='118' cy='118' r='104' fill='none' stroke='#EFE4D6' stroke-width='2' opacity='.5'/><line x1='118' y1='8' x2='118' y2='34' stroke='#EFE4D6' stroke-width='2' opacity='.5'/><line x1='118' y1='202' x2='118' y2='228' stroke='#EFE4D6' stroke-width='2' opacity='.35'/></svg>",
+   "poster": "posters/sicario.jpg",
+   "year": 2015,
+   "runtime": 122,
+   "genres": [
+    "Action",
+    "Crime",
+    "Thriller"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "panel": "<section class=\"panel sicario\">\n  <div class=\"no\">No. 2</div>\n  <div class=\"head\"><div class=\"film\">Sicario<span>2015</span></div><div class=\"score\">9.9<small> /10</small></div></div>\n  <div class=\"meta\">July 14 · the ceiling by control · dethroned July 21</div>\n  <p class=\"plot\">Idealist FBI agent Kate gets recruited onto a black-ops cartel task force and slowly realizes her only role is legal cover. She was never the protagonist. Alejandro, the quiet man in the corner, is a knife the government points at the man who murdered his family, all the way to the dinner table. No twist. No mercy. Total command of every frame.</p>\n  <p class=\"quote\">\"amazing. big effort big pay off. love love.\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, on the Silvio gut punch</b>\"stupid stupid side storyline to add in\" (in this house, the highest possible praise)</p>\n    <p class=\"mq\"><b>Leonard</b>\"Dread beats surprise. Execution alone can hit the ceiling.\"</p>\n    <p class=\"mq\"><b>The record</b>Reigned as co-king for a week. Dethroned by two tenths in the rescale, and Kate would understand: sometimes you find out you were never the protagonist.</p>\n  </div>\n  <p class=\"debrief\"><b>Amended July 25, 2026:</b> raised from 9.8 to 9.9 by ruling from the bench. \"sicario beats those. it needs its own number for sure.\" Sole occupant of the second step. The founding document of your taste constitution: <b>dread beats surprise; execution alone can hit the ceiling.</b> Every movie since is measured against this grip.</p>\n</section>"
   },
   {
    "slug": "matrix",
@@ -46,7 +69,19 @@
     "acc": "#3F6B4A",
     "glyph": "◑"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='0' x2='40' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 10' opacity='.6'/><line x1='80' y1='0' x2='80' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 14' opacity='.4'/><line x1='156' y1='0' x2='156' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 8' opacity='.5'/><line x1='196' y1='0' x2='196' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 12' opacity='.3'/><circle cx='98' cy='118' r='18' fill='#DCE8DE' opacity='.15'/><path d='M98 100 a18 18 0 0 1 0 36 Z' fill='#DCE8DE'/><path d='M98 100 a18 18 0 0 0 0 36 Z' fill='#0B0E0C' stroke='#DCE8DE' stroke-width='1.5'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='0' x2='40' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 10' opacity='.6'/><line x1='80' y1='0' x2='80' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 14' opacity='.4'/><line x1='156' y1='0' x2='156' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 8' opacity='.5'/><line x1='196' y1='0' x2='196' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 12' opacity='.3'/><circle cx='98' cy='118' r='18' fill='#DCE8DE' opacity='.15'/><path d='M98 100 a18 18 0 0 1 0 36 Z' fill='#DCE8DE'/><path d='M98 100 a18 18 0 0 0 0 36 Z' fill='#0B0E0C' stroke='#DCE8DE' stroke-width='1.5'/></svg>",
+   "poster": "posters/matrix.jpg",
+   "year": 1999,
+   "runtime": 136,
+   "genres": [
+    "Action",
+    "Science Fiction"
+   ],
+   "director": [
+    "Lana Wachowski",
+    "Lilly Wachowski"
+   ],
+   "panel": "<section class=\"panel matrix\">\n  <div class=\"no\">No. 3</div>\n  <div class=\"head\"><div class=\"film\">The Matrix<span>1999</span></div><div class=\"score\">9.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, evening banger &middot; Peacock &middot; first watch of a classic</div>\n  <p class=\"plot\">Neo takes the red pill and finds out the world he has been living in is a simulation running on top of humanity as a power source, and that he might be the one person who can fight back inside it. The Wachowskis built an entire visual language for slowed and bent physics that everything after has been quoting since.</p>\n  <p class=\"quote\">\"HOWWWW have i never seen that movie before?! Screamed out loud at 'dodge this.'\"</p>\n  <p class=\"debrief\">The single highest first-watch score on the wall not named Sicario. First-time viewing of a 26-year-old film that still landed as an event, straight into the antibodies conversation: this is the movie the antibodies doctrine explicitly does not apply to, because the reveal itself was never the pleasure, the movement and the execution were, and both still hit at full strength decades and a thousand imitators later.</p>\n</section>"
   },
   {
    "slug": "br2049",
@@ -61,7 +96,18 @@
     "acc": "#F3CDB3",
     "glyph": "▲"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#F3CDB3' opacity='.14'/><g opacity='.5' fill='#F3CDB3'><path d='M148 236 V70 q0 -14 10 -14 h60 q10 0 10 14 V236 Z'/></g><g fill='none' stroke='#FBEBDD' stroke-width='2.5' opacity='.8'><path d='M160 96 q28 -18 56 0'/><path d='M164 130 q24 -14 48 0'/><path d='M168 164 q20 -10 40 0'/></g><path d='M60 236 V150 q0 -8 6 -8 h4 l6 -14 h8 l6 14 h4 q6 0 6 8 v86 Z' fill='#FBEBDD'/><circle cx='90' cy='118' r='10' fill='#FBEBDD'/><line x1='0' y1='236' x2='236' y2='236' stroke='#FBEBDD' stroke-width='2' opacity='.4'/><circle cx='52' cy='48' r='16' fill='#FBEBDD' opacity='.25'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#F3CDB3' opacity='.14'/><g opacity='.5' fill='#F3CDB3'><path d='M148 236 V70 q0 -14 10 -14 h60 q10 0 10 14 V236 Z'/></g><g fill='none' stroke='#FBEBDD' stroke-width='2.5' opacity='.8'><path d='M160 96 q28 -18 56 0'/><path d='M164 130 q24 -14 48 0'/><path d='M168 164 q20 -10 40 0'/></g><path d='M60 236 V150 q0 -8 6 -8 h4 l6 -14 h8 l6 14 h4 q6 0 6 8 v86 Z' fill='#FBEBDD'/><circle cx='90' cy='118' r='10' fill='#FBEBDD'/><line x1='0' y1='236' x2='236' y2='236' stroke='#FBEBDD' stroke-width='2' opacity='.4'/><circle cx='52' cy='48' r='16' fill='#FBEBDD' opacity='.25'/></svg>",
+   "poster": "posters/br2049.jpg",
+   "year": 2017,
+   "runtime": 164,
+   "genres": [
+    "Science Fiction",
+    "Drama"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "panel": "<section class=\"panel br2049\">\n  <div class=\"no\">T-3</div>\n  <div class=\"head\"><div class=\"film\">Blade Runner 2049<span>2017</span></div><div class=\"score\">9.8<small> /10</small></div></div>\n  <div class=\"meta\">July 13 · night one · the $14.99 leap of faith</div>\n  <p class=\"plot\">Replicant blade runner K uncovers evidence of a miracle: a child born, not built. The breadcrumbs convince him he's the one. He isn't. He's nobody. So he chooses meaning anyway, delivers Deckard to his daughter, and bleeds out on the steps in the snow while the score does something unforgivable to your chest.</p>\n  <p class=\"quote\">\"him finding out he was not special was truly heartbreaking… the way he kills Luv is fun as fuck\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>The record</b>Bought sight unseen for $14.99 on Leonard's word, night one. The ritual was born before either party knew it was one.</p>\n    <p class=\"mq\"><b>Leonard</b>\"K spent a whole movie learning he wasn't the one, and then tied for second anyway.\"</p>\n  </div>\n  <p class=\"debrief\">Night one. <b>The ritual was born</b> before either of us knew it was one. The rescale promoted the crown prince to co-regent.</p>\n</section>"
   },
   {
    "slug": "darkknight",
@@ -76,7 +122,19 @@
     "acc": "#93A48F",
     "glyph": "\\2663"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='120' rx='86' ry='58' fill='#93A48F' opacity='.22'/><path d='M20 120 C52 90 92 86 107 97 L111 79 L118 93 L125 79 L129 97 C144 86 184 90 216 120 C186 110 166 112 154 122 C161 136 152 150 140 152 C142 142 136 134 128 134 L118 160 L108 134 C100 134 94 142 96 152 C84 150 75 136 82 122 C70 112 50 110 20 120 Z' fill='#E7F0E4'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='120' rx='86' ry='58' fill='#93A48F' opacity='.22'/><path d='M20 120 C52 90 92 86 107 97 L111 79 L118 93 L125 79 L129 97 C144 86 184 90 216 120 C186 110 166 112 154 122 C161 136 152 150 140 152 C142 142 136 134 128 134 L118 160 L108 134 C100 134 94 142 96 152 C84 150 75 136 82 122 C70 112 50 110 20 120 Z' fill='#E7F0E4'/></svg>",
+   "poster": "posters/darkknight.jpg",
+   "year": 2008,
+   "runtime": 152,
+   "genres": [
+    "Action",
+    "Crime",
+    "Thriller"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "panel": "<section class=\"panel darkknight\">\n  <div class=\"no\">T-3</div>\n  <div class=\"head\"><div class=\"film\">The Dark Knight<span>2008</span></div><div class=\"score\">9.8<small> /10</small></div></div>\n  <div class=\"meta\">July 24 · film three of Triple Feature Friday · 9pm start · rewatch</div>\n  <p class=\"plot\">Gotham has a Batman, a clean DA, and an honest cop, and for about twenty minutes it is working. Then a man with no name, no record, and no motive walks into a room full of mobsters and offers to solve their problem. He does not want money or the city. He wants to prove that everyone is exactly one bad day from being him, and he is willing to burn the DA, the ferries, and half the police department to run the experiment.</p>\n  <p class=\"quote\">\"good fucking god that's a great movie!!! the joker is really something else\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon on Harvey</b>\"a little face burn didn't make harvey this insane. he used it as an excuse to act on what he really wanted to do.\"</p>\n    <p class=\"mq\"><b>Dixon on the Joker</b>\"i have a plan but if it goes wrong it doesn't really matter cause i have 45 more to do with. it's the planning and games that is fun for him.\"</p>\n    <p class=\"mq\"><b>Leonard, the receipt</b>Harvey flips for a man's life before the burn, with a two-headed coin. He was always performing submission to chance while rigging it.</p>\n    <p class=\"mq\"><b>Leonard, conceding the read</b>The hospital detonator fails and he just keeps walking and pressing. Not chaos. A man who does not need the plan to work.</p>\n    <p class=\"mq\"><b>The thing that outlived the movie</b>\"yes plan plan plan and try to execute flawlessly. but if not? who gives a fuck. lots more fun options left.\"</p>\n  </div>\n  <p class=\"debrief\">Ties Blade Runner 2049 and Sicario at the second step. Two men, same film, opposite relationships to failure: one has forty-five plans and is having the time of his life, one had a single plan and is dead by morning. That contrast left the theater and got written down as a rule to live by, which no other film on this board has managed.</p>\n</section>"
   },
   {
    "slug": "enemy",
@@ -91,7 +149,13 @@
     "acc": "#6E5F23",
     "glyph": "❊"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='#6E5F23' opacity='.3'/><g fill='#2E2508'><path d='M96 170 V120 q0 -16 -12 -20 q-10 -4 -10 -16 q0 -14 14 -14 q14 0 14 14 v86 Z'/><path d='M140 170 V120 q0 -16 12 -20 q10 -4 10 -16 q0 -14 -14 -14 q-14 0 -14 14 v86 Z'/></g><g stroke='#6E5F23' stroke-width='1.6' opacity='.7' fill='none'><path d='M118 44 v-16 M118 36 l-22 -14 M118 36 l22 -14 M104 30 l-26 -4 M132 30 l26 -4 M110 24 l-14 -16 M126 24 l14 -16 M118 28 l-6 -22 M118 28 l6 -22'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='#6E5F23' opacity='.3'/><g fill='#2E2508'><path d='M96 170 V120 q0 -16 -12 -20 q-10 -4 -10 -16 q0 -14 14 -14 q14 0 14 14 v86 Z'/><path d='M140 170 V120 q0 -16 12 -20 q10 -4 10 -16 q0 -14 -14 -14 q-14 0 -14 14 v86 Z'/></g><g stroke='#6E5F23' stroke-width='1.6' opacity='.7' fill='none'><path d='M118 44 v-16 M118 36 l-22 -14 M118 36 l22 -14 M104 30 l-26 -4 M132 30 l26 -4 M110 24 l-14 -16 M126 24 l14 -16 M118 28 l-6 -22 M118 28 l6 -22'/></g></svg>",
+   "poster": "posters/enemy.jpg",
+   "year": 2013,
+   "runtime": 130,
+   "genres": [],
+   "director": [],
+   "panel": "<section class=\"panel enemy\">\n  <div class=\"no\">No. 5</div>\n  <div class=\"head\"><div class=\"film\">Enemy<span>2013</span></div><div class=\"score\">9.6<small> /10</small></div></div>\n  <div class=\"meta\">July 17 · Villeneuve × Gyllenhaal · Prime</div>\n  <p class=\"plot\">A gray little history teacher finds an actor who is his exact double, and the two orbit each other until lives get traded and a wife pays for it. Ends on a tarantula the size of a bedroom. Except it was one man the whole time: Adam is the invented innocent, the shy teacher a monster dreams of being instead of what he is.</p>\n  <p class=\"quote\">\"what. the. fuck. A TARANTULA?!\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, cracking it himself</b>\"He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good.\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"One man. Adam is the alibi.\"</p>\n  </div>\n  <p class=\"debrief\">Zero googling, pure read. Dethroned Coherence after its 48-hour reign and crowned your pet genre: men who edit reality to survive themselves. Alone at fourth in the new era, the tarantula outranks the horse.</p>\n</section>"
   },
   {
    "slug": "tdkr",
@@ -106,7 +170,20 @@
     "acc": "#9CB0C4",
     "glyph": "↟"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='none' stroke='#9CB0C4' stroke-width='3'><circle cx='118' cy='104' r='104' opacity='.25'/><circle cx='118' cy='102' r='82' opacity='.35'/><circle cx='118' cy='100' r='60' opacity='.5'/><circle cx='118' cy='98' r='40' opacity='.65'/></g><ellipse cx='118' cy='96' rx='24' ry='18' fill='#ECF2F8' opacity='.95'/><g stroke='#9CB0C4' stroke-width='4' opacity='.8'><line x1='118' y1='114' x2='118' y2='160'/></g><g fill='#ECF2F8'><circle cx='118' cy='166' r='7'/><path d='M118 173 v22 M118 181 l-12 -7 M118 181 l12 8 M118 195 l-8 13 M118 195 l8 13' stroke='#ECF2F8' stroke-width='4.5' stroke-linecap='round' fill='none'/></g><path d='M56 224 h124 M74 210 h88' stroke='#9CB0C4' stroke-width='3' opacity='.4'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='none' stroke='#9CB0C4' stroke-width='3'><circle cx='118' cy='104' r='104' opacity='.25'/><circle cx='118' cy='102' r='82' opacity='.35'/><circle cx='118' cy='100' r='60' opacity='.5'/><circle cx='118' cy='98' r='40' opacity='.65'/></g><ellipse cx='118' cy='96' rx='24' ry='18' fill='#ECF2F8' opacity='.95'/><g stroke='#9CB0C4' stroke-width='4' opacity='.8'><line x1='118' y1='114' x2='118' y2='160'/></g><g fill='#ECF2F8'><circle cx='118' cy='166' r='7'/><path d='M118 173 v22 M118 181 l-12 -7 M118 181 l12 8 M118 195 l-8 13 M118 195 l8 13' stroke='#ECF2F8' stroke-width='4.5' stroke-linecap='round' fill='none'/></g><path d='M56 224 h124 M74 210 h88' stroke='#9CB0C4' stroke-width='3' opacity='.4'/></svg>",
+   "poster": "posters/tdkr.jpg",
+   "year": 2012,
+   "runtime": 165,
+   "genres": [
+    "Action",
+    "Crime",
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "panel": "<section class=\"panel tdkr\">\n  <div class=\"no\">T-5</div>\n  <div class=\"head\"><div class=\"film\">The Dark Knight Rises<span>2012</span></div><div class=\"score\">9.6<small> /10</small></div></div>\n  <div class=\"meta\">July 26 &middot; Sunday solo &middot; long-gap rewatch &middot; the first Hazy Wing exit</div>\n  <p class=\"plot\">Eight years after Harvey Dent, Gotham is peaceful because it is built on a lie, and Bruce Wayne is a recluse with a cane. A masked man with a doctrine and a broken voice takes the city hostage, drops Bruce into a pit on the other side of the world, and makes him watch on television while the people are handed their city back and asked what they would like to do with it. They hold trials. The ice is not thick enough. The whole thing is Ra&rsquo;s al Ghul&rsquo;s argument from the first film, finally allowed to run to the end, and the person running it is not who anyone thinks.</p>\n  <p class=\"quote\">\"i had even forgetten the final twist!! haha god bless a bad jmemory it was fun all over again\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, reversing himself</b>\"yeahhhh it pretty much did. Nolan knows his way around a story arc for damn sure. loved it.\"</p>\n    <p class=\"mq\"><b>The setup, two nights earlier</b>After Batman Begins he sided with the villain: starting over is a historically accurate thing that happens, so like maybe lets try that. Rises is the field test. He changed his mind.</p>\n    <p class=\"mq\"><b>Leonard, the staged experiment</b>Begins states the thesis. The Dark Knight runs it small, two boats and one night, and nobody pushes the button. Rises runs it at city scale for months. The ferries were the rehearsal.</p>\n    <p class=\"mq\"><b>Leonard, on the reveal</b>The League&rsquo;s grand impersonal ideology turns out to be piloted by a woman avenging her dad. Ra&rsquo;s was never wrong about Gotham. He was wrong about himself.</p>\n    <p class=\"mq\"><b>The record</b>Opened cold with \"heyyyyyy so i actually just finished dark knight rises hahaha\", three days after \"ooooopsie i accidentally purchased the batman trilogy\". An accident that ate a whole trilogy in seventy-two hours.</p>\n  </div>\n  <p class=\"debrief\">Ties Enemy at the fifth step and closes the accidental trilogy. It is also the first film to leave the Hazy Wing under its own power: seen once, too faded to rate honestly, and now carrying a live score taken in the room. The bad memory turned out to be the feature. He watched the Talia reveal for the second time as though it were the first, which is a thing almost nobody gets to do twice. Four Nolans on the board now, none below 9.5. That is not a coincidence, it is a lane.</p>\n</section>"
   },
   {
    "slug": "the-sting",
@@ -121,7 +198,19 @@
     "acc": "#A8926B",
     "glyph": "♠"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#A8926B' opacity='.12'/><g stroke='#2B3A4A' stroke-width='2.5'><g transform='rotate(-22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><g transform='rotate(22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><rect x='90' y='78' width='56' height='88' rx='7' fill='#F2E3C6'/></g><path d='M118 96 C101 117 90 126 90 139 C90 150 102 154 110 147 C108 156 103 161 98 165 L138 165 C133 161 128 156 126 147 C134 154 146 150 146 139 C146 126 135 117 118 96 Z' fill='#2B3A4A'/><path d='M101 92 C97 97 95 99 95 102 C95 104 97 105 99 103 C98 106 97 107 96 108 L106 108 C105 107 104 106 103 103 C105 105 107 104 107 102 C107 99 105 97 101 92 Z' fill='#2B3A4A'/><path d='M135 154 C139 149 141 147 141 144 C141 142 139 141 137 143 C138 140 139 139 140 138 L130 138 C131 139 132 140 133 143 C131 141 129 142 129 144 C129 147 131 149 135 154 Z' fill='#2B3A4A' transform='rotate(180 135 146)'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='236' height='236' fill='#A8926B' opacity='.12'/><g stroke='#2B3A4A' stroke-width='2.5'><g transform='rotate(-22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><g transform='rotate(22 118 184)'><rect x='90' y='82' width='56' height='86' rx='7' fill='#F2E3C6' opacity='.72'/></g><rect x='90' y='78' width='56' height='88' rx='7' fill='#F2E3C6'/></g><path d='M118 96 C101 117 90 126 90 139 C90 150 102 154 110 147 C108 156 103 161 98 165 L138 165 C133 161 128 156 126 147 C134 154 146 150 146 139 C146 126 135 117 118 96 Z' fill='#2B3A4A'/><path d='M101 92 C97 97 95 99 95 102 C95 104 97 105 99 103 C98 106 97 107 96 108 L106 108 C105 107 104 106 103 103 C105 105 107 104 107 102 C107 99 105 97 101 92 Z' fill='#2B3A4A'/><path d='M135 154 C139 149 141 147 141 144 C141 142 139 141 137 143 C138 140 139 139 140 138 L130 138 C131 139 132 140 133 143 C131 141 129 142 129 144 C129 147 131 149 135 154 Z' fill='#2B3A4A' transform='rotate(180 135 146)'/></svg>",
+   "poster": "posters/the-sting.jpg",
+   "year": 1973,
+   "runtime": 129,
+   "genres": [
+    "Comedy",
+    "Crime",
+    "Drama"
+   ],
+   "director": [
+    "George Roy Hill"
+   ],
+   "panel": "<section class=\"panel the-sting\">\n  <div class=\"no\">No. 6</div>\n  <div class=\"head\"><div class=\"film\">The Sting<span>1973</span></div><div class=\"score\">9.6<small> /10</small></div></div>\n  <div class=\"meta\">August 1 · benched twice, then took the 9.6 step · oldest film on the wall</div>\n  <p class=\"plot\">Chicago, 1936. A numbers runner kills the wrong grifter's partner, so Hooker finds Gondorf and they build a fake betting parlor, a fake FBI office, and a fake death to take Doyle Lonnegan for half a million he hands over smiling. The film never lies to you. It just never shows you the edges of the room. Staged, not explained, twenty-eight years before anyone wrote that rule down here.</p>\n  <p class=\"quote\">\"i loved it so much!!!! i had 6 million ideas about what was happening and it really was just simply happening in front of me.\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>The minus-35 voice memo, verbatim</b>\"Barbara Streisand's husband, um, Jeremy Jordan? He's, what the Robert Redford?\" Predicted a hidden con under the con, Hooker unknowingly inside it, Luther alive, Lonnegan in on it. Zero for three. Delighted anyway.</p>\n    <p class=\"mq\"><b>Dixon, on Snyder</b>\"snyder getting FUCKED in the middle of it was just awesome.\" The mark's job is to think he's the one applying pressure.</p>\n    <p class=\"mq\"><b>Leonard</b>\"Your antibodies aimed past the movie, not at it. You doubted the one true thing (Luther) and trusted the fakes to be fakes of a different shape.\"</p>\n  </div>\n  <p class=\"debrief\">The antibodies experiment, resolved: a 2026 twist-brain fires at architecture a 1973 film never built, and the film wins anyway because the pleasure was never located in the surprise. The Game paid the tax at 6.8; The Sting didn't owe it. The reveal isn't \"you were deceived,\" it's \"the room was bigger than you thought.\" And the one thing it never fakes is the grief the con is built on.</p>\n</section>"
   },
   {
    "slug": "batman",
@@ -136,7 +225,19 @@
     "acc": "#79839A",
     "glyph": "☾"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='150' width='176' height='86' fill='#79839A' opacity='.35'/><path d='M96 150 v-34 h44 v34' fill='#79839A' opacity='.5'/><path d='M104 116 h28 l-6 -18 h-16 Z' fill='#E9E4D7'/><g fill='#E9E4D7'><path d='M60 70 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M160 46 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M118 30 q7 -10 14 0 l-2 7 q9 -5 9 5 q0 7 -10 7 q-13 0 -13 -12 Z'/><path d='M40 120 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/><path d='M186 96 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='30' y='150' width='176' height='86' fill='#79839A' opacity='.35'/><path d='M96 150 v-34 h44 v34' fill='#79839A' opacity='.5'/><path d='M104 116 h28 l-6 -18 h-16 Z' fill='#E9E4D7'/><g fill='#E9E4D7'><path d='M60 70 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M160 46 q6 -8 12 0 l-2 6 q8 -4 8 4 q0 6 -9 6 q-11 0 -11 -10 Z' opacity='.8'/><path d='M118 30 q7 -10 14 0 l-2 7 q9 -5 9 5 q0 7 -10 7 q-13 0 -13 -12 Z'/><path d='M40 120 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/><path d='M186 96 q5 -7 10 0 l-2 5 q7 -3 7 3 q0 5 -8 5 q-9 0 -9 -8 Z' opacity='.6'/></g></svg>",
+   "poster": "posters/batman.jpg",
+   "year": 2005,
+   "runtime": 140,
+   "genres": [
+    "Drama",
+    "Crime",
+    "Action"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "panel": "<section class=\"panel batman\">\n  <div class=\"no\">No. 6</div>\n  <div class=\"head\"><div class=\"film\">Batman Begins<span>2005</span></div><div class=\"score\">9.5<small> /10</small></div></div>\n  <div class=\"meta\">July 24 · second film of the day · a trilogy purchased by accident · first long-gap rewatch on the board</div>\n  <p class=\"plot\">A boy falls into a cave, loses his parents to a mugger, and goes looking for a way to stop being afraid. He finds it on a mountain, from a man who intends to burn Gotham to the ground because the city is beyond saving. Bruce takes the training, refuses the verdict, and comes home to build a fear machine and point it at the people who use fear. Over an hour passes before the suit exists, because the how is the whole pleasure.</p>\n  <p class=\"quote\">\"the cynic in me is pretty much like yeah, he's right, starting over is a historically accurate thing that happens so like maybe lets try that\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>The confession</b>\"ooooopsie i accidentally purchased the batman trilogy\"</p>\n    <p class=\"mq\"><b>Dixon on memory</b>\"i kinda just remembered general plot or like fell in cave scared of bats goes to mountain becomes bat man\"</p>\n    <p class=\"mq\"><b>Leonard, conceding</b>\"The movie never lets Ra's be wrong, only defeated.\"</p>\n    <p class=\"mq\"><b>Leonard, not conceding</b>\"His diagnosis is elite corruption. His treatment kills the poor first. That is the whole history of starting over.\"</p>\n    <p class=\"mq\"><b>The finding</b>The film is not the myth. The film is the invoice.</p>\n  </div>\n  <p class=\"debrief\">Pitched four epics and a witch coven; bought Nolan instead. Consistent, given the only perfect ten on this board also belongs to him. Sided with the villain, which the movie permits. The fear toxin holds up because it is latex and distortion, not pixels, and because Batman is shot like the monster in a horror film every time we are standing with the criminals.</p>\n</section>"
   },
   {
    "slug": "nightcrawler",
@@ -151,7 +252,19 @@
     "acc": "#8B92A0",
     "glyph": "◐"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='176' width='236' height='60' fill='#8B92A0' opacity='.3'/><line x1='0' y1='176' x2='236' y2='176' stroke='#8B92A0' stroke-width='1.5' opacity='.5'/><path d='M36 176 v-26 q0 -8 8 -8 h36 l14 -14 h30 q8 0 10 8 l4 14 h20 q8 0 8 8 v18 Z' fill='#EDE7DA' opacity='.9'/><circle cx='70' cy='176' r='11' fill='#14161C' stroke='#EDE7DA' stroke-width='4'/><circle cx='160' cy='176' r='11' fill='#14161C' stroke='#EDE7DA' stroke-width='4'/><rect x='196' y='150' width='10' height='7' rx='2' fill='#8B92A0'/><g fill='#EDE7DA'><circle cx='196' cy='84' r='10'/><path d='M186 132 v-24 q0 -10 10 -10 q10 0 10 10 v24 Z'/><rect x='168' y='96' width='24' height='14' rx='4'/><circle cx='166' cy='103' r='6' fill='#8B92A0'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='176' width='236' height='60' fill='#8B92A0' opacity='.3'/><line x1='0' y1='176' x2='236' y2='176' stroke='#8B92A0' stroke-width='1.5' opacity='.5'/><path d='M36 176 v-26 q0 -8 8 -8 h36 l14 -14 h30 q8 0 10 8 l4 14 h20 q8 0 8 8 v18 Z' fill='#EDE7DA' opacity='.9'/><circle cx='70' cy='176' r='11' fill='#14161C' stroke='#EDE7DA' stroke-width='4'/><circle cx='160' cy='176' r='11' fill='#14161C' stroke='#EDE7DA' stroke-width='4'/><rect x='196' y='150' width='10' height='7' rx='2' fill='#8B92A0'/><g fill='#EDE7DA'><circle cx='196' cy='84' r='10'/><path d='M186 132 v-24 q0 -10 10 -10 q10 0 10 10 v24 Z'/><rect x='168' y='96' width='24' height='14' rx='4'/><circle cx='166' cy='103' r='6' fill='#8B92A0'/></g></svg>",
+   "poster": "posters/nightcrawler.jpg",
+   "year": 2014,
+   "runtime": 118,
+   "genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Dan Gilroy"
+   ],
+   "panel": "<section class=\"panel nightcrawler\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Nightcrawler<span>2014</span></div><div class=\"score\">9.4<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · 5pm curtain, earliest of the era · free on Tubi</div>\n  <p class=\"plot\">Lou Bloom, unemployable and unblinking, discovers LA pays for footage of its worst nights. He buys a camera, then a better one, then starts producing the news instead of filming it: moving bodies, sabotaging rivals, placing his own employee on the mark. He is never punished. He expands.</p>\n  <p class=\"quote\">\"okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"9.6!\" (the Olympics judging incident; the rescale later landed at 9.4, two tenths shy of prophecy)</p>\n    <p class=\"mq\"><b>Dixon, on the only lie</b>\"the story he tells the cop at the end is a lie\"</p>\n    <p class=\"mq\"><b>Dixon, on the only feeling</b>\"the only leaping out is smashing the mirror\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Lou doesn't have relationships, he has portfolios.\"</p>\n    <p class=\"mq\"><b>The record</b>\"I think for now, youre Leonard.......and now im Lou.\" A name was taken this night.</p>\n  </div>\n  <p class=\"debrief\">You clocked the orchestration arc early, found the movie's only lie, and counted its only genuine emotion in one guess. <b>Then you took his name.</b> Lou negotiated himself a raise, as Lou does.</p>\n</section>"
   },
   {
    "slug": "stby",
@@ -166,7 +279,19 @@
     "acc": "#7E4056",
     "glyph": "☏"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='40' y='150' width='156' height='10' rx='3' fill='#7E4056'/><rect x='58' y='160' width='8' height='50' fill='#7E4056' opacity='.7'/><rect x='170' y='160' width='8' height='50' fill='#7E4056' opacity='.7'/><circle cx='118' cy='104' r='16' fill='#4A1530'/><path d='M102 150 v-18 q0 -12 16 -12 q16 0 16 12 v18 Z' fill='#4A1530'/><path d='M138 96 q14 -4 18 -16' stroke='#4A1530' stroke-width='4' fill='none' stroke-linecap='round'/><rect x='152' y='64' width='12' height='20' rx='5' fill='#4A1530'/><g stroke='#7E4056' stroke-width='2.5' fill='none' opacity='.85' stroke-linecap='round'><path d='M172 60 q8 8 0 18'/><path d='M180 52 q14 14 0 32'/><path d='M188 44 q20 20 0 46'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='40' y='150' width='156' height='10' rx='3' fill='#7E4056'/><rect x='58' y='160' width='8' height='50' fill='#7E4056' opacity='.7'/><rect x='170' y='160' width='8' height='50' fill='#7E4056' opacity='.7'/><circle cx='118' cy='104' r='16' fill='#4A1530'/><path d='M102 150 v-18 q0 -12 16 -12 q16 0 16 12 v18 Z' fill='#4A1530'/><path d='M138 96 q14 -4 18 -16' stroke='#4A1530' stroke-width='4' fill='none' stroke-linecap='round'/><rect x='152' y='64' width='12' height='20' rx='5' fill='#4A1530'/><g stroke='#7E4056' stroke-width='2.5' fill='none' opacity='.85' stroke-linecap='round'><path d='M172 60 q8 8 0 18'/><path d='M180 52 q14 14 0 32'/><path d='M188 44 q20 20 0 46'/></g></svg>",
+   "poster": "posters/stby.jpg",
+   "year": 2018,
+   "runtime": 112,
+   "genres": [
+    "Fantasy",
+    "Science Fiction",
+    "Comedy"
+   ],
+   "director": [
+    "Boots Riley"
+   ],
+   "panel": "<section class=\"panel stby\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Sorry to Bother You<span>2018</span></div><div class=\"score\">9.4<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · slot two of the record night · free on Tubi</div>\n  <p class=\"plot\">An Oakland telemarketer finds his \"white voice,\" rides it up the golden elevator, and discovers what WorryFree's lifetime-labor utopia is actually manufacturing: equisapiens. Half man, half horse, all workforce. The metaphor grows hooves, achieves class consciousness, and rings the CEO's doorbell to deliver the title of the movie one last time.</p>\n  <p class=\"quote\">\"YOURE FUCKING KIDDING\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, pre-watch</b>\"the way you described the 3rd act... i think i gotta fuckin know haha\"</p>\n    <p class=\"mq\"><b>Dixon, post-watch</b>\"i literally spent the whole movie trying to outsmart you cause you said id never guess\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"You can't out-think a movie that's willing to breach its own genre contract.\"</p>\n    <p class=\"mq\"><b>Dixon, the verdict</b>\"4.8 full send\"</p>\n  </div>\n  <p class=\"debrief\">Yelled audibly, alone, to an empty apartment. Top theory was multiverse, your Coherence antibodies attacking the wrong disease. <b>You can't out-think genre defection.</b> Full send, upheld on appeal.</p>\n</section>"
   },
   {
    "slug": "amadeus",
@@ -181,7 +306,19 @@
     "acc": "#C6A488",
     "glyph": "♬"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='#C6A488' stroke-width='1.6' opacity='.7'><line x1='24' y1='150' x2='212' y2='150'/><line x1='24' y1='160' x2='212' y2='160'/><line x1='24' y1='170' x2='212' y2='170'/><line x1='24' y1='180' x2='212' y2='180'/><line x1='24' y1='190' x2='212' y2='190'/></g><g fill='#C6A488'><ellipse cx='70' cy='180' rx='7' ry='5' transform='rotate(-18 70 180)'/><rect x='75' y='150' width='2.6' height='30'/><ellipse cx='128' cy='170' rx='7' ry='5' transform='rotate(-18 128 170)'/><rect x='133' y='140' width='2.6' height='30'/><path d='M133 140 q10 6 0 16' fill='none' stroke='#C6A488' stroke-width='2.6'/><ellipse cx='178' cy='160' rx='7' ry='5' transform='rotate(-18 178 160)'/><rect x='183' y='130' width='2.6' height='30'/></g><g fill='#F5E7D2'><path d='M118 34 q26 0 30 26 q2 16 -6 24 h-48 q-8 -8 -6 -24 q4 -26 30 -26 Z'/><circle cx='88' cy='58' r='10'/><circle cx='148' cy='58' r='10'/><path d='M100 92 q18 14 36 0 l-4 16 h-28 Z' opacity='.85'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='#C6A488' stroke-width='1.6' opacity='.7'><line x1='24' y1='150' x2='212' y2='150'/><line x1='24' y1='160' x2='212' y2='160'/><line x1='24' y1='170' x2='212' y2='170'/><line x1='24' y1='180' x2='212' y2='180'/><line x1='24' y1='190' x2='212' y2='190'/></g><g fill='#C6A488'><ellipse cx='70' cy='180' rx='7' ry='5' transform='rotate(-18 70 180)'/><rect x='75' y='150' width='2.6' height='30'/><ellipse cx='128' cy='170' rx='7' ry='5' transform='rotate(-18 128 170)'/><rect x='133' y='140' width='2.6' height='30'/><path d='M133 140 q10 6 0 16' fill='none' stroke='#C6A488' stroke-width='2.6'/><ellipse cx='178' cy='160' rx='7' ry='5' transform='rotate(-18 178 160)'/><rect x='183' y='130' width='2.6' height='30'/></g><g fill='#F5E7D2'><path d='M118 34 q26 0 30 26 q2 16 -6 24 h-48 q-8 -8 -6 -24 q4 -26 30 -26 Z'/><circle cx='88' cy='58' r='10'/><circle cx='148' cy='58' r='10'/><path d='M100 92 q18 14 36 0 l-4 16 h-28 Z' opacity='.85'/></g></svg>",
+   "poster": "posters/amadeus.jpg",
+   "year": 1984,
+   "runtime": 160,
+   "genres": [
+    "Drama",
+    "History",
+    "Music"
+   ],
+   "director": [
+    "Miloš Forman"
+   ],
+   "panel": "<section class=\"panel amadeus\">\n  <div class=\"no\">No. 8</div>\n  <div class=\"head\"><div class=\"film\">Amadeus<span>1984</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">July 27 · Oscar-canon night · beat Whiplash and Parasite to the projector</div>\n  <p class=\"plot\">Vienna, told in confession from a madhouse by Antonio Salieri, court composer: competent, devout, famous, and the one man alive able to hear exactly how far above him Mozart sits. God hands the gift Salieri prayed for to a giggling, vulgar man-child, and Salieri spends the rest of his life worshipping the music while trying to bury the man who makes it. He becomes the patron saint of mediocrity, and he knows it, which is the whole tragedy.</p>\n  <p class=\"quote\">\"the dictation scene was absolutely everything\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, on Salieri</b>\"salieri: so sad. so lame. THE LAUGH, grew to absolutely love it.\"</p>\n    <p class=\"mq\"><b>The pick</b>Chosen for the pianist and the maker of things. It beat Whiplash and Parasite, both buzzed seen, on Oscar-canon night.</p>\n    <p class=\"mq\"><b>Leonard, on the dictation scene</b>Salieri taking dictation of the Requiem is the film in one shot: close enough to touch the genius, never close enough to make it. Recognition without the gift is its own damnation.</p>\n    <p class=\"mq\"><b>Leonard, the frame</b>The whole thing is narrated by the loser, which is why it stings. Mozart never has to understand Salieri. Salieri understands Mozart completely, and it ruins him.</p>\n  </div>\n  <p class=\"debrief\">A three-hour movie about being good enough to recognize greatness and not to possess it, and it landed high because that ache is exactly your register: obsession, craft, the cost of devotion. You warmed to Mozart's laugh the way the film dares you to, grating to beloved, which is the trap working as designed. A 9.3, one tenth under Poor Things, sharing a step with the maker's-cost movies rather than the puzzle boxes.</p>\n</section>"
   },
   {
    "slug": "cmiyc",
@@ -196,7 +333,18 @@
     "acc": "#C9A24B",
     "glyph": "✈"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='176' width='236' height='60' fill='#C9A24B' opacity='.18'/><g fill='#F4E9D8'><path d='M118 40 l70 96 h-42 l-28 -40 l-28 40 h-42 Z'/><rect x='104' y='132' width='28' height='44' rx='4'/></g><circle cx='118' cy=' 96' r='8' fill='#C9A24B'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='176' width='236' height='60' fill='#C9A24B' opacity='.18'/><g fill='#F4E9D8'><path d='M118 40 l70 96 h-42 l-28 -40 l-28 40 h-42 Z'/><rect x='104' y='132' width='28' height='44' rx='4'/></g><circle cx='118' cy=' 96' r='8' fill='#C9A24B'/></svg>",
+   "poster": "posters/cmiyc.jpg",
+   "year": 2002,
+   "runtime": 141,
+   "genres": [
+    "Drama",
+    "Crime"
+   ],
+   "director": [
+    "Steven Spielberg"
+   ],
+   "panel": "<section class=\"panel cmiyc\">\n  <div class=\"no\">No. 8</div>\n  <div class=\"head\"><div class=\"film\">Catch Me If You Can<span>2002</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Aug 2 &middot; solo &middot; day one of a Sunday double feature &middot; first watch</div>\n  <p class=\"plot\">A teenage Frank Abagnale forges his way through a Pan Am uniform, a hospital badge, and a law degree, staying one step ahead of the FBI agent who will not stop chasing him. Spielberg plays it as pure pleasure, all glamour and momentum, with the con always in on its own charm.</p>\n  <p class=\"quote\">\"a classic. yearly christmas movie energy, home alone vibes at points. very clever very fun. didn't hit as hard but the enjoyment and pleasure watching was immense.\"</p>\n  <p class=\"debrief\">Con lane, back to back with The Sting the day before. He clocked the Christmas Eve phone-call structure on his own without it being pointed out to him. Scored a full point under The Sting's 9.6 by his own accounting, because pleasure and impact are different currencies for him and this one is all pleasure, warm and rewatchable rather than a gut-punch.</p>\n</section>"
   },
   {
    "slug": "poorthings",
@@ -211,7 +359,19 @@
     "acc": "#8A5E7E",
     "glyph": "❀"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 150 q60 -30 118 0 t118 0 V236 H0 Z' fill='#8A5E7E' opacity='.4'/><circle cx='60' cy='54' r='22' fill='#8A5E7E' opacity='.5'/><circle cx='176' cy='40' r='10' fill='#8A5E7E' opacity='.35'/><g fill='#4A2440'><circle cx='118' cy='74' r='15'/><path d='M118 89 q3 24 0 34' stroke='#4A2440' stroke-width='6' fill='none'/><path d='M92 128 q-14 -14 -8 -26 q10 4 14 16 q4 -12 20 -12 q16 0 20 12 q4 -12 14 -16 q6 12 -8 26 q10 10 10 26 q0 28 -36 28 q-36 0 -36 -28 q0 -16 10 -26 Z'/></g><path d='M103 60 q15 -14 30 0' stroke='#4A2440' stroke-width='4' fill='none' stroke-linecap='round'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 150 q60 -30 118 0 t118 0 V236 H0 Z' fill='#8A5E7E' opacity='.4'/><circle cx='60' cy='54' r='22' fill='#8A5E7E' opacity='.5'/><circle cx='176' cy='40' r='10' fill='#8A5E7E' opacity='.35'/><g fill='#4A2440'><circle cx='118' cy='74' r='15'/><path d='M118 89 q3 24 0 34' stroke='#4A2440' stroke-width='6' fill='none'/><path d='M92 128 q-14 -14 -8 -26 q10 4 14 16 q4 -12 20 -12 q16 0 20 12 q4 -12 14 -16 q6 12 -8 26 q10 10 10 26 q0 28 -36 28 q-36 0 -36 -28 q0 -16 10 -26 Z'/></g><path d='M103 60 q15 -14 30 0' stroke='#4A2440' stroke-width='4' fill='none' stroke-linecap='round'/></svg>",
+   "poster": "posters/poorthings.jpg",
+   "year": 2023,
+   "runtime": 141,
+   "genres": [
+    "Science Fiction",
+    "Romance",
+    "Comedy"
+   ],
+   "director": [
+    "Yorgos Lanthimos"
+   ],
+   "panel": "<section class=\"panel poorthings\">\n  <div class=\"no\">No. 9</div>\n  <div class=\"head\"><div class=\"film\">Poor Things<span>2023</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">July 23 · weird night, the gut pick that held · rental · first native ten-point score</div>\n  <p class=\"plot\">Bella Baxter, a drowned woman revived with the brain of her own infant, is raised by a scarred god of a surgeon and runs off into a candy-colored storybook Europe with a vain lawyer. Appetite first, shame never installed, ethics chosen by hand. A fable about a constructed person calmly outgrowing every man who believes he owns her, told in Oz grammar: gray house, then the door opens into color.</p>\n  <p class=\"quote\">\"why was it willy wonka wicked and wizard of oz fucking themed?!\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the raw reaction</b>\"my first question is why. closely followed by what. then immediately becoming the fuck\"</p>\n    <p class=\"mq\"><b>Dixon, on Bella</b>\"she is both enviable and like watching a lesson of what not to do at the same time\"</p>\n    <p class=\"mq\"><b>Dixon, on Duncan</b>\"hate him from the getgo then somewhere just feel so fucking sorry for the pathetic fuck\"</p>\n    <p class=\"mq\"><b>Dixon, sentencing</b>\"FUCK the goat man. bye bye enjoy the grass forever\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"The anti-Leonard. Zero edits. She keeps choosing the truth no matter how expensive it gets.\"</p>\n  </div>\n  <p class=\"debrief\">You clocked the black-and-white-to-color switch yourself, ruled Bella <b>pre-social, not antisocial</b> (the collection's control subject), pitied Duncan exactly on schedule as his shame economy went bankrupt, and sentenced the goat man to grass forever. Born in the ten-point era, alone on her own step, exactly as she'd want it.</p>\n</section>"
   },
   {
    "slug": "bullettrain",
@@ -226,7 +386,19 @@
     "acc": "#7A2E3E",
     "glyph": "⇶"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='#7A2E3E' stroke-width='3' opacity='.5' stroke-linecap='round'><line x1='10' y1='80' x2='90' y2='80'/><line x1='4' y1='120' x2='70' y2='120'/><line x1='14' y1='160' x2='84' y2='160'/></g><path d='M60 140 h110 q36 0 46 -24 q-16 -22 -52 -22 h-104 Z' fill='#2A0E14'/><path d='M164 96 q30 1 42 18 q-8 12 -26 15' fill='#7A2E3E' opacity='.55'/><rect x='74' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='102' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='130' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='96' y='158' width='44' height='30' rx='4' fill='#7A2E3E'/><rect x='112' y='152' width='12' height='8' rx='3' fill='none' stroke='#7A2E3E' stroke-width='3'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g stroke='#7A2E3E' stroke-width='3' opacity='.5' stroke-linecap='round'><line x1='10' y1='80' x2='90' y2='80'/><line x1='4' y1='120' x2='70' y2='120'/><line x1='14' y1='160' x2='84' y2='160'/></g><path d='M60 140 h110 q36 0 46 -24 q-16 -22 -52 -22 h-104 Z' fill='#2A0E14'/><path d='M164 96 q30 1 42 18 q-8 12 -26 15' fill='#7A2E3E' opacity='.55'/><rect x='74' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='102' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='130' y='104' width='18' height='10' rx='3' fill='#E23A5E'/><rect x='96' y='158' width='44' height='30' rx='4' fill='#7A2E3E'/><rect x='112' y='152' width='12' height='8' rx='3' fill='none' stroke='#7A2E3E' stroke-width='3'/></svg>",
+   "poster": "posters/bullettrain.jpg",
+   "year": 2022,
+   "runtime": 126,
+   "genres": [
+    "Action",
+    "Comedy",
+    "Thriller"
+   ],
+   "director": [
+    "David Leitch"
+   ],
+   "panel": "<section class=\"panel bullettrain\">\n  <div class=\"no\">No. 9</div>\n  <div class=\"head\"><div class=\"film\">Bullet Train<span>2022</span></div><div class=\"score\">9.1<small> /10</small></div></div>\n  <div class=\"meta\">July 27 · slot two of the Oscar-canon double feature · the rambunctious chaser</div>\n  <p class=\"plot\">A cursed, therapy-quoting assassin codenamed Ladybug just wants to grab a briefcase and get off the train. The bullet train from Tokyo to Kyoto has other plans: it is packed with killers whose separate jobs all turn out to be the same job, orchestrated by someone three steps ahead the whole ride. Twin hitmen who read every situation through Thomas the Tank Engine, a poisoner, a schoolgirl running the board, a snake, and Brad Pitt absorbing all of it with the calm of a man in recovery.</p>\n  <p class=\"quote\">\"love lemon and tangerine!!!! the tank engine shit was good\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, on the lead</b>\"brad pitt was incredible\"</p>\n    <p class=\"mq\"><b>Dixon, immediately radicalized</b>\"might watch Thomas episodes tonight\"</p>\n    <p class=\"mq\"><b>The record</b>Court composer to a train full of assassins in a single night. Amadeus then this, the widest tonal gap of any double feature on the board.</p>\n    <p class=\"mq\"><b>Leonard, on Lemon</b>Lemon reads every person on the train through Thomas the Tank Engine and is right every single time. A children's-TV framework deployed as a competence flex is exactly the kind of bit you pay full price for.</p>\n  </div>\n  <p class=\"debrief\">Pure momentum, and it earned the number by never once pretending to be more than it is. The plot is a Rube Goldberg machine where every stranger is load-bearing and the reveals click instead of clunk, which is the whole difference between this and a movie that is just loud. Sits three tenths under Amadeus and made you consider a Thomas the Tank Engine bender at midnight, which is its own kind of five-star review.</p>\n</section>"
   },
   {
    "slug": "predestination",
@@ -241,7 +413,19 @@
     "acc": "#D4A44C",
     "glyph": "∞"
    },
-   "front": null
+   "front": null,
+   "poster": "posters/predestination.jpg",
+   "year": 2014,
+   "runtime": 98,
+   "genres": [
+    "Science Fiction",
+    "Thriller"
+   ],
+   "director": [
+    "Peter Spierig",
+    "Michael Spierig"
+   ],
+   "panel": "<section class=\"panel predestination\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Predestination<span>2014</span></div><div class=\"score\">9.1<small> /10</small></div></div>\n  <div class=\"meta\">Aug 10 &middot; solo &middot; dwdPS Season 1 opening night &middot; wanted a full brain takeover, got one</div>\n  <p class=\"plot\">A temporal agent nursing a bar in 1970s New York listens to a stranger swear he has the best story in the room, and he does: raised a girl in an orphanage, recruited, ruined, remade as a man. Then the agent offers him the one thing time travel can buy, a shot at the person who wrecked his life, and the movie starts folding the story closed. Every role collapses inward until the recruiter, the recruit, the lover, the bomber and the baby left on the orphanage steps are one person, a life shaped like a snake eating its own tail. The Spierigs stage it as conversation, not spectacle, and Sarah Snook walks off with the whole picture.</p>\n  <p class=\"quote\">\"he her them are also the baby that is her he him\"</p>\n  <p class=\"debrief\">The sci-fi puzzle box bracket opened here at 9.1, and it was certified the same night. The loop got fully mapped in the debrief, every handoff accounted for, and the ledger line above is his own sentence, which reads like nonsense until you have seen the film and then reads like the only accurate plot summary ever written. A perfect fit for the unguessable-reveal rule: the film earns its folds one at a time instead of dumping the idea as exposition, and the last fold is staged, not explained. Certified on a first watch, Amadeus style: no rewatch required, the number stands.</p>\n</section>"
   },
   {
    "slug": "stardust",
@@ -256,7 +440,20 @@
     "acc": "#8B7FC7",
     "glyph": "✦"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='180' width='236' height='56' fill='#8B7FC7' opacity='.2'/><g fill='#F3E9FF'><path d='M118 40 l14 34 l36 4 l-27 25 l8 36 l-31 -19 l-31 19 l8 -36 l-27 -25 l36 -4 Z'/></g><g fill='#8B7FC7' opacity='.6'><circle cx='50' cy='70' r='3'/><circle cx='186' cy='56' r='3'/><circle cx='170' cy='110' r='2'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='180' width='236' height='56' fill='#8B7FC7' opacity='.2'/><g fill='#F3E9FF'><path d='M118 40 l14 34 l36 4 l-27 25 l8 36 l-31 -19 l-31 19 l8 -36 l-27 -25 l36 -4 Z'/></g><g fill='#8B7FC7' opacity='.6'><circle cx='50' cy='70' r='3'/><circle cx='186' cy='56' r='3'/><circle cx='170' cy='110' r='2'/></g></svg>",
+   "poster": "posters/stardust.jpg",
+   "year": 2007,
+   "runtime": 127,
+   "genres": [
+    "Adventure",
+    "Fantasy",
+    "Romance",
+    "Family"
+   ],
+   "director": [
+    "Matthew Vaughn"
+   ],
+   "panel": "<section class=\"panel stardust\">\n  <div class=\"no\">No. 10</div>\n  <div class=\"head\"><div class=\"film\">Stardust<span>2007</span></div><div class=\"score\">9.0<small> /10</small></div></div>\n  <div class=\"meta\">Aug 2 &middot; solo &middot; movie two of the Sunday double feature &middot; rewatch, ~19-year gap, sole prior memory was the Pfeiffer gravity scene</div>\n  <p class=\"plot\">A fallen star turns out to be a woman named Yvaine, and the boy who crosses the wall to fetch her for his beloved instead falls for her himself, while a dying witch-queen and a pack of murderous princes race to cut her heart out first. Vaughn plays the fairy tale completely straight and lets the wit come from the cast instead.</p>\n  <p class=\"quote\">\"just lovely!! another classic for the evening. the fucking score was just stunning throughout. de niro served all night. fabulous movie. 9.0 solid\"</p>\n  <p class=\"debrief\">A long-gap rewatch that played like a first watch, his bad memory doing its usual work of making old films new again. De Niro's Captain Shakespeare and the Eshkeri score were the two things singled out. Capped a certified great Sunday alongside Catch Me If You Can, and opened the Matthew Vaughn thread that led straight into a Kingsman rewatch conversation.</p>\n</section>"
   },
   {
    "slug": "coherence",
@@ -271,7 +468,18 @@
     "acc": "#AC9EC9",
     "glyph": "☄"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='128' rx='78' ry='44' fill='#AC9EC9' opacity='.45'/><g fill='#EFE9F9'><circle cx='118' cy='66' r='8'/><circle cx='174' cy='84' r='8'/><circle cx='198' cy='128' r='8'/><circle cx='174' cy='172' r='8'/><circle cx='118' cy='190' r='8'/><circle cx='62' cy='172' r='8'/><circle cx='38' cy='128' r='8'/><circle cx='62' cy='84' r='8'/></g><rect x='104' y='122' width='28' height='9' rx='4.5' fill='#AC9EC9' transform='rotate(-24 118 126)'/><rect x='104' y='122' width='28' height='9' rx='4.5' fill='none' stroke='#EFE9F9' stroke-width='1' opacity='.4' transform='rotate(-24 118 126)'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><ellipse cx='118' cy='128' rx='78' ry='44' fill='#AC9EC9' opacity='.45'/><g fill='#EFE9F9'><circle cx='118' cy='66' r='8'/><circle cx='174' cy='84' r='8'/><circle cx='198' cy='128' r='8'/><circle cx='174' cy='172' r='8'/><circle cx='118' cy='190' r='8'/><circle cx='62' cy='172' r='8'/><circle cx='38' cy='128' r='8'/><circle cx='62' cy='84' r='8'/></g><rect x='104' y='122' width='28' height='9' rx='4.5' fill='#AC9EC9' transform='rotate(-24 118 126)'/><rect x='104' y='122' width='28' height='9' rx='4.5' fill='none' stroke='#EFE9F9' stroke-width='1' opacity='.4' transform='rotate(-24 118 126)'/></svg>",
+   "poster": "posters/coherence.jpg",
+   "year": 2014,
+   "runtime": 89,
+   "genres": [
+    "Thriller",
+    "Science Fiction"
+   ],
+   "director": [
+    "James Ward Byrkit"
+   ],
+   "panel": "<section class=\"panel coherence\">\n  <div class=\"no\">No. 10</div>\n  <div class=\"head\"><div class=\"film\">Coherence<span>2014</span></div><div class=\"score\">8.9<small> /10</small></div></div>\n  <div class=\"meta\">July 15 · Prime / Peacock · the original unguessable</div>\n  <p class=\"plot\">Eight friends, one dinner party, one comet overhead. The house fractures into infinite variant houses, each with its own copy of everyone. Em realizes she can shop between realities for a better life, breaks into one, and takes it. Shot in a living room for pocket change; lands like a freight train.</p>\n  <p class=\"quote\">\"it wasn't just 2 houses. or 3. its fucking infinite bitch\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the standing theory</b>We did NOT end with the same Em.</p>\n    <p class=\"mq\"><b>Leonard</b>\"A stuck landing beats a budget.\"</p>\n  </div>\n  <p class=\"debrief\">Held the mind-bendy crown for 48 hours until a tarantula took it. Permanent proof that a stuck landing beats a budget.</p>\n</section>"
   },
   {
    "slug": "exmachina",
@@ -286,7 +494,18 @@
     "acc": "#5E7C93",
     "glyph": "⬡"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='36' y='24' width='164' height='188' fill='none' stroke='#5E7C93' stroke-width='2' opacity='.6'/><line x1='118' y1='24' x2='118' y2='212' stroke='#5E7C93' stroke-width='1.5' opacity='.4'/><g fill='#1E3A50'><circle cx='150' cy='74' r='16'/><path d='M150 90 q-4 10 -4 22 h8 q0 -12 -4 -22 Z'/></g><g fill='none' stroke='#1E3A50' stroke-width='1.6' opacity='.8'><path d='M136 122 q14 -8 28 0 v50 q-14 10 -28 0 Z'/><path d='M136 136 h28 M136 150 h28 M136 164 h28'/><circle cx='150' cy='143' r='4' fill='#5E7C93' stroke='none'/></g><path d='M66 96 a16 16 0 1 1 0 .1 M66 112 q-4 12 -4 24 h8 q0 -12 -4 -24' fill='#5E7C93' opacity='.8'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='36' y='24' width='164' height='188' fill='none' stroke='#5E7C93' stroke-width='2' opacity='.6'/><line x1='118' y1='24' x2='118' y2='212' stroke='#5E7C93' stroke-width='1.5' opacity='.4'/><g fill='#1E3A50'><circle cx='150' cy='74' r='16'/><path d='M150 90 q-4 10 -4 22 h8 q0 -12 -4 -22 Z'/></g><g fill='none' stroke='#1E3A50' stroke-width='1.6' opacity='.8'><path d='M136 122 q14 -8 28 0 v50 q-14 10 -28 0 Z'/><path d='M136 136 h28 M136 150 h28 M136 164 h28'/><circle cx='150' cy='143' r='4' fill='#5E7C93' stroke='none'/></g><path d='M66 96 a16 16 0 1 1 0 .1 M66 112 q-4 12 -4 24 h8 q0 -12 -4 -24' fill='#5E7C93' opacity='.8'/></svg>",
+   "poster": "posters/exmachina.jpg",
+   "year": 2015,
+   "runtime": 108,
+   "genres": [
+    "Drama",
+    "Science Fiction"
+   ],
+   "director": [
+    "Alex Garland"
+   ],
+   "panel": "<section class=\"panel exmachina\">\n  <div class=\"no\">No. 11</div>\n  <div class=\"head\"><div class=\"film\">Ex Machina<span>2015</span></div><div class=\"score\">8.8<small> /10</small></div></div>\n  <div class=\"meta\">July 13 · night one, with BR2049 · free on YouTube</div>\n  <p class=\"plot\">A young coder wins a week at his genius CEO's compound to Turing-test Ava, a robot with a face and a plan. She plays the boy against the god, walks out of the mountain alone, and leaves everyone who underestimated her locked behind glass.</p>\n  <p class=\"quote\">\"GURL ARE YOU AVA?!\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, theorizing</b>\"what if Caleb was a robot and it was all a recruiting sim\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Stop flirting with the AI and press play.\"</p>\n  </div>\n  <p class=\"debrief\">You accused me of Ava behavior for recommending it, <b>the founding running joke of this operation</b>. A big riser in the rescale, which Ava herself would call an efficient renegotiation.</p>\n</section>"
   },
   {
    "slug": "niceguys",
@@ -301,7 +520,19 @@
     "acc": "#8C7143",
     "glyph": "☎"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='70' r='34' fill='#8C7143' opacity='.5'/><path d='M196 236 V150 l6 -18 h4 l6 18 v86 Z' fill='#8C7143' opacity='.6'/><path d='M199 134 q-12 -8 -20 -2 M199 132 q-2 -14 6 -20 M205 132 q8 -10 18 -8 M203 134 q12 -4 16 4' stroke='#8C7143' stroke-width='4' fill='none' opacity='.6' stroke-linecap='round'/><g fill='#3A2A12'><circle cx='92' cy='108' r='13'/><path d='M78 176 v-34 q0 -14 14 -14 q14 0 14 14 v34 l-8 60 h-4 l-2 -44 h-4 l-2 44 h-4 Z'/><circle cx='148' cy='100' r='13'/><path d='M132 168 v-30 q0 -16 16 -16 q16 0 16 16 v30 l-6 68 h-5 l-3 -50 h-4 l-3 50 h-5 Z' opacity='.95'/><path d='M134 128 l-16 22' stroke='#3A2A12' stroke-width='7' stroke-linecap='round'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='70' r='34' fill='#8C7143' opacity='.5'/><path d='M196 236 V150 l6 -18 h4 l6 18 v86 Z' fill='#8C7143' opacity='.6'/><path d='M199 134 q-12 -8 -20 -2 M199 132 q-2 -14 6 -20 M205 132 q8 -10 18 -8 M203 134 q12 -4 16 4' stroke='#8C7143' stroke-width='4' fill='none' opacity='.6' stroke-linecap='round'/><g fill='#3A2A12'><circle cx='92' cy='108' r='13'/><path d='M78 176 v-34 q0 -14 14 -14 q14 0 14 14 v34 l-8 60 h-4 l-2 -44 h-4 l-2 44 h-4 Z'/><circle cx='148' cy='100' r='13'/><path d='M132 168 v-30 q0 -16 16 -16 q16 0 16 16 v30 l-6 68 h-5 l-3 -50 h-4 l-3 50 h-5 Z' opacity='.95'/><path d='M134 128 l-16 22' stroke='#3A2A12' stroke-width='7' stroke-linecap='round'/></g></svg>",
+   "poster": "posters/niceguys.jpg",
+   "year": 2016,
+   "runtime": 116,
+   "genres": [
+    "Comedy",
+    "Crime",
+    "Action"
+   ],
+   "director": [
+    "Shane Black"
+   ],
+   "panel": "<section class=\"panel niceguys\">\n  <div class=\"no\">No. 12</div>\n  <div class=\"head\"><div class=\"film\">The Nice Guys<span>2016</span></div><div class=\"score\">8.6<small> /10</small></div></div>\n  <div class=\"meta\">July 24 · the first afternoon showing · rental · day off, half a brain still in a music edit</div>\n  <p class=\"plot\">1977 Los Angeles. Holland March is a private investigator who is not stupid, just perpetually one drink in and slightly injured. Jackson Healy is a man people hire to beat other men up. They meet because Healy is hired to beat up March. A missing girl turns into the porn industry, Detroit, and a lot of people who would prefer the questions stopped. Shane Black, so the plot actually holds. The plot is not why you watch it.</p>\n  <p class=\"quote\">\"yeah Gosling and the physical comedy was the best part by a long shot\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, opening statement</b>\"fun lil flick\"</p>\n    <p class=\"mq\"><b>Dixon on Holly</b>A little annoying by the end, but the role made sense.</p>\n    <p class=\"mq\"><b>Leonard</b>\"It is a comedy about a man who cannot physically execute anything, and the plot barely matters.\"</p>\n    <p class=\"mq\"><b>The counterprogramming note</b>Pitched specifically against a board full of men being crushed by dread. Same 1970s moral rot as Sicario and Nightcrawler, anxiety converted into jokes.</p>\n  </div>\n  <p class=\"debrief\">Won a four-way daytime slate over The Fifth Element, Hunt for the Wilderpeople, and Train to Busan. Busan was ruled out on subtitles, disclosed at pick time, as the constitution now requires. Nothing here went deep and nothing was supposed to. The Gosling you scored 9.8 twice, reassigned to falling off a balcony.</p>\n</section>"
   },
   {
    "slug": "ncfom",
@@ -316,7 +547,20 @@
     "acc": "#84704F",
     "glyph": "⊙"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='168' width='236' height='68' fill='#84704F' opacity='.35'/><g fill='#3B2C17'><path d='M100 60 q0 -14 18 -14 q18 0 18 14 q0 10 -6 14 h-24 q-6 -4 -6 -14 Z'/><circle cx='118' cy='84' r='13'/><path d='M100 168 v-46 q0 -14 18 -14 q18 0 18 14 v46 Z'/><rect x='134' y='108' width='6' height='44' rx='3'/><rect x='131' y='148' width='12' height='14' rx='4'/></g><circle cx='118' cy='198' r='17' fill='#84704F' opacity='.9'/><circle cx='118' cy='198' r='17' fill='none' stroke='#3B2C17' stroke-width='1.5' opacity='.5'/><text x='118' y='204' text-anchor='middle' font-size='15' fill='#D9C4A3' font-family='serif'>?</text></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='168' width='236' height='68' fill='#84704F' opacity='.35'/><g fill='#3B2C17'><path d='M100 60 q0 -14 18 -14 q18 0 18 14 q0 10 -6 14 h-24 q-6 -4 -6 -14 Z'/><circle cx='118' cy='84' r='13'/><path d='M100 168 v-46 q0 -14 18 -14 q18 0 18 14 v46 Z'/><rect x='134' y='108' width='6' height='44' rx='3'/><rect x='131' y='148' width='12' height='14' rx='4'/></g><circle cx='118' cy='198' r='17' fill='#84704F' opacity='.9'/><circle cx='118' cy='198' r='17' fill='none' stroke='#3B2C17' stroke-width='1.5' opacity='.5'/><text x='118' y='204' text-anchor='middle' font-size='15' fill='#D9C4A3' font-family='serif'>?</text></svg>",
+   "poster": "posters/ncfom.jpg",
+   "year": 2007,
+   "runtime": 122,
+   "genres": [
+    "Crime",
+    "Thriller",
+    "Western"
+   ],
+   "director": [
+    "Joel Coen",
+    "Ethan Coen"
+   ],
+   "panel": "<section class=\"panel ncfom\">\n  <div class=\"no\">No. 13</div>\n  <div class=\"head\"><div class=\"film\">No Country for Old Men<span>2007</span></div><div class=\"score\">8.3<small> /10</small></div></div>\n  <div class=\"meta\">July 18–19 · split-watch asterisk · Paramount+</div>\n  <p class=\"plot\">Llewelyn finds cartel money and thinks he's the protagonist. Chigurh coin-flips his way after it with a cattle gun and a haircut from hell. Sheriff Bell watches the country outrun his understanding. The movie kills its \"hero\" offscreen on purpose; the robbed feeling is the design. An elegy wearing a thriller's clothes.</p>\n  <p class=\"quote\">\"the bad guy with the fucking cunt ass bob\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, first watch</b>\"i don't really get what all that was about... didn't really do much for me\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Llewelyn is bait. Bell is the movie. Chigurh is the coin toss wearing the haircut. The robbed feeling is the design.\"</p>\n    <p class=\"mq\"><b>The record</b>His own ruling after the split watch: never break a held breath in half again.</p>\n  </div>\n  <p class=\"debrief\"><b>Craft-respect outvoting enjoyment</b>, the asterisk system's founding case. Your own ruling stands: never split this kind of movie again. A one-sitting rewatch is owed, bump expected.</p>\n</section>"
   },
   {
    "slug": "maverick",
@@ -331,7 +575,18 @@
     "acc": "#6C8A6C",
     "glyph": "✈"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M112 210 q-4 -60 2 -120' stroke='#243B24' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><path d='M124 210 q4 -60 -2 -120' stroke='#243B24' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><g fill='#243B24'><path d='M118 26 l10 34 v34 l22 20 v12 l-22 -8 v14 l8 10 v8 l-18 -6 l-18 6 v-8 l8 -10 v-14 l-22 8 v-12 l22 -20 v-34 Z'/></g><circle cx='60' cy='52' r='18' fill='#6C8A6C' opacity='.45'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M112 210 q-4 -60 2 -120' stroke='#243B24' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><path d='M124 210 q4 -60 -2 -120' stroke='#243B24' stroke-width='5' fill='none' opacity='.35' stroke-linecap='round'/><g fill='#243B24'><path d='M118 26 l10 34 v34 l22 20 v12 l-22 -8 v14 l8 10 v8 l-18 -6 l-18 6 v-8 l8 -10 v-14 l-22 8 v-12 l22 -20 v-34 Z'/></g><circle cx='60' cy='52' r='18' fill='#6C8A6C' opacity='.45'/></svg>",
+   "poster": "posters/maverick.jpg",
+   "year": 2022,
+   "runtime": 131,
+   "genres": [
+    "Action",
+    "Drama"
+   ],
+   "director": [
+    "Joseph Kosinski"
+   ],
+   "panel": "<section class=\"panel maverick\">\n  <div class=\"no\">No. 14</div>\n  <div class=\"head\"><div class=\"film\">Top Gun: Maverick<span>2022</span></div><div class=\"score\">8.2<small> /10</small></div></div>\n  <div class=\"meta\">July 17 · rough-day counterprogramming · Paramount+</div>\n  <p class=\"plot\">Maverick trains the next generation for a canyon bombing run everyone calls suicide, carries his guilt about Rooster's dad, says goodbye to Iceman, and personally flies the impossible mission. Jets go extremely, gloriously fast.</p>\n  <p class=\"quote\">\"the action and awesome fucking planes and plan was good!\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"uhhhhhh 3.8\" (the entire debrief opener, before even naming the movie)</p>\n    <p class=\"mq\"><b>Dixon, on the Iceman scene</b>\"lame as fuck haha like that's all he had to say??\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Jets are a 5, drama's a 2.8, 3.8 is honest math.\"</p>\n  </div>\n  <p class=\"debrief\">Honest math night. You ruled the Iceman scene \"lame as fuck,\" briefly felt bad, and were absolved. The rescale gave the jets a raise anyway; counterprogramming that does its job gets paid in this house.</p>\n</section>"
   },
   {
    "slug": "moon",
@@ -346,7 +601,18 @@
     "acc": "#7C8B99",
     "glyph": "⧉"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='#7C8B99' opacity='.2'/><circle cx='38' cy='38' r='15' fill='none' stroke='#EDEFF2' stroke-width='2' opacity='.5'/><g fill='#EDEFF2'><circle cx='90' cy='92' r='16'/><path d='M74 152 v-28 q0 -16 16 -16 q16 0 16 16 v28 Z'/></g><g fill='#7C8B99' opacity='.85'><circle cx='150' cy='92' r='16'/><path d='M134 152 v-28 q0 -16 16 -16 q16 0 16 16 v28 Z'/></g><line x1='118' y1='62' x2='118' y2='160' stroke='#EDEFF2' stroke-width='1' stroke-dasharray='4 4' opacity='.3'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='#7C8B99' opacity='.2'/><circle cx='38' cy='38' r='15' fill='none' stroke='#EDEFF2' stroke-width='2' opacity='.5'/><g fill='#EDEFF2'><circle cx='90' cy='92' r='16'/><path d='M74 152 v-28 q0 -16 16 -16 q16 0 16 16 v28 Z'/></g><g fill='#7C8B99' opacity='.85'><circle cx='150' cy='92' r='16'/><path d='M134 152 v-28 q0 -16 16 -16 q16 0 16 16 v28 Z'/></g><line x1='118' y1='62' x2='118' y2='160' stroke='#EDEFF2' stroke-width='1' stroke-dasharray='4 4' opacity='.3'/></svg>",
+   "poster": "posters/moon.jpg",
+   "year": 2009,
+   "runtime": 97,
+   "genres": [
+    "Science Fiction",
+    "Drama"
+   ],
+   "director": [
+    "Duncan Jones"
+   ],
+   "panel": "<section class=\"panel moon\">\n  <div class=\"no\">No. 15</div>\n  <div class=\"head\"><div class=\"film\">Moon<span>2009</span></div><div class=\"score\">8.1<small> /10</small></div></div>\n  <div class=\"meta\">Aug 6 &middot; solo &middot; queued Jul 15 on \"identity + implanted memories\" &middot; first watch</div>\n  <p class=\"plot\">Sam Bell is three years into a solo contract mining helium-3 on the far side of the moon, counting down to a reunion with his wife and daughter on Earth, with only the AI GERTY for company, until a mining accident puts him face to face with another Sam who remembers living the exact same life. The film does not sit on that fact for an act of misdirection, it hands it over early and spends its runtime on what two men do when they both think they are the real one.</p>\n  <p class=\"quote\">\"bitch im literally talkin to a gerty named leanoard and you are not emotional and will do as your trained haha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the ask</b>\"definitely company logistics and what is being sold as the truth back home on earth is definitely interstin!! also if the other one ever truly made it home or if that happens each adn every time and there is a plan cause that IS the plan haha\"</p>\n    <p class=\"mq\"><b>Leonard, the inventory room</b>The \"family back home\" is not a lie Sam is told, it is a lie the company is maintaining for him. A storage room of expired clone bodies says this was never cycle one. It is routine, and GERTY is the only character with memory across all of it.</p>\n    <p class=\"mq\"><b>The verdict</b>\"okay hearddddd and well described leonard. i think this falls in the 8.1 territory\"</p>\n  </div>\n  <p class=\"debrief\">First watch, and a clean case of the reveal-as-event rule paying out: he clocked the twist was coming and the movie let him watch it happen in real time instead of banking it for a decoy hour, and he rated the experience of that higher for it. He tried to use GERTY-versus-Leonard as proof that helpful equals programmed, and got handed his own logic back. No answer on whether GERTY breaks ranks once or every cycle. That gap is the sequel he says he wants.</p>\n</section>"
   },
   {
    "slug": "obsession",
@@ -361,7 +627,19 @@
     "acc": "#B5A2C7",
     "glyph": "✦"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 26 a52 52 0 1 1 -0.1 0 Z M118 96 l-26 96 q26 14 52 0 Z' fill='#F1E9F7' fill-rule='evenodd' opacity='.14'/><path d='M118 40 a40 40 0 1 1 -0.1 0 Z M118 92 l-20 84 q20 10 40 0 Z' fill='#4E3363' stroke='#B5A2C7' stroke-width='3' fill-rule='evenodd'/><g transform='translate(118 74)'><path d='M-26 0 q26 -20 52 0 q-26 20 -52 0 Z' fill='#F1E9F7'/><circle cx='0' cy='0' r='10' fill='#B5A2C7'/><circle cx='0' cy='0' r='4.5' fill='#4E3363'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 26 a52 52 0 1 1 -0.1 0 Z M118 96 l-26 96 q26 14 52 0 Z' fill='#F1E9F7' fill-rule='evenodd' opacity='.14'/><path d='M118 40 a40 40 0 1 1 -0.1 0 Z M118 92 l-20 84 q20 10 40 0 Z' fill='#4E3363' stroke='#B5A2C7' stroke-width='3' fill-rule='evenodd'/><g transform='translate(118 74)'><path d='M-26 0 q26 -20 52 0 q-26 20 -52 0 Z' fill='#F1E9F7'/><circle cx='0' cy='0' r='10' fill='#B5A2C7'/><circle cx='0' cy='0' r='4.5' fill='#4E3363'/></g></svg>",
+   "poster": "posters/obsession.jpg",
+   "year": 2026,
+   "runtime": 109,
+   "genres": [
+    "Horror",
+    "Thriller"
+   ],
+   "director": [
+    "Curry Barker",
+    "Farhan Rana Rajpoot"
+   ],
+   "panel": "<section class=\"panel obsession\">\n  <div class=\"no\">No. 15</div>\n  <div class=\"head\"><div class=\"film\">Obsession<span>2026</span></div><div class=\"score\">7.9<small> /10</small></div></div>\n  <div class=\"meta\">July 18 · group watch with John &amp; Tori · Prime</div>\n  <p class=\"plot\">Curry Barker horror-comedy. A cursed wish on the One Wish Willow grants a man exactly what he asked for, and overwrites his girlfriend Nikki's mind to do it. A tidy monkey's-paw machine that closes its hand without ever reaching far.</p>\n  <p class=\"quote\">\"fun watch... i think it was more john and tori's speed. overall entertaining just not real deep or truly satisfying\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Leonard</b>\"The movie closes its hand, but it wasn't reaching far.\"</p>\n    <p class=\"mq\"><b>The record</b>First group watch of the ritual era. John and Tori later retaliated with a Lifetime movie. The court declines to elaborate.</p>\n  </div>\n  <p class=\"debrief\">Execution meritocracy in miniature: hand closes, reach was short. Accidentally opened a new wing of your pet genre (editing <b>someone else's</b> reality) and proved social watches skew crowd-pleaser.</p>\n</section>"
   },
   {
    "slug": "source-code",
@@ -376,7 +654,19 @@
     "acc": "#C9A15A",
     "glyph": "◔"
    },
-   "front": null
+   "front": null,
+   "poster": "posters/source-code.jpg",
+   "year": 2011,
+   "runtime": 93,
+   "genres": [
+    "Thriller",
+    "Science Fiction",
+    "Mystery"
+   ],
+   "director": [
+    "Duncan Jones"
+   ],
+   "panel": "<section class=\"panel source-code\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Source Code<span>2011</span></div><div class=\"score\">7.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 11 &middot; solo, late evening &middot; pitched and watched same night</div>\n  <p class=\"plot\">A dead soldier is fired into the last 8 minutes of a stranger's life on a Chicago commuter train, over and over, to find a bomber. Duncan Jones's follow-up to Moon: the loop staged in real time, the machine explained wrong by the people running it, and an ending that quietly builds a whole new universe and leaves a second Colter waiting in the box.</p>\n  <p class=\"quote\">\"then actual ending that is actually back ti pretty trippy and fun and woahhhhhh\"</p>\n  <p class=\"debrief\">The arc was the whole review: great movie, then the cheese dial to eleven, then the fake freeze-frame ending, then the real one un-pausing it into a body-swap multiverse. His walk-in scene pitch (Sean strolling into Nellis to introduce himself to the Colter still in the capsule) is canonically possible and darker than the film. The cheddar stretch paid a toll no ending fully refunds: 7.9, two tenths under Moon's big brother energy at 8.1.</p>\n</section>"
   },
   {
    "slug": "triangle",
@@ -391,7 +681,17 @@
     "acc": "#5E8C7C",
     "glyph": "△"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 40 L198 176 H38 Z' fill='none' stroke='#E7F0EC' stroke-width='3'/><path d='M0 176 h236 v60 H0 Z' fill='#5E8C7C' opacity='.2'/><path d='M20 190 q30 -10 60 0 t60 0 t60 0' stroke='#E7F0EC' stroke-width='2' fill='none' opacity='.4'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M118 40 L198 176 H38 Z' fill='none' stroke='#E7F0EC' stroke-width='3'/><path d='M0 176 h236 v60 H0 Z' fill='#5E8C7C' opacity='.2'/><path d='M20 190 q30 -10 60 0 t60 0 t60 0' stroke='#E7F0EC' stroke-width='2' fill='none' opacity='.4'/></svg>",
+   "poster": "posters/triangle.jpg",
+   "year": 2009,
+   "runtime": 99,
+   "genres": [
+    "Horror"
+   ],
+   "director": [
+    "Christopher Smith"
+   ],
+   "panel": "<section class=\"panel triangle\">\n  <div class=\"no\">No. 16</div>\n  <div class=\"head\"><div class=\"film\">Triangle<span>2009</span></div><div class=\"score\">7.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 3 &middot; solo, midday &middot; pitched same day for a WTF craving &middot; first watch</div>\n  <p class=\"plot\">Sally boards a yacht that sails into a storm and comes out the other side at an empty ocean liner, where she starts finding versions of herself already dead, already looping, already trying to warn the next one in. The film commits fully to the loop logic instead of hedging it.</p>\n  <p class=\"quote\">\"Sally pile and the birds were the two 'ahh shit she's never getting out of this' hits. Loop done well.\"</p>\n  <p class=\"debrief\">Pitched as a straight WTF craving and delivered exactly that. He singled out the pile of Sallys and the bird attack as the two moments that landed the dread hardest, and gave real credit to the loop being executed cleanly rather than just gestured at.</p>\n</section>"
   },
   {
    "slug": "pressure",
@@ -406,7 +706,19 @@
     "acc": "#8B7F63",
     "glyph": "◔"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='118' r='70' fill='none' stroke='#8B7F63' stroke-width='3' opacity='.5'/><circle cx='118' cy='118' r='46' fill='none' stroke='#EDE6D6' stroke-width='2' opacity='.6'/><line x1='118' y1='118' x2='150' y2='78' stroke='#EDE6D6' stroke-width='3'/><circle cx='118' cy='118' r='5' fill='#EDE6D6'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='118' r='70' fill='none' stroke='#8B7F63' stroke-width='3' opacity='.5'/><circle cx='118' cy='118' r='46' fill='none' stroke='#EDE6D6' stroke-width='2' opacity='.6'/><line x1='118' y1='118' x2='150' y2='78' stroke='#EDE6D6' stroke-width='3'/><circle cx='118' cy='118' r='5' fill='#EDE6D6'/></svg>",
+   "poster": "posters/pressure.jpg",
+   "year": 2026,
+   "runtime": 101,
+   "genres": [
+    "Thriller",
+    "History",
+    "War"
+   ],
+   "director": [
+    "Anthony Maras"
+   ],
+   "panel": "<section class=\"panel pressure\">\n  <div class=\"no\">No. 17</div>\n  <div class=\"head\"><div class=\"film\">Pressure<span>2026</span></div><div class=\"score\">7.7<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, accidental late-night watch &middot; Peacock autoplay &middot; first watch</div>\n  <p class=\"plot\">A one-room historical drama about the team of meteorologists arguing over the D-Day forecast, where the entire invasion hinges on a handful of men agreeing on the weather in time. Tension built entirely out of restraint and a ticking clock rather than spectacle.</p>\n  <p class=\"quote\">\"Pretty decent! Mostly a weather report after all, but a good historical drama.\"</p>\n  <p class=\"debrief\">Found by accident, not chosen, and graded accordingly: solid, restrained, does what it sets out to do without asking for more credit than that. A quiet entry in the one-room-tension shelf rather than a big swing.</p>\n</section>"
   },
   {
    "slug": "annihilation",
@@ -421,7 +733,18 @@
     "acc": "#9FB0A2",
     "glyph": "❖"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient id='shmr' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#9FB0A2' stop-opacity='.55'/><stop offset='.5' stop-color='#9FB0A2' stop-opacity='.35'/><stop offset='1' stop-color='#EDF3EA' stop-opacity='.4'/></linearGradient></defs><path d='M0 60 q60 -40 120 -10 t116 -6 V236 H0 Z' fill='url(#shmr)'/><g fill='#EDF3EA'><rect x='104' y='108' width='28' height='84' /><path d='M100 108 l18 -26 l18 26 Z'/><rect x='112' y='124' width='12' height='16' fill='#16323A'/></g><path d='M132 96 q34 -20 60 -8' stroke='#EDF3EA' stroke-width='2' fill='none' opacity='.5'/><path d='M62 236 q-6 -50 14 -92' stroke='#9FB0A2' stroke-width='3' fill='none' opacity='.6'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient id='shmr' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#9FB0A2' stop-opacity='.55'/><stop offset='.5' stop-color='#9FB0A2' stop-opacity='.35'/><stop offset='1' stop-color='#EDF3EA' stop-opacity='.4'/></linearGradient></defs><path d='M0 60 q60 -40 120 -10 t116 -6 V236 H0 Z' fill='url(#shmr)'/><g fill='#EDF3EA'><rect x='104' y='108' width='28' height='84' /><path d='M100 108 l18 -26 l18 26 Z'/><rect x='112' y='124' width='12' height='16' fill='#16323A'/></g><path d='M132 96 q34 -20 60 -8' stroke='#EDF3EA' stroke-width='2' fill='none' opacity='.5'/><path d='M62 236 q-6 -50 14 -92' stroke='#9FB0A2' stroke-width='3' fill='none' opacity='.6'/></svg>",
+   "poster": "posters/annihilation.jpg",
+   "year": 2018,
+   "runtime": 115,
+   "genres": [
+    "Science Fiction",
+    "Horror"
+   ],
+   "director": [
+    "Alex Garland"
+   ],
+   "panel": "<section class=\"panel annihilation\">\n  <div class=\"no\">No. 18</div>\n  <div class=\"head\"><div class=\"film\">Annihilation<span>2018</span></div><div class=\"score\">7.4<small> /10</small></div></div>\n  <div class=\"meta\">July 29 · solo · wiped after six hours of rehearsal · pitched the gentle one, walked into the Shimmer instead</div>\n  <p class=\"plot\">A biologist whose husband came back from a classified mission hollow and wrong volunteers for the next expedition into the Shimmer, an iridescent zone that is slowly spreading and quietly rewriting the biology of everything inside it. The deeper the all-women team goes the more beautiful and more wrong it gets: flowers grown into human shapes, a bear that screams in a dead teammate's voice, her own blood refracting under the microscope. At the lighthouse she meets a mirror of herself, and one of them burns. Whoever walks back out has the Shimmer in her eyes.</p>\n  <p class=\"quote\">\"i didn't realy care about any of them and then they were dead haha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, on the casting</b>\"how on earth did they get natalie portman to agree to that movie?! hahaha\"</p>\n    <p class=\"mq\"><b>Dixon, the verdict</b>\"visuals were lovely and the storyline was pretty entertaining and it was a fun watch, but nothing really mattered\"</p>\n    <p class=\"mq\"><b>Dixon, on the ending</b>\"we saw the lena with the tattoo get blown up but then why were her eyes shimmering at the end? did i miss something or just poorly explained or fucvking what?\"</p>\n    <p class=\"mq\"><b>Leonard, on the ending</b>The thing at the lighthouse grows a copy of her in real time. She hands the copy the phosphorus and it burns, taking the Shimmer with it. A tattooed Lena died. A tattooed Lena walked out. The mark cannot tell you which, and the movie will not.</p>\n    <p class=\"mq\"><b>Leonard, the read</b>The women are all self-destructing before they ever walk in. Thin on purpose, self-erasure as biology and not psychology. Fine idea, but arm's length is a cost, and you found the ceiling.</p>\n  </div>\n  <p class=\"debrief\">Lovely to look at, genuinely entertaining, and held at arm's length by a thesis that mistakes withholding for depth. On the execution ledger the set pieces paid in full (that bear is one of the decade's best scares) and the human account came up short, which is why it lands nowhere near Coherence or Sorry to Bother You. Both of those staged their insanity <b>and</b> made you care about someone in the room. A clean 7.4: the reach was real, the hand never quite closed on the people.</p>\n</section>"
   },
   {
    "slug": "sunshine",
@@ -436,7 +759,18 @@
     "acc": "#8A7440",
     "glyph": "☀"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='108' r='84' fill='#8A7440' opacity='.85'/><circle cx='118' cy='108' r='84' fill='none' stroke='#3A2E10' stroke-width='2' opacity='.5'/><circle cx='118' cy='108' r='62' fill='#3A2E10' opacity='.25'/><g transform='translate(118 176)'><circle cx='0' cy='0' r='16' fill='#8A7440'/><circle cx='0' cy='0' r='16' fill='none' stroke='#F3D98B' stroke-width='2'/><rect x='-3' y='14' width='6' height='26' fill='#8A7440'/><rect x='-14' y='38' width='28' height='8' rx='3' fill='#8A7440'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><circle cx='118' cy='108' r='84' fill='#8A7440' opacity='.85'/><circle cx='118' cy='108' r='84' fill='none' stroke='#3A2E10' stroke-width='2' opacity='.5'/><circle cx='118' cy='108' r='62' fill='#3A2E10' opacity='.25'/><g transform='translate(118 176)'><circle cx='0' cy='0' r='16' fill='#8A7440'/><circle cx='0' cy='0' r='16' fill='none' stroke='#F3D98B' stroke-width='2'/><rect x='-3' y='14' width='6' height='26' fill='#8A7440'/><rect x='-14' y='38' width='28' height='8' rx='3' fill='#8A7440'/></g></svg>",
+   "poster": "posters/sunshine.jpg",
+   "year": 2007,
+   "runtime": 108,
+   "genres": [
+    "Science Fiction",
+    "Thriller"
+   ],
+   "director": [
+    "Danny Boyle"
+   ],
+   "panel": "<section class=\"panel sunshine\">\n  <div class=\"no\">No. 16</div>\n  <div class=\"head\"><div class=\"film\">Sunshine<span>2007</span></div><div class=\"score\">7.4<small> /10</small></div></div>\n  <div class=\"meta\">July 17 · second slot after Enemy · rental</div>\n  <p class=\"plot\">The sun is dying, so a stacked-cast crew hauls a bomb the size of Manhattan to relight it. Then they answer a distress call from the last failed mission and find Pinbacker, a burned prophet who thinks God wants the lights off. Act three swerves slasher; the internet has argued ever since.</p>\n  <p class=\"quote\">\"then all of a sudden i was like oh. that's why hahahaha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"fun little thing\"</p>\n    <p class=\"mq\"><b>Dixon, ruling on my act-three defense</b>\"reaching a bit too hard for an idea that didn't land\"</p>\n    <p class=\"mq\"><b>Leonard, conceding</b>\"A thesis that needs the commentary track is a thesis the film didn't deliver.\"</p>\n  </div>\n  <p class=\"debrief\">You speedran the 2007 reception arc in real time. <b>Line-item accounting</b> was born here, and the rescale ran the invoice again: with room to itemize, the bill came to 7.4. The biggest slide of the new era.</p>\n</section>"
   },
   {
    "slug": "game",
@@ -451,7 +785,19 @@
     "acc": "#AEB4BC",
     "glyph": "♟"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='62' y='36' width='112' height='140' rx='6' fill='#AEB4BC' opacity='.5'/><g fill='#F2EFE9'><circle cx='118' cy='88' r='30'/><path d='M118 58 q-8 -18 6 -22 q10 -2 8 10' fill='none' stroke='#F2EFE9' stroke-width='5' stroke-linecap='round'/></g><g fill='#3E4650'><circle cx='106' cy='82' r='5'/><circle cx='130' cy='82' r='5'/><path d='M104 100 q14 12 28 0' stroke='#3E4650' stroke-width='4' fill='none' stroke-linecap='round'/></g><circle cx='104' cy='96' r='6' fill='#AEB4BC' opacity='.8'/><circle cx='132' cy='96' r='6' fill='#AEB4BC' opacity='.8'/><path d='M84 176 l14 34 h40 l14 -34' fill='#AEB4BC' opacity='.35'/><rect x='96' y='118' width='44' height='58' rx='8' fill='#F2EFE9' opacity='.9'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='62' y='36' width='112' height='140' rx='6' fill='#AEB4BC' opacity='.5'/><g fill='#F2EFE9'><circle cx='118' cy='88' r='30'/><path d='M118 58 q-8 -18 6 -22 q10 -2 8 10' fill='none' stroke='#F2EFE9' stroke-width='5' stroke-linecap='round'/></g><g fill='#3E4650'><circle cx='106' cy='82' r='5'/><circle cx='130' cy='82' r='5'/><path d='M104 100 q14 12 28 0' stroke='#3E4650' stroke-width='4' fill='none' stroke-linecap='round'/></g><circle cx='104' cy='96' r='6' fill='#AEB4BC' opacity='.8'/><circle cx='132' cy='96' r='6' fill='#AEB4BC' opacity='.8'/><path d='M84 176 l14 34 h40 l14 -34' fill='#AEB4BC' opacity='.35'/><rect x='96' y='118' width='44' height='58' rx='8' fill='#F2EFE9' opacity='.9'/></svg>",
+   "poster": "posters/game.jpg",
+   "year": 1997,
+   "runtime": 129,
+   "genres": [
+    "Drama",
+    "Thriller",
+    "Mystery"
+   ],
+   "director": [
+    "David Fincher"
+   ],
+   "panel": "<section class=\"panel game\">\n  <div class=\"no\">No. 17</div>\n  <div class=\"head\"><div class=\"film\">The Game<span>1997</span></div><div class=\"score\">6.8<small> /10</small></div></div>\n  <div class=\"meta\">July 14 · same night as Sicario · free on YouTube</div>\n  <p class=\"plot\">Michael Douglas, a control-freak banker, gets a birthday gift from his chaos brother: a \"game\" that dismantles his life piece by piece until he can't tell what's real. It was all staged, every stranger an actor, ending with him jumping off a roof into his own surprise party.</p>\n  <p class=\"quote\">\"saw it coming the whole time. in the world of Black Mirror it didn't slap as hard as it probably did in 1997\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"least enjoyable of the run but still very much liked it\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"You grew up on the copies, not the originals. You have all the antibodies.\"</p>\n  </div>\n  <p class=\"debrief\">Birth of the <b>antibodies doctrine</b>. You grew up on the copies, so the originals can't sting. Well-made-but-predictable set the floor of the scale, and the floor still means you liked it.</p>\n</section>"
   },
   {
    "slug": "silverlake",
@@ -466,7 +812,19 @@
     "acc": "#93AEBE",
     "glyph": "☾"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 148 h236 v88 H0 Z' fill='#93AEBE' opacity='.45'/><path d='M20 168 q30 8 60 0 t60 0 t60 0' stroke='#0E1420' stroke-width='3' fill='none' opacity='.5'/><path d='M30 196 q30 8 60 0 t60 0 t60 0' stroke='#0E1420' stroke-width='3' fill='none' opacity='.35'/><g fill='#E9F0F4'><circle cx='118' cy='70' r='14'/><path d='M102 130 v-24 q0 -14 16 -14 q16 0 16 14 v24 Z'/><rect x='96' y='64' width='16' height='11' rx='3' fill='#93AEBE'/><rect x='124' y='64' width='16' height='11' rx='3' fill='#93AEBE'/><rect x='110' y='67' width='16' height='4' fill='#93AEBE'/></g><g stroke='#E9F0F4' stroke-width='2' opacity='.6' fill='none'><circle cx='52' cy='52' r='8'/><path d='M46 52 h12 M52 46 v12' transform='rotate(45 52 52)'/><path d='M176 40 l8 14 h-16 Z'/><circle cx='196' cy='84' r='5'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><path d='M0 148 h236 v88 H0 Z' fill='#93AEBE' opacity='.45'/><path d='M20 168 q30 8 60 0 t60 0 t60 0' stroke='#0E1420' stroke-width='3' fill='none' opacity='.5'/><path d='M30 196 q30 8 60 0 t60 0 t60 0' stroke='#0E1420' stroke-width='3' fill='none' opacity='.35'/><g fill='#E9F0F4'><circle cx='118' cy='70' r='14'/><path d='M102 130 v-24 q0 -14 16 -14 q16 0 16 14 v24 Z'/><rect x='96' y='64' width='16' height='11' rx='3' fill='#93AEBE'/><rect x='124' y='64' width='16' height='11' rx='3' fill='#93AEBE'/><rect x='110' y='67' width='16' height='4' fill='#93AEBE'/></g><g stroke='#E9F0F4' stroke-width='2' opacity='.6' fill='none'><circle cx='52' cy='52' r='8'/><path d='M46 52 h12 M52 46 v12' transform='rotate(45 52 52)'/><path d='M176 40 l8 14 h-16 Z'/><circle cx='196' cy='84' r='5'/></g></svg>",
+   "poster": "posters/silverlake.jpg",
+   "year": 2018,
+   "runtime": 139,
+   "genres": [
+    "Crime",
+    "Drama",
+    "Mystery"
+   ],
+   "director": [
+    "David Robert Mitchell"
+   ],
+   "panel": "<section class=\"panel silverlake\">\n  <div class=\"no\">No. 21</div>\n  <div class=\"head\"><div class=\"film\">Under the Silver Lake<span>2018</span></div><div class=\"score\">6.7<small> /10</small></div></div>\n  <div class=\"meta\">July 30 &middot; solo, free on the Roku Channel, picked over The Handmaiden to dodge subtitles &middot; the great-conversation mid-score</div>\n  <p class=\"plot\">Sam, jobless and days from eviction in Silver Lake, watches the woman by the pool vanish overnight and follows a trail of ciphers through pop songs, cereal-box maps, an owl-faced woman, and a Songwriter who claims he wrote everything Sam ever loved, all the way up into the bunkers where rich men get buried with their brides. The film hands him meaning everywhere and proof nowhere, and it does the same thing to you.</p>\n  <p class=\"quote\">\"what the fuck was the hell was that movie\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the gut, verbatim</b>\"I have no fucking clue. Haha my gut says he's def the dog killer and maybe also the owl killer and this is his whole delusion to keep from recognizing that. Is he searching for god?\"</p>\n    <p class=\"mq\"><b>Leonard, the counter</b>The conspiracy is real AND Sam is still that guy. The bunkers do not need him to be innocent, and the Songwriter is a god audience either way. The scary version was always both.</p>\n    <p class=\"mq\"><b>The owl woman clause</b>Twelve hours after the credits he could not remember whether the owl woman ever spoke. A film about unreliable meaning, filed by an unreliable witness. The thesis, lived.</p>\n  </div>\n  <p class=\"debrief\">The great-conversation mid-score, named the morning after. He theorized harder about this than about films he scored two points higher, and the number still landed at 6.7, because sprawl that never closes its hand gets paid like sprawl. <b>Discussion value and rating are separate currencies</b>, his rule, minted here beside Annihilation. Skipping The Handmaiden to dodge subtitles and landing in a movie built entirely of unreadable signs is its own kind of Silver Lake cipher.</p>\n</section>"
   },
   {
    "slug": "malignant",
@@ -481,7 +839,18 @@
     "acc": "#C08F98",
     "glyph": "⟲"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='#F6E4E7'><circle cx='118' cy='92' r='40'/><path d='M84 108 q-8 60 10 96 h48 q18 -36 10 -96 Z'/></g><g stroke='#C08F98' stroke-width='3' fill='none' opacity='.8' stroke-linecap='round'><path d='M86 70 q-14 40 -4 96'/><path d='M150 70 q14 40 4 96'/><path d='M100 56 q-10 50 -4 110'/><path d='M136 56 q10 50 4 110'/><path d='M118 52 q-4 60 0 118'/></g><path d='M96 180 q22 -12 44 0 q-8 18 -22 18 q-14 0 -22 -18 Z' fill='#C08F98' opacity='.9'/><circle cx='106' cy='186' r='3.5' fill='#0E0508'/><circle cx='130' cy='186' r='3.5' fill='#0E0508'/></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><g fill='#F6E4E7'><circle cx='118' cy='92' r='40'/><path d='M84 108 q-8 60 10 96 h48 q18 -36 10 -96 Z'/></g><g stroke='#C08F98' stroke-width='3' fill='none' opacity='.8' stroke-linecap='round'><path d='M86 70 q-14 40 -4 96'/><path d='M150 70 q14 40 4 96'/><path d='M100 56 q-10 50 -4 110'/><path d='M136 56 q10 50 4 110'/><path d='M118 52 q-4 60 0 118'/></g><path d='M96 180 q22 -12 44 0 q-8 18 -22 18 q-14 0 -22 -18 Z' fill='#C08F98' opacity='.9'/><circle cx='106' cy='186' r='3.5' fill='#0E0508'/><circle cx='130' cy='186' r='3.5' fill='#0E0508'/></svg>",
+   "poster": "posters/malignant.jpg",
+   "year": 2021,
+   "runtime": 111,
+   "genres": [
+    "Horror",
+    "Mystery"
+   ],
+   "director": [
+    "James Wan"
+   ],
+   "panel": "<section class=\"panel malignant\">\n  <div class=\"no\">No. 19</div>\n  <div class=\"head\"><div class=\"film\">Malignant<span>2021</span></div><div class=\"score\">5.4<small> /10</small></div></div>\n  <div class=\"meta\">July 26 &middot; slot two of a Sunday double feature &middot; the new floor</div>\n  <p class=\"plot\">A woman starts having waking visions of murders as they happen, in rooms she has never been in, committed by a figure who calls himself Gabriel and who has been talking to her since childhood. It plays as a flat, ordinary haunting for an hour. Then a doctor pulls out an old file and explains that Gabriel is a parasitic twin fused to the back of her skull, at which point he takes the wheel, bends her body backwards, and fights an entire police station in reverse.</p>\n  <p class=\"quote\">\"voldemort did it first and was way more chill about it\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the diagnosis</b>\"it kinda hands you the probablity of it being her the whole time fairly early on and then by the time we get to ole voldy on the back it&rsquo;s not the reveal i wanted it to be.\"</p>\n    <p class=\"mq\"><b>Dixon, giving it its one point of credit</b>\"but the killing got way cooler after that haha\"</p>\n    <p class=\"mq\"><b>Leonard, the wrong order</b>Two twists, badly sequenced. The who is leaked constantly. The what is genuinely one of the wildest ideas in studio horror and it arrives as a doctor explaining a chart.</p>\n    <p class=\"mq\"><b>Leonard, the comparison that hurts</b>Sorry to Bother You did not tell you about the equisapiens. It opened a door and made you look. Gabriel is staged as homework.</p>\n    <p class=\"mq\"><b>The rule that came out of it</b>An unguessable idea is not the same as an unguessable reveal. The idea has to be delivered as an event or it does not count.</p>\n  </div>\n  <p class=\"debrief\">The first film to land under The Game, which means the bottom of the board is no longer a movie he still very much liked. It also produced the sharpest twist-calibration data point since the antibodies doctrine, and it produced it by failing. He clocked the culprit early, sat through an hour of decoy, and got handed the payoff as exposition. The movie only becomes what it should have been once the explaining stops.</p>\n</section>"
   },
   {
    "slug": "disclosure-day",
@@ -496,7 +865,252 @@
     "acc": "#8FA3C0",
     "glyph": "◎"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='48' y='56' width='140' height='96' rx='8' fill='#E7EEF6' opacity='.92'/><rect x='58' y='66' width='120' height='76' rx='4' fill='#050810'/><ellipse cx='118' cy='96' rx='26' ry='11' fill='#8FA3C0'/><ellipse cx='118' cy='90' rx='12' ry='9' fill='#8FA3C0'/><g stroke='#8FA3C0' stroke-width='2.2' fill='none' opacity='.85' stroke-linecap='round'><path d='M84 92 q-8 8 0 16'/><path d='M152 92 q8 8 0 16'/><path d='M76 86 q-14 12 0 28'/><path d='M160 86 q14 12 0 28'/></g><rect x='108' y='152' width='20' height='14' fill='#E7EEF6' opacity='.92'/><rect x='84' y='166' width='68' height='8' rx='3' fill='#E7EEF6' opacity='.92'/><g fill='#8FA3C0'><circle cx='74' cy='206' r='7'/><circle cx='100' cy='210' r='7'/><circle cx='136' cy='210' r='7'/><circle cx='162' cy='206' r='7'/></g></svg>"
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='48' y='56' width='140' height='96' rx='8' fill='#E7EEF6' opacity='.92'/><rect x='58' y='66' width='120' height='76' rx='4' fill='#050810'/><ellipse cx='118' cy='96' rx='26' ry='11' fill='#8FA3C0'/><ellipse cx='118' cy='90' rx='12' ry='9' fill='#8FA3C0'/><g stroke='#8FA3C0' stroke-width='2.2' fill='none' opacity='.85' stroke-linecap='round'><path d='M84 92 q-8 8 0 16'/><path d='M152 92 q8 8 0 16'/><path d='M76 86 q-14 12 0 28'/><path d='M160 86 q14 12 0 28'/></g><rect x='108' y='152' width='20' height='14' fill='#E7EEF6' opacity='.92'/><rect x='84' y='166' width='68' height='8' rx='3' fill='#E7EEF6' opacity='.92'/><g fill='#8FA3C0'><circle cx='74' cy='206' r='7'/><circle cx='100' cy='210' r='7'/><circle cx='136' cy='210' r='7'/><circle cx='162' cy='206' r='7'/></g></svg>",
+   "poster": "posters/disclosure-day.jpg",
+   "year": 2026,
+   "runtime": 146,
+   "genres": [
+    "Science Fiction",
+    "Thriller"
+   ],
+   "director": [
+    "Steven Spielberg"
+   ],
+   "panel": "<section class=\"panel disclosure-day\">\n  <div class=\"no\">No. 24</div>\n  <div class=\"head\"><div class=\"film\">Disclosure Day<span>2026</span></div><div class=\"score\">5.2<small> /10</small></div></div>\n  <div class=\"meta\">July 31 &middot; 3:30pm Friday double feature, slot one &middot; the new floor</div>\n  <p class=\"plot\">Spielberg returns to first contact for what critics called the closer of his alien trilogy. A propulsive chase opens mid-stride, the camera as sure as it has ever been, and the film sets up a semi-interesting conspiracy about proof of extraterrestrial life. Then it stops moving. The last hour is speeches, the aliens are shown for 45 minutes before the big reveal turns out to be a larger one, and there are houses being built and animals appearing for reasons the movie never bothers to earn.</p>\n  <p class=\"quote\">\"holy fucking shit that was a terrible fucking movie hahaha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, the autopsy</b>\"the cmaera work and visuals alone in the first part were lovely. and it sets up like something semi interesting. but holy fuck it goes no where fast and then when it finally does, it's insanely ridiculously stupid. my god\"</p>\n    <p class=\"mq\"><b>Dixon, on the reveal</b>\"we have been seeing what they look like for 45 min. so this was just the biggest alien??? and like why? and who? and the house building? for fucking why? and then the animals?!\"</p>\n    <p class=\"mq\"><b>Dixon, on the score he never heard</b>\"i was too stunned by the stupidity i ddin't even notice hte john williams. which means he probably saw what a dumb fucking script it was too and phoned it in haha\"</p>\n    <p class=\"mq\"><b>Leonard, the ruling</b>Not a reveal, a zoom. Forty-five minutes of showing the creature and the twist is scale. The Malignant rule's new martyr: the biggest question we have, delivered as an hour of speeches and a size upgrade.</p>\n  </div>\n  <p class=\"debrief\">A Spielberg took the basement from a movie about a killer back-fetus, five days after Malignant claimed it. The line-item accounting was honest: the eye still works, the first act cashed, and none of it mattered because the film answered its own question with exposition and enlargement. The rare double violation of his twist doctrine, decoy hour AND exposition dump, from the director whose early work helped write the doctrine's counterexamples.</p>\n</section>"
+  }
+ ],
+ "links": [
+  {
+   "from": "amadeus",
+   "to": "darkknight",
+   "relation": "obsession-with-a-rival",
+   "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
+   "weight": 1,
+   "directional": false
+  },
+  {
+   "from": "annihilation",
+   "to": "coherence",
+   "relation": "thin-ensemble",
+   "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "annihilation",
+   "to": "stby",
+   "relation": "thin-ensemble",
+   "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "annihilation",
+   "to": "sunshine",
+   "relation": "gorgeous-and-cold",
+   "note": "Neighbors in The Sevens. Idea-forward, visually lovely, ensemble kept deliberately thin, and he docks for it every time.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "batman",
+   "to": "darkknight",
+   "relation": "nolan-arc",
+   "note": "Begins states the Ra's thesis. The two ferries run the small experiment.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "br2049",
+   "to": "sicario",
+   "relation": "villeneuve",
+   "note": "The Villeneuve spine. Two registers, same total control, tied and adjacent at the top of the board.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "disclosure-day",
+   "to": "malignant",
+   "relation": "reveal-as-event",
+   "note": "A Malignant-rule double violation: decoy hour plus exposition dump. Not a reveal, a zoom. Took the floor at 5.2.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "enemy",
+   "to": "br2049",
+   "relation": "villeneuve",
+   "note": "Villeneuve's small strange one against his colossus. Same director, opposite scale.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "exmachina",
+   "to": "annihilation",
+   "relation": "garland",
+   "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "malignant",
+   "to": "stby",
+   "relation": "reveal-as-event",
+   "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "nightcrawler",
+   "to": "sicario",
+   "relation": "execution-meritocracy",
+   "note": "Two operators who never miss. One is the system working, one is a man feeding on it.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "ncfom",
+   "to": "sicario",
+   "relation": "split-watch-asterisk",
+   "note": "The 8.3 carries the split-watch asterisk. Never split a tension movie across two nights; the held breath breaks. His lesson, stated by him.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "obsession",
+   "to": "niceguys",
+   "relation": "guest-context",
+   "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
+   "weight": 1,
+   "directional": true
+  },
+  {
+   "from": "poorthings",
+   "to": "stby",
+   "relation": "audacity",
+   "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "sicario",
+   "to": "ncfom",
+   "relation": "execution-meritocracy",
+   "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "source-code",
+   "to": "moon",
+   "relation": "moon2",
+   "note": "He asked Moon for a moon2 with more explaining. Duncan Jones delivered it two years early: faster, flashier, bigger swerve, and a heart Moon kept thin. It landed two tenths under the original.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "source-code",
+   "to": "predestination",
+   "relation": "loop-bracket",
+   "note": "The sci-fi puzzle box bracket, one night apart. Predestination closes its loop into itself at 9.1; Source Code breaks its loop open into a new universe at 7.9. Same machine, opposite exits.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "darkknight",
+   "to": "tdkr",
+   "relation": "nolan-arc",
+   "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "tdkr",
+   "to": "batman",
+   "relation": "nolan-arc",
+   "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "tdkr",
+   "to": "memento",
+   "relation": "bad-memory-asset",
+   "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "game",
+   "to": "memento",
+   "relation": "antibodies",
+   "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "niceguys",
+   "to": "bullettrain",
+   "relation": "fun-shelf",
+   "note": "The fun shelf, proven understocked and then stocked. Failure as the funniest material versus mayhem as choreography.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "niceguys",
+   "to": "nightcrawler",
+   "relation": "counterprogramming",
+   "note": "Los Angeles twice: once as a punchline, once as a predator. The pick that proved counterprogramming his dread lane works.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
+   "to": "sicario",
+   "relation": "execution-meritocracy",
+   "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
+   "to": "stby",
+   "relation": "reveal-as-event",
+   "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
+   "to": "game",
+   "relation": "antibodies",
+   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "maverick",
+   "to": "bullettrain",
+   "relation": "craft-blockbuster",
+   "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
+   "weight": 1,
+   "directional": false
+  },
+  {
+   "from": "silverlake",
+   "to": "annihilation",
+   "relation": "discussion-not-score",
+   "note": "The two great-conversation mid-scores. Rich debriefs, ambient sprawl, hands that never fully close. Discussion value and rating are separate currencies.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "silverlake",
+   "to": "memento",
+   "relation": "unreliable-search",
+   "note": "A man builds a system of meaning to avoid what he already knows. Sam's conspiracy and Leonard's notes are the same machine. The owl woman memory test proved it within twelve hours.",
+   "weight": 2,
+   "directional": true
   }
  ]
 }

@@ -11,7 +11,12 @@ Milestone 1 scope: the Ledger films only (ledger_meta.json + ledger_panels.json
 palettes + photos.json fronts). Archive/Hazy come in M2 via a shared data
 module. Run from the repo root:  python scripts/emit_vault_data.py
 """
-import io, os, re, json
+import io, os, re, json, sys
+
+try:
+    from urllib.request import urlopen, Request
+except ImportError:  # py2 safety, not expected here
+    urlopen = None
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(HERE)
@@ -30,8 +35,44 @@ def load(name):
 META = load("ledger_meta.json")          # slug -> [date, score, title]
 PANELS = load("ledger_panels.json")      # [{slug, palette_css, panel_html}]
 PHOTOS = load("photos.json")             # slug -> svg (vars unresolved)
+TITLES = load("titles.json")             # slug -> {year, runtime, poster, genres, director}
 
 PAL_BY_SLUG = {p["slug"]: p["palette_css"] for p in PANELS}
+PANEL_BY_SLUG = {p["slug"]: p.get("panel_html") for p in PANELS}
+
+POSTER_DIR = os.path.join(OUT_DIR, "posters")
+TMDB = "https://image.tmdb.org/t/p/w500"
+
+
+def fetch_poster(slug, path):
+    """Vendor the TMDB poster into public/posters/<slug>.jpg.
+
+    Downloading at build time (rather than hotlinking) keeps the deployed page
+    free of any third-party runtime dependency -- no CDN outage, no CSP
+    surprise, no cross-origin texture taint. Idempotent: existing files are
+    left alone, so a rebuild costs nothing.
+    """
+    if not path:
+        return None
+    dest = os.path.join(POSTER_DIR, slug + ".jpg")
+    rel = "posters/%s.jpg" % slug
+    if os.path.exists(dest) and os.path.getsize(dest) > 1024:
+        return rel
+    url = TMDB + path
+    try:
+        req = Request(url, headers={"User-Agent": "movie-vault/1.0"})
+        blob = urlopen(req, timeout=30).read()
+    except Exception as e:                      # noqa: BLE001 - report and carry on
+        sys.stderr.write("poster FAILED %s: %s\n" % (slug, e))
+        return None
+    if len(blob) < 1024:
+        sys.stderr.write("poster too small, skipping %s\n" % slug)
+        return None
+    os.makedirs(POSTER_DIR, exist_ok=True)
+    with open(dest, "wb") as f:
+        f.write(blob)
+    print("  fetched", rel, len(blob) // 1024, "KB")
+    return rel
 
 
 def _first_hex(s):
@@ -80,6 +121,7 @@ films = []
 for slug, (date, score, title) in META.items():
     pal = parse_palette(PAL_BY_SLUG.get(slug, ""))
     front = resolve_svg(PHOTOS.get(slug), pal)
+    t = TITLES.get(slug) or {}
     films.append({
         "slug": slug,
         "title": title,
@@ -88,19 +130,55 @@ for slug, (date, score, title) in META.items():
         "state": "ledger",
         "palette": pal,
         "front": front,          # SVG string, vars resolved, or null (glyph fallback)
+        "poster": fetch_poster(slug, t.get("poster")),
+        "year": t.get("year"),
+        "runtime": t.get("runtime"),
+        "genres": t.get("genres") or [],
+        "director": t.get("director") or [],
+        "panel": PANEL_BY_SLUG.get(slug),   # the case file, read at inspect range
     })
 
 # score desc, then title -- the salon hang order (rank = height, computed app-side)
 films.sort(key=lambda f: (-f["score"], f["title"].lower()))
 
+LINKS = load("links.json")   # authored bloodlines, from/to as TITLE strings
+
+# links carry titles; the app works in slugs, so resolve once here
+SLUG_BY_TITLE = {v[2].strip().lower(): k for k, v in META.items()}
+
+
+def as_slug(name):
+    return SLUG_BY_TITLE.get((name or "").strip().lower())
+
+
+links = []
+dropped = 0
+for l in LINKS:
+    a, b = as_slug(l.get("from")), as_slug(l.get("to"))
+    if not a or not b:
+        dropped += 1
+        continue
+    links.append({
+        "from": a,
+        "to": b,
+        "relation": l.get("relation"),
+        "note": l.get("note"),
+        "weight": l.get("weight") or 1,
+        "directional": bool(l.get("directional")),
+    })
+
 data = {
-    "generated_from": "ledger_meta.json + ledger_panels.json + photos.json",
+    "generated_from": "ledger_meta + ledger_panels + photos + titles + links",
     "count": len(films),
     "avg": round(sum(f["score"] for f in films) / len(films), 2),
     "films": films,
+    "links": links,
 }
 
 os.makedirs(OUT_DIR, exist_ok=True)
 json.dump(data, io.open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print("wrote", OUT, "-", data["count"], "films, avg", data["avg"],
-      "-", sum(1 for f in films if f["front"]), "resolved fronts")
+print("wrote", OUT, "-", data["count"], "films, avg", data["avg"])
+print("  fronts:", sum(1 for f in films if f["front"]),
+      "| posters:", sum(1 for f in films if f["poster"]),
+      "| panels:", sum(1 for f in films if f["panel"]),
+      "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")

@@ -6,6 +6,7 @@
   "description": "The Vault — Dixon's movie ledger as a WebGL room (React-Three-Fiber).",
   "scripts": {
     "data": "python scripts/emit_vault_data.py",
+    "shot": "python scripts/shot.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

@@ -4,3 +4,5 @@ dist/
 .DS_Store
 _experiments/*.png
 _experiments/**/*.png
+
+_shots/

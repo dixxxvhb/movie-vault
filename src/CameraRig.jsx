@@ -12,7 +12,9 @@ const EYE = 1.62
 export const STATIONS = {
   center: { pos: [0, EYE, 1.25], look: [0, 1.45, -HD], fov: 60, freeLook: true },
   ledger: { pos: [0, 1.5, 0.55], look: [0, 1.46, -HD], fov: 54, yawRange: 0.45 },
-  investigation: { pos: [0.2, 1.5, 0], look: [HW, 1.45, 0], fov: 56, yawRange: 0.5 },
+  // The Investigation is not a different wall — it is the Ledger wall with the
+  // string lit. Stand back so the whole web is in frame at once.
+  investigation: { pos: [0, 1.48, 1.35], look: [0, 1.44, -HD], fov: 62, yawRange: 0.3 },
   door: { pos: [0.1, 1.55, 0.0], look: [0.95, 1.3, HD], fov: 58, yawRange: 0.5 },
   mirror: { pos: [-0.2, 1.5, 0.15], look: [-HW, 1.45, 0.2], fov: 56, yawRange: 0.5 },
 }
@@ -31,8 +33,16 @@ function aim(pos, look) {
   return { yaw: Math.atan2(-d.x, -d.z), pitch: Math.asin(THREE.MathUtils.clamp(d.y, -1, 1)) }
 }
 
-export default function CameraRig({ station = 'center' }) {
+// `station` may be a name from STATIONS or an ad-hoc viewpoint object (used for
+// per-card inspect, where the viewpoint is derived from where the card hangs).
+// `stationKey` is what drives the flight, so an object identity change on
+// re-render doesn't restart the camera mid-move.
+export default function CameraRig({ station = 'center', stationKey }) {
   const { camera, gl } = useThree()
+  const key = stationKey ?? (typeof station === 'string' ? station : 'custom')
+  const resolved = typeof station === 'string' ? (STATIONS[station] || STATIONS.center) : station
+  const latest = useRef(resolved)
+  latest.current = resolved
 
   const base = useRef(aim(STATIONS.center.pos, STATIONS.center.look))
   const off = useRef({ yaw: 0, pitch: 0 })      // user's drag, relative to base
@@ -42,7 +52,7 @@ export default function CameraRig({ station = 'center' }) {
 
   // begin a flight whenever the station changes
   useEffect(() => {
-    const s = STATIONS[station] || STATIONS.center
+    const s = latest.current
     const target = aim(s.pos, s.look)
     flight.current = {
       t: 0,
@@ -58,7 +68,7 @@ export default function CameraRig({ station = 'center' }) {
     }
     base.current = { yaw: flight.current.toYaw, pitch: target.pitch }
     off.current = { yaw: 0, pitch: 0 }
-  }, [station, camera])
+  }, [key, camera])
 
   // drag to look around
   useEffect(() => {
@@ -76,7 +86,7 @@ export default function CameraRig({ station = 'center' }) {
       drag.current.y = e.clientY
       drag.current.moved += Math.abs(dx) + Math.abs(dy)
 
-      const s = STATIONS[station] || STATIONS.center
+      const s = latest.current
       const sens = 0.0032
       let yaw = off.current.yaw - dx * sens
       let pitch = off.current.pitch - dy * sens
@@ -103,7 +113,7 @@ export default function CameraRig({ station = 'center' }) {
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
     }
-  }, [gl, station])
+  }, [gl, key])
 
   useFrame((_, dt) => {
     camera.rotation.order = 'YXZ'
