@@ -159,6 +159,27 @@ poster textures by wall visibility.
 
 ---
 
+## 6b. Doctrine conflicts found mid-build (2026-08-13)
+
+Reading `film_lessons` for the Mirror wall surfaced two of Dixon's own standing
+design rules that this build was breaking. Recorded here so they are not
+re-broken by accident:
+
+1. **"Banned design drawer: noir, evidence board, typewriter, VHS, marquee,
+   neon. All AI slop."** The v6 room shipped a pink neon window. **Fixed** — the
+   window is now a cold streetlight, which does the same lighting job (cool
+   counterpoint to the warm practical) without wearing a costume.
+2. **"No corkboard, no red string, no pins"**, and the Thread exception is
+   explicitly narrow: *"a thin temporary line of light, opt-in on hold, gone on
+   release, with the room dimming while held. If it ever reads as yarn or
+   becomes a standing web, the exception dies and the ban wins."*
+   This build has a **standing web with pins**, which the rule forbids — but
+   Dixon asked for exactly that in session ("all of it connected through strings
+   like a serial killer") and confirmed it in the plan review. Kept, and pulled
+   toward the rule: the web only exists inside the Investigation station (opt-in
+   rather than always-on) and **the room dims while it is up**. Open question
+   for Dixon: hold-to-reveal instead of a mode, and whether the pins stay.
+
 ## 7. Milestones
 
 ### M0 — Dev harness (do this first, it pays for itself immediately)

@@ -8,6 +8,7 @@ import CameraRig, { STATIONS, wasDrag } from './CameraRig.jsx'
 import Polaroid, { CARD_W, CARD_H } from './Polaroid.jsx'
 import CaseFile from './CaseFile.jsx'
 import Strings from './Strings.jsx'
+import { QueueWall, LessonsWall } from './Notes.jsx'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -22,9 +23,9 @@ function jitter(slug) {
   }
 }
 
-// Salon hang on the north wall: the perfect score crowns it, then rows of eight
-// descend by rank toward the baseboard.
-const ROWS = [1, 8, 8, 8, 8, 8]
+// Salon hang on the north wall: the top score crowns it, then rows descend by
+// rank toward the baseboard.
+const MAX_PER_ROW = 9
 const COL_GAP = CARD_W + 0.052
 const ROW_GAP = CARD_H + 0.062
 const TOP_Y = 2.16
@@ -32,11 +33,24 @@ const WALL_Z = -HD + 0.014
 // the inspected card floats off the wall; aim a little in front of the paper
 const LIFT_LOOK = 0.02
 
+// Rows are computed, not hardcoded. A fixed [1,8,8,8,8] leaves a single
+// stranded card the moment the ledger hits 34 films, and it will keep growing.
+// Balance the remainder across rows instead so the hang always looks composed.
+function rowSizes(total) {
+  if (total <= 1) return [total]
+  const rest = total - 1
+  const rows = Math.ceil(rest / MAX_PER_ROW)
+  const base = Math.floor(rest / rows)
+  const extra = rest % rows
+  return [1, ...Array.from({ length: rows }, (_, i) => base + (i < extra ? 1 : 0))]
+}
+
 function layout(films) {
   const placed = []
+  const rows = rowSizes(films.length)
   let idx = 0
-  for (let r = 0; r < ROWS.length && idx < films.length; r++) {
-    const n = Math.min(ROWS[r], films.length - idx)
+  for (let r = 0; r < rows.length && idx < films.length; r++) {
+    const n = Math.min(rows[r], films.length - idx)
     const y = TOP_Y - r * ROW_GAP
     for (let c = 0; c < n; c++) {
       const film = films[idx++]
@@ -130,7 +144,7 @@ export default function App() {
       >
         <color attach="background" args={['#05040a']} />
 
-        <Room />
+        <Room dim={thread} />
         <CameraRig station={view.station} stationKey={view.key} />
 
         {Object.keys(WALLS).map((w) => (
@@ -152,6 +166,17 @@ export default function App() {
             onHover={setHover}
           />
         ))}
+
+        {/* the door wall: what's next. Offset left so the slips don't hang
+            across the actual door, which sits at x = 0.95 */}
+        {data?.queue?.length > 0 && (
+          <QueueWall queue={data.queue} origin={[-0.62, 0, HD - 0.016]} rotation={[0, Math.PI, 0]} />
+        )}
+
+        {/* the mirror wall: what he likes. Pushed off the window at z = 0.75 */}
+        {data?.lessons?.length > 0 && (
+          <LessonsWall lessons={data.lessons} origin={[-HW + 0.016, 0, -0.45]} rotation={[0, Math.PI / 2, 0]} />
+        )}
 
         {thread && (
           <Strings

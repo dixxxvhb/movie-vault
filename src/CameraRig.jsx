@@ -15,7 +15,9 @@ export const STATIONS = {
   // The Investigation is not a different wall — it is the Ledger wall with the
   // string lit. Stand back so the whole web is in frame at once.
   investigation: { pos: [0, 1.48, 1.35], look: [0, 1.44, -HD], fov: 62, yawRange: 0.3 },
-  door: { pos: [0.1, 1.55, 0.0], look: [0.95, 1.3, HD], fov: 58, yawRange: 0.5 },
+  // aimed at the queue slips, not at the door itself — the door is scenery,
+  // the list of what's next is the content
+  door: { pos: [0.5, 1.58, 0.05], look: [-0.6, 1.5, HD], fov: 62, yawRange: 0.5 },
   mirror: { pos: [-0.2, 1.5, 0.15], look: [-HW, 1.45, 0.2], fov: 56, yawRange: 0.5 },
 }
 

@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react'
+// eslint-disable-next-line no-unused-vars
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { wallpaper, wallpaperRough, carpet, ceiling } from './roomTextures.js'
@@ -64,11 +65,14 @@ function Window() {
   }, [])
   return (
     <group position={[-HW + 0.03, 1.55, 0.75]} rotation={[0, Math.PI / 2, 0]}>
-      {/* the night outside. Tone-mapped on purpose — an untone-mapped emissive
-          at this size floods the whole room pink and eats the warm lamp. */}
+      {/* The night outside is a cold streetlight, NOT neon. Dixon's own design
+          doctrine bans the neon/noir drawer as AI slop; a sodium-and-moonlight
+          window does the same job (cold counterpoint to the warm practical)
+          without wearing a costume. Tone-mapped on purpose — an untone-mapped
+          emissive at this size floods the room and eats the lamp. */}
       <mesh>
         <planeGeometry args={[0.78, 0.92]} />
-        <meshBasicMaterial color="#b83a6d" />
+        <meshBasicMaterial color="#5c6b84" />
       </mesh>
       {/* blinds */}
       {slats.map((y, i) => (
@@ -198,9 +202,22 @@ function Dust({ count = 260 }) {
   )
 }
 
-export default function Room() {
+export default function Room({ dim = false }) {
   const floorMap = useMemo(() => carpet(), [])
   const ceilMap = useMemo(() => ceiling(), [])
+  // Dixon's Thread rule: the room dims while the string is up, so the lines
+  // read as the only thing lit rather than as decoration hung on a bright wall.
+  const lights = useRef()
+  useFrame((_, dt) => {
+    const g = lights.current
+    if (!g) return
+    g.children.forEach((l) => {
+      if (l.userData.base === undefined) l.userData.base = l.intensity
+      l.intensity = THREE.MathUtils.damp(
+        l.intensity, l.userData.base * (dim ? 0.34 : 1), 6, dt
+      )
+    })
+  })
 
   return (
     <group>
@@ -225,6 +242,7 @@ export default function Room() {
       <Dust />
 
       {/* --- lighting: one warm practical, one cold intruder --- */}
+      <group ref={lights}>
       <ambientLight intensity={0.34} color="#7d8aa2" />
 
       {/* the lamp itself */}
@@ -240,10 +258,11 @@ export default function Room() {
         distance={10}
         decay={2}
       />
-      {/* neon through the blinds — cool counterpoint, kept well under the lamp */}
-      <pointLight position={[-HW + 0.45, 1.55, 0.75]} intensity={1.5} color="#ff5f9e" distance={4.5} decay={2} />
+      {/* streetlight through the blinds — cool counterpoint, kept under the lamp */}
+      <pointLight position={[-HW + 0.45, 1.55, 0.75]} intensity={1.7} color="#93a8c6" distance={4.5} decay={2} />
       {/* barely-there fill so the far corners aren't pure black */}
       <pointLight position={[0, 1.7, 1.7]} intensity={1.5} color="#8fa5c4" distance={6.5} decay={2} />
+      </group>
     </group>
   )
 }

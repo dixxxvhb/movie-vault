@@ -1,0 +1,25 @@
+{
+ "_source": "film_watchlist where status = 'queued', joined to film_titles, pulled 2026-08-13. Ordered by queue_rank, unranked last.",
+ "queue": [
+  {"title": "Prisoners", "year": 2013, "rank": 2, "reason": "Villeneuve, heavy, excellent. REWATCH.", "note": "needs weekend emotional budget"},
+  {"title": "Her", "year": 2013, "rank": 3, "reason": "completes the AI-feelings trilogy", "note": ""},
+  {"title": "Children of Men", "year": 2006, "rank": 7, "reason": "", "note": ""},
+  {"title": "The Menu", "year": 2022, "rank": 10, "reason": "", "note": ""},
+  {"title": "Atomic Blonde", "year": 2017, "rank": 11, "reason": "", "note": ""},
+  {"title": "Tinker Tailor Soldier Spy", "year": 2011, "rank": 12, "reason": "", "note": ""},
+  {"title": "John Wick", "year": 2014, "rank": 13, "reason": "", "note": ""},
+  {"title": "Jack Reacher", "year": 2012, "rank": 14, "reason": "", "note": ""},
+  {"title": "The Accountant", "year": 2016, "rank": 15, "reason": "", "note": ""},
+  {"title": "Spotlight", "year": 2015, "rank": 16, "reason": "", "note": ""},
+  {"title": "Michael Clayton", "year": 2007, "rank": 17, "reason": "", "note": ""},
+  {"title": "Apollo 13", "year": 1995, "rank": 18, "reason": "", "note": ""},
+  {"title": "Munich", "year": 2005, "rank": 19, "reason": "", "note": ""},
+  {"title": "Sicario: Day of the Soldado", "year": 2018, "rank": 21, "reason": "sequel, decent but lesser. No Villeneuve, no Kate.", "note": ""},
+  {"title": "Andor", "year": 2022, "rank": 22, "reason": "spy-thriller writing in a Star Wars costume", "note": ""},
+  {"title": "Dune: Part Three", "year": 2026, "rank": 23, "reason": "highly anticipated. Villeneuve lane, the spine.", "note": "coming soon, late 2026"},
+  {"title": "Kingsman: The Secret Service", "year": 2015, "rank": null, "reason": "competent-operator lane turned gonzo", "note": "rewatch candidate"},
+  {"title": "Run Lola Run", "year": 1998, "rank": null, "reason": "80 min, three sprints at the same 20 minutes. Structure-as-stimulation, Memento family.", "note": "tabled, his to raise"},
+  {"title": "The Vast of Night", "year": 2019, "rank": null, "reason": "the short weird one. Coherence-lane low-budget wonder.", "note": ""},
+  {"title": "Whiplash", "year": 2014, "rank": null, "reason": "memory score 8.7", "note": "rewatch candidate"}
+ ]
+}

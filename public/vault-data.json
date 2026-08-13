@@ -1,7 +1,211 @@
 {
- "generated_from": "ledger_meta + ledger_panels + photos + titles + links",
- "count": 33,
- "avg": 8.57,
+ "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons",
+ "queue": [
+  {
+   "title": "Prisoners",
+   "year": 2013,
+   "rank": 2,
+   "reason": "Villeneuve, heavy, excellent. REWATCH.",
+   "note": "needs weekend emotional budget"
+  },
+  {
+   "title": "Her",
+   "year": 2013,
+   "rank": 3,
+   "reason": "completes the AI-feelings trilogy",
+   "note": ""
+  },
+  {
+   "title": "Children of Men",
+   "year": 2006,
+   "rank": 7,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "The Menu",
+   "year": 2022,
+   "rank": 10,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Atomic Blonde",
+   "year": 2017,
+   "rank": 11,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Tinker Tailor Soldier Spy",
+   "year": 2011,
+   "rank": 12,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "John Wick",
+   "year": 2014,
+   "rank": 13,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Jack Reacher",
+   "year": 2012,
+   "rank": 14,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "The Accountant",
+   "year": 2016,
+   "rank": 15,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Spotlight",
+   "year": 2015,
+   "rank": 16,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Michael Clayton",
+   "year": 2007,
+   "rank": 17,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Apollo 13",
+   "year": 1995,
+   "rank": 18,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Munich",
+   "year": 2005,
+   "rank": 19,
+   "reason": "",
+   "note": ""
+  },
+  {
+   "title": "Sicario: Day of the Soldado",
+   "year": 2018,
+   "rank": 21,
+   "reason": "sequel, decent but lesser. No Villeneuve, no Kate.",
+   "note": ""
+  },
+  {
+   "title": "Andor",
+   "year": 2022,
+   "rank": 22,
+   "reason": "spy-thriller writing in a Star Wars costume",
+   "note": ""
+  },
+  {
+   "title": "Dune: Part Three",
+   "year": 2026,
+   "rank": 23,
+   "reason": "highly anticipated. Villeneuve lane, the spine.",
+   "note": "coming soon, late 2026"
+  },
+  {
+   "title": "Kingsman: The Secret Service",
+   "year": 2015,
+   "rank": null,
+   "reason": "competent-operator lane turned gonzo",
+   "note": "rewatch candidate"
+  },
+  {
+   "title": "Run Lola Run",
+   "year": 1998,
+   "rank": null,
+   "reason": "80 min, three sprints at the same 20 minutes. Structure-as-stimulation, Memento family.",
+   "note": "tabled, his to raise"
+  },
+  {
+   "title": "The Vast of Night",
+   "year": 2019,
+   "rank": null,
+   "reason": "the short weird one. Coherence-lane low-budget wonder.",
+   "note": ""
+  },
+  {
+   "title": "Whiplash",
+   "year": 2014,
+   "rank": null,
+   "reason": "memory score 8.7",
+   "note": "rewatch candidate"
+  }
+ ],
+ "lessons": [
+  {
+   "weight": 5,
+   "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them."
+  },
+  {
+   "weight": 5,
+   "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes."
+  },
+  {
+   "weight": 5,
+   "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time."
+  },
+  {
+   "weight": 4,
+   "rule": "Never split a tension movie across two nights. The held breath breaks and it costs the film real points."
+  },
+  {
+   "weight": 4,
+   "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them."
+  },
+  {
+   "weight": 4,
+   "rule": "The antibodies tax is not automatic. It applies when the pleasure is located in the surprise itself. When the pleasure is craft and scale-of-con, the movie wins anyway."
+  },
+  {
+   "weight": 3,
+   "rule": "Soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight."
+  },
+  {
+   "weight": 3,
+   "rule": "Group watches skew crowd-pleaser. His solo lane is headier."
+  },
+  {
+   "weight": 3,
+   "rule": "Sleepy nights need brains WITH the motion. The choreography button alone does not close a pitch."
+  },
+  {
+   "weight": 3,
+   "rule": "The light and fun shelf is viable and was understocked. Counterprogramming against his dread lane works."
+  },
+  {
+   "weight": 3,
+   "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s. Character investment is a separate line item he docks for."
+  },
+  {
+   "weight": 3,
+   "rule": "A great post-movie conversation does not equal a great score. Discussion value and rating are separate currencies."
+  },
+  {
+   "weight": 3,
+   "rule": "Structure films score by their human anchor. A loop executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9."
+  },
+  {
+   "weight": 3,
+   "rule": "Movement and music are amplifiers, not foundations. They add real points to films that already have brains; alone they do not close a pitch."
+  },
+  {
+   "weight": 3,
+   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys."
+  }
+ ],
+ "count": 34,
+ "avg": 8.54,
  "films": [
   {
    "slug": "memento",
@@ -152,9 +356,14 @@
    "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='170' width='236' height='66' fill='#6E5F23' opacity='.3'/><g fill='#2E2508'><path d='M96 170 V120 q0 -16 -12 -20 q-10 -4 -10 -16 q0 -14 14 -14 q14 0 14 14 v86 Z'/><path d='M140 170 V120 q0 -16 12 -20 q10 -4 10 -16 q0 -14 -14 -14 q-14 0 -14 14 v86 Z'/></g><g stroke='#6E5F23' stroke-width='1.6' opacity='.7' fill='none'><path d='M118 44 v-16 M118 36 l-22 -14 M118 36 l22 -14 M104 30 l-26 -4 M132 30 l26 -4 M110 24 l-14 -16 M126 24 l14 -16 M118 28 l-6 -22 M118 28 l6 -22'/></g></svg>",
    "poster": "posters/enemy.jpg",
    "year": 2013,
-   "runtime": 130,
-   "genres": [],
-   "director": [],
+   "runtime": 91,
+   "genres": [
+    "Thriller",
+    "Mystery"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
    "panel": "<section class=\"panel enemy\">\n  <div class=\"no\">No. 5</div>\n  <div class=\"head\"><div class=\"film\">Enemy<span>2013</span></div><div class=\"score\">9.6<small> /10</small></div></div>\n  <div class=\"meta\">July 17 · Villeneuve × Gyllenhaal · Prime</div>\n  <p class=\"plot\">A gray little history teacher finds an actor who is his exact double, and the two orbit each other until lives get traded and a wife pays for it. Ends on a tarantula the size of a bedroom. Except it was one man the whole time: Adam is the invented innocent, the shy teacher a monster dreams of being instead of what he is.</p>\n  <p class=\"quote\">\"what. the. fuck. A TARANTULA?!\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, cracking it himself</b>\"He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good.\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"One man. Adam is the alibi.\"</p>\n  </div>\n  <p class=\"debrief\">Zero googling, pure read. Dethroned Coherence after its 48-hour reign and crowned your pet genre: men who edit reality to survive themselves. Alone at fourth in the new era, the tarantula outranks the horse.</p>\n</section>"
   },
   {
@@ -719,6 +928,33 @@
     "Anthony Maras"
    ],
    "panel": "<section class=\"panel pressure\">\n  <div class=\"no\">No. 17</div>\n  <div class=\"head\"><div class=\"film\">Pressure<span>2026</span></div><div class=\"score\">7.7<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, accidental late-night watch &middot; Peacock autoplay &middot; first watch</div>\n  <p class=\"plot\">A one-room historical drama about the team of meteorologists arguing over the D-Day forecast, where the entire invasion hinges on a handful of men agreeing on the weather in time. Tension built entirely out of restraint and a ticking clock rather than spectacle.</p>\n  <p class=\"quote\">\"Pretty decent! Mostly a weather report after all, but a good historical drama.\"</p>\n  <p class=\"debrief\">Found by accident, not chosen, and graded accordingly: solid, restrained, does what it sets out to do without asking for more credit than that. A quiet entry in the one-room-tension shelf rather than a big swing.</p>\n</section>"
+  },
+  {
+   "slug": "barbarian",
+   "title": "Barbarian",
+   "score": 7.6,
+   "watched": "2026-08-12",
+   "state": "ledger",
+   "palette": {
+    "bg": "#12100E",
+    "fg": "#EDE6D6",
+    "sub": "#7A6E5C",
+    "acc": "#C43A2F",
+    "glyph": "⌸"
+   },
+   "front": "<svg viewBox=\"0 0 200 150\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"200\" height=\"150\" fill=\"#12100E\"/><g fill=\"none\" stroke=\"#7A6E5C\" stroke-width=\"3\"><rect x=\"40\" y=\"20\" width=\"120\" height=\"120\"/><rect x=\"62\" y=\"42\" width=\"76\" height=\"98\"/><rect x=\"82\" y=\"64\" width=\"36\" height=\"76\"/></g><rect x=\"92\" y=\"86\" width=\"16\" height=\"54\" fill=\"#C43A2F\"/><circle cx=\"104\" cy=\"112\" r=\"2.5\" fill=\"#EDE6D6\"/></svg>",
+   "poster": "posters/barbarian.jpg",
+   "year": 2022,
+   "runtime": 103,
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "Zach Cregger"
+   ],
+   "panel": "<section class=\"panel barbarian\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Barbarian<span>2022</span></div><div class=\"score\">7.6<small> /10</small></div></div>\n  <div class=\"meta\">Aug 12 &middot; solo &middot; wine night &middot; guessed from three words: doors doors doors</div>\n  <p class=\"plot\">A double-booked Detroit Airbnb on a dead street: Tess at the door in the rain, a stranger named Keith already inside with the tea kettle on. The movie spends its first act teaching you to suspect everyone, then swings a smash cut like a wrecking ball: black screen, then sunshine, an ocean, a Ronette, and a piece of garbage in a convertible who owns the house. Under it all is a basement under the basement, a corridor that gets measured twice, once as nightmare and once as square footage, and at the bottom a Mother who does not want to kill anybody. She wants a baby. That is so much worse.</p>\n  <p class=\"verdict\">The con landed clean: he thought the movie was OVER at the cut. First act cooks, tape-measure sequence is the thesis in one gag (AJ cannot perceive horror, only equity), Frank flashback stages its decade without a word of explanation. Docked for the eternal stairs problem, for wanting one more layer of Frank assembly, and for an endgame that left him at \"wolf. ugh. I don't know.\" Tactically correct unused survival strategy, delivered in a tiny baby voice: please mommy. Collateral damage: The Ronettes, ruined in general, Be My Baby dead on arrival. Better than Sunshine, just under Pressure. jesus christ, so many feelings about that fucking goddamn mothershitting movie.</p>\n</section>"
   },
   {
    "slug": "annihilation",

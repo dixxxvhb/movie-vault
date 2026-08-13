@@ -117,6 +117,27 @@ def resolve_svg(svg, pal):
     return out
 
 
+# DRIFT GUARD. The local data/ files are a snapshot; the DB moves under them
+# every movie night. Barbarian was watched, panelled and scored while the wall
+# silently kept showing 33 films, because a panel with no ledger_meta row just
+# vanishes from this loop. Anything present in one file and missing from the
+# other is a stale pull, and it must be loud.
+_panel_slugs = set(PANEL_BY_SLUG)
+_meta_slugs = set(META)
+_orphan_panels = sorted(_panel_slugs - _meta_slugs)
+_missing_panels = sorted(_meta_slugs - _panel_slugs)
+if _orphan_panels:
+    sys.stderr.write(
+        "DRIFT: %d panel(s) with no ledger_meta entry -> %s\n"
+        "       data/ is behind the database. Re-pull before trusting this build.\n"
+        % (len(_orphan_panels), ", ".join(_orphan_panels))
+    )
+if _missing_panels:
+    sys.stderr.write(
+        "DRIFT: %d ledger film(s) with no panel -> %s\n"
+        % (len(_missing_panels), ", ".join(_missing_panels))
+    )
+
 films = []
 for slug, (date, score, title) in META.items():
     pal = parse_palette(PAL_BY_SLUG.get(slug, ""))
@@ -167,8 +188,13 @@ for l in LINKS:
         "directional": bool(l.get("directional")),
     })
 
+QUEUE = load("queue.json")["queue"]        # the door: what's next
+LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
+
 data = {
-    "generated_from": "ledger_meta + ledger_panels + photos + titles + links",
+    "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons",
+    "queue": QUEUE,
+    "lessons": LESSONS,
     "count": len(films),
     "avg": round(sum(f["score"] for f in films) / len(films), 2),
     "films": films,
@@ -182,3 +208,4 @@ print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),
       "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")
+print("  queue:", len(QUEUE), "| lessons:", len(LESSONS))
