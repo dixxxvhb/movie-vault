@@ -1,23 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import Polaroid from './Polaroid.jsx'
+import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
+import Room, { ROOM, WALLS } from './Room.jsx'
+import CameraRig, { STATIONS, wasDrag } from './CameraRig.jsx'
+import Polaroid, { CARD_W, CARD_H } from './Polaroid.jsx'
+
+const HD = ROOM.D / 2
+const HW = ROOM.W / 2
 
 // deterministic tiny hash -> pinned-photo jitter, stable per slug
 function jitter(slug) {
   let h = 0
   for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) & 0xffff
   return {
-    rot: (((h % 7) - 3) * 0.018),
-    dy: (((h >> 3) % 5) - 2) * 0.03,
+    rot: ((h % 7) - 3) * 0.016,
+    dy: (((h >> 3) % 5) - 2) * 0.006,
   }
 }
 
-// salon hang: perfect score crowns the wall, then rows of six descend by rank
-const ROWS = [1, 6, 6, 6, 6, 6]
-const COL_GAP = 1.46
-const ROW_GAP = 1.66
-const TOP_Y = 9.3
+// Salon hang on the north wall: the perfect score crowns it, then rows of eight
+// descend by rank toward the baseboard.
+const ROWS = [1, 8, 8, 8, 8, 8]
+const COL_GAP = CARD_W + 0.052
+const ROW_GAP = CARD_H + 0.062
+const TOP_Y = 2.16
+const WALL_Z = -HD + 0.014
 
 function layout(films) {
   const placed = []
@@ -29,52 +37,47 @@ function layout(films) {
       const film = films[idx++]
       const j = jitter(film.slug)
       const x = (c - (n - 1) / 2) * COL_GAP
-      placed.push({ film, position: [x, y + j.dy, 0.02], rotation: j.rot })
+      placed.push({ film, position: [x, y + j.dy, WALL_Z], rotation: j.rot })
     }
   }
   return placed
 }
 
-function Room() {
+// Invisible click targets so looking at a wall and clicking takes you to it.
+function WallZone({ wall, onGo }) {
+  const w = WALLS[wall]
   return (
-    <group>
-      {/* back wall — aged ivory, warm */}
-      <mesh position={[0, 5, -0.35]} receiveShadow>
-        <planeGeometry args={[26, 16]} />
-        <meshStandardMaterial color="#cbbfa3" roughness={1} />
-      </mesh>
-      {/* floor — dark boards */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.4, 6]}>
-        <planeGeometry args={[26, 22]} />
-        <meshStandardMaterial color="#241a12" roughness={1} />
-      </mesh>
-      {/* ceiling */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 12.5, 6]}>
-        <planeGeometry args={[26, 22]} />
-        <meshStandardMaterial color="#221d17" roughness={1} />
-      </mesh>
-      {/* side walls */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-13, 5, 6]}>
-        <planeGeometry args={[22, 16]} />
-        <meshStandardMaterial color="#3a3126" roughness={1} />
-      </mesh>
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[13, 5, 6]}>
-        <planeGeometry args={[22, 16]} />
-        <meshStandardMaterial color="#3a3126" roughness={1} />
-      </mesh>
-    </group>
+    <mesh
+      position={w.pos}
+      rotation={w.rot}
+      onClick={(e) => { e.stopPropagation(); if (!wasDrag()) onGo(wall) }}
+      onPointerOver={() => { document.body.style.cursor = 'pointer' }}
+      onPointerOut={() => { document.body.style.cursor = 'auto' }}
+    >
+      <planeGeometry args={w.size} />
+      <meshBasicMaterial visible={false} />
+    </mesh>
   )
 }
+
+const WALL_STATION = { north: 'ledger', east: 'investigation', south: 'door', west: 'mirror' }
 
 export default function App() {
   const [data, setData] = useState(null)
   const [selected, setSelected] = useState(null)
+  const [station, setStation] = useState('center')
 
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
       .then((r) => r.json())
       .then((d) => { setData(d); const b = document.getElementById('boot'); if (b) b.style.display = 'none' })
       .catch((e) => console.error('vault-data load failed', e))
+  }, [])
+
+  useEffect(() => {
+    const k = (e) => { if (e.key === 'Escape') { setSelected(null); setStation('center') } }
+    window.addEventListener('keydown', k)
+    return () => window.removeEventListener('keydown', k)
   }, [])
 
   const placed = useMemo(() => (data ? layout(data.films) : []), [data])
@@ -84,20 +87,18 @@ export default function App() {
       <Canvas
         shadows={false}
         dpr={[1, 2]}
-        camera={{ position: [0, 4.4, 12.5], fov: 42 }}
+        camera={{ position: STATIONS.center.pos, fov: STATIONS.center.fov, near: 0.05, far: 60 }}
         gl={{ antialias: true }}
         onPointerMissed={() => setSelected(null)}
       >
-        <color attach="background" args={['#0b0906']} />
-        <fog attach="fog" args={['#0b0906', 14, 40]} />
-
-        {/* room lighting only affects the walls/floor now — the polaroid faces
-            are unlit so they stay readable. Kept low + warm for a moody vault. */}
-        <ambientLight intensity={0.55} color="#f2e6cf" />
-        <spotLight position={[0, 11.5, 7]} angle={0.7} penumbra={0.8} intensity={12} color="#ffd9a0" decay={0.4} />
-        <pointLight position={[-8, 6, 9]} intensity={16} color="#ffe6c2" decay={2} />
+        <color attach="background" args={['#05040a']} />
 
         <Room />
+        <CameraRig station={station} />
+
+        {Object.keys(WALLS).map((w) => (
+          <WallZone key={w} wall={w} onGo={(k) => setStation(WALL_STATION[k])} />
+        ))}
 
         {placed.map((p) => (
           <Polaroid
@@ -106,22 +107,16 @@ export default function App() {
             position={p.position}
             rotation={p.rotation}
             selected={selected?.slug === p.film.slug}
-            onSelect={setSelected}
+            onSelect={(f) => { setStation('ledger'); setSelected(f) }}
           />
         ))}
 
-        <OrbitControls
-          target={[0, 5, 0]}
-          enablePan={false}
-          minDistance={4}
-          maxDistance={18}
-          minPolarAngle={0.4}
-          maxPolarAngle={Math.PI / 2 + 0.15}
-          minAzimuthAngle={-0.9}
-          maxAzimuthAngle={0.9}
-          rotateSpeed={0.6}
-          zoomSpeed={0.8}
-        />
+        <EffectComposer>
+          <Bloom intensity={0.62} luminanceThreshold={0.52} luminanceSmoothing={0.3} mipmapBlur />
+          <ChromaticAberration offset={[0.0006, 0.0009]} blendFunction={BlendFunction.NORMAL} />
+          <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
+          <Vignette eskil={false} offset={0.24} darkness={0.92} />
+        </EffectComposer>
       </Canvas>
 
       {/* HUD */}
@@ -129,7 +124,26 @@ export default function App() {
         <div style={hud.title}>The Vault</div>
         {data && <div style={hud.sub}>{data.count} films · avg {data.avg} · scored live</div>}
       </div>
-      <div style={hud.hint}>drag to look around · scroll to zoom · click a photo</div>
+
+      <div style={hud.nav}>
+        {[
+          ['center', 'stand'],
+          ['ledger', 'the ledger'],
+          ['investigation', 'investigation'],
+          ['door', 'the door'],
+          ['mirror', 'the mirror'],
+        ].map(([k, label]) => (
+          <button
+            key={k}
+            onClick={() => setStation(k)}
+            style={{ ...hud.navBtn, ...(station === k ? hud.navOn : null) }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div style={hud.hint}>drag to look · click a wall to approach · esc to stand back</div>
 
       {selected && (
         <div style={card.wrap} onClick={() => setSelected(null)}>
@@ -139,7 +153,10 @@ export default function App() {
               <span style={card.score}>{selected.score.toFixed(1)}<small style={{ opacity: 0.6 }}> /10</small></span>
             </div>
             <div style={card.meta}>watched {selected.watched} · the Ledger</div>
-            <div style={card.note}>Full hot-take and back-of-card notes land in the next pass — this is milestone one (real 3D, live on your own hosting).</div>
+            <div style={card.note}>
+              The full case file — plot, hot take, the conversation — lands in M3, read in
+              place on the card instead of in this box.
+            </div>
             <div style={card.close}>click anywhere to close</div>
           </div>
         </div>
@@ -149,10 +166,18 @@ export default function App() {
 }
 
 const hud = {
-  brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif' },
+  brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.8)' },
   title: { fontSize: 26, fontStyle: 'italic', letterSpacing: '.01em' },
   sub: { fontSize: 12.5, color: '#b9ae98', marginTop: 2, fontFamily: 'system-ui, sans-serif' },
-  hint: { position: 'fixed', bottom: 16, right: 20, color: '#8f8672', fontSize: 13, fontFamily: 'system-ui, sans-serif', pointerEvents: 'none' },
+  nav: { position: 'fixed', bottom: 18, left: 20, display: 'flex', gap: 8, flexWrap: 'wrap' },
+  navBtn: {
+    background: 'rgba(14,10,8,.62)', color: '#a99c85', border: '1px solid rgba(180,160,120,.22)',
+    padding: '7px 12px', borderRadius: 2, fontSize: 11.5, letterSpacing: '.14em',
+    textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'system-ui, sans-serif',
+    backdropFilter: 'blur(3px)',
+  },
+  navOn: { color: '#f2e4c8', border: '1px solid rgba(255,190,120,.55)', background: 'rgba(50,32,16,.72)' },
+  hint: { position: 'fixed', bottom: 18, right: 20, color: '#7d735f', fontSize: 12.5, fontFamily: 'system-ui, sans-serif', pointerEvents: 'none' },
 }
 const card = {
   wrap: { position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(8,6,4,.5)' },

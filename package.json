@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "The Vault \u2014 Dixon's movie ledger as a WebGL room (React-Three-Fiber).",
+  "description": "The Vault — Dixon's movie ledger as a WebGL room (React-Three-Fiber).",
   "scripts": {
     "data": "python scripts/emit_vault_data.py",
     "dev": "vite",
@@ -11,11 +11,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.109.2",
+    "@react-three/fiber": "^8.16.8",
+    "@react-three/postprocessing": "^2.16.0",
+    "postprocessing": "^6.35.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.161.0",
-    "@react-three/fiber": "^8.16.8",
-    "@react-three/drei": "^9.109.2"
+    "three": "^0.161.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
