@@ -105,9 +105,10 @@ def main():
             page.get_by_role("button", name="the ledger", exact=True).click()
             page.wait_for_timeout(1400)
             box = page.locator("canvas").bounding_box()
-            # top-left card of the second row, in the lit part of the hang
-            page.mouse.click(box["x"] + box["width"] * 0.30,
-                             box["y"] + box["height"] * 0.40)
+            # into the dense band just under the 10 line, where the layout puts
+            # the highest scores. Recheck this point if the hang changes shape.
+            page.mouse.click(box["x"] + box["width"] * 0.50,
+                             box["y"] + box["height"] * 0.30)
             page.wait_for_timeout(2000)
             path = os.path.join(OUT, "inspect.png")
             page.screenshot(path=path)

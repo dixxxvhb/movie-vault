@@ -4,10 +4,12 @@ import * as THREE from 'three'
 import { makeCardTexture, makeBackTexture } from './vaultTextures.js'
 import { wasDrag } from './CameraRig.jsx'
 
-// Real Polaroid is 8.8 x 10.7cm. These run oversized so 33 of them stay
-// readable from across a 4m room — a heightened space, not a museum replica.
-export const CARD_W = 0.26
-export const CARD_H = 0.32
+// Real Polaroid is 8.8 x 10.7cm. These run about 2x life size: big enough to
+// read across the room, small enough that a whole score band can sit side by
+// side without running off the wall. Card size is now a constraint of the
+// score-height layout, not a free choice.
+export const CARD_W = 0.17
+export const CARD_H = 0.21
 
 // How far an inspected card comes off the wall, toward the room.
 const LIFT = 0.30

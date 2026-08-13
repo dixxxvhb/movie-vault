@@ -9,6 +9,7 @@ import Polaroid, { CARD_W, CARD_H } from './Polaroid.jsx'
 import CaseFile from './CaseFile.jsx'
 import Strings from './Strings.jsx'
 import { QueueWall, LessonsWall } from './Notes.jsx'
+import ScoreMarks from './ScoreMarks.jsx'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -23,41 +24,59 @@ function jitter(slug) {
   }
 }
 
-// Salon hang on the north wall: the top score crowns it, then rows descend by
-// rank toward the baseboard.
-const MAX_PER_ROW = 9
-const COL_GAP = CARD_W + 0.052
-const ROW_GAP = CARD_H + 0.062
-const TOP_Y = 2.16
+// HEIGHT IS THE SCORE.
+//
+// The hang used to be a rank-ordered grid: sorted list, eight per row. That
+// encodes ordinal position, not feeling — a 9.9 and a 9.5 sat side by side in
+// the same row, and the distance from the best film to the worst read as "four
+// rows down". You could not look at the wall and know anything.
+//
+// Now y maps linearly to the score itself. Same score, same height. The gap
+// between two Polaroids IS the gap in how he felt about them, and the shape the
+// cards make is the true shape of his taste: a crowd up in the nines, a thin
+// tail, and two films alone down by the baseboard.
+const SCORE_MIN = 5.0
+const SCORE_MAX = 10.0
+const Y_FLOOR = 0.66          // lowest score hangs here
+const Y_CEIL = 2.22           // a perfect 10 hangs here
 const WALL_Z = -HD + 0.014
 // the inspected card floats off the wall; aim a little in front of the paper
 const LIFT_LOOK = 0.02
 
-// Rows are computed, not hardcoded. A fixed [1,8,8,8,8] leaves a single
-// stranded card the moment the ledger hits 34 films, and it will keep growing.
-// Balance the remainder across rows instead so the hang always looks composed.
-function rowSizes(total) {
-  if (total <= 1) return [total]
-  const rest = total - 1
-  const rows = Math.ceil(rest / MAX_PER_ROW)
-  const base = Math.floor(rest / rows)
-  const extra = rest % rows
-  return [1, ...Array.from({ length: rows }, (_, i) => base + (i < extra ? 1 : 0))]
+const X_STEP = CARD_W + 0.012  // horizontal pitch when cards must sit side by side
+const Y_CLEAR = CARD_H * 0.86  // closer than this vertically and they collide
+
+export function scoreToY(score) {
+  const t = (THREE.MathUtils.clamp(score, SCORE_MIN, SCORE_MAX) - SCORE_MIN) /
+    (SCORE_MAX - SCORE_MIN)
+  return Y_FLOOR + t * (Y_CEIL - Y_FLOOR)
 }
 
+// Cards that share a height would stack on top of each other, so they spread
+// sideways from the centre — a beeswarm. Nothing is moved vertically to make
+// room, because moving a card vertically would be lying about its score.
 function layout(films) {
   const placed = []
-  const rows = rowSizes(films.length)
-  let idx = 0
-  for (let r = 0; r < rows.length && idx < films.length; r++) {
-    const n = Math.min(rows[r], films.length - idx)
-    const y = TOP_Y - r * ROW_GAP
-    for (let c = 0; c < n; c++) {
-      const film = films[idx++]
-      const j = jitter(film.slug)
-      const x = (c - (n - 1) / 2) * COL_GAP
-      placed.push({ film, position: [x, y + j.dy, WALL_Z], rotation: j.rot })
+  for (const film of [...films].sort((a, b) => b.score - a.score)) {
+    const y = scoreToY(film.score)
+    let x = 0
+    for (let k = 0; k < 40; k++) {
+      // 0, +1, -1, +2, -2 … keeps each cluster centred on the wall
+      const step = Math.ceil(k / 2) * (k % 2 === 0 ? -1 : 1)
+      x = step * X_STEP
+      const clash = placed.some(
+        (p) => Math.abs(p.position[1] - y) < Y_CLEAR &&
+               Math.abs(p.position[0] - x) < X_STEP * 0.98
+      )
+      if (!clash) break
     }
+    const j = jitter(film.slug)
+    placed.push({
+      film,
+      // jitter x only — y is data, and must stay honest
+      position: [x + j.dy * 0.6, y, WALL_Z],
+      rotation: j.rot,
+    })
   }
   return placed
 }
@@ -154,6 +173,8 @@ export default function App() {
             onGo={(k) => { setSelected(null); setStation(WALL_STATION[k]) }}
           />
         ))}
+
+        <ScoreMarks scoreToY={scoreToY} avg={data?.avg} z={WALL_Z - 0.004} />
 
         {placed.map((p) => (
           <Polaroid

@@ -16,10 +16,17 @@ four jobs:
 
 | Wall | Holds |
 |---|---|
-| North — **the Ledger** | Every scored film, salon hang, rank = height |
+| North — **the Ledger** | Every scored film. **Height is the score**, not the rank |
 | North lit — **the Investigation** | The same wall with `film_links` strung in red, room dimmed |
 | South — **the Door** | The queue: what's next |
 | West — **the Mirror** | The taste lessons, taped up |
+
+The Ledger is a value axis, not a leaderboard. `y` maps linearly from score 5.0
+to 10.0, so equal scores hang at equal height and the distance between two
+Polaroids is the real distance in how he felt. Cards that would collide spread
+sideways (a beeswarm); nothing is ever moved vertically to make room, because
+that would be lying about a score. Pencil rules mark 6 through 10 and the
+current average, so the axis is legible without being explained.
 
 Navigation is **click-to-station**: stand and drag to look, click a wall to
 approach, Esc to stand back. Clicking a Polaroid flies to it, turns it over and
