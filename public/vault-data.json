@@ -1463,7 +1463,7 @@
    "kind": "shoebox",
    "memory": 9.8,
    "note": "vault archive — memory 9.8, scored as a whole",
-   "poster": null,
+   "poster": "posters/lotr.jpg",
    "genres": [],
    "director": [],
    "runtime": null
@@ -1834,7 +1834,7 @@
    "kind": "shoebox",
    "memory": 9.3,
    "note": "vault archive — memory 9.3, scored as a run",
-   "poster": null,
+   "poster": "posters/bourne-trilogy.jpg",
    "genres": [],
    "director": [],
    "runtime": null
@@ -1881,7 +1881,7 @@
    "kind": "shoebox",
    "memory": 8.9,
    "note": "vault archive — memory 8.9, seen in the past year",
-   "poster": null,
+   "poster": "posters/planet-of-the-apes.jpg",
    "genres": [],
    "director": [],
    "runtime": null
@@ -2005,7 +2005,7 @@
    "kind": "drawer",
    "memory": null,
    "note": "hazy — most seen and loved over decades, no number",
-   "poster": null,
+   "poster": "posters/james-bond.jpg",
    "genres": [],
    "director": [],
    "runtime": null
@@ -2124,10 +2124,16 @@
    "kind": "drawer",
    "memory": null,
    "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "poster": null,
-   "genres": [],
-   "director": [],
-   "runtime": null
+   "poster": "posters/nope.jpg",
+   "genres": [
+    "Horror",
+    "Science Fiction",
+    "Thriller"
+   ],
+   "director": [
+    "Jordan Peele"
+   ],
+   "runtime": 130
   },
   {
    "slug": "old",
@@ -2136,10 +2142,16 @@
    "kind": "drawer",
    "memory": null,
    "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "poster": null,
-   "genres": [],
-   "director": [],
-   "runtime": null
+   "poster": "posters/old.jpg",
+   "genres": [
+    "Thriller",
+    "Mystery",
+    "Horror"
+   ],
+   "director": [
+    "M. Night Shyamalan"
+   ],
+   "runtime": 108
   },
   {
    "slug": "prisoners",
@@ -2205,10 +2217,16 @@
    "kind": "drawer",
    "memory": null,
    "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "poster": null,
-   "genres": [],
-   "director": [],
-   "runtime": null
+   "poster": "posters/dragon-tattoo.jpg",
+   "genres": [
+    "Thriller",
+    "Crime",
+    "Mystery"
+   ],
+   "director": [
+    "David Fincher"
+   ],
+   "runtime": 158
   },
   {
    "slug": "the-martian",
