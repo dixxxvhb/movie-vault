@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
 import { setDragDistance } from './pointer.js'
+import { useXR } from '@react-three/xr'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -46,6 +47,7 @@ function aim(pos, look) {
 // re-render doesn't restart the camera mid-move.
 export default function CameraRig({ station = 'center', stationKey }) {
   const { camera, gl } = useThree()
+  const inXR = useXR((s) => s.session != null)
   const key = stationKey ?? (typeof station === 'string' ? station : 'custom')
   const resolved = typeof station === 'string' ? (STATIONS[station] || STATIONS.center) : station
   const latest = useRef(resolved)
@@ -123,6 +125,12 @@ export default function CameraRig({ station = 'center', stationKey }) {
   }, [gl, key])
 
   useFrame((_, dt) => {
+    // In a session the headset owns the camera pose. Writing to it here would
+    // either be overwritten or, worse, land — fighting the head pose is how you
+    // make someone motion sick. The player gets moved via XROrigin instead
+    // (see xr.jsx); this rig simply stops.
+    if (inXR) return
+
     camera.rotation.order = 'YXZ'
 
     if (flight.current) {

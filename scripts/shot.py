@@ -49,6 +49,67 @@ def sample(png_path):
     }
 
 
+def sample_half(png_path, side):
+    """Brightness stats for one half of the image — i.e. one eye."""
+    from PIL import Image
+
+    im = Image.open(png_path).convert("L")
+    w, h = im.size
+    box = (0, 0, w // 2, h) if side == "left" else (w // 2, 0, w, h)
+    im = im.crop(box).resize((32, 32))
+    px = list(im.tobytes())
+    lit = sum(1 for v in px if v > 24)
+    return {"mean": sum(px) / len(px), "litFraction": lit / len(px), "px": px}
+
+
+def check_xr(page, failures):
+    """Enter an emulated immersive session and prove the room renders in stereo.
+
+    Only possible against the dev server: the emulator is dev-only and behind
+    ?xrsim, so a production build has no way to fake a headset (by design —
+    shipping IWER to real visitors would be megabytes for nothing).
+    """
+    page.goto(page.url.split("?")[0] + "?nocold&xrsim", wait_until="networkidle")
+    page.wait_for_selector("canvas", timeout=20000)
+    page.wait_for_timeout(2500)
+
+    if not page.evaluate("!!window.__xrEmulator"):
+        failures.append("xr: emulator did not install (?xrsim)")
+        return
+    if not page.evaluate("navigator.xr.isSessionSupported('immersive-vr')"):
+        failures.append("xr: immersive-vr reported unsupported after emulator install")
+        return
+
+    # The session's own canvas overlays the page and swallows real pointer
+    # events — exactly as a headset would — so the button is invoked directly.
+    page.evaluate(
+        "[...document.querySelectorAll('button')]"
+        ".find(b => b.textContent.trim() === 'enter vr').click()"
+    )
+    page.wait_for_timeout(4000)
+
+    if not page.evaluate("!!(window.__xrEmulator && window.__xrEmulator.activeSession)"):
+        failures.append("xr: no active session after pressing enter vr")
+        return
+
+    path = os.path.join(OUT, "xr.png")
+    page.screenshot(path=path)
+    left, right = sample_half(path, "left"), sample_half(path, "right")
+
+    if left["mean"] < 4 or left["litFraction"] < 0.10:
+        failures.append("xr: left eye is a void (mean %.1f)" % left["mean"])
+    if right["mean"] < 4 or right["litFraction"] < 0.10:
+        failures.append("xr: right eye is a void (mean %.1f)" % right["mean"])
+    # Two eyes must differ: identical halves mean one image is being stretched
+    # across the frame rather than a real stereo pair being rendered.
+    if left["px"] == right["px"]:
+        failures.append("xr: both eyes are pixel-identical — not rendering in stereo")
+    if not failures:
+        print("  %-14s left %5.1f  right %5.1f  stereo pair -> %s"
+              % ("xr session", left["mean"], right["mean"],
+                 os.path.relpath(path, BASE)))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:5173")
@@ -171,6 +232,15 @@ def main():
                          os.path.relpath(mid, BASE)))
         except Exception as e:
             failures.append("cold open step: %s" % e)
+
+        # WebXR, against the dev server only.
+        if "localhost" in args.url or "127.0.0.1" in args.url:
+            try:
+                check_xr(page, failures)
+            except Exception as e:
+                failures.append("xr step: %s" % e)
+        else:
+            print("  %-14s skipped (emulator is dev-only; test XR on localhost)" % "xr session")
 
         browser.close()
 

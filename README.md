@@ -96,6 +96,65 @@ fully lit room.
 **Read the PNGs.** The brightness numbers only catch a black void — they cannot
 tell you the shoebox is inside the wall or the pencil is illegible.
 
+## VR
+
+Open the live URL in the Quest browser and press **enter vr**. The button only
+appears once the browser confirms it can do `immersive-vr`, so a desktop without
+a headset never sees it.
+
+The room was built in metres from the start, so nothing was re-authored for this.
+What changes in a session:
+
+- **The headset owns the camera.** `CameraRig` stops writing to it entirely —
+  fighting the head pose is how you make someone motion sick. Flying to a station
+  instead moves the *player*: `XROrigin` is their feet, placed at the station's
+  floor position and turned to face its target. Pitch is deliberately dropped;
+  you tilt your own head. Eye height comes from the actual human, which is why
+  the existing stations still frame correctly.
+- **Postprocessing comes off.** A screen-space composer has no correct answer for
+  a stereo pair — it runs per eye, so grain and aberration differ between your
+  eyes and read as eye strain within a minute — and the stack alone costs more
+  than the 72fps budget allows.
+- **Navigation is the controller ray**, because there is no DOM in a headset:
+  point at a wall to approach it, at the shoebox or drawer to open it, at a
+  Polaroid to take it down, and at the floor to step back to the middle of the
+  room (the floor stands in for Esc).
+
+Known limit: the case-file panel is DOM, so in a headset a card turns over and
+you read its handwritten back, but the long-form panel does not appear. Putting
+that in-world needs a real 3D text layer and is not done.
+
+### Testing VR without a headset
+
+```bash
+npm run shot
+```
+
+The harness enters an **emulated Quest 3** and checks the room actually renders
+as a stereo pair — both eyes lit, and the two halves not pixel-identical (which
+would mean one image stretched across the frame rather than real stereo).
+
+To look around the emulator by hand, load the dev server with `?xrsim`. Two
+things about it that cost an hour each to find:
+
+- The emulator is **dev-only and opt-in**, because installing it *replaces*
+  `navigator.xr` globally (it would shadow a real headset) and because `iwer`
+  plus its synthetic rooms is megabytes that no visitor should download.
+  `import.meta.env.DEV` makes the whole branch vanish from the production build —
+  verified: production fetches one JS file and none of the emulator chunks.
+- It must be installed with **`installRuntime({ forceInstall: true })`**, which
+  is why `src/xrEmulator.js` exists instead of using the library's own `emulate`
+  option. Desktop Chrome already exposes a deviceless `navigator.xr`, so IWER
+  decides a real runtime is present and skips installing itself; the library
+  calls `installRuntime()` with no arguments, so the override is unreachable
+  through its config. The only symptom is `isSessionSupported` staying false
+  forever, with no error.
+
+Note that `vite preview` will NOT serve this correctly without `--base
+/movie-vault/`: the base in `vite.config.js` is keyed on `command === 'build'`,
+and preview reports `serve`, so it hosts at `/` while the built HTML asks for
+`/movie-vault/`. That is a local-preview quirk, not a deploy problem.
+
 ## Refresh the film data
 
 Re-pull the files in `data/` from Supabase, then:
@@ -126,6 +185,6 @@ Push to `master`. The GitHub Action builds and deploys to Pages.
   the cold open (a 3.4s wake-up blink, skippable on any input, `?nocold` to
   bypass). Optional room tone is synthesised on demand and **never autoplays** —
   no AudioContext is constructed until the toggle is pressed.
-- **Next:** WebXR (`@react-three/xr`, Quest browser, 72fps budget).
+- **M7 (shipped)** WebXR. Stand in the room in a Quest — see **VR** above.
 
 Full plan and the locked design rulings: `VAULT-V6-PLAN.md`.

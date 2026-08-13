@@ -243,9 +243,34 @@ Data notes from the build, so they are not rediscovered:
   Nope, Old and Dragon Tattoo. They render with an empty well rather than
   invented art.
 
-### M7 — XR
-`@react-three/xr` entry, Quest testing, 72fps budget. The room is already in
-metres, so no re-authoring.
+### M7 — XR (shipped 2026-08-13)
+`@react-three/xr` v6. The metres bet paid off: no geometry, no station and no
+layout was re-authored. Full notes in the README's **VR** section; the load-
+bearing decisions:
+
+- The headset owns the camera, so `CameraRig` no-ops in a session and stations
+  move `XROrigin` (the player's feet) instead. Yaw only — pitch is the user's
+  neck, and forcing it would tilt the world.
+- Postprocessing is disabled in-session (per-eye composer = eye strain, and it
+  does not fit in the 72fps budget).
+- Navigation falls back to the controller ray, since there is no DOM in a
+  headset. The existing invisible wall zones already work for this: three's
+  raycaster does not skip `visible={false}` objects, and `@pmndrs/pointer-events`
+  adds no visibility filtering of its own. Verified, not assumed.
+- The floor became a click target in-session only, standing in for Esc.
+- **v5 vs v6:** v6 was chosen despite the R3F 8 stack, because its peer deps
+  genuinely allow R3F 8 / React 18. v5 is the older, unmaintained line.
+
+Gotchas that cost real time, so they are written down properly in the README:
+the emulator needs `installRuntime({ forceInstall: true })` and cannot be reached
+through the library's `emulate` option; and swapping the dust mote count on
+entering XR threw "Resizing buffer attributes is not supported" until the points
+geometry was keyed on count.
+
+Not done: the case file is a DOM overlay and is therefore invisible in a headset.
+A card still turns over and its handwritten back reads fine in-world. Fixing it
+properly needs a 3D text layer (`@react-three/uikit` or similar) — a project, not
+a patch.
 
 ---
 

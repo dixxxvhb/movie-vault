@@ -15,6 +15,8 @@ import Archive from './Archive.jsx'
 import { WallQuotes } from './Quotes.jsx'
 import ColdOpen from './ColdOpen.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
+import { XR } from '@react-three/xr'
+import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -114,6 +116,26 @@ function WallZone({ wall, onGo }) {
 }
 
 const WALL_STATION = { north: 'ledger', east: 'investigation', south: 'door', west: 'mirror' }
+
+// The whole postprocessing stack comes off in a headset. Two reasons, either one
+// sufficient: a screen-space composer has no correct answer for a stereo pair
+// (it runs per-eye and the grain/aberration then differ between your eyes, which
+// reads as eye strain within about a minute), and the stack alone costs more
+// than the entire 72fps budget allows. The room loses its bloom and grain in VR
+// and gains being a place you can stand in.
+function Post() {
+  if (useInXR()) return null
+  return (
+    <EffectComposer>
+      <Bloom intensity={0.42} luminanceThreshold={0.72} luminanceSmoothing={0.35} mipmapBlur />
+      {/* barely there. At 0.0006 the fringing read as a rendering fault on
+          every card edge rather than as lens character. */}
+      <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
+      <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
+      <Vignette eskil={false} offset={0.24} darkness={0.92} />
+    </EffectComposer>
+  )
+}
 
 export default function App() {
   const [data, setData] = useState(null)
@@ -223,7 +245,11 @@ export default function App() {
         gl={{ antialias: true }}
         onPointerMissed={() => setSelected(null)}
       >
+       <XR store={xrStore}>
         <color attach="background" args={['#05040a']} />
+
+        <XRPlayer station={view.station} />
+        <XRFloorZone onBack={() => { setSelected(null); setPicked(null); setOpenBox(null); setStation('center') }} />
 
         <Room
           dim={thread}
@@ -290,14 +316,8 @@ export default function App() {
           />
         )}
 
-        <EffectComposer>
-          <Bloom intensity={0.42} luminanceThreshold={0.72} luminanceSmoothing={0.35} mipmapBlur />
-          {/* barely there. At 0.0006 the fringing read as a rendering fault on
-              every card edge rather than as lens character. */}
-          <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
-          <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
-          <Vignette eskil={false} offset={0.24} darkness={0.92} />
-        </EffectComposer>
+        <Post />
+       </XR>
       </Canvas>
 
       {/* HUD */}
@@ -336,6 +356,7 @@ export default function App() {
         >
           {tone ? 'room tone ·on' : 'room tone'}
         </button>
+        <EnterVR style={{ ...hud.navBtn, ...hud.navVr }} />
       </div>
 
       <div style={hud.hint}>
@@ -393,6 +414,7 @@ const hud = {
     backdropFilter: 'blur(3px)',
   },
   navOn: { color: '#f2e4c8', border: '1px solid rgba(255,190,120,.55)', background: 'rgba(50,32,16,.72)' },
+  navVr: { color: '#cbb9d8', border: '1px solid rgba(190,150,220,.4)' },
   hint: { position: 'fixed', bottom: 18, right: 20, color: '#7d735f', fontSize: 12.5, fontFamily: 'system-ui, sans-serif', pointerEvents: 'none' },
   print: {
     position: 'fixed', top: 96, right: 22, width: 276, padding: '16px 18px 18px',

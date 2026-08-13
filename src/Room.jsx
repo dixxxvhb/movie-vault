@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { wallpaper, wallpaperRough, carpet, ceiling } from './roomTextures.js'
 import { wasDrag } from './pointer.js'
+import { useXR } from '@react-three/xr'
 
 // Room is built in METERS so the space reads at true human scale and so a
 // WebXR pass later needs no re-authoring.
@@ -224,7 +225,11 @@ function Dust({ count = 260 }) {
   })
 
   return (
-    <points ref={ref}>
+    // Keyed on count: entering XR drops the mote count, and without a fresh
+    // geometry three tries to swap a differently-sized array into the existing
+    // buffer attribute and throws ("Resizing buffer attributes is not
+    // supported"). A new key builds a new geometry instead of resizing one.
+    <points ref={ref} key={count}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
       </bufferGeometry>
@@ -241,6 +246,9 @@ function Dust({ count = 260 }) {
 }
 
 export default function Room({ dim = false, drawerOpen = false, onDrawer }) {
+  // Dust is per-frame CPU work on a Float32Array; at 72fps stereo it is the
+  // cheapest thing to cut and nobody counts motes in a headset.
+  const inXR = useXR((s) => s.session != null)
   const floorMap = useMemo(() => carpet(), [])
   const ceilMap = useMemo(() => ceiling(), [])
   // Dixon's Thread rule: the room dims while the string is up, so the lines
@@ -277,7 +285,7 @@ export default function Room({ dim = false, drawerOpen = false, onDrawer }) {
       <Window />
       <Door />
       <Nightstand drawerOpen={drawerOpen} onDrawer={onDrawer} />
-      <Dust />
+      <Dust count={inXR ? 90 : 260} />
 
       {/* --- lighting: one warm practical, one cold intruder --- */}
       <group ref={lights}>
