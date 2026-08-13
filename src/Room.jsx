@@ -3,6 +3,7 @@ import React, { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { wallpaper, wallpaperRough, carpet, ceiling } from './roomTextures.js'
+import { wasDrag } from './pointer.js'
 
 // Room is built in METERS so the space reads at true human scale and so a
 // WebXR pass later needs no re-authoring.
@@ -115,22 +116,59 @@ function Door() {
 // the room comes from here, so its position drives the whole light design.
 export const LAMP = [1.42, 0.78, -1.35]
 
-function Nightstand() {
+function Nightstand({ drawerOpen = false, onDrawer }) {
+  // The drawer is the Dark Drawer: the films he has seen but cannot score. It
+  // is shut by default, and the whole point is that it is shut.
+  const drawer = useRef()
+  useFrame((_, dt) => {
+    const g = drawer.current
+    if (!g) return
+    g.position.z = THREE.MathUtils.damp(g.position.z, drawerOpen ? 0.30 : 0, 6, dt)
+  })
+
   return (
     <group position={[1.45, 0, -1.35]}>
       <mesh position={[0, 0.28, 0]} castShadow>
         <boxGeometry args={[0.52, 0.56, 0.42]} />
         <meshStandardMaterial color="#3d2c1d" roughness={0.75} />
       </mesh>
-      {/* drawer front — the archive, opens in a later milestone */}
-      <mesh position={[0, 0.36, 0.212]}>
+
+      {/* the void the drawer pulls out of — without this the open drawer reads
+          as a box stuck to the front of a solid cabinet */}
+      <mesh position={[0, 0.36, 0.208]}>
         <planeGeometry args={[0.44, 0.18]} />
-        <meshStandardMaterial color="#31220f" roughness={0.8} />
+        <meshStandardMaterial color="#080603" roughness={1} />
       </mesh>
-      <mesh position={[0, 0.36, 0.222]}>
-        <boxGeometry args={[0.12, 0.02, 0.02]} />
-        <meshStandardMaterial color="#8a7647" roughness={0.4} metalness={0.7} />
-      </mesh>
+
+      <group
+        ref={drawer}
+        position={[0, 0, 0]}
+        onClick={(e) => { e.stopPropagation(); if (!wasDrag()) onDrawer?.() }}
+        onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
+        onPointerOut={() => { document.body.style.cursor = 'auto' }}
+      >
+        <mesh position={[0, 0.36, 0.212]}>
+          <planeGeometry args={[0.44, 0.18]} />
+          <meshStandardMaterial color="#31220f" roughness={0.8} />
+        </mesh>
+        {/* drawer sides + floor, only ever seen once it is out */}
+        <mesh position={[0, 0.28, 0.02]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.42, 0.38]} />
+          <meshStandardMaterial color="#241809" roughness={0.95} side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[-0.21, 0.33, 0.02]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[0.38, 0.12]} />
+          <meshStandardMaterial color="#2b1d0c" roughness={0.9} side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[0.21, 0.33, 0.02]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[0.38, 0.12]} />
+          <meshStandardMaterial color="#2b1d0c" roughness={0.9} side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[0, 0.36, 0.222]}>
+          <boxGeometry args={[0.12, 0.02, 0.02]} />
+          <meshStandardMaterial color="#8a7647" roughness={0.4} metalness={0.7} />
+        </mesh>
+      </group>
       {/* lamp base + shade */}
       <mesh position={[0, 0.62, 0]}>
         <cylinderGeometry args={[0.045, 0.075, 0.12, 16]} />
@@ -202,7 +240,7 @@ function Dust({ count = 260 }) {
   )
 }
 
-export default function Room({ dim = false }) {
+export default function Room({ dim = false, drawerOpen = false, onDrawer }) {
   const floorMap = useMemo(() => carpet(), [])
   const ceilMap = useMemo(() => ceiling(), [])
   // Dixon's Thread rule: the room dims while the string is up, so the lines
@@ -238,7 +276,7 @@ export default function Room({ dim = false }) {
       <Baseboards />
       <Window />
       <Door />
-      <Nightstand />
+      <Nightstand drawerOpen={drawerOpen} onDrawer={onDrawer} />
       <Dust />
 
       {/* --- lighting: one warm practical, one cold intruder --- */}

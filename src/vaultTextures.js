@@ -11,7 +11,7 @@ const CARD_H = 648
 const PAD = 28              // paper border
 const IMG = CARD_W - PAD * 2 // square image well
 
-function loadImage(src) {
+export function loadImage(src) {
   return new Promise((resolve) => {
     const img = new Image()
     img.onload = () => resolve(img)
@@ -23,7 +23,7 @@ function loadImage(src) {
 const loadSVG = (svg) =>
   loadImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg))
 
-function roundRect(ctx, x, y, w, h, r) {
+export function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
   ctx.moveTo(x + r, y)
   ctx.arcTo(x + w, y, x + w, y + h, r)
@@ -35,7 +35,7 @@ function roundRect(ctx, x, y, w, h, r) {
 
 // Cover-fit: fill the square well, cropping the overflow. Posters are 2:3, so
 // this crops top and bottom and keeps the art rather than the title block.
-function drawCover(ctx, img, x, y, w, h) {
+export function drawCover(ctx, img, x, y, w, h) {
   const scale = Math.max(w / img.width, h / img.height)
   const dw = img.width * scale
   const dh = img.height * scale
@@ -94,7 +94,7 @@ function gradeEmulsion(ctx, x, y, w, h, seed) {
   }
 }
 
-function hash(str) {
+export function hash(str) {
   let h = 0
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0xffffffff
   return h

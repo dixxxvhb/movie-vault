@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { makeCardTexture, makeBackTexture } from './vaultTextures.js'
-import { wasDrag } from './CameraRig.jsx'
+import { wasDrag } from './pointer.js'
 
 // Real Polaroid is 8.8 x 10.7cm. These run about 2x life size: big enough to
 // read across the room, small enough that a whole score band can sit side by

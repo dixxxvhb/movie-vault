@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
+import { setDragDistance } from './pointer.js'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -19,12 +20,16 @@ export const STATIONS = {
   // the list of what's next is the content
   door: { pos: [0.5, 1.58, 0.05], look: [-0.6, 1.5, HD], fov: 62, yawRange: 0.5 },
   mirror: { pos: [-0.2, 1.5, 0.15], look: [-HW, 1.45, 0.2], fov: 56, yawRange: 0.5 },
+  // The archive is on the floor, so both of these look DOWN — you crouch over a
+  // box, you do not stand back and admire it. Never aimed straight down: with a
+  // near-vertical view vector the yaw solve degenerates and the camera spins.
+  shoebox: { pos: [-0.5, 1.42, 1.82], look: [-0.5, 0.04, 0.72], fov: 62, yawRange: 0.35 },
+  drawer: { pos: [1.28, 1.30, 0.92], look: [1.3, 0.04, -0.34], fov: 60, yawRange: 0.35 },
 }
 
-// How far the pointer travelled during the last press. Click handlers consult
-// this so "drag to look" never also counts as "click the thing behind cursor".
-let lastDragDistance = 0
-export const wasDrag = () => lastDragDistance > 6
+// The drag tracker lives in pointer.js (room objects need it too, and importing
+// it from here made a cycle). Re-exported so existing importers keep working.
+export { wasDrag } from './pointer.js'
 
 const FLIGHT_MS = 780
 const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
@@ -77,7 +82,7 @@ export default function CameraRig({ station = 'center', stationKey }) {
     const el = gl.domElement
     const down = (e) => {
       drag.current = { x: e.clientX, y: e.clientY, moved: 0 }
-      lastDragDistance = 0
+      setDragDistance(0)
       el.setPointerCapture?.(e.pointerId)
     }
     const move = (e) => {
@@ -101,7 +106,7 @@ export default function CameraRig({ station = 'center', stationKey }) {
       el.style.cursor = 'grabbing'
     }
     const up = (e) => {
-      lastDragDistance = drag.current?.moved ?? 0
+      setDragDistance(drag.current?.moved ?? 0)
       drag.current = null
       el.style.cursor = 'grab'
       el.releasePointerCapture?.(e.pointerId)

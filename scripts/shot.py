@@ -25,7 +25,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.dirname(HERE)
 OUT = os.path.join(BASE, "_shots")
 
-STATIONS = ["stand", "the ledger", "investigation", "the door", "the mirror"]
+STATIONS = ["stand", "the ledger", "investigation", "the door", "the mirror",
+            "the shoebox", "the drawer"]
 
 
 def sample(png_path):
@@ -71,7 +72,12 @@ def main():
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 
-        page.goto(args.url, wait_until="networkidle")
+        # ?nocold skips the wake-up blink. Without it every station shot would
+        # race a 3.4s black overlay, and the harness would be timing an
+        # animation instead of checking a render. The blink gets its own shot
+        # at the end, where the timing is the point.
+        url = args.url + ("&" if "?" in args.url else "?") + "nocold"
+        page.goto(url, wait_until="networkidle")
         page.wait_for_selector("canvas", timeout=20000)
         page.wait_for_timeout(args.settle)
 
@@ -122,6 +128,49 @@ def main():
                          os.path.relpath(path, BASE)))
         except Exception as e:
             failures.append("inspect step: %s" % e)
+
+        # The cold open. Checked by timing, not by looking: the lids must
+        # actually cover the room early on and must be gone by the end. A blink
+        # that renders but never darkens anything is the failure mode here.
+        try:
+            # NOT networkidle: waiting for idle burns 2-3s and the blink is
+            # over by then, so the "early" frame came back as a fully lit room
+            # and the check silently proved nothing. Grab the first frame the
+            # document will give us instead.
+            page.goto(args.url, wait_until="domcontentloaded")
+            page.wait_for_selector("canvas", timeout=20000)
+            early = os.path.join(OUT, "coldopen.png")
+            page.screenshot(path=early)
+            e_s = sample(early)
+            # A mid frame, because "black, then room" would also be the
+            # signature of a 3.4s black screen with no blink in it at all. The
+            # lids have to be demonstrably part-open partway through.
+            page.wait_for_timeout(900)
+            mid = os.path.join(OUT, "coldopen-mid.png")
+            page.screenshot(path=mid)
+            m_s = sample(mid)
+            page.wait_for_timeout(2700)
+            late = os.path.join(OUT, "coldopen-after.png")
+            page.screenshot(path=late)
+            l_s = sample(late)
+            if e_s["mean"] >= l_s["mean"]:
+                failures.append(
+                    "cold open: not covering (early mean %.1f >= settled mean %.1f)"
+                    % (e_s["mean"], l_s["mean"])
+                )
+            elif l_s["mean"] < 4:
+                failures.append("cold open: never lifted (settled mean %.1f)" % l_s["mean"])
+            elif not (e_s["mean"] < m_s["mean"] < l_s["mean"]):
+                failures.append(
+                    "cold open: no blink between the ends (%.1f -> %.1f -> %.1f)"
+                    % (e_s["mean"], m_s["mean"], l_s["mean"])
+                )
+            else:
+                print("  %-14s shut %.1f -> blinking %.1f -> open %.1f  -> %s"
+                      % ("cold open", e_s["mean"], m_s["mean"], l_s["mean"],
+                         os.path.relpath(mid, BASE)))
+        except Exception as e:
+            failures.append("cold open step: %s" % e)
 
         browser.close()
 

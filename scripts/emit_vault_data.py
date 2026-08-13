@@ -7,9 +7,11 @@ build inputs, drift-guarded) and the new 3D app. It reads the SAME inputs
 vault.py uses -- it does NOT invent data. The 3D app is pure render; all film
 facts live in Supabase and flow through here.
 
-Milestone 1 scope: the Ledger films only (ledger_meta.json + ledger_panels.json
-palettes + photos.json fronts). Archive/Hazy come in M2 via a shared data
-module. Run from the repo root:  python scripts/emit_vault_data.py
+Scope: the Ledger films (ledger_meta + ledger_panels + photos + titles), the
+Archive (archive.json -> the Shoebox and the Dark Drawer), the links, the queue,
+the lessons, and the quotes. Run from the repo root:
+
+    python scripts/emit_vault_data.py
 """
 import io, os, re, json, sys
 
@@ -191,14 +193,124 @@ for l in LINKS:
 QUEUE = load("queue.json")["queue"]        # the door: what's next
 LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
 
+# ---------------------------------------------------------------- the archive
+#
+# Films Dixon has watched but never scored live. His own doctrine sets the
+# shape: every film is a photo taken the night it happened -- developed and hung
+# (the Ledger), faded in the shoebox and scored from memory in pencil (the
+# Shoebox), or an undeveloped dark frame awaiting the chemical bath of a rewatch
+# (the Dark Drawer).
+#
+# The split is read out of seen_note, which is prose, not an enum. A memory
+# score anywhere in the note puts the film in the Shoebox; everything else is a
+# dark frame. Notes matching NEITHER known shape are reported rather than
+# silently binned -- the same reasoning as the drift guard above.
+ARCHIVE_IN = load("archive.json")["archive"]
+
+MEMORY_RE = re.compile(r"memory\s+(\d+(?:\.\d+)?)", re.I)
+KNOWN_DARK_RE = re.compile(r"hazy|no memory score", re.I)
+
+archive = []
+_by_slug = {}
+_unclassified = []
+_dupes = []
+
+for a in ARCHIVE_IN:
+    note = a.get("seen_note") or ""
+    m = MEMORY_RE.search(note)
+    memory = float(m.group(1)) if m else None
+    if memory is None and not KNOWN_DARK_RE.search(note):
+        _unclassified.append("%s -> %r" % (a["slug"], note))
+
+    row = {
+        "slug": a["slug"],
+        "title": a["title"],
+        "year": a.get("year"),
+        # SHOEBOX = scored from memory, in pencil. DRAWER = undeveloped.
+        "kind": "shoebox" if memory is not None else "drawer",
+        "memory": memory,
+        "note": note,
+        "poster": None,          # filled below, only for rows that survive dedupe
+        "poster_path": a.get("poster"),
+        "genres": a.get("genres") or [],
+        "director": a.get("director") or [],
+        "runtime": a.get("runtime"),
+    }
+
+    # The DB carries The Prestige twice: one archive row with a memory score and
+    # a poster, one bare "confirmed seen" row. Keep the richer one rather than
+    # letting import order decide, and say so.
+    prev = _by_slug.get(row["slug"])
+    if prev is None:
+        _by_slug[row["slug"]] = row
+        archive.append(row)
+        continue
+    _dupes.append(row["slug"])
+    better = (row["memory"] is not None, bool(row["poster_path"]))
+    worse = (prev["memory"] is not None, bool(prev["poster_path"]))
+    if better > worse:
+        archive[archive.index(prev)] = row
+        _by_slug[row["slug"]] = row
+
+for row in archive:
+    row["poster"] = fetch_poster(row["slug"], row["poster_path"])
+    row.pop("poster_path")
+
+# Shoebox descends by remembered score; the Dark Drawer has no score to sort by,
+# so it sits in alphabetical order -- an unsorted pile would imply a ranking.
+shoebox = sorted([a for a in archive if a["kind"] == "shoebox"],
+                 key=lambda a: (-a["memory"], a["title"].lower()))
+drawer = sorted([a for a in archive if a["kind"] == "drawer"],
+                key=lambda a: a["title"].lower())
+
+if _dupes:
+    sys.stderr.write("ARCHIVE: %d duplicate slug(s) merged -> %s\n"
+                     % (len(_dupes), ", ".join(sorted(set(_dupes)))))
+if _unclassified:
+    sys.stderr.write(
+        "ARCHIVE: %d seen_note(s) match no known shape (filed as dark frames):\n  %s\n"
+        % (len(_unclassified), "\n  ".join(_unclassified))
+    )
+
+# ----------------------------------------------------------------- the quotes
+#
+# Marginalia, not a sixth wall. A quote hangs beside its film when that film is
+# on a wall or in the archive; a quote whose film is neither (Veep, Star Trek
+# Beyond -- television, never scored) goes loose into the Dark Drawer.
+QUOTES_IN = load("quotes.json")["quotes"]
+
+ARCHIVE_SLUG_BY_TITLE = {a["title"].strip().lower(): a["slug"] for a in archive}
+
+quotes = []
+_loose = 0
+for q in QUOTES_IN:
+    name = (q.get("film") or "").strip().lower()
+    slug = SLUG_BY_TITLE.get(name)
+    where = "ledger" if slug else None
+    if not slug:
+        slug = ARCHIVE_SLUG_BY_TITLE.get(name)
+        where = "archive" if slug else "loose"
+    if where == "loose":
+        _loose += 1
+    quotes.append({
+        "film": q.get("film"),
+        "slug": slug,          # None for loose scraps
+        "where": where,
+        "quote": q.get("quote"),
+        "said_by": q.get("said_by"),
+    })
+
 data = {
-    "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons",
+    "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons + archive + quotes",
     "queue": QUEUE,
     "lessons": LESSONS,
     "count": len(films),
     "avg": round(sum(f["score"] for f in films) / len(films), 2),
     "films": films,
     "links": links,
+    "shoebox": shoebox,
+    "drawer": drawer,
+    "quotes": quotes,
 }
 
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -209,3 +321,10 @@ print("  fronts:", sum(1 for f in films if f["front"]),
       "| panels:", sum(1 for f in films if f["panel"]),
       "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")
 print("  queue:", len(QUEUE), "| lessons:", len(LESSONS))
+print("  shoebox:", len(shoebox), "| dark drawer:", len(drawer),
+      "| archive posters:", sum(1 for a in archive if a["poster"]))
+print("  quotes:", len(quotes),
+      "(%d ledger, %d archive, %d loose)"
+      % (sum(1 for q in quotes if q["where"] == "ledger"),
+         sum(1 for q in quotes if q["where"] == "archive"),
+         _loose))

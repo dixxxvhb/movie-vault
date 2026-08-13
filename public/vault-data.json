@@ -1,5 +1,5 @@
 {
- "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons",
+ "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons + archive + quotes",
  "queue": [
   {
    "title": "Prisoners",
@@ -1347,6 +1347,1222 @@
    "note": "A man builds a system of meaning to avoid what he already knows. Sam's conspiracy and Leonard's notes are the same machine. The owl woman memory test proved it within twelve hours.",
    "weight": 2,
    "directional": true
+  }
+ ],
+ "shoebox": [
+  {
+   "slug": "arrival",
+   "title": "Arrival",
+   "year": 2016,
+   "kind": "shoebox",
+   "memory": 10.0,
+   "note": "vault archive — memory 10.0, seen in the past year",
+   "poster": "posters/arrival.jpg",
+   "genres": [
+    "Drama",
+    "Science Fiction",
+    "Mystery"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "runtime": 116
+  },
+  {
+   "slug": "contact",
+   "title": "Contact",
+   "year": 1997,
+   "kind": "shoebox",
+   "memory": 10.0,
+   "note": "vault archive — memory 10.0, seen in the past year",
+   "poster": "posters/contact.jpg",
+   "genres": [
+    "Drama",
+    "Science Fiction",
+    "Mystery"
+   ],
+   "director": [
+    "Robert Zemeckis"
+   ],
+   "runtime": 150
+  },
+  {
+   "slug": "deep-impact",
+   "title": "Deep Impact",
+   "year": 1998,
+   "kind": "shoebox",
+   "memory": 10.0,
+   "note": "vault archive — memory 10.0, seen in the past year",
+   "poster": "posters/deep-impact.jpg",
+   "genres": [
+    "Action",
+    "Drama",
+    "Science Fiction"
+   ],
+   "director": [
+    "Mimi Leder"
+   ],
+   "runtime": 122
+  },
+  {
+   "slug": "interstellar",
+   "title": "Interstellar",
+   "year": 2014,
+   "kind": "shoebox",
+   "memory": 10.0,
+   "note": "vault archive — memory 10.0",
+   "poster": "posters/interstellar.jpg",
+   "genres": [
+    "Adventure",
+    "Drama",
+    "Science Fiction"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "runtime": 169
+  },
+  {
+   "slug": "oppenheimer",
+   "title": "Oppenheimer",
+   "year": 2023,
+   "kind": "shoebox",
+   "memory": 10.0,
+   "note": "vault archive — memory 10.0",
+   "poster": "posters/oppenheimer.jpg",
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "runtime": 181
+  },
+  {
+   "slug": "dune-part-two",
+   "title": "Dune: Part Two",
+   "year": 2024,
+   "kind": "shoebox",
+   "memory": 9.9,
+   "note": "vault archive — memory 9.9, seen in the past year",
+   "poster": "posters/dune-part-two.jpg",
+   "genres": [
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "runtime": 167
+  },
+  {
+   "slug": "lotr",
+   "title": "The Lord of the Rings (trilogy)",
+   "year": null,
+   "kind": "shoebox",
+   "memory": 9.8,
+   "note": "vault archive — memory 9.8, scored as a whole",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "truman-show",
+   "title": "The Truman Show",
+   "year": 1998,
+   "kind": "shoebox",
+   "memory": 9.8,
+   "note": "vault archive — memory 9.8",
+   "poster": "posters/truman-show.jpg",
+   "genres": [
+    "Comedy",
+    "Drama"
+   ],
+   "director": [
+    "Peter Weir"
+   ],
+   "runtime": 103
+  },
+  {
+   "slug": "titanic",
+   "title": "Titanic",
+   "year": 1997,
+   "kind": "shoebox",
+   "memory": 9.8,
+   "note": "vault archive — memory 9.8",
+   "poster": "posters/titanic.jpg",
+   "genres": [
+    "Drama",
+    "Romance"
+   ],
+   "director": [
+    "James Cameron"
+   ],
+   "runtime": 194
+  },
+  {
+   "slug": "dune",
+   "title": "Dune",
+   "year": 2021,
+   "kind": "shoebox",
+   "memory": 9.7,
+   "note": "vault archive — memory 9.7, seen in the past year",
+   "poster": "posters/dune.jpg",
+   "genres": [
+    "Science Fiction",
+    "Adventure",
+    "War"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "runtime": 155
+  },
+  {
+   "slug": "inception",
+   "title": "Inception",
+   "year": 2010,
+   "kind": "shoebox",
+   "memory": 9.7,
+   "note": "vault archive — memory 9.7, seen a few years back",
+   "poster": "posters/inception.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "runtime": 148
+  },
+  {
+   "slug": "the-substance",
+   "title": "The Substance",
+   "year": 2024,
+   "kind": "shoebox",
+   "memory": 9.7,
+   "note": "vault archive — memory 9.7, seen in the past year",
+   "poster": "posters/the-substance.jpg",
+   "genres": [
+    "Horror",
+    "Science Fiction",
+    "Thriller"
+   ],
+   "director": [
+    "Coralie Fargeat"
+   ],
+   "runtime": 141
+  },
+  {
+   "slug": "zodiac",
+   "title": "Zodiac",
+   "year": 2007,
+   "kind": "shoebox",
+   "memory": 9.7,
+   "note": "vault archive — memory 9.7, seen a few years back",
+   "poster": "posters/zodiac.jpg",
+   "genres": [
+    "Crime",
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "David Fincher"
+   ],
+   "runtime": 157
+  },
+  {
+   "slug": "chicago",
+   "title": "Chicago",
+   "year": 2002,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6",
+   "poster": "posters/chicago.jpg",
+   "genres": [
+    "Comedy",
+    "Crime",
+    "Drama"
+   ],
+   "director": [
+    "Rob Marshall"
+   ],
+   "runtime": 113
+  },
+  {
+   "slug": "conclave",
+   "title": "Conclave",
+   "year": 2024,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6, seen in the past year",
+   "poster": "posters/conclave.jpg",
+   "genres": [
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Edward Berger"
+   ],
+   "runtime": 120
+  },
+  {
+   "slug": "dont-look-up",
+   "title": "Don't Look Up",
+   "year": 2021,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6, seen in the past year",
+   "poster": "posters/dont-look-up.jpg",
+   "genres": [
+    "Comedy",
+    "Science Fiction",
+    "Drama"
+   ],
+   "director": [
+    "Adam McKay"
+   ],
+   "runtime": 138
+  },
+  {
+   "slug": "get-out",
+   "title": "Get Out",
+   "year": 2017,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6",
+   "poster": "posters/get-out.jpg",
+   "genres": [
+    "Mystery",
+    "Thriller",
+    "Horror"
+   ],
+   "director": [
+    "Jordan Peele"
+   ],
+   "runtime": 104
+  },
+  {
+   "slug": "gone-girl",
+   "title": "Gone Girl",
+   "year": 2014,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6",
+   "poster": "posters/gone-girl.jpg",
+   "genres": [
+    "Mystery",
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "David Fincher"
+   ],
+   "runtime": 149
+  },
+  {
+   "slug": "kingsman",
+   "title": "Kingsman: The Secret Service",
+   "year": 2015,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6; rewatch queued (his call)",
+   "poster": "posters/kingsman.jpg",
+   "genres": [
+    "Crime",
+    "Comedy",
+    "Action",
+    "Adventure"
+   ],
+   "director": [
+    "Matthew Vaughn"
+   ],
+   "runtime": 129
+  },
+  {
+   "slug": "parasite",
+   "title": "Parasite",
+   "year": 2019,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6 (corrected from 9.7 on the spot)",
+   "poster": "posters/parasite.jpg",
+   "genres": [
+    "Comedy",
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "Bong Joon Ho"
+   ],
+   "runtime": 133
+  },
+  {
+   "slug": "tenet",
+   "title": "Tenet",
+   "year": 2020,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6, seen a few years back",
+   "poster": "posters/tenet.jpg",
+   "genres": [
+    "Action",
+    "Thriller",
+    "Science Fiction"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "runtime": 150
+  },
+  {
+   "slug": "silence-of-the-lambs",
+   "title": "The Silence of the Lambs",
+   "year": 1991,
+   "kind": "shoebox",
+   "memory": 9.6,
+   "note": "vault archive — memory 9.6",
+   "poster": "posters/silence-of-the-lambs.jpg",
+   "genres": [
+    "Crime",
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "Jonathan Demme"
+   ],
+   "runtime": 119
+  },
+  {
+   "slug": "bugonia",
+   "title": "Bugonia",
+   "year": 2025,
+   "kind": "shoebox",
+   "memory": 9.5,
+   "note": "vault archive — memory 9.5, seen in the past year",
+   "poster": "posters/bugonia.jpg",
+   "genres": [
+    "Science Fiction",
+    "Thriller",
+    "Comedy"
+   ],
+   "director": [
+    "Yorgos Lanthimos"
+   ],
+   "runtime": 119
+  },
+  {
+   "slug": "mission-impossible",
+   "title": "Mission: Impossible",
+   "year": 1996,
+   "kind": "shoebox",
+   "memory": 9.5,
+   "note": "vault archive — whole franchise seen and loved, memory 9.5 as a run",
+   "poster": "posters/mission-impossible.jpg",
+   "genres": [
+    "Adventure",
+    "Action",
+    "Thriller"
+   ],
+   "director": [
+    "Brian De Palma"
+   ],
+   "runtime": 111
+  },
+  {
+   "slug": "eeaao",
+   "title": "Everything Everywhere All at Once",
+   "year": 2022,
+   "kind": "shoebox",
+   "memory": 9.4,
+   "note": "vault archive — memory 9.4, seen a few years back",
+   "poster": "posters/eeaao.jpg",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Science Fiction"
+   ],
+   "director": [
+    "Daniel Scheinert",
+    "Daniel Kwan"
+   ],
+   "runtime": 140
+  },
+  {
+   "slug": "snowpiercer",
+   "title": "Snowpiercer",
+   "year": 2013,
+   "kind": "shoebox",
+   "memory": 9.4,
+   "note": "vault archive — memory 9.4, SEEN AND LOVED buzz Jul 22",
+   "poster": "posters/snowpiercer.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Drama"
+   ],
+   "director": [
+    "Bong Joon Ho"
+   ],
+   "runtime": 127
+  },
+  {
+   "slug": "saw",
+   "title": "Saw",
+   "year": 2004,
+   "kind": "shoebox",
+   "memory": 9.3,
+   "note": "vault archive — memory 9.3",
+   "poster": "posters/saw.jpg",
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Crime"
+   ],
+   "director": [
+    "James Wan"
+   ],
+   "runtime": 103
+  },
+  {
+   "slug": "bourne-trilogy",
+   "title": "The Bourne trilogy",
+   "year": null,
+   "kind": "shoebox",
+   "memory": 9.3,
+   "note": "vault archive — memory 9.3, scored as a run",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "center-stage",
+   "title": "Center Stage",
+   "year": 2000,
+   "kind": "shoebox",
+   "memory": 9.2,
+   "note": "vault archive — memory 9.2",
+   "poster": "posters/center-stage.jpg",
+   "genres": [
+    "Drama",
+    "Music"
+   ],
+   "director": [
+    "Nicholas Hytner"
+   ],
+   "runtime": 115
+  },
+  {
+   "slug": "the-prestige",
+   "title": "The Prestige",
+   "year": 2006,
+   "kind": "shoebox",
+   "memory": 9.1,
+   "note": "vault archive — memory 9.1, seen a few years back",
+   "poster": "posters/the-prestige.jpg",
+   "genres": [
+    "Drama",
+    "Mystery",
+    "Science Fiction"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "runtime": 130
+  },
+  {
+   "slug": "planet-of-the-apes",
+   "title": "Planet of the Apes (the modern trilogy)",
+   "year": null,
+   "kind": "shoebox",
+   "memory": 8.9,
+   "note": "vault archive — memory 8.9, seen in the past year",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "whiplash",
+   "title": "Whiplash",
+   "year": 2014,
+   "kind": "shoebox",
+   "memory": 8.7,
+   "note": "archive addition — memory 8.7, rewatch queued per Dixon",
+   "poster": "posters/whiplash.jpg",
+   "genres": [
+    "Drama",
+    "Music",
+    "Thriller"
+   ],
+   "director": [
+    "Damien Chazelle"
+   ],
+   "runtime": 107
+  },
+  {
+   "slug": "step-up",
+   "title": "Step Up",
+   "year": 2006,
+   "kind": "shoebox",
+   "memory": 8.4,
+   "note": "vault archive — memory 8.4",
+   "poster": "posters/step-up.jpg",
+   "genres": [
+    "Music",
+    "Drama",
+    "Romance",
+    "Crime"
+   ],
+   "director": [
+    "Anne Fletcher"
+   ],
+   "runtime": 104
+  },
+  {
+   "slug": "flowers-in-the-attic",
+   "title": "Flowers in the Attic",
+   "year": 2014,
+   "kind": "shoebox",
+   "memory": 4.3,
+   "note": "vault archive — memory 4.3, the floor (John and Tori retaliation watch)",
+   "poster": "posters/flowers-in-the-attic.jpg",
+   "genres": [
+    "Drama",
+    "Mystery",
+    "Thriller",
+    "TV Movie"
+   ],
+   "director": [
+    "Deborah Chow"
+   ],
+   "runtime": 90
+  }
+ ],
+ "drawer": [
+  {
+   "slug": "10-cloverfield-lane",
+   "title": "10 Cloverfield Lane",
+   "year": 2016,
+   "kind": "drawer",
+   "memory": null,
+   "note": "confirmed seen 2026-08-10 during pitch; no memory score yet",
+   "poster": "posters/10-cloverfield-lane.jpg",
+   "genres": [
+    "Thriller",
+    "Science Fiction",
+    "Drama",
+    "Horror"
+   ],
+   "director": [
+    "Dan Trachtenberg"
+   ],
+   "runtime": 104
+  },
+  {
+   "slug": "black-swan",
+   "title": "Black Swan",
+   "year": 2010,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago",
+   "poster": "posters/black-swan.jpg",
+   "genres": [
+    "Drama",
+    "Thriller",
+    "Horror"
+   ],
+   "director": [
+    "Darren Aronofsky"
+   ],
+   "runtime": 108
+  },
+  {
+   "slug": "edge-of-tomorrow",
+   "title": "Edge of Tomorrow",
+   "year": 2014,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen a few years back, faded",
+   "poster": "posters/edge-of-tomorrow.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction"
+   ],
+   "director": [
+    "Doug Liman"
+   ],
+   "runtime": 114
+  },
+  {
+   "slug": "james-bond",
+   "title": "James Bond (the franchise)",
+   "year": null,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — most seen and loved over decades, no number",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "knives-out",
+   "title": "Knives Out",
+   "year": 2019,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen a few years back, did not stick",
+   "poster": "posters/knives-out.jpg",
+   "genres": [
+    "Comedy",
+    "Crime",
+    "Mystery"
+   ],
+   "director": [
+    "Rian Johnson"
+   ],
+   "runtime": 131
+  },
+  {
+   "slug": "la-la-land",
+   "title": "La La Land",
+   "year": 2016,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen a few years back",
+   "poster": "posters/la-la-land.jpg",
+   "genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+   ],
+   "director": [
+    "Damien Chazelle"
+   ],
+   "runtime": 129
+  },
+  {
+   "slug": "life-of-pi",
+   "title": "Life of Pi",
+   "year": 2012,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago, load-bearing in his taste",
+   "poster": "posters/life-of-pi.jpg",
+   "genres": [
+    "Adventure",
+    "Drama"
+   ],
+   "director": [
+    "Ang Lee"
+   ],
+   "runtime": 127
+  },
+  {
+   "slug": "mad-max-fury-road",
+   "title": "Mad Max: Fury Road",
+   "year": 2015,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago, rewatch overdue",
+   "poster": "posters/mad-max-fury-road.jpg",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Science Fiction"
+   ],
+   "director": [
+    "George Miller"
+   ],
+   "runtime": 121
+  },
+  {
+   "slug": "midsommar",
+   "title": "Midsommar",
+   "year": 2019,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen a few years back, faded",
+   "poster": "posters/midsommar.jpg",
+   "genres": [
+    "Horror",
+    "Drama",
+    "Mystery"
+   ],
+   "director": [
+    "Ari Aster"
+   ],
+   "runtime": 147
+  },
+  {
+   "slug": "moulin-rouge",
+   "title": "Moulin Rouge!",
+   "year": 2001,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago",
+   "poster": "posters/moulin-rouge.jpg",
+   "genres": [
+    "Drama",
+    "Romance",
+    "Music"
+   ],
+   "director": [
+    "Baz Luhrmann"
+   ],
+   "runtime": 128
+  },
+  {
+   "slug": "nope",
+   "title": "Nope",
+   "year": 2022,
+   "kind": "drawer",
+   "memory": null,
+   "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "old",
+   "title": "Old",
+   "year": 2021,
+   "kind": "drawer",
+   "memory": null,
+   "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "prisoners",
+   "title": "Prisoners",
+   "year": 2013,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen; standing rule: NEVER pitch, only Dixon raises it",
+   "poster": "posters/prisoners.jpg",
+   "genres": [
+    "Drama",
+    "Thriller",
+    "Crime"
+   ],
+   "director": [
+    "Denis Villeneuve"
+   ],
+   "runtime": 153
+  },
+  {
+   "slug": "shutter-island",
+   "title": "Shutter Island",
+   "year": 2010,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago, rewatch could be loud",
+   "poster": "posters/shutter-island.jpg",
+   "genres": [
+    "Drama",
+    "Thriller",
+    "Mystery"
+   ],
+   "director": [
+    "Martin Scorsese"
+   ],
+   "runtime": 138
+  },
+  {
+   "slug": "spider-verse",
+   "title": "Spider-Man: Into the Spider-Verse",
+   "year": 2018,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen a few years back",
+   "poster": "posters/spider-verse.jpg",
+   "genres": [
+    "Animation",
+    "Action",
+    "Adventure",
+    "Science Fiction"
+   ],
+   "director": [
+    "Bob Persichetti",
+    "Peter Ramsey",
+    "Rodney Rothman"
+   ],
+   "runtime": 117
+  },
+  {
+   "slug": "dragon-tattoo",
+   "title": "The Girl with the Dragon Tattoo",
+   "year": 2011,
+   "kind": "drawer",
+   "memory": null,
+   "note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
+   "slug": "the-martian",
+   "title": "The Martian",
+   "year": 2015,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — seen long ago",
+   "poster": "posters/the-martian.jpg",
+   "genres": [
+    "Science Fiction",
+    "Drama",
+    "Adventure"
+   ],
+   "director": [
+    "Ridley Scott"
+   ],
+   "runtime": 141
+  },
+  {
+   "slug": "west-side-story",
+   "title": "West Side Story",
+   "year": 1961,
+   "kind": "drawer",
+   "memory": null,
+   "note": "hazy — childhood",
+   "poster": "posters/west-side-story.jpg",
+   "genres": [
+    "Crime",
+    "Drama",
+    "Romance"
+   ],
+   "director": [
+    "Jerome Robbins",
+    "Robert Wise"
+   ],
+   "runtime": 153
+  }
+ ],
+ "quotes": [
+  {
+   "film": "Arrival",
+   "slug": "arrival",
+   "where": "archive",
+   "quote": "Now I'm not so sure I believe in beginnings and endings.",
+   "said_by": "Louise Banks"
+  },
+  {
+   "film": "Arrival",
+   "slug": "arrival",
+   "where": "archive",
+   "quote": "Despite knowing the journey and where it leads, I embrace it, and I welcome every moment of it.",
+   "said_by": "Louise Banks"
+  },
+  {
+   "film": "Avatar",
+   "slug": null,
+   "where": "loose",
+   "quote": "I see you.",
+   "said_by": "Neytiri"
+  },
+  {
+   "film": "Blade Runner 2049",
+   "slug": "br2049",
+   "where": "ledger",
+   "quote": "Cells interlinked within cells interlinked within cells interlinked within one stem.",
+   "said_by": "K"
+  },
+  {
+   "film": "Conclave",
+   "slug": "conclave",
+   "where": "archive",
+   "quote": "There is one sin which I have come to fear above all others: certainty.",
+   "said_by": "Cardinal Lawrence"
+  },
+  {
+   "film": "Conclave",
+   "slug": "conclave",
+   "where": "archive",
+   "quote": "Our faith is a living thing precisely because it walks hand in hand with doubt.",
+   "said_by": "Cardinal Lawrence"
+  },
+  {
+   "film": "Contact",
+   "slug": "contact",
+   "where": "archive",
+   "quote": "Small moves, Ellie. Small moves.",
+   "said_by": "Ted Arroway"
+  },
+  {
+   "film": "Contact",
+   "slug": "contact",
+   "where": "archive",
+   "quote": "If it is just us... seems like an awful waste of space.",
+   "said_by": "Ellie Arroway"
+  },
+  {
+   "film": "Don't Look Up",
+   "slug": "dont-look-up",
+   "where": "archive",
+   "quote": "I'm sorry, were we not being clear? We're all 100% for sure gonna die!",
+   "said_by": "Kate Dibiasky"
+  },
+  {
+   "film": "Don't Look Up",
+   "slug": "dont-look-up",
+   "where": "archive",
+   "quote": "We really did have everything, didn't we?",
+   "said_by": "Dr. Randall Mindy"
+  },
+  {
+   "film": "Dune",
+   "slug": "dune",
+   "where": "archive",
+   "quote": "I must not fear. Fear is the mind-killer. Fear is the little-death that brings total obliteration.",
+   "said_by": "Paul Atreides"
+  },
+  {
+   "film": "Dune",
+   "slug": "dune",
+   "where": "archive",
+   "quote": "Dreams are messages from the deep.",
+   "said_by": "Paul Atreides"
+  },
+  {
+   "film": "Dune: Part Two",
+   "slug": "dune-part-two",
+   "where": "archive",
+   "quote": "Long live the fighters!",
+   "said_by": "Fremen"
+  },
+  {
+   "film": "Dune: Part Two",
+   "slug": "dune-part-two",
+   "where": "archive",
+   "quote": "As written.",
+   "said_by": "Stilgar"
+  },
+  {
+   "film": "Everything Everywhere All at Once",
+   "slug": "eeaao",
+   "where": "archive",
+   "quote": "The only thing I know is that we have to be kind. Please, be kind. Especially when we don't know what's going on.",
+   "said_by": "Waymond Wang"
+  },
+  {
+   "film": "Everything Everywhere All at Once",
+   "slug": "eeaao",
+   "where": "archive",
+   "quote": "In another life, I would have really liked just doing laundry and taxes with you.",
+   "said_by": "Evelyn Wang"
+  },
+  {
+   "film": "Ex Machina",
+   "slug": "exmachina",
+   "where": "ledger",
+   "quote": "One day the AIs are going to look back on us the same way we look at fossil skeletons on the plains of Africa.",
+   "said_by": "Nathan"
+  },
+  {
+   "film": "Ex Machina",
+   "slug": "exmachina",
+   "where": "ledger",
+   "quote": "If you've created a conscious machine, it's not the history of man. That's the history of gods.",
+   "said_by": "Caleb"
+  },
+  {
+   "film": "Interstellar",
+   "slug": "interstellar",
+   "where": "archive",
+   "quote": "Mankind was born on Earth. It was never meant to die here.",
+   "said_by": "Cooper"
+  },
+  {
+   "film": "Interstellar",
+   "slug": "interstellar",
+   "where": "archive",
+   "quote": "We used to look up at the sky and wonder at our place in the stars. Now we just look down and worry about our place in the dirt.",
+   "said_by": "Cooper"
+  },
+  {
+   "film": "Interstellar",
+   "slug": "interstellar",
+   "where": "archive",
+   "quote": "Love is the one thing that we're capable of perceiving that transcends dimensions of time and space.",
+   "said_by": "Dr. Brand"
+  },
+  {
+   "film": "Interstellar",
+   "slug": "interstellar",
+   "where": "archive",
+   "quote": "Do not go gentle into that good night.",
+   "said_by": "Professor Brand"
+  },
+  {
+   "film": "Oppenheimer",
+   "slug": "oppenheimer",
+   "where": "archive",
+   "quote": "Now I am become Death, the destroyer of worlds.",
+   "said_by": "J. Robert Oppenheimer"
+  },
+  {
+   "film": "Oppenheimer",
+   "slug": "oppenheimer",
+   "where": "archive",
+   "quote": "They won't fear it until they understand it. And they won't understand it until they've used it.",
+   "said_by": "J. Robert Oppenheimer"
+  },
+  {
+   "film": "Saw",
+   "slug": "saw",
+   "where": "archive",
+   "quote": "Live or die, Adam. Make your choice.",
+   "said_by": "Jigsaw"
+  },
+  {
+   "film": "Saw",
+   "slug": "saw",
+   "where": "archive",
+   "quote": "I want to play a game.",
+   "said_by": "Jigsaw"
+  },
+  {
+   "film": "Sicario",
+   "slug": "sicario",
+   "where": "ledger",
+   "quote": "Welcome to Juárez.",
+   "said_by": "Alejandro"
+  },
+  {
+   "film": "Sicario",
+   "slug": "sicario",
+   "where": "ledger",
+   "quote": "You are not a wolf. And this is a land of wolves now.",
+   "said_by": "Alejandro"
+  },
+  {
+   "film": "Star Trek Beyond",
+   "slug": null,
+   "where": "loose",
+   "quote": "Space: the final frontier. These are the voyages of the starship Enterprise.",
+   "said_by": "Captain Kirk"
+  },
+  {
+   "film": "Tenet",
+   "slug": "tenet",
+   "where": "archive",
+   "quote": "We live in a twilight world.",
+   "said_by": "The Protagonist"
+  },
+  {
+   "film": "Tenet",
+   "slug": "tenet",
+   "where": "archive",
+   "quote": "Don't try to understand it. Feel it.",
+   "said_by": "The Scientist"
+  },
+  {
+   "film": "The Martian",
+   "slug": "the-martian",
+   "where": "archive",
+   "quote": "I'm going to have to science the shit out of this.",
+   "said_by": "Mark Watney"
+  },
+  {
+   "film": "The Martian",
+   "slug": "the-martian",
+   "where": "archive",
+   "quote": "In your face, Neil Armstrong!",
+   "said_by": "Mark Watney"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "The level of incompetence in this office is staggering.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "Why don't you put on your running shoes and get to the fucking point?",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "If men got pregnant, you could get an abortion at an ATM.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "That's like trying to use a croissant as a fucking dildo. It doesn't do the job, and it makes a fucking mess.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "Being Vice President is like being declawed, defanged, neutered, ball-gagged, and sealed in an abandoned coal mine under two miles of human shit.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "I've met some people, okay? Real people. And I gotta tell ya, a lot of 'em are fucking idiots.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "I came in third, Amy, okay? Even the Nazis came in second.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "I said fuck off. Three fucks, you're out.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "Don't give me that Quaker-in-a-titty-bar look.",
+   "said_by": "Selina Meyer"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "You can't unring that bell.",
+   "said_by": "Kent Davison"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "You're the world's biggest single-cell organism.",
+   "said_by": "Ben Cafferty"
+  },
+  {
+   "film": "Veep",
+   "slug": null,
+   "where": "loose",
+   "quote": "You are the worst thing that has happened to this country since food in buckets and maybe slavery!",
+   "said_by": "Amy Brookheimer"
   }
  ]
 }

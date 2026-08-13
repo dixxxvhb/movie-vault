@@ -177,8 +177,25 @@ re-broken by accident:
    Dixon asked for exactly that in session ("all of it connected through strings
    like a serial killer") and confirmed it in the plan review. Kept, and pulled
    toward the rule: the web only exists inside the Investigation station (opt-in
-   rather than always-on) and **the room dims while it is up**. Open question
-   for Dixon: hold-to-reveal instead of a mode, and whether the pins stay.
+   rather than always-on) and **the room dims while it is up**.
+
+**RESOLVED 2026-08-13 — stop re-opening these.** Both conflicts were put to
+Dixon and the question itself was the mistake: they were `film_lessons` rows
+scraped out of past movie nights, quoted back at him as doctrine, about a build
+he had already directed out loud. His answer, fairly, was that the rules make no
+sense for what the room is now.
+
+So the standing decision is: **what Dixon asked for out loud wins over anything
+mined out of `film_lessons`.** The web stays standing, the pins stay, the
+horizontal axis stays meaningless (an invented x encoding would be a fake claim
+about his taste, and empty wall is the honest version). Do not re-litigate any of
+this, and do not put a `film_lessons` row to him as though it were a ruling he
+owes — those rows are evidence about his taste, not a spec.
+
+The one item from that pass worth keeping was mechanical, and it is done: the
+score axis floor used to be pinned at 5.0 and would have **clamped** anything
+below it, hanging a 4.8 and a 3.1 at the same height. It now tracks the real
+minimum.
 
 ## 7. Milestones
 
@@ -209,9 +226,26 @@ Card flight, lift-and-turn animation, `<Html>` case-file overlay rendering
 ### M5 — The other three walls
 Queue/door, mirror/lessons, shoebox + drawer archive.
 
-### M6 — Polish and XR
-Cold open (coma-wake blink), ambient room audio, `@react-three/xr` entry,
-Quest testing.
+### M6 — The archive, the quotes, the arrival (shipped 2026-08-13)
+The Shoebox (34 faded prints, pencil scores) and the Dark Drawer (18
+undeveloped frames, no scores), both spread on the carpet out of a real
+container that opens; `film_quotes` as scraps; the cold-open blink; opt-in
+synthesised room tone.
+
+Data notes from the build, so they are not rediscovered:
+- The archive split is prose, not an enum. `memory N.N` anywhere in `seen_note`
+  → Shoebox; `hazy …` / "no memory score yet" → Dark Drawer. The emitter reports
+  any note matching neither shape rather than silently binning it.
+- `film_titles` carries **The Prestige twice** (one archive row with a score and
+  a poster, one bare "confirmed seen" row). The emitter merges by slug, keeping
+  the richer row, and says so. Worth fixing in the DB at some point.
+- Six archive rows have no `poster_path` — the franchise/trilogy entries plus
+  Nope, Old and Dragon Tattoo. They render with an empty well rather than
+  invented art.
+
+### M7 — XR
+`@react-three/xr` entry, Quest testing, 72fps budget. The room is already in
+metres, so no re-authoring.
 
 ---
 
