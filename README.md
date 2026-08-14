@@ -54,15 +54,64 @@ Navigation is **click-to-station**: stand and drag to look, click a wall to
 approach, Esc to stand back. Clicking a Polaroid flies to it, turns it over and
 opens its case file.
 
+Looking is **unbounded**. Every station turns a full 360 and pitches freely; the
+authored aim is only where you are pointed when you arrive. The old per-station
+`yawRange` clamps are gone — they protected the composition and in exchange made
+the room feel like four photographs rather than one place, since standing at the
+Ledger physically prevented you from turning to see the door behind you.
+
+Zoom is a **lens, not a walk**: wheel, trackpad pinch, two-finger pinch, or
+`+` / `-`, applied as station fov divided by a factor between 0.78 and 3.4 and
+reset on arrival. It never moves the camera, because the stations are composed
+positions and dollying the wheel would put you through a wall. Look sensitivity
+scales down with the zoom so the felt turn speed stays constant.
+
+## Saying what things are
+
+Two layers, because "what is this and what does it do" had no answer in the
+room itself:
+
+- **Signage** (`Signs.jsx`) — each region wears a strip of masking tape naming
+  it and counting what it holds, stuck to the thing it names: above the Ledger,
+  above the Door and the Mirror, on the shoebox lid, on the drawer front. They
+  fade in only as you turn toward them and fade back out once you are standing
+  at the thing, so they teach the room without standing in front of it.
+- **The guest card** (`Guide.jsx`) — a printed motel information card behind the
+  `?` in the corner, shown once on a first visit (`localStorage`). It names all
+  six regions with live counts and lists the controls. `?noguide` suppresses it
+  (the screenshot harness uses this).
+
+## The case file
+
+Clicking a Polaroid takes it off the wall; its case file hangs **beside it, in
+the room** — a real object at an angle in world space, not a panel bolted to the
+edge of the screen. It is drei's `<Html transform>`, so the prose stays crisp,
+selectable and scrollable while keeping true perspective; a canvas texture would
+turn every paragraph to mush at reading distance.
+
+One CSS px = `scale / 40` metres in transform mode (drei divides the object
+basis by `distanceFactor / 400` while leaving translation in world units) — that
+constant is why `SCALE` looks arbitrary.
+
+Each sheet is printed in **the film's own palette**. `film_ledger_panels
+.palette_css` already carries a designed `bg` / `fg` / `sub` / `acc` pair per
+film, so Barbarian's file is near-black with a blood accent and The Nice Guys'
+is warm 70s card stock, with the film's glyph printed into the stock. `palette.js`
+mixes the raw swatch toward pulp so a saturated poster colour reads as paper, and
+walks the accent toward black or white until it clears a contrast ratio at body
+size.
+
 ## Layout
 
 ```
 src/            App (room + layout), Room, CameraRig, Polaroid, CaseFile,
-                Strings, Notes, Archive, Quotes, ColdOpen, roomTone,
-                pointer, roomTextures, vaultTextures, archiveTextures
+                Strings, Notes, Archive, Quotes, ColdOpen, Signs, Guide,
+                roomTone, pointer, palette, roomTextures, vaultTextures,
+                archiveTextures
 data/           Supabase-derived data, pulled from project swjqlfcqvcrnydpyjyog
 scripts/        emit_vault_data.py (data -> public/vault-data.json, fetches
-                posters), shot.py (headless screenshots + pixel checks)
+                posters), shot.py (headless screenshots + pixel checks),
+                peek.py (one-frame look while iterating)
 public/         emitted vault-data.json + vendored posters/
 ```
 
@@ -96,6 +145,17 @@ fully lit room.
 **Read the PNGs.** The brightness numbers only catch a black void — they cannot
 tell you the shoebox is inside the wall or the pencil is illegible.
 
+While iterating, `scripts/peek.py` takes a single frame without the full suite:
+
+```bash
+python scripts/peek.py --station "the ledger" --zoom 8 --out zoom-in
+python scripts/peek.py --url "http://localhost:5173/?film=niceguys" --out casefile
+python scripts/peek.py --guide --out guide
+```
+
+`?film=<slug>` opens straight onto one card, so a case-file check does not
+depend on clicking blindly into the canvas and hoping it hits the right film.
+
 ## VR
 
 Open the live URL in the Quest browser and press **enter vr**. The button only
@@ -120,8 +180,8 @@ What changes in a session:
   Polaroid to take it down, and at the floor to step back to the middle of the
   room (the floor stands in for Esc).
 
-Known limit: the case-file panel is DOM, so in a headset a card turns over and
-you read its handwritten back, but the long-form panel does not appear. Putting
+Known limit: the case file is DOM, so in a headset a card turns over and
+you read its handwritten back, but the long-form sheet does not appear. Putting
 that in-world needs a real 3D text layer and is not done.
 
 ### Testing VR without a headset

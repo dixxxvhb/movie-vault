@@ -14,6 +14,8 @@ import ScoreMarks from './ScoreMarks.jsx'
 import Archive from './Archive.jsx'
 import { WallQuotes } from './Quotes.jsx'
 import ColdOpen from './ColdOpen.jsx'
+import Signs from './Signs.jsx'
+import Guide from './Guide.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
@@ -151,7 +153,18 @@ export default function App() {
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
       .then((r) => r.json())
-      .then((d) => { setData(d); const b = document.getElementById('boot'); if (b) b.style.display = 'none' })
+      .then((d) => {
+        setData(d)
+        const b = document.getElementById('boot'); if (b) b.style.display = 'none'
+        // ?film=<slug> opens straight onto one card. Exists so the screenshot
+        // harness can frame a named film instead of clicking blindly into the
+        // canvas and hoping it hits the one it wanted.
+        const want = new URLSearchParams(location.search).get('film')
+        if (want && d.films.some((f) => f.slug === want)) {
+          setStation('ledger')
+          setSelected(want)
+        }
+      })
       .catch((e) => console.error('vault-data load failed', e))
   }, [])
 
@@ -217,9 +230,12 @@ export default function App() {
   )
   const thread = station === 'investigation'
 
-  // An inspected card gets its own viewpoint, derived from where it hangs:
-  // stand a metre off the wall, card pushed left of centre so the case file
-  // has the right side of the screen without covering it.
+  // An inspected card gets its own viewpoint, derived from where it hangs. You
+  // step in close and stand square to BOTH objects — the Polaroid on the left,
+  // the case file hanging beside it on the right — with the room still visible
+  // past them. The old framing put the camera far enough back that the sheet
+  // had to be a screen-edge panel to be readable; standing in reading distance
+  // is what lets the file be a physical thing.
   const view = useMemo(() => {
     if (!selected) return { station, key: station }
     const p = byPlace[selected]
@@ -228,10 +244,9 @@ export default function App() {
     return {
       key: 'card:' + selected,
       station: {
-        pos: [x + 0.42, THREE.MathUtils.clamp(y, 1.15, 2.0), z + 1.45],
-        look: [x, y + LIFT_LOOK, z],
-        fov: 44,
-        yawRange: 0.18,
+        pos: [x + 0.30, THREE.MathUtils.clamp(y, 1.16, 1.98), z + 1.02],
+        look: [x + 0.15, THREE.MathUtils.clamp(y, 1.10, 1.96) + LIFT_LOOK, z + 0.2],
+        fov: 46,
       },
     }
   }, [selected, station, byPlace])
@@ -265,6 +280,9 @@ export default function App() {
             onGo={(k) => { setSelected(null); setStation(WALL_STATION[k]) }}
           />
         ))}
+
+        {/* every region says what it is, in the room */}
+        <Signs data={data} />
 
         <ScoreMarks scoreToY={scoreToY} avg={data?.avg} z={WALL_Z - 0.004} />
 
@@ -306,6 +324,17 @@ export default function App() {
         {/* lines he wrote down, taped under the film that said them */}
         {ledgerQuotes.length > 0 && (
           <WallQuotes quotes={ledgerQuotes} positions={pinPoints} cardH={CARD_H} />
+        )}
+
+        {/* the reading sheet, hung in the room beside the card it belongs to */}
+        {openFilm && (
+          <CaseFile
+            film={openFilm}
+            links={data?.links || []}
+            anchor={byPlace[selected].position}
+            onClose={() => setSelected(null)}
+            onJump={(slug) => setSelected(slug)}
+          />
         )}
 
         {thread && (
@@ -362,7 +391,7 @@ export default function App() {
       <div style={hud.hint}>
         {openBox
           ? 'click a print to hold it up · esc to put the box away'
-          : 'drag to look · click a wall to approach · esc to stand back'}
+          : 'drag to look · scroll to zoom · click a wall to approach · esc to stand back'}
       </div>
 
       {/* What a print says when you hold it up. Deliberately thin next to a
@@ -388,16 +417,20 @@ export default function App() {
         </div>
       )}
 
-      <ColdOpen />
-
-      {openFilm && (
-        <CaseFile
-          film={openFilm}
-          links={data?.links || []}
-          onClose={() => setSelected(null)}
-          onJump={(slug) => setSelected(slug)}
+      {data && (
+        <Guide
+          counts={{
+            films: data.count,
+            links: data.links?.length || 0,
+            queue: data.queue?.length || 0,
+            lessons: data.lessons?.length || 0,
+            shoebox: data.shoebox?.length || 0,
+            drawer: data.drawer?.length || 0,
+          }}
         />
       )}
+
+      <ColdOpen />
     </>
   )
 }

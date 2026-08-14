@@ -69,7 +69,7 @@ def check_xr(page, failures):
     ?xrsim, so a production build has no way to fake a headset (by design —
     shipping IWER to real visitors would be megabytes for nothing).
     """
-    page.goto(page.url.split("?")[0] + "?nocold&xrsim", wait_until="networkidle")
+    page.goto(page.url.split("?")[0] + "?nocold&noguide&xrsim", wait_until="networkidle")
     page.wait_for_selector("canvas", timeout=20000)
     page.wait_for_timeout(2500)
 
@@ -137,7 +137,7 @@ def main():
         # race a 3.4s black overlay, and the harness would be timing an
         # animation instead of checking a render. The blink gets its own shot
         # at the end, where the timing is the point.
-        url = args.url + ("&" if "?" in args.url else "?") + "nocold"
+        url = args.url + ("&" if "?" in args.url else "?") + "nocold&noguide"
         page.goto(url, wait_until="networkidle")
         page.wait_for_selector("canvas", timeout=20000)
         page.wait_for_timeout(args.settle)
