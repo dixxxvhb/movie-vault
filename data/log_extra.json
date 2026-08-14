@@ -1,0 +1,341 @@
+{
+ "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-14. vibe_tags verbatim; rewatch = film_log.is_rewatch.",
+ "films": {
+  "amadeus": {
+   "vibes": [
+    "oscar-canon",
+    "music",
+    "envy",
+    "epic",
+    "period"
+   ],
+   "rewatch": false
+  },
+  "annihilation": {
+   "vibes": [
+    "gorgeous",
+    "weird",
+    "sciencey",
+    "mind-bendy",
+    "cosmic-horror"
+   ],
+   "rewatch": false
+  },
+  "barbarian": {
+   "vibes": [
+    "horror",
+    "structure-swing",
+    "three-acts",
+    "wine-night",
+    "doors",
+    "guessing-machine",
+    "ronettes-funeral"
+   ],
+   "rewatch": false
+  },
+  "batman": {
+   "vibes": [
+    "nolan",
+    "epic",
+    "origin",
+    "rewatch",
+    "fear",
+    "crime"
+   ],
+   "rewatch": true
+  },
+  "br2049": {
+   "vibes": [
+    "slow burn",
+    "gorgeous",
+    "heartbreaking"
+   ],
+   "rewatch": false
+  },
+  "bullettrain": {
+   "vibes": [
+    "action-comedy",
+    "assassins",
+    "train",
+    "choreography",
+    "fun-deck"
+   ],
+   "rewatch": false
+  },
+  "cmiyc": {
+   "vibes": [],
+   "rewatch": false
+  },
+  "coherence": {
+   "vibes": [
+    "mind-bendy",
+    "unguessable",
+    "paranoid",
+    "low-budget-miracle"
+   ],
+   "rewatch": false
+  },
+  "darkknight": {
+   "vibes": [
+    "nolan",
+    "epic",
+    "crime",
+    "rewatch",
+    "villain",
+    "chaos"
+   ],
+   "rewatch": true
+  },
+  "disclosure-day": {
+   "vibes": [
+    "first contact",
+    "exposition dump",
+    "new floor",
+    "daytime watch",
+    "spielberg"
+   ],
+   "rewatch": false
+  },
+  "enemy": {
+   "vibes": [
+    "mind-bendy",
+    "unguessable",
+    "doppelganger",
+    "dread",
+    "one-man-show"
+   ],
+   "rewatch": false
+  },
+  "exmachina": {
+   "vibes": [
+    "mind-bendy",
+    "tense",
+    "three-hander"
+   ],
+   "rewatch": false
+  },
+  "game": {
+   "vibes": [
+    "twisty",
+    "well-made",
+    "predictable"
+   ],
+   "rewatch": false
+  },
+  "malignant": {
+   "vibes": [
+    "twisty",
+    "predictable",
+    "third-act-swerve",
+    "gonzo",
+    "over-the-top",
+    "villain"
+   ],
+   "rewatch": false
+  },
+  "matrix": {
+   "vibes": [
+    "mind-blowing",
+    "fun",
+    "movement-design",
+    "sci-fi",
+    "first-watch-of-a-classic"
+   ],
+   "rewatch": false
+  },
+  "maverick": {
+   "vibes": [
+    "immersive",
+    "action",
+    "crowd-pleaser",
+    "over-the-top"
+   ],
+   "rewatch": false
+  },
+  "memento": {
+   "vibes": [
+    "mind-bendy",
+    "twisty",
+    "structure-as-twist",
+    "tragic"
+   ],
+   "rewatch": false
+  },
+  "minority-report": {
+   "vibes": [
+    "sci-fi",
+    "noir",
+    "procedural",
+    "spielberg",
+    "big-swing",
+    "epic"
+   ],
+   "rewatch": false
+  },
+  "moon": {
+   "vibes": [
+    "one-man-show",
+    "sci-fi",
+    "space-thriller",
+    "doppelganger",
+    "staged-not-explained",
+    "gorgeous"
+   ],
+   "rewatch": false
+  },
+  "ncfom": {
+   "vibes": [
+    "dread",
+    "anti-crowd-pleaser",
+    "elegy",
+    "split-watch",
+    "masterful"
+   ],
+   "rewatch": false
+  },
+  "niceguys": {
+   "vibes": [
+    "comedy",
+    "crime",
+    "1970s",
+    "buddy",
+    "daytime"
+   ],
+   "rewatch": false
+  },
+  "nightcrawler": {
+   "vibes": [
+    "dread",
+    "morally gray",
+    "one-man-show",
+    "neo-noir",
+    "satire"
+   ],
+   "rewatch": false
+  },
+  "obsession": {
+   "vibes": [
+    "horror-comedy",
+    "crowd-pleaser",
+    "group-watch",
+    "monkeys-paw",
+    "low-budget"
+   ],
+   "rewatch": false
+  },
+  "poorthings": {
+   "vibes": [
+    "weird",
+    "audacious",
+    "storybook",
+    "fable",
+    "pre-social"
+   ],
+   "rewatch": false
+  },
+  "predestination": {
+   "vibes": [
+    "mind-bender",
+    "circular",
+    "sci-fi puzzle box",
+    "solo night",
+    "Snook showcase"
+   ],
+   "rewatch": false
+  },
+  "pressure": {
+   "vibes": [
+    "historical-drama",
+    "wwii",
+    "restrained",
+    "one-room-tension",
+    "accidental-watch"
+   ],
+   "rewatch": false
+  },
+  "sicario": {
+   "vibes": [
+    "tense",
+    "brutal",
+    "morally gray",
+    "slow burn"
+   ],
+   "rewatch": false
+  },
+  "silverlake": {
+   "vibes": [
+    "weird",
+    "conspiracy",
+    "mystery",
+    "la",
+    "surreal"
+   ],
+   "rewatch": false
+  },
+  "source-code": {
+   "vibes": [
+    "sci-fi",
+    "time-loop",
+    "train",
+    "mind-bendy",
+    "solo night",
+    "structure-as-twist"
+   ],
+   "rewatch": false
+  },
+  "stardust": {
+   "vibes": [],
+   "rewatch": true
+  },
+  "stby": {
+   "vibes": [
+    "unguessable",
+    "third-act-swerve",
+    "satire",
+    "gonzo",
+    "magical-realism"
+   ],
+   "rewatch": false
+  },
+  "sunshine": {
+   "vibes": [
+    "space-thriller",
+    "sciencey",
+    "stacked-cast",
+    "third-act-swerve",
+    "dying-sun"
+   ],
+   "rewatch": false
+  },
+  "tdkr": {
+   "vibes": [
+    "nolan",
+    "epic",
+    "rewatch",
+    "tragic",
+    "villain",
+    "well-made"
+   ],
+   "rewatch": true
+  },
+  "the-sting": {
+   "vibes": [
+    "con",
+    "crackling",
+    "competence-porn",
+    "classic",
+    "staged-not-explained"
+   ],
+   "rewatch": false
+  },
+  "triangle": {
+   "vibes": [
+    "time-loop",
+    "structural",
+    "midday-watch",
+    "wtf-delivered"
+   ],
+   "rewatch": false
+  }
+ }
+}

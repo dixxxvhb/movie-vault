@@ -147,6 +147,30 @@ export async function makeShoeboxTexture(film) {
   pencil(ctx, title, PAD, baseY, 40)
   pencil(ctx, 'from memory', PAD, baseY + 34, 25)
 
+  // A favourite gets a star scratched into the corner of the print. It is the
+  // one thing `film_titles.affinity` has ever been asked to do, and it belongs
+  // on the object rather than in a caption: you are meant to spot it face-down
+  // in a pile of thirty-four, the way you would spot your own handwriting.
+  if (film.affinity === 'favorite') {
+    ctx.save()
+    ctx.translate(ix + IMG - 46, iy + 46)
+    ctx.rotate(-0.14)
+    ctx.strokeStyle = 'rgba(48,44,38,0.55)'
+    ctx.lineWidth = 3.4
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    for (let i = 0; i < 5; i++) {
+      // a five-point star drawn in one stroke, like a hand would
+      const a = -Math.PI / 2 + (i * 4 * Math.PI) / 5
+      const x = Math.cos(a) * 21
+      const y = Math.sin(a) * 21
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+    }
+    ctx.closePath()
+    ctx.stroke()
+    ctx.restore()
+  }
+
   const tex = new THREE.CanvasTexture(c)
   tex.anisotropy = 8
   tex.colorSpace = THREE.SRGBColorSpace

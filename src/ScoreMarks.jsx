@@ -25,7 +25,7 @@ function numeralTexture(n, { size = 74, color = 'rgba(226,214,186,0.62)', w = 12
   return t
 }
 
-export default function ScoreMarks({ scoreToY, avg, from = 6, to = 10, width = 3.5, z }) {
+export default function ScoreMarks({ scoreToY, avg, from = 6, to = 10, width = 3.5, z, inner = 1.02 }) {
   // The average, drawn once. This is the line that turns the wall into a
   // judgement: everything above it beat his own bar, everything below missed.
   const avgMark = useMemo(() => {
@@ -58,12 +58,24 @@ export default function ScoreMarks({ scoreToY, avg, from = 6, to = 10, width = 3
               depthWrite={false}
             />
           </mesh>
-          {/* the numeral, at both ends so it reads from anywhere in the room */}
+          {/* The numeral, at both ends so it reads from anywhere in the room —
+              and again just outside the hang, because on a phone the wall's
+              edges are off-frame and those outer pair were the only place the
+              axis was labelled. The inner pair costs nothing on a desktop
+              (they sit in empty wallpaper beside the beeswarm) and is the
+              difference between a legible chart and a pile of photos on a
+              narrow screen. */}
           {[-1, 1].map((side) => (
-            <mesh key={side} position={[side * (width / 2 + 0.085), y, z]}>
-              <planeGeometry args={[0.11, 0.11]} />
-              <meshBasicMaterial map={tex} transparent depthWrite={false} />
-            </mesh>
+            <group key={side}>
+              <mesh position={[side * (width / 2 + 0.085), y, z]}>
+                <planeGeometry args={[0.11, 0.11]} />
+                <meshBasicMaterial map={tex} transparent depthWrite={false} />
+              </mesh>
+              <mesh position={[side * inner, y, z]}>
+                <planeGeometry args={[0.085, 0.085]} />
+                <meshBasicMaterial map={tex} transparent opacity={0.5} depthWrite={false} />
+              </mesh>
+            </group>
           ))}
         </group>
       ))}

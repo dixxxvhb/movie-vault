@@ -16,6 +16,9 @@ import { WallQuotes } from './Quotes.jsx'
 import ColdOpen from './ColdOpen.jsx'
 import Signs from './Signs.jsx'
 import Guide from './Guide.jsx'
+import Nights from './Nights.jsx'
+import Lens, { useVibes } from './Lens.jsx'
+import Find, { buildIndex } from './Find.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
@@ -117,7 +120,11 @@ function WallZone({ wall, onGo }) {
   )
 }
 
-const WALL_STATION = { north: 'ledger', east: 'investigation', south: 'door', west: 'mirror' }
+// Clicking a wall takes you to what is ON that wall. East used to map to the
+// Investigation, whose viewpoint faces NORTH — so clicking the nightstand wall
+// in front of you turned you a hundred and eighty degrees to look behind you.
+// East is the nightstand, so east opens the drawer that is in it.
+const WALL_STATION = { north: 'ledger', east: 'drawer', south: 'door', west: 'mirror' }
 
 // The whole postprocessing stack comes off in a headset. Two reasons, either one
 // sufficient: a screen-space composer has no correct answer for a stereo pair
@@ -149,6 +156,9 @@ export default function App() {
   const [openBox, setOpenBox] = useState(null)
   const [picked, setPicked] = useState(null)     // archive print held up
   const [tone, setTone] = useState(false)
+  const [lens, setLens] = useState(null)        // a vibe tag, or null
+  const [lensOpen, setLensOpen] = useState(false)
+  const [finding, setFinding] = useState(false)
 
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
@@ -156,13 +166,24 @@ export default function App() {
       .then((d) => {
         setData(d)
         const b = document.getElementById('boot'); if (b) b.style.display = 'none'
-        // ?film=<slug> opens straight onto one card. Exists so the screenshot
-        // harness can frame a named film instead of clicking blindly into the
-        // canvas and hoping it hits the one it wanted.
-        const want = new URLSearchParams(location.search).get('film')
+        // Addresses. ?film= is a card on the Ledger wall, ?print= is a print in
+        // one of the two archives. Reload lands you back in front of the thing
+        // you were looking at instead of in the middle of the room, and either
+        // one is a link you can send someone.
+        const q = new URLSearchParams(location.search)
+        const want = q.get('film')
+        const print = q.get('print')
         if (want && d.films.some((f) => f.slug === want)) {
           setStation('ledger')
           setSelected(want)
+        } else if (print) {
+          const box = (d.shoebox || []).some((a) => a.slug === print) ? 'shoebox'
+            : (d.drawer || []).some((a) => a.slug === print) ? 'drawer' : null
+          if (box) {
+            setOpenBox(box)
+            setStation(box)
+            setPicked(print)
+          }
         }
       })
       .catch((e) => console.error('vault-data load failed', e))
@@ -170,7 +191,17 @@ export default function App() {
 
   useEffect(() => {
     const k = (e) => {
+      // "/" is the universal open-the-search key; ignore it while typing
+      if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(e.target?.tagName || '')) {
+        e.preventDefault()
+        return setFinding(true)
+      }
       if (e.key !== 'Escape') return
+      // panels first: Esc should shut what is in front of you before it starts
+      // walking you back across the room
+      if (finding) return setFinding(false)
+      if (lensOpen) return setLensOpen(false)
+      if (lens) return setLens(null)
       // Esc steps back one layer at a time rather than teleporting you to the
       // middle of the room from inside a shoebox.
       if (picked) return setPicked(null)
@@ -180,10 +211,45 @@ export default function App() {
     }
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
-  }, [picked, openBox])
+  }, [picked, openBox, finding, lensOpen, lens])
+
+  // A film is a place, so it gets an address. `?film=<slug>` started life as a
+  // screenshot-harness hack; keeping the address bar in step with what is open
+  // makes a case file something you can send someone, and makes reload land you
+  // back where you were instead of in the middle of the room.
+  useEffect(() => {
+    if (!data) return
+    const url = new URL(location.href)
+    if (selected) url.searchParams.set('film', selected)
+    else url.searchParams.delete('film')
+    if (picked) url.searchParams.set('print', picked)
+    else url.searchParams.delete('print')
+    history.replaceState(null, '', url)
+  }, [selected, picked, data])
 
   const scoreToY = useMemo(() => makeScoreToY(data?.films), [data])
+  const vibes = useVibes(data?.films)
+  const findIndex = useMemo(() => buildIndex(data), [data])
+
+  // where a search result actually lives, and what it takes to stand in front
+  // of it
+  const goTo = (hit) => {
+    setFinding(false)
+    if (hit.kind === 'ledger') { setOpenBox(null); setPicked(null); setStation('ledger'); return setSelected(hit.slug) }
+    if (hit.kind === 'shoebox' || hit.kind === 'drawer') return openBoxAt(hit.kind, hit.slug)
+    setOpenBox(null); setPicked(null); setSelected(null); setStation('door')
+  }
   const placed = useMemo(() => (data ? layout(data.films, scoreToY) : []), [data, scoreToY])
+
+  // Search results have to be able to OPEN a box, not toggle it: landing on a
+  // print in the shoebox must work whether or not the shoebox happened to be
+  // open already.
+  const openBoxAt = (which, slug = null) => {
+    setSelected(null)
+    setOpenBox(which)
+    setStation(which)
+    setPicked(slug)
+  }
 
   // one open box at a time, and opening one takes you to it
   const goBox = (which) => {
@@ -277,7 +343,14 @@ export default function App() {
           <WallZone
             key={w}
             wall={w}
-            onGo={(k) => { setSelected(null); setStation(WALL_STATION[k]) }}
+            onGo={(k) => {
+              const to = WALL_STATION[k]
+              setSelected(null)
+              if (to === 'drawer') return openBoxAt('drawer')
+              setOpenBox(null)
+              setPicked(null)
+              setStation(to)
+            }}
           />
         ))}
 
@@ -286,6 +359,17 @@ export default function App() {
 
         <ScoreMarks scoreToY={scoreToY} avg={data?.avg} z={WALL_Z - 0.004} />
 
+        {/* time, given its own object rather than forced onto the hang */}
+        <Nights
+          films={data?.films}
+          z={WALL_Z - 0.002}
+          lens={lens}
+          selected={selected}
+          hover={hover}
+          onSelect={(slug) => { setStation('ledger'); setSelected(slug) }}
+          onHover={setHover}
+        />
+
         {placed.map((p) => (
           <Polaroid
             key={p.film.slug}
@@ -293,6 +377,7 @@ export default function App() {
             position={p.position}
             rotation={p.rotation}
             inspected={selected === p.film.slug}
+            dimmed={!!lens && !(p.film.vibes || []).includes(lens)}
             onSelect={(f) => setSelected(f.slug)}
             onHover={setHover}
           />
@@ -349,17 +434,48 @@ export default function App() {
        </XR>
       </Canvas>
 
-      {/* HUD */}
+      {/* HUD.
+          The dock and the hint carry real CSS rather than inline styles,
+          because both of them need media queries: inline styles cannot express
+          "stop showing this below 620px", and that is exactly what the phone
+          layout needed. */}
+      <style>{`
+        .vault-dock {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          display: flex; align-items: center; gap: 8px;
+          padding: 14px 18px 16px;
+          overflow-x: auto; overflow-y: hidden;
+          scrollbar-width: none;
+          background: linear-gradient(to top, rgba(4,3,2,.72), rgba(4,3,2,0));
+        }
+        .vault-dock::-webkit-scrollbar { display: none; }
+        .vault-dock > * { flex: 0 0 auto; }
+        .vault-hint {
+          position: fixed; right: 20px; bottom: 62px;
+          color: #7d735f; font-size: 12.5px; font-family: system-ui, sans-serif;
+          pointer-events: none; text-shadow: 0 1px 6px rgba(0,0,0,.9);
+        }
+        @media (max-width: 720px) {
+          .vault-hint { display: none; }
+          .vault-dock { padding: 10px 12px 12px; }
+        }
+      `}</style>
+
       <div style={hud.brand}>
         <div style={hud.title}>The Vault</div>
         {data && <div style={hud.sub}>{data.count} films · avg {data.avg} · scored live</div>}
       </div>
 
-      <div style={hud.nav}>
+      {/* The dock. One row that scrolls sideways rather than wrapping: at
+          390px the wrapped version stacked into three rows and the hint line
+          rendered on top of the bottom one. Places on the left, modes after
+          the rule — "the door" is somewhere you stand, "investigation" is
+          something you switch on, and the old flat row said they were the same
+          kind of thing. */}
+      <div className="vault-dock">
         {[
           ['center', 'stand'],
           ['ledger', 'the ledger'],
-          ['investigation', 'investigation'],
           ['door', 'the door'],
           ['mirror', 'the mirror'],
           ['shoebox', 'the shoebox'],
@@ -367,6 +483,7 @@ export default function App() {
         ].map(([k, label]) => (
           <button
             key={k}
+            aria-label={label}
             onClick={() => {
               if (k === 'shoebox' || k === 'drawer') return goBox(k)
               setOpenBox(null)
@@ -378,6 +495,33 @@ export default function App() {
             {label}
           </button>
         ))}
+
+        <span style={hud.rule} />
+
+        <button
+          aria-label="investigation"
+          onClick={() => { setOpenBox(null); setPicked(null); setStation('investigation') }}
+          style={{ ...hud.navBtn, ...(station === 'investigation' ? hud.navOn : null) }}
+          title="the red string between films that rhyme"
+        >
+          investigation
+        </button>
+        <button
+          aria-label="lens"
+          onClick={() => { setLensOpen((v) => !v); setFinding(false) }}
+          style={{ ...hud.navBtn, ...(lens || lensOpen ? hud.navOn : null) }}
+          title="dim everything that is not a given vibe"
+        >
+          {lens ? 'lens · ' + lens : 'lens'}
+        </button>
+        <button
+          aria-label="find"
+          onClick={() => { setFinding((v) => !v); setLensOpen(false) }}
+          style={{ ...hud.navBtn, ...(finding ? hud.navOn : null) }}
+          title="find a film anywhere in the room  ( / )"
+        >
+          find
+        </button>
         <button
           onClick={() => { tone ? stopRoomTone() : startRoomTone(); setTone(!tone) }}
           style={{ ...hud.navBtn, ...(tone ? hud.navOn : null) }}
@@ -388,11 +532,17 @@ export default function App() {
         <EnterVR style={{ ...hud.navBtn, ...hud.navVr }} />
       </div>
 
-      <div style={hud.hint}>
+      <div className="vault-hint">
         {openBox
           ? 'click a print to hold it up · esc to put the box away'
-          : 'drag to look · scroll to zoom · click a wall to approach · esc to stand back'}
+          : 'drag to look · scroll to zoom · click a wall to approach · / to find · esc to stand back'}
       </div>
+
+      {lensOpen && (
+        <Lens vibes={vibes} value={lens} onPick={setLens} onClose={() => setLensOpen(false)} />
+      )}
+
+      {finding && <Find index={findIndex} onGo={goTo} onClose={() => setFinding(false)} />}
 
       {/* What a print says when you hold it up. Deliberately thin next to a
           case file — there is no hot take here, because he never wrote one. */}
@@ -405,6 +555,7 @@ export default function App() {
             {pickedFilm.memory != null
               ? `${pickedFilm.memory.toFixed(1)} from memory`
               : 'never scored'}
+            {pickedFilm.affinity === 'favorite' && <span style={hud.printFav}> · favourite</span>}
           </div>
           <div style={hud.printMeta}>
             {[
@@ -413,7 +564,10 @@ export default function App() {
               pickedFilm.genres?.join(' · '),
             ].filter(Boolean).map((line, i) => <div key={i}>{line}</div>)}
           </div>
-          <div style={hud.printNote}>{pickedFilm.note}</div>
+          {/* A snap line is the film in one sentence, in his words. It beats
+              the seen_note, which is bookkeeping ("vault archive — memory
+              10.0") and reads like the machinery talking. */}
+          <div style={hud.printNote}>{pickedFilm.snap || pickedFilm.note}</div>
         </div>
       )}
 
@@ -439,7 +593,10 @@ const hud = {
   brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.8)' },
   title: { fontSize: 26, fontStyle: 'italic', letterSpacing: '.01em' },
   sub: { fontSize: 12.5, color: '#b9ae98', marginTop: 2, fontFamily: 'system-ui, sans-serif' },
-  nav: { position: 'fixed', bottom: 18, left: 20, display: 'flex', gap: 8, flexWrap: 'wrap' },
+  rule: {
+    flex: '0 0 auto', width: 1, alignSelf: 'stretch', margin: '2px 4px',
+    background: 'rgba(180,160,120,.26)',
+  },
   navBtn: {
     background: 'rgba(14,10,8,.62)', color: '#a99c85', border: '1px solid rgba(180,160,120,.22)',
     padding: '7px 12px', borderRadius: 2, fontSize: 11.5, letterSpacing: '.14em',
@@ -448,7 +605,7 @@ const hud = {
   },
   navOn: { color: '#f2e4c8', border: '1px solid rgba(255,190,120,.55)', background: 'rgba(50,32,16,.72)' },
   navVr: { color: '#cbb9d8', border: '1px solid rgba(190,150,220,.4)' },
-  hint: { position: 'fixed', bottom: 18, right: 20, color: '#7d735f', fontSize: 12.5, fontFamily: 'system-ui, sans-serif', pointerEvents: 'none' },
+
   print: {
     position: 'fixed', top: 96, right: 22, width: 276, padding: '16px 18px 18px',
     background: 'rgba(12,9,7,.82)', border: '1px solid rgba(180,160,120,.22)',

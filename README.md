@@ -21,6 +21,10 @@ four jobs:
 | South — **the Door** | The queue: what's next |
 | West — **the Mirror** | The taste lessons, taped up |
 
+Clicking a wall takes you to what is on it. East is the nightstand, so east
+opens the drawer — it used to map to the Investigation, whose viewpoint faces
+NORTH, so clicking the wall in front of you turned you round to look behind you.
+
 And two things on the floor, because not every film he has seen got scored the
 night he saw it:
 
@@ -35,6 +39,13 @@ scores **never** sit on the Ledger's axis and never move a Ledger anchor — a
 remembered 10 and a recorded 10 are different currencies, so they are never
 measured against the same wall. That is why the archive is at your feet and not
 on the north wall.
+
+Along the bottom of the Ledger wall, between the lowest Polaroid and the
+baseboard, runs **the nights** (`Nights.jsx`): a contact strip where x is the
+actual calendar. A double feature is two frames stacked on one date, a quiet
+week is visibly empty wall, and the Nolan trilogy inside three days reads as a
+clump. Time gets its own object rather than being forced onto the hang — the
+x-axis of the score layout still means nothing, on purpose.
 
 The 45 lines in `film_quotes` hang as small scraps: under their Polaroid on the
 Ledger, tucked beside their print in the archive, or loose in the drawer if the
@@ -66,6 +77,24 @@ reset on arrival. It never moves the camera, because the stations are composed
 positions and dollying the wheel would put you through a wall. Look sensitivity
 scales down with the zoom so the felt turn speed stays constant.
 
+## The lens
+
+Every film was tagged on the night it was watched (`film_log.vibe_tags`) and
+none of it was rendered until now. Pick a tag and every film that does not carry
+it goes dark — dark, not hidden, because the shape of the hang is the argument
+of the wall and punching holes in it would draw a different and false picture.
+Only tags used more than once are offered; a tag on one film is a note about
+that night, not a lens.
+
+## Finding a film
+
+`/` (or the **find** button) searches the Ledger, both archives and the queue at
+once, and going to a result puts you in front of the actual object — opening the
+shoebox and holding the print up if that is where the film lives.
+
+`?film=<slug>` and `?print=<slug>` are addresses: they track what is open, so a
+case file is a link you can send and a reload lands you where you were.
+
 ## Saying what things are
 
 Two layers, because "what is this and what does it do" had no answer in the
@@ -77,9 +106,16 @@ room itself:
   fade in only as you turn toward them and fade back out once you are standing
   at the thing, so they teach the room without standing in front of it.
 - **The guest card** (`Guide.jsx`) — a printed motel information card behind the
-  `?` in the corner, shown once on a first visit (`localStorage`). It names all
-  six regions with live counts and lists the controls. `?noguide` suppresses it
+  `?` in the corner, shown once on a first visit (`localStorage`). It names every
+  region with live counts and lists the controls. `?noguide` suppresses it
   (the screenshot harness uses this).
+
+The dock is one horizontally-scrolling row, split by a rule into **places** you
+stand and **modes** you switch on — at 390px the old wrapping version stacked
+into three rows with the hint line printed on top of the bottom one. Camera fov
+is also widened on narrow viewports (three's fov is vertical, so portrait was
+silently cropping the score axis off both sides — the one thing the Ledger
+exists to say).
 
 ## The case file
 
@@ -106,9 +142,12 @@ size.
 ```
 src/            App (room + layout), Room, CameraRig, Polaroid, CaseFile,
                 Strings, Notes, Archive, Quotes, ColdOpen, Signs, Guide,
-                roomTone, pointer, palette, roomTextures, vaultTextures,
-                archiveTextures
+                Nights, Lens, Find, roomTone, pointer, palette, iwerStub,
+                roomTextures, vaultTextures, archiveTextures
 data/           Supabase-derived data, pulled from project swjqlfcqvcrnydpyjyog
+                (ledger_meta, ledger_panels, photos, titles, log_extra,
+                links, queue, providers, lessons, archive, archive_extra,
+                quotes)
 scripts/        emit_vault_data.py (data -> public/vault-data.json, fetches
                 posters), shot.py (headless screenshots + pixel checks),
                 peek.py (one-frame look while iterating)
@@ -155,6 +194,14 @@ python scripts/peek.py --guide --out guide
 
 `?film=<slug>` opens straight onto one card, so a case-file check does not
 depend on clicking blindly into the canvas and hoping it hits the right film.
+
+## What the data is asked to do
+
+Beyond the score and the panels: `vibe_tags` drive the lens, `is_rewatch` puts a
+second pin on a card, `watch_providers` (ranked against `film_services` — free
+beats a service he pays for beats one he does not beats renting) puts one honest
+line on every queue slip, and `snap_line` / `affinity` give archive prints
+something to say and a pencil star to wear.
 
 ## VR
 

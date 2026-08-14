@@ -38,6 +38,7 @@ META = load("ledger_meta.json")          # slug -> [date, score, title]
 PANELS = load("ledger_panels.json")      # [{slug, palette_css, panel_html}]
 PHOTOS = load("photos.json")             # slug -> svg (vars unresolved)
 TITLES = load("titles.json")             # slug -> {year, runtime, poster, genres, director}
+LOG_EXTRA = load("log_extra.json")["films"]   # slug -> {vibes, rewatch}
 
 PAL_BY_SLUG = {p["slug"]: p["palette_css"] for p in PANELS}
 PANEL_BY_SLUG = {p["slug"]: p.get("panel_html") for p in PANELS}
@@ -159,6 +160,11 @@ for slug, (date, score, title) in META.items():
         "genres": t.get("genres") or [],
         "director": t.get("director") or [],
         "panel": PANEL_BY_SLUG.get(slug),   # the case file, read at inspect range
+        # vibe_tags were authored on the night and had never been rendered.
+        # They are what the lens filters on.
+        "vibes": (LOG_EXTRA.get(slug) or {}).get("vibes") or [],
+        # a rewatch is a film he came back to; the wall gives it a second pin.
+        "rewatch": bool((LOG_EXTRA.get(slug) or {}).get("rewatch")),
     })
 
 # score desc, then title -- the salon hang order (rank = height, computed app-side)
@@ -191,6 +197,73 @@ for l in LINKS:
     })
 
 QUEUE = load("queue.json")["queue"]        # the door: what's next
+
+# ---------------------------------------------------------- where to watch it
+#
+# A queue is only useful if it tells you how to actually start the film, so each
+# slip gets ONE line. The ranking is deliberate and it is about his wallet, not
+# TMDB's ordering: free beats a service he already pays for, which beats a
+# service he does not have, which beats renting. A film on eleven platforms he
+# has never heard of is not "available", it is a rental.
+PROV = load("providers.json")
+MINE = PROV["mine"]
+
+# TMDB writes the same service a dozen ways ("Paramount Plus Premium",
+# "Paramount+ Amazon Channel"), so his subscriptions are matched on a stem
+# rather than an exact string.
+MINE_STEMS = {
+    "amazon prime video": "Prime",
+    "paramount plus": "Paramount+",
+    "paramount+": "Paramount+",
+    "peacock": "Peacock",
+    "youtube": "YouTube",
+}
+
+
+def _short(name):
+    n = (name or "").strip()
+    for junk in (" Amazon Channel", " Apple TV Channel", " Roku Premium Channel", " Standard with Ads"):
+        n = n.replace(junk, "")
+    return {"YouTube Free": "YouTube", "Amazon Prime Video": "Prime",
+            "Paramount Plus Premium": "Paramount+", "Paramount Plus Essential": "Paramount+",
+            "Tubi TV": "Tubi", "Disney Plus": "Disney+"}.get(n, n)
+
+
+def _mine(name):
+    low = (name or "").lower()
+    for stem, label in MINE_STEMS.items():
+        if stem in low:
+            return label
+    return None
+
+
+def where_to_watch(title):
+    """One honest line, or None when there is genuinely nowhere to go."""
+    p = PROV["titles"].get(title)
+    if not p:
+        return None
+    # free first, and a free source he already uses beats one he does not
+    for f in p.get("free") or []:
+        if _mine(f):
+            return "free on " + _mine(f)
+    if p.get("free"):
+        return "free on " + _short(p["free"][0])
+    for f in p.get("flat") or []:
+        if _mine(f):
+            return "on " + _mine(f)
+    if p.get("flat"):
+        return "needs " + _short(p["flat"][0])
+    if p.get("rent"):
+        return "rent"
+    return None
+
+
+_where = 0
+for q in QUEUE:
+    w = where_to_watch(q.get("title"))
+    q["where"] = w
+    if w:
+        _where += 1
 LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
 
 # ---------------------------------------------------------------- the archive
@@ -206,6 +279,10 @@ LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
 # dark frame. Notes matching NEITHER known shape are reported rather than
 # silently binned -- the same reasoning as the drift guard above.
 ARCHIVE_IN = load("archive.json")["archive"]
+# A print used to read "vault archive - memory 10.0", which is the machinery
+# talking. Where a title has a snap_line, the print says that instead: one line
+# about the film, in his own words.
+ARCH_EXTRA = load("archive_extra.json")["titles"]
 
 MEMORY_RE = re.compile(r"memory\s+(\d+(?:\.\d+)?)", re.I)
 KNOWN_DARK_RE = re.compile(r"hazy|no memory score", re.I)
@@ -235,6 +312,8 @@ for a in ARCHIVE_IN:
         "genres": a.get("genres") or [],
         "director": a.get("director") or [],
         "runtime": a.get("runtime"),
+        "snap": (ARCH_EXTRA.get(a["title"]) or {}).get("snap"),
+        "affinity": (ARCH_EXTRA.get(a["title"]) or {}).get("aff"),
     }
 
     # The DB carries The Prestige twice: one archive row with a memory score and
@@ -301,7 +380,8 @@ for q in QUOTES_IN:
     })
 
 data = {
-    "generated_from": "ledger_meta + ledger_panels + photos + titles + links + queue + lessons + archive + quotes",
+    "generated_from": ("ledger_meta + ledger_panels + photos + titles + log_extra + links + "
+                       "queue + providers + lessons + archive + archive_extra + quotes"),
     "queue": QUEUE,
     "lessons": LESSONS,
     "count": len(films),
@@ -320,7 +400,11 @@ print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),
       "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")
-print("  queue:", len(QUEUE), "| lessons:", len(LESSONS))
+print("  queue:", len(QUEUE), "(%d with a place to watch)" % _where, "| lessons:", len(LESSONS))
+print("  vibes:", sum(1 for f in films if f["vibes"]),
+      "| rewatches:", sum(1 for f in films if f["rewatch"]),
+      "| snap lines:", sum(1 for a in archive if a.get("snap")),
+      "| favourites:", sum(1 for a in archive if a.get("affinity") == "favorite"))
 print("  shoebox:", len(shoebox), "| dark drawer:", len(drawer),
       "| archive posters:", sum(1 for a in archive if a["poster"]))
 print("  quotes:", len(quotes),

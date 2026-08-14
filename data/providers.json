@@ -1,0 +1,172 @@
+{
+ "_source": "film_titles.watch_providers (TMDB, US) for film_watchlist status='queued', plus film_services where active. Pulled 2026-08-14.",
+ "mine": [
+  "Amazon Prime Video",
+  "Paramount+",
+  "Peacock",
+  "YouTube (free with ads)"
+ ],
+ "titles": {
+  "Andor": {
+   "free": [],
+   "flat": [
+    "Disney Plus"
+   ],
+   "rent": false
+  },
+  "Apollo 13": {
+   "free": [
+    "BYUtv"
+   ],
+   "flat": [
+    "Netflix",
+    "Netflix Standard with Ads"
+   ],
+   "rent": true
+  },
+  "Atomic Blonde": {
+   "free": [],
+   "flat": [
+    "HBO Max Amazon Channel",
+    "Cinemax Amazon Channel",
+    "HBO Max",
+    "Cinemax Apple TV Channel"
+   ],
+   "rent": true
+  },
+  "Children of Men": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Dune: Part Three": {
+   "free": [],
+   "flat": [],
+   "rent": false
+  },
+  "Her": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Jack Reacher": {
+   "free": [
+    "YouTube Free"
+   ],
+   "flat": [
+    "Paramount Plus Premium",
+    "Paramount Plus Essential",
+    "Philo",
+    "Paramount+ Amazon Channel",
+    "YouTube TV",
+    "Paramount+ Roku Premium Channel",
+    "Starz Amazon Channel",
+    "Starz",
+    "Starz Apple TV Channel"
+   ],
+   "rent": true
+  },
+  "John Wick": {
+   "free": [],
+   "flat": [
+    "Philo",
+    "AMC Plus Apple TV Channel ",
+    "AMC+ Amazon Channel",
+    "AMC+ Roku Premium Channel",
+    "AMC+",
+    "AMC"
+   ],
+   "rent": true
+  },
+  "Kingsman: The Secret Service": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Michael Clayton": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Munich": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Prisoners": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Run Lola Run": {
+   "free": [
+    "YouTube Free"
+   ],
+   "flat": [
+    "Hulu",
+    "Sundance Now"
+   ],
+   "rent": true
+  },
+  "Sicario: Day of the Soldado": {
+   "free": [],
+   "flat": [
+    "Philo",
+    "Starz Amazon Channel",
+    "Starz",
+    "Starz Apple TV Channel",
+    "Starz Roku Premium Channel"
+   ],
+   "rent": true
+  },
+  "Spotlight": {
+   "free": [
+    "Kanopy",
+    "Shout! Factory TV",
+    "YouTube Free",
+    "Plex",
+    "Plex Channel",
+    "Tubi TV"
+   ],
+   "flat": [
+    "fuboTV"
+   ],
+   "rent": true
+  },
+  "The Accountant": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "The Menu": {
+   "free": [],
+   "flat": [
+    "fuboTV",
+    "FXNow"
+   ],
+   "rent": true
+  },
+  "The Vast of Night": {
+   "free": [],
+   "flat": [],
+   "rent": false
+  },
+  "Tinker Tailor Soldier Spy": {
+   "free": [],
+   "flat": [],
+   "rent": true
+  },
+  "Whiplash": {
+   "free": [],
+   "flat": [
+    "fuboTV",
+    "MGM+ Amazon Channel",
+    "Philo",
+    "MGM Plus Roku Premium Channel",
+    "MGM Plus",
+    "Sony Pictures Core Amazon Channel"
+   ],
+   "rent": true
+  }
+ }
+}

@@ -232,8 +232,27 @@ export default function CameraRig({ station = 'center', stationKey }) {
   return null
 }
 
+// Every station was composed on a wide desktop window, and three's fov is
+// VERTICAL — so on a narrow window the horizontal field silently shrinks and
+// the composition is cropped from the sides. On a phone in portrait that ate
+// the whole score axis: the numerals live at the wall's edges, so the one thing
+// the Ledger exists to say ("height is the score") was off-screen on the device
+// most people would open the link on. This widens the vertical fov on narrow
+// viewports to hold roughly the same horizontal field, capped so portrait does
+// not turn into a fisheye.
+const REF_ASPECT = 16 / 10
+const MAX_WIDEN = 1.9
+
 function applyFov(camera, fov) {
-  const v = THREE.MathUtils.clamp(fov, FOV_MIN, FOV_MAX)
+  let f = fov
+  const aspect = camera.aspect || REF_ASPECT
+  if (aspect < REF_ASPECT) {
+    const widen = Math.min(REF_ASPECT / aspect, MAX_WIDEN)
+    f = THREE.MathUtils.radToDeg(
+      2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(f) / 2) * widen)
+    )
+  }
+  const v = THREE.MathUtils.clamp(f, FOV_MIN, FOV_MAX)
   if (Math.abs(camera.fov - v) < 0.001) return
   camera.fov = v
   camera.updateProjectionMatrix()

@@ -68,6 +68,8 @@ export default function Guide({ counts }) {
             <Row k="The Mirror" v={`${counts.lessons} things this room has worked out about my taste.`} />
             <Row k="The Shoebox" v={`${counts.shoebox} older films, scored from memory. Under the window.`} />
             <Row k="The Dark Drawer" v={`${counts.drawer} seen, none scoreable. In the nightstand.`} />
+            <Row k="The Nights" v="The strip along the bottom of the wall is the calendar. Gaps are gaps." />
+            <Row k="The Lens" v="Filter the wall by a tag written on the night — dread, mind-bendy, one-man-show." />
           </dl>
 
           <div style={S.rule} />
@@ -75,7 +77,8 @@ export default function Guide({ counts }) {
           <p style={S.keys}>
             Drag to look — you can turn the whole way round. Scroll or pinch to
             zoom. Click a wall, the box or the drawer to walk over. Click any
-            photo to take it down and read its case file. Esc steps back out.
+            photo to take it down and read its case file. Press / to find a film
+            anywhere in the room. Esc steps back out.
           </p>
 
           <button onClick={close} style={S.ok}>got it</button>

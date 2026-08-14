@@ -8,7 +8,7 @@ import * as THREE from 'three'
 // that drawer. These are torn slips taped up by someone who cannot trust his
 // own memory, which is the same reason the Polaroids are there.
 
-function slipTexture({ lines, kicker, accent = '#1d2a3a', w = 512, h = 320, seed = 1 }) {
+function slipTexture({ lines, kicker, footer, accent = '#1d2a3a', w = 512, h = 320, seed = 1 }) {
   const c = document.createElement('canvas')
   c.width = w
   c.height = h
@@ -43,10 +43,22 @@ function slipTexture({ lines, kicker, accent = '#1d2a3a', w = 512, h = 320, seed
 
   x.fillStyle = accent
   x.font = "500 30px 'Caveat', 'Segoe Script', cursive"
+  const floor = footer ? h - 54 : h - 24
   for (const line of lines) {
-    if (y > h - 24) break
+    if (y > floor) break
     y = wrapText(x, line.text, 34, y, w - 68, 36, line.size, line.color, accent)
     y += line.gap ?? 14
+  }
+
+  // Drawn last and at a FIXED height, not flowed with the rest. A long reason
+  // plus a long note runs the flow loop out of paper, and the line that got
+  // dropped was the one that tells you how to actually start the film — the
+  // single most useful thing on the slip.
+  if (footer) {
+    x.fillStyle = '#2f6146'
+    x.font = "500 22px 'Caveat', 'Segoe Script', cursive"
+    x.textAlign = 'left'
+    x.fillText(footer, 34, h - 22)
   }
 
   const tex = new THREE.CanvasTexture(c)
@@ -130,15 +142,18 @@ function scatter(i, seed) {
 export function QueueWall({ queue, origin, rotation }) {
   const slips = useMemo(() => {
     const cols = 4
-    const CW = 0.30, CH = 0.19
+    // taller than it was: the slips gained a "where to watch" line and the
+    // texture loop simply stops drawing when it runs out of paper
+    const CW = 0.30, CH = 0.214
     return queue.slice(0, 20).map((q, i) => {
       const col = i % cols
       const row = Math.floor(i / cols)
       const s = scatter(i, 91)
       const tex = slipTexture({
         seed: i * 7919 + 3,
-        w: 420, h: 268,
+        w: 420, h: 300,
         kicker: q.rank ? '#' + q.rank : 'someday',
+        footer: q.where,
         lines: [
           { text: q.title, size: 40, color: '#1d2a3a', gap: 4 },
           { text: String(q.year || ''), size: 24, color: '#7d7460', gap: 10 },
@@ -152,7 +167,7 @@ export function QueueWall({ queue, origin, rotation }) {
         size: [CW, CH],
         position: [
           (col - (cols - 1) / 2) * (CW + 0.055) + s.dx,
-          1.98 - row * (CH + 0.06) + s.dy,
+          1.98 - row * (CH + 0.05) + s.dy,
           0.012,
         ],
         rotation: [0, 0, s.rot],

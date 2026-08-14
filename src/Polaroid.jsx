@@ -14,8 +14,12 @@ export const CARD_H = 0.21
 // How far an inspected card comes off the wall, toward the room.
 const LIFT = 0.30
 
-export default function Polaroid({ film, position, rotation = 0, onSelect, onHover, selected, inspected }) {
+// scratch colour, reused every frame so the lens costs no allocations
+const DIM_TARGET = new THREE.Color()
+
+export default function Polaroid({ film, position, rotation = 0, onSelect, onHover, selected, inspected, dimmed = false }) {
   const group = useRef()
+  const front = useRef()
   const [tex, setTex] = useState(null)
   const [back, setBack] = useState(null)
   const [hovered, setHovered] = useState(false)
@@ -35,7 +39,20 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, onHov
   useFrame((_, dt) => {
     if (!group.current) return
     const g = group.current
-    const lift = hovered || selected ? 1 : 0
+    const lift = (hovered || selected) && !dimmed ? 1 : 0
+
+    // The lens: a film that does not carry the chosen vibe sinks back into the
+    // wall rather than disappearing, because the shape of the whole hang is the
+    // point and a wall with holes in it would lie about it. Emissive is what
+    // actually reads here — the faces are lit almost entirely by their own
+    // emissiveMap, so dropping that is what puts a card in shadow.
+    const m = front.current
+    if (m) {
+      m.emissiveIntensity = THREE.MathUtils.damp(
+        m.emissiveIntensity, dimmed ? 0.02 : 0.26, 6, dt
+      )
+      m.color.lerp(DIM_TARGET.set(dimmed ? 0.28 : 1, dimmed ? 0.28 : 1, dimmed ? 0.3 : 1), 1 - Math.exp(-6 * dt))
+    }
 
     const targetZ = position[2] + (inspected ? LIFT : lift * 0.035)
     g.position.z = THREE.MathUtils.damp(g.position.z, targetZ, inspected ? 5 : 8, dt)
@@ -84,6 +101,7 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, onHov
         {tex
           ? <meshStandardMaterial
               key="mapped"
+              ref={front}
               map={tex}
               emissiveMap={tex}
               emissive="#ffffff"
@@ -110,11 +128,21 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, onHov
           : <meshStandardMaterial key="backblank" color="#e6ddc9" roughness={0.95} />}
       </mesh>
 
-      {/* pushpin — stays on the wall when the card is taken down */}
+      {/* Pushpins — they stay on the wall when the card is taken down.
+          A REWATCH gets a second one: he took this photo down, watched the
+          film again, and put it back up. Four films on this wall carry two
+          pins, and that is the only mark on the hang that is about time
+          rather than score. */}
       {!inspected && (
-        <mesh position={[0, CARD_H / 2 - 0.016, 0.006]}>
+        <mesh position={[film.rewatch ? -0.018 : 0, CARD_H / 2 - 0.016, 0.006]}>
           <sphereGeometry args={[0.007, 10, 8]} />
           <meshStandardMaterial color="#b4403a" roughness={0.35} metalness={0.1} />
+        </mesh>
+      )}
+      {!inspected && film.rewatch && (
+        <mesh position={[0.019, CARD_H / 2 - 0.021, 0.006]}>
+          <sphereGeometry args={[0.0062, 10, 8]} />
+          <meshStandardMaterial color="#8d6f2f" roughness={0.4} metalness={0.15} />
         </mesh>
       )}
     </group>

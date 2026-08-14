@@ -1,0 +1,77 @@
+{
+ "_source": "film_titles.affinity + snap_line for archive rows (seen_before, no film_log row). Pulled 2026-08-14.",
+ "titles": {
+  "Arrival": {
+   "aff": "favorite",
+   "snap": "a linguist learns an alien language and it quietly reorganizes her sense of time."
+  },
+  "Bugonia": {
+   "aff": "favorite",
+   "snap": "two guys are certain the CEO they kidnapped is an alien, and will not be talked out of it."
+  },
+  "Conclave": {
+   "aff": "favorite",
+   "snap": "cardinals lock themselves in a room to pick a pope and it turns into a political knife fight."
+  },
+  "Contact": {
+   "aff": "favorite",
+   "snap": "a scientist finally gets the alien phone call, then has to prove it to a world that won't listen."
+  },
+  "Deep Impact": {
+   "aff": "favorite",
+   "snap": "a comet is coming, so here is everyone who will be sad about it, in an orderly fashion."
+  },
+  "Don't Look Up": {
+   "aff": "favorite",
+   "snap": "two scientists discover a planet-killing comet and nobody can be bothered to care."
+  },
+  "Dune": {
+   "aff": "favorite",
+   "snap": "a space messiah reluctantly signs up for his desert-and-sandworm destiny."
+  },
+  "Dune: Part Two": {
+   "aff": "favorite",
+   "snap": "the messiah stops being reluctant, and that is exactly the problem."
+  },
+  "Edge of Tomorrow": {
+   "aff": "liked",
+   "snap": null
+  },
+  "Everything Everywhere All at Once": {
+   "aff": "favorite",
+   "snap": "a laundromat audit spirals into a multiverse held together by hot dogs and kindness."
+  },
+  "Inception": {
+   "aff": "liked",
+   "snap": null
+  },
+  "Interstellar": {
+   "aff": "favorite",
+   "snap": "a farmer-astronaut punches through a wormhole because love is somehow the fifth dimension."
+  },
+  "Oppenheimer": {
+   "aff": "favorite",
+   "snap": "the man who built the bomb spends three hours realizing what he did."
+  },
+  "Saw": {
+   "aff": "favorite",
+   "snap": "two men chained in a filthy bathroom learn to appreciate life, the very hard way."
+  },
+  "Tenet": {
+   "aff": "favorite",
+   "snap": "spies fight a war backwards through time; do not, under any circumstance, try to understand it."
+  },
+  "The Martian": {
+   "aff": "favorite",
+   "snap": "an astronaut left for dead on Mars decides to science his way home."
+  },
+  "The Prestige": {
+   "aff": "liked",
+   "snap": null
+  },
+  "The Substance": {
+   "aff": "favorite",
+   "snap": "a fading star takes a shortcut to a younger self, and the body keeps the receipts."
+  }
+ }
+}
