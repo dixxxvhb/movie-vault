@@ -44,7 +44,7 @@ function shadowProps(spec) {
 // `target-position` dash-prop (a common half-working shortcut) silently
 // freezes at the origin. This renders the target as an actual scene child
 // and wires `light.target` to it once both exist.
-function SpotWithTarget({ spec, role, i, refFn }) {
+function SpotWithTarget({ spec, role, i, refFn, scale = 1 }) {
   const lightRef = useRef()
   const targetRef = useRef()
   useEffect(() => {
@@ -52,7 +52,7 @@ function SpotWithTarget({ spec, role, i, refFn }) {
       lightRef.current.target = targetRef.current
     }
   }, [])
-  const intensity = (spec.intensity ?? 1) * (SCALE[role] ?? 8)
+  const intensity = (spec.intensity ?? 1) * (SCALE[role] ?? 8) * scale
   return React.createElement(React.Fragment, { key: role + i },
     React.createElement('spotLight', {
       // `refFn`, when present, is a ref OBJECT (GenericRoom's keyLightRef —
@@ -72,11 +72,11 @@ function SpotWithTarget({ spec, role, i, refFn }) {
   )
 }
 
-function pointOrSpot(spec, role, i, refFn) {
+function pointOrSpot(spec, role, i, refFn, scale = 1) {
   if (spec.type === 'spot') {
-    return React.createElement(SpotWithTarget, { key: role + i, spec, role, i, refFn })
+    return React.createElement(SpotWithTarget, { key: role + i, spec, role, i, refFn, scale })
   }
-  const intensity = (spec.intensity ?? 1) * (SCALE[role] ?? 8)
+  const intensity = (spec.intensity ?? 1) * (SCALE[role] ?? 8) * scale
   if (spec.type === 'directional') {
     return React.createElement('directionalLight', {
       key: role + i,
@@ -99,16 +99,27 @@ function pointOrSpot(spec, role, i, refFn) {
   })
 }
 
-// LightRig({lights, keyRef}) -> a <group> of lights, or null if the config
-// carries no `lights` block at all (the common case for the other 24
-// template rooms until P2's engine lift opts them in).
-export default function LightRig({ lights, keyRef }) {
+// LightRig({lights, keyRef, scale}) -> a <group> of lights, or null if the
+// config carries no `lights` block at all.
+//
+// Wave P2 (template engine lift): `scale` is GenericRoom's own
+// grade.keyIntensity-derived multiplier, applied uniformly across every
+// role in the rig (matching the old fixed-fallback pair's own behavior,
+// which multiplied both its lights by the same grade.keyIntensity). Several
+// rooms (tdkr, moon, oblivion, sunshine, batman...) tuned keyIntensity WAY
+// down to compensate for near-white materials or a camera sitting right
+// next to the fixed key — that tuning now flows into the preset-supplied
+// rig too, instead of being silently ignored the moment a preset's `lights`
+// block replaced the old fallback (QA sweep: moon/oblivion/tdkr/sunshine/
+// hereditary all blew out or went void once presets.js started supplying
+// its own rig, because their grade.keyIntensity had nothing left to scale).
+export default function LightRig({ lights, keyRef, scale = 1 }) {
   if (!lights) return null
   const children = []
-  if (lights.key) children.push(pointOrSpot(lights.key, 'key', 0, keyRef))
-  ;(lights.practicals || []).forEach((p, i) => children.push(pointOrSpot(p, 'practicals', i)))
-  ;(lights.bounce || []).forEach((b, i) => children.push(pointOrSpot(b, 'bounce', i)))
-  if (lights.rim) children.push(pointOrSpot(lights.rim, 'rim', 0))
+  if (lights.key) children.push(pointOrSpot(lights.key, 'key', 0, keyRef, scale))
+  ;(lights.practicals || []).forEach((p, i) => children.push(pointOrSpot(p, 'practicals', i, undefined, scale)))
+  ;(lights.bounce || []).forEach((b, i) => children.push(pointOrSpot(b, 'bounce', i, undefined, scale)))
+  if (lights.rim) children.push(pointOrSpot(lights.rim, 'rim', 0, undefined, scale))
   return React.createElement('group', null, ...children)
 }
 

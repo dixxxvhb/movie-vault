@@ -69,9 +69,68 @@ export function SwingKind({ token, amplitude = 0.32, axis = 'x', children }) {
   return <group ref={group}>{children}</group>
 }
 
+// Punch list (IMMERSION-V2-POLISH-SPEC.md P2): press/light on a large
+// emissive pane (glassWall/screenPanel) needs a visible brightness flash on
+// activation, not just the mechanical response (depress/dim). Generic on
+// purpose — this traverses whatever `children` turns out to be rather than
+// assuming glassWall/screenPanel's own geometry, so it's a no-op on a prop
+// with no color/opacity to brighten and does nothing extra on a small prop
+// (nudge/spin kinds never call this). Captures each traversed material's
+// baseline color + opacity once on mount, then every frame lerps toward a
+// brighter version of that same baseline for `duration` seconds after a
+// touch and restores exactly on unmount so nothing is left flashed.
+function useFlashOnTouch(groupRef, token, { duration = 0.32, boost = 0.85 } = {}) {
+  const firedAt = useFiredAt(token)
+  const baseline = useRef(null)
+  const white = useRef(new THREE.Color(1, 1, 1))
+  const scratch = useRef(new THREE.Color())
+
+  useEffect(() => {
+    const g = groupRef.current
+    if (!g) return undefined
+    const mats = []
+    g.traverse((obj) => {
+      if (obj.isMesh && obj.material) {
+        const m = obj.material
+        mats.push({
+          mat: m,
+          baseColor: m.color ? m.color.clone() : null,
+          baseOpacity: m.opacity,
+        })
+      }
+    })
+    baseline.current = mats
+    return () => {
+      mats.forEach(({ mat, baseColor, baseOpacity }) => {
+        if (baseColor && mat.color) mat.color.copy(baseColor)
+        if (baseOpacity !== undefined) mat.opacity = baseOpacity
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupRef.current])
+
+  useFrame(() => {
+    const mats = baseline.current
+    if (!mats || !mats.length) return
+    const dt = firedAt.current ? (performance.now() - firedAt.current) / 1000 : Infinity
+    const f = dt < duration ? (1 - dt / duration) : 0
+    mats.forEach(({ mat, baseColor, baseOpacity }) => {
+      if (baseColor && mat.color) {
+        scratch.current.copy(baseColor).lerp(white.current, f * boost)
+        mat.color.copy(scratch.current)
+      }
+      if (baseOpacity !== undefined && baseOpacity < 1) {
+        mat.opacity = Math.min(1, baseOpacity + (1 - baseOpacity) * f)
+      }
+    })
+  })
+}
+
 // depresses 2-4cm and returns; optionally fires a named walkBus event once
 // per activation (a room/system can listen for it — wiring that listener up
-// is a per-room concern, not this component's).
+// is a per-room concern, not this component's). Also flashes brighter for a
+// beat on every activation (see useFlashOnTouch above) — the visible cue a
+// glassWall/screenPanel needs since neither has a moving part to watch.
 export function PressKind({ token, depress = 0.03, axis = 'y', event, children }) {
   const group = useRef(null)
   const firedAt = useFiredAt(token)
@@ -84,6 +143,7 @@ export function PressKind({ token, depress = 0.03, axis = 'y', event, children }
       prevToken.current = token
     }
   }, [token, event])
+  useFlashOnTouch(group, token)
   useFrame(() => {
     const g = group.current
     if (!g) return
@@ -161,6 +221,7 @@ export function LightKind({ token, lowFactor = 0.08, children }) {
   const t = useRef(1) // 1 = full (authored) brightness, 0 = dimmed
   const prevToken = useRef(token)
   const baseline = useRef(null)
+  useFlashOnTouch(group, token)
 
   useEffect(() => {
     const g = group.current

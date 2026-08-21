@@ -60,13 +60,17 @@ export function slab({ pos, rot, scale = 1, size = [1, 1, 1], color = '#555', em
   )
 }
 
+// Wave P2 (props.jsx upgrade, IMMERSION-V2-POLISH-SPEC.md P2 #3): hero prop
+// bodies (table/counter/podium/throne/bed) move from naked boxGeometry to
+// Bevel (detail.jsx's RoundedBox wrapper) so they read as manufactured, not
+// extruded stock — spec: "Naked sharp boxGeometry allowed only for distant/
+// large architecture." Small secondary parts (legs, finials) stay plain
+// boxes; footprint() below is unchanged since a small bevel radius doesn't
+// move a prop's collision silhouette.
 export function table({ pos, rot, scale = 1, w = 1.4, d = 0.8, h = 0.75, color = '#4a3626' }) {
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, h - 0.04, 0]}>
-        <boxGeometry args={[w, 0.08, d]} />
-        <meshStandardMaterial color={color} roughness={0.6} />
-      </mesh>
+      <Bevel pos={[0, h - 0.04, 0]} w={w} h={0.08} d={d} radius={0.018} color={color} roughness={0.6} />
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * (w / 2 - 0.08), (h - 0.08) / 2, sz * (d / 2 - 0.08)]}>
           <boxGeometry args={[0.07, h - 0.08, 0.07]} />
@@ -77,7 +81,10 @@ export function table({ pos, rot, scale = 1, w = 1.4, d = 0.8, h = 0.75, color =
   )
 }
 
-export function chairRow({ pos, rot, scale = 1, count = 6, spacing = 0.62, color = '#3a3f4a', seatH = 0.46 }) {
+// chairRow: a thin cushion sits proud of the seat plane, a shade darker/
+// warmer than the frame color, so the row reads as furnished rather than
+// stacked crates.
+export function chairRow({ pos, rot, scale = 1, count = 6, spacing = 0.62, color = '#3a3f4a', seatH = 0.46, cushion = '#5a3f38' }) {
   const items = useMemo(() => Array.from({ length: count }, (_, i) => i - (count - 1) / 2), [count])
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
@@ -86,6 +93,10 @@ export function chairRow({ pos, rot, scale = 1, count = 6, spacing = 0.62, color
           <mesh position={[0, seatH, 0]}>
             <boxGeometry args={[0.44, 0.06, 0.44]} />
             <meshStandardMaterial color={color} roughness={0.8} />
+          </mesh>
+          <mesh position={[0, seatH + 0.032, 0]}>
+            <boxGeometry args={[0.38, 0.03, 0.38]} />
+            <meshStandardMaterial color={cushion} roughness={0.92} />
           </mesh>
           <mesh position={[0, seatH + 0.3, -0.2]}>
             <boxGeometry args={[0.44, 0.6, 0.06]} />
@@ -101,27 +112,52 @@ export function chairRow({ pos, rot, scale = 1, count = 6, spacing = 0.62, color
   )
 }
 
-export function counter({ pos, rot, scale = 1, w = 2.4, d = 0.7, h = 0.95, color = '#5a4530' }) {
+// counter: bevelled body + a small register-keys grid pressed into the top
+// near one end — a cheap silhouette detail that reads as "a till lives
+// here" without a whole cash-register prop.
+export function counter({ pos, rot, scale = 1, w = 2.4, d = 0.7, h = 0.95, color = '#5a4530', keys = true }) {
+  const keyCols = 3, keyRows = 3
+  const keyArea = Math.min(0.3, w * 0.16)
+  const keyX = w / 2 - keyArea * 0.7
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, h / 2, 0]}>
-        <boxGeometry args={[w, h, d]} />
-        <meshStandardMaterial color={color} roughness={0.7} />
-      </mesh>
+      <Bevel pos={[0, h / 2, 0]} w={w} h={h} d={d} radius={0.02} color={color} roughness={0.7} />
       <mesh position={[0, h + 0.02, 0]}>
         <boxGeometry args={[w + 0.06, 0.05, d + 0.06]} />
         <meshStandardMaterial color="#2c2118" roughness={0.5} />
       </mesh>
+      {keys && Array.from({ length: keyCols * keyRows }, (_, i) => {
+        const cx = i % keyCols, cy = Math.floor(i / keyCols)
+        return (
+          <mesh
+            key={i}
+            position={[
+              keyX + (cx - (keyCols - 1) / 2) * (keyArea / keyCols),
+              h + 0.052,
+              (cy - (keyRows - 1) / 2) * (keyArea / keyRows),
+            ]}
+          >
+            <boxGeometry args={[keyArea / keyCols - 0.006, 0.014, keyArea / keyRows - 0.006]} />
+            <meshStandardMaterial color={cx === 1 && cy === 1 ? '#c85a3a' : '#e8e2d4'} roughness={0.4} />
+          </mesh>
+        )
+      })}
     </Wrap>
   )
 }
 
-export function barShelf({ pos, rot, scale = 1, count = 14, w = 2, rows = 2, color = '#3a2a1e', glint = '#e8b060' }) {
+// barShelf: bottle variety — a small palette cycles instead of one uniform
+// glint color, and body radius/height vary a touch more per bottle so the
+// row reads as a real assortment, not one bottle instanced N times.
+export function barShelf({ pos, rot, scale = 1, count = 14, w = 2, rows = 2, color = '#3a2a1e', glint = '#e8b060', palette }) {
+  const colors = useMemo(() => palette || [glint, '#3a5a3a', '#5a2a2a', '#2a3a5a', '#8a6a2a'], [palette, glint])
   const bottles = useMemo(() => Array.from({ length: count }, (_, i) => ({
     x: (i / count - 0.5) * w + (Math.sin(i * 12.9) * 0.02),
     row: i % rows,
-    h: 0.28 + (i % 5) * 0.02,
-  })), [count, w, rows])
+    h: 0.24 + (i % 5) * 0.025 + (i % 3) * 0.015,
+    r: 0.032 + (i % 4) * 0.004,
+    color: colors[i % colors.length],
+  })), [count, w, rows, colors])
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
       {[0, 1].slice(0, rows).map((r) => (
@@ -132,8 +168,8 @@ export function barShelf({ pos, rot, scale = 1, count = 14, w = 2, rows = 2, col
       ))}
       {bottles.map((b, i) => (
         <mesh key={i} position={[b.x, 0.32 + b.row * 0.34 + b.h / 2, 0]}>
-          <cylinderGeometry args={[0.035, 0.045, b.h, 8]} />
-          <meshStandardMaterial color={glint} emissive={glint} emissiveIntensity={0.35} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+          <cylinderGeometry args={[b.r * 0.8, b.r, b.h, 8]} />
+          <meshStandardMaterial color={b.color} emissive={b.color} emissiveIntensity={0.32} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
         </mesh>
       ))}
     </Wrap>
@@ -143,14 +179,8 @@ export function barShelf({ pos, rot, scale = 1, count = 14, w = 2, rows = 2, col
 export function bed({ pos, rot, scale = 1, color = '#8a8072', frame = '#3a3226' }) {
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, 0.24, 0]}>
-        <boxGeometry args={[1.3, 0.28, 2]} />
-        <meshStandardMaterial color={frame} roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 0.42, 0]}>
-        <boxGeometry args={[1.24, 0.16, 1.94]} />
-        <meshStandardMaterial color={color} roughness={0.95} />
-      </mesh>
+      <Bevel pos={[0, 0.24, 0]} w={1.3} h={0.28} d={2} radius={0.02} color={frame} roughness={0.8} />
+      <Bevel pos={[0, 0.42, 0]} w={1.24} h={0.16} d={1.94} radius={0.05} color={color} roughness={0.95} />
       <mesh position={[0, 0.56, -0.85]}>
         <boxGeometry args={[1.24, 0.22, 0.3]} />
         <meshStandardMaterial color="#e8e0d0" roughness={0.9} />
@@ -198,10 +228,7 @@ export function screenPanel({ pos, rot, scale = 1, w = 1, h = 0.6, color = '#eee
 export function podium({ pos, rot, scale = 1, color = '#3a3a42' }) {
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, 0.55, 0]}>
-        <boxGeometry args={[0.55, 1.1, 0.4]} />
-        <meshStandardMaterial color={color} roughness={0.5} />
-      </mesh>
+      <Bevel pos={[0, 0.55, 0]} w={0.55} h={1.1} d={0.4} radius={0.025} color={color} roughness={0.5} />
       <mesh position={[0, 1.14, 0.08]} rotation={[-0.35, 0, 0]}>
         <boxGeometry args={[0.5, 0.05, 0.32]} />
         <meshStandardMaterial color="#20222a" roughness={0.4} />
@@ -213,14 +240,8 @@ export function podium({ pos, rot, scale = 1, color = '#3a3a42' }) {
 export function throne({ pos, rot, scale = 1, color = '#3a2a44', accent = '#e8dcc0' }) {
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, 0.35, 0]}>
-        <boxGeometry args={[1, 0.7, 1]} />
-        <meshStandardMaterial color={color} roughness={0.55} />
-      </mesh>
-      <mesh position={[0, 1.2, -0.45]}>
-        <boxGeometry args={[1, 1.6, 0.14]} />
-        <meshStandardMaterial color={color} roughness={0.5} />
-      </mesh>
+      <Bevel pos={[0, 0.35, 0]} w={1} h={0.7} d={1} radius={0.03} color={color} roughness={0.55} />
+      <Bevel pos={[0, 1.2, -0.45]} w={1} h={1.6} d={0.14} radius={0.02} color={color} roughness={0.5} />
       {[-0.5, 0.5].map((x, i) => (
         <mesh key={i} position={[x, 1.9, -0.45]}>
           <coneGeometry args={[0.1, 0.35, 4]} />

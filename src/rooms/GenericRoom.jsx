@@ -210,25 +210,44 @@ function OpenShell({ grade, p }) {
 function CorridorShell({ grade, p }) {
   const len = p.length ?? 14, width = p.width ?? 2.6, h = p.height ?? 2.6
   const tex = useMemo(() => wallCanvas('steel', p.wallTint || grade.bg), [p.wallTint, grade.bg])
+  // P2 (template engine lift): corridor shells never read `p.mat` — every
+  // corridor room (moon, tdkr, batman, sicario...) rendered through the
+  // flat wallCanvas swatch above regardless of the materials.js work
+  // elsewhere. Same opt-in shape as BoxShell's own `mat` (walls/floor/
+  // ceiling kind names): additive, a config with no `mat` renders exactly
+  // as before.
+  const mat = p.mat
+  const floorSurface = useMemo(
+    () => (mat?.floor ? surfaceMat(mat.floor, p.wallTint || grade.bg, [Math.max(1, width / 1.6), Math.max(1, len / 1.6)], mat.floorWear) : null),
+    [mat?.floor, mat?.floorWear, p.wallTint, grade.bg, width, len]
+  )
+  const ceilSurface = useMemo(
+    () => (mat?.ceiling ? surfaceMat(mat.ceiling, p.wallTint || grade.bg, [Math.max(1, width / 1.6), Math.max(1, len / 1.6)], mat.ceilingWear) : null),
+    [mat?.ceiling, mat?.ceilingWear, p.wallTint, grade.bg, width, len]
+  )
+  const wallSurface = useMemo(
+    () => (mat?.walls ? surfaceMat(mat.walls, p.wallTint || grade.bg, [Math.max(1, len / 4), Math.max(1, h / 2)], mat.wallWear) : null),
+    [mat?.walls, mat?.wallWear, p.wallTint, grade.bg, len, h]
+  )
   const ribCount = p.ribs ?? 8
   const ribs = useMemo(() => Array.from({ length: ribCount }, (_, i) => -1 - (i / ribCount) * len), [ribCount, len])
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -len / 2]}>
         <planeGeometry args={[width, len]} />
-        <meshStandardMaterial map={tex} roughness={0.9} />
+        {floorSurface ? <primitive object={floorSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.9} />}
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, h, -len / 2]}>
         <planeGeometry args={[width, len]} />
-        <meshStandardMaterial map={tex} roughness={0.95} />
+        {ceilSurface ? <primitive object={ceilSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.95} />}
       </mesh>
       <mesh position={[-width / 2, h / 2, -len / 2]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[len, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
       <mesh position={[width / 2, h / 2, -len / 2]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[len, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
       {/* QA sweep 2026-08-21: these were a single solid box spanning the
           FULL width and height of the corridor — every rib was a wall
@@ -592,7 +611,13 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
           light (lightRig.js accepts the same ref) so PulseBeat and any
           other system reading keyLightRef keeps working unmodified. */}
       {config.lights ? (
-        <LightRig lights={config.lights} keyRef={keyLightRef} />
+        // Wave P2: grade.keyIntensity, historically the ONE knob a config
+        // author had to fight the old fixed-fallback pair's brightness,
+        // still means the same thing once a lightRig (preset-supplied or
+        // per-film) replaces that pair — see lightRig.js's own comment.
+        // 2.4 is defaultConfigFor's own baseline (configs.js), so a room
+        // that never mentions keyIntensity gets scale 1 (no change).
+        <LightRig lights={config.lights} keyRef={keyLightRef} scale={(grade.keyIntensity ?? 2.4) / 2.4} />
       ) : (
         <>
           <pointLight ref={keyLightRef} position={[0, 2.0, -0.7]} intensity={(grade.keyIntensity ?? 2.2) * 16} color={grade.key} distance={16} decay={2} />
