@@ -321,10 +321,14 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------ baby-driver
+  // Bespoke now (Phase 2, src/rooms/bespoke/BabyDriver.jsx): the camera below
+  // already framed the car/facade well for the hand-built room, so it's
+  // unchanged from the Wave B stand-in. `place` is dead weight for the same
+  // reason as the-departed's above — the bespoke component never reads it.
   'baby-driver': {
     family: 'momentum',
     grade: { key: '#f0c860', fill: '#5a7a8a', ambient: 0.28 },
-    camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52 },
+    camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52, far: 60 },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#88888a', skyTop: '#a8d8e8', skyBottom: '#e8d8b0', horizon: true },
