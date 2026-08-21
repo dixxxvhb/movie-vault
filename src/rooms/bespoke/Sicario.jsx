@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { gaze } from '../../CameraRig.jsx'
 import { makeMetaTexture } from '../infoTextures.js'
 import { sheetOf, mix } from '../../palette.js'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
+import { registerColliders, setBounds, registerFloor, clearOwner } from '../colliders.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startSicarioAudio } from '../audio/recipes/sicario.js'
 import { notifyDepth } from './sicarioBus.js'
@@ -12,7 +12,6 @@ import {
   makeDuskSkyTexture, makeTunnelTexture, makeMissionBriefTexture, makeThermalNumeralTexture,
 } from './sicarioTextures.js'
 import DoorRow from '../DoorRow.jsx'
-import { wasDrag } from '../../pointer.js'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -32,26 +31,31 @@ const SLOPE = 1.05          // metres of drop per cell
 const TUNNEL_W = 2.4
 const TUNNEL_H = 2.3
 const EYE_H = 1.5
+const WALL_T = 0.15
 
+// Wave M3: free walk. GROUND_STATION documents the entry viewpoint — it's
+// what configs.js's own sicario.camera matches exactly — but no code path
+// here calls goToStation with it any more; the walker simply starts there
+// and descends under its own power.
 const GROUND_STATION = { pos: [0, 1.9, 3.2], look: [0, 0.85, -2.4], fov: 56 }
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v))
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 
+// Continuous version of the old per-station floorY(i): SLOPE is constant
+// per cell, so the ramp is linear in z the whole way down. Negative i (the
+// staging ground, z > 0) stays flat.
 function floorY(i) { return i < 0 ? 0 : -i * SLOPE }
-function stationFor(i) {
-  const z = -(i + 0.4) * CELL_LEN
-  // the eye stands 0.4 cells INTO cell i (matching the z above), so its
-  // local floor has already dropped further than floorY(i) alone accounts
-  // for — floorY is linear, so floorY(i + 0.4) is that interpolated local
-  // floor directly. Using floorY(i) here (QA bug) put the eye up to ~0.4m
-  // higher than the actual local floor, and by the last station that was
-  // enough to put the camera ABOVE the end cap's own ceiling line — the
-  // reason the bottom of the descent rendered as a black void with nothing
-  // in it, 9.9 included.
-  const y = floorY(i + 0.4) + EYE_H
-  return { pos: [0, y, z], look: [0, y - 0.3, z - 5], fov: 46 }
-}
+// Grade zone depth: clamped to [0, CELLS-1], matching the old station index
+// range gradeForIndex was written against (thermalStart = CELLS - 2, etc).
+function depthIndexAt(z) { return clamp(-z / CELL_LEN, 0, CELLS - 1) }
+// Floor depth: clamped to [0, CELLS] — one cell further than the grade zone
+// — because TunnelCell/TunnelEndCap's own geometry keeps sloping through the
+// full last cell (floorY(CELLS) is the end cap's height); capping this one
+// at CELLS-1 the same way would flatten the last 1.6m of ramp and leave the
+// walker's feet floating above the actual rendered floor near the bottom.
+function rawDepthAt(z) { return clamp(-z / CELL_LEN, 0, CELLS) }
+function tunnelFloorAt(z) { return floorY(rawDepthAt(z)) }
 
 // ------------------------------------------------------------ grade zones
 const GREEN = { sat: -0.3, contrast: 0.18, hue: 0.05, key: '#4fae6a', fill: '#16261a', bg: '#050a06' }
@@ -235,33 +239,6 @@ function TunnelEndCap() {
   )
 }
 
-// Click-catchers at every cell boundary, ground/tunnel threshold included —
-// same "vertical pane across the corridor's cross-section" trick as
-// Memento's own CorridorClickPlanes, because a near-level view vector down
-// a tunnel almost never crosses a floor- or ceiling-height plane in time.
-function TunnelClickPlanes({ onAdvance }) {
-  return (
-    <>
-      {Array.from({ length: CELLS + 1 }, (_, i) => {
-        const z = -i * CELL_LEN
-        const y = floorY(i) + TUNNEL_H / 2
-        return (
-          <mesh
-            key={i}
-            position={[0, y, z]}
-            onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
-            onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
-            onPointerOut={() => { document.body.style.cursor = 'auto' }}
-          >
-            <planeGeometry args={[TUNNEL_W, TUNNEL_H]} />
-            <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
-          </mesh>
-        )
-      })}
-    </>
-  )
-}
-
 /* --------------------------------------------------------------- descent light */
 
 // The tunnel has no fixtures of its own, so a dim pool of light travels with
@@ -373,51 +350,91 @@ const DOOR_MOUNT = {
 
 /* ------------------------------------------------------------------ room */
 
-export default function Sicario({ film, config, doors = [], goToStation, onDoor }) {
+// Wave M3: free walk. `goToStation` is no longer called from in here — the
+// entry viewpoint stays config.camera (GROUND_STATION above), and the whole
+// descent is walked, not clicked — so it's deliberately not destructured;
+// FilmWorld still passes it, unused.
+export default function Sicario({ film, config, doors = [], onDoor }) {
   const { grade } = config
-  const [stationIndex, setStationIndex] = useState(-1)
-  const stationRef = useRef(-1)
-  stationRef.current = stationIndex
   const dwellRef = useRef(0)
   const decayRef = useRef(1)
 
+  // `inTunnel`/`nearBottom` are React state, not refs, because they gate
+  // JSX (fog color, the ground-only prop group) and so need to trigger a
+  // re-render on the rare frame they actually flip — everything continuous
+  // (grade lerp, dwell decay, the depth bus) stays imperative in useFrame
+  // below and never touches state.
+  const inTunnelRef = useRef(false)
+  const [inTunnel, setInTunnel] = useState(false)
+  const nearBottomRef = useRef(false)
+  const [nearBottom, setNearBottom] = useState(false)
+
   const tunnelTex = useMemo(() => makeTunnelTexture('#1c1a14'), [])
 
-  const stepTo = (next) => {
-    setStationIndex(next)
-    goToStation?.(next < 0 ? GROUND_STATION : stationFor(next), next < 0 ? 'ground' : 'descent-' + next)
-    notifyDepth(next < 0 ? 0 : clamp01(next / (CELLS - 1)))
-  }
-  const moveOneStep = () => {
-    const facingDown = Math.cos(gaze.yaw) > 0
-    const dir = facingDown ? 1 : -1
-    const next = clamp(stationRef.current + dir, -1, CELLS - 1)
-    if (next !== stationRef.current) stepTo(next)
-  }
+  // grade: keyed to walker depth, published every frame on gradeBus the same
+  // way Memento publishes its split — a zone per the film's own "dual
+  // optics," now continuous with position instead of jumping per click.
+  useFrame(({ camera }, dt) => {
+    const z = camera.position.z
+    const inTun = z < 0
+    if (inTun !== inTunnelRef.current) {
+      inTunnelRef.current = inTun
+      setInTunnel(inTun)
+    }
 
-  // grade: keyed to depth, published on gradeBus the same way Memento
-  // publishes its split — a discrete zone per the film's own "dual optics,"
-  // not a continuous per-frame lerp against gaze.
-  useEffect(() => {
-    const g = gradeForIndex(stationIndex)
+    const depthIdx = inTun ? depthIndexAt(z) : -1
+    const g = gradeForIndex(depthIdx)
     if (g) setGradeOverride(g)
     else clearGradeOverride()
-  }, [stationIndex])
-  useEffect(() => clearGradeOverride, [])
 
-  // dwell + the slow darkening. Resets the instant you're back at the
-  // ground (index -1); otherwise a floor at 0.4x over roughly 80s.
-  useFrame((_, dt) => {
-    if (stationRef.current >= 0) dwellRef.current += dt
+    const bottom = depthIdx >= CELLS - 2
+    if (bottom !== nearBottomRef.current) {
+      nearBottomRef.current = bottom
+      setNearBottom(bottom)
+    }
+
+    notifyDepth(inTun ? clamp01(depthIdx / (CELLS - 1)) : 0)
+
+    // dwell + the slow darkening. Resets the instant you're back at the
+    // ground; otherwise a floor at 0.4x over roughly 80s.
+    if (inTun) dwellRef.current += dt
     else dwellRef.current = 0
     const target = THREE.MathUtils.lerp(1, 0.4, clamp01(dwellRef.current / 80))
     decayRef.current = THREE.MathUtils.damp(decayRef.current, target, 2, dt)
   })
+  useEffect(() => clearGradeOverride, [])
+
+  // Wave M3: colliders. The staging ground's perimeter is the room's ONE
+  // bounds rect (generous enough to cover the ground zone AND the tunnel's
+  // full length — the tunnel's own side walls below give the descent its
+  // narrower shape, same "bounds is the envelope, wall rects are the shape"
+  // device Memento uses); tunnel side walls + far end block; the floor fn
+  // matches TunnelCell's own linear ramp so feet stay planted on the slope.
+  useEffect(() => {
+    const ownerId = 'bespoke:sicario'
+    const tunnelLen = CELLS * CELL_LEN
+    registerColliders(ownerId, [
+      { minX: -TUNNEL_W / 2 - WALL_T, maxX: -TUNNEL_W / 2, minZ: -tunnelLen, maxZ: 0 },
+      { minX: TUNNEL_W / 2, maxX: TUNNEL_W / 2 + WALL_T, minZ: -tunnelLen, maxZ: 0 },
+      { minX: -TUNNEL_W / 2, maxX: TUNNEL_W / 2, minZ: -tunnelLen - WALL_T, maxZ: -tunnelLen },
+    ])
+    setBounds(ownerId, {
+      kind: 'rect',
+      minX: -8,
+      maxX: 8,
+      minZ: -tunnelLen - 0.3,
+      maxZ: 4.5,
+    })
+    registerFloor(ownerId, (x, z) => {
+      if (z <= 0.1 && Math.abs(x) <= TUNNEL_W / 2 + 0.3) return tunnelFloorAt(z)
+      return 0
+    })
+    return () => clearOwner(ownerId)
+  }, [])
 
   useRoomAudio(startSicarioAudio)
 
-  const inTunnel = stationIndex >= 0
-  const tint = stationIndex >= CELLS - 2 ? '#ffdca0' : '#4fae6a'
+  const tint = nearBottom ? '#ffdca0' : '#4fae6a'
 
   return (
     <group>
@@ -446,7 +463,6 @@ export default function Sicario({ film, config, doors = [], goToStation, onDoor 
         <TunnelCell key={i} index={i} tex={tunnelTex} />
       ))}
       <TunnelEndCap />
-      <TunnelClickPlanes onAdvance={moveOneStep} />
       <DescentGlow decayRef={decayRef} tint={tint} />
       <ThermalScore film={film} />
 
