@@ -8,6 +8,8 @@
 // block, and it also means "the page makes sound" is never true unless a
 // person asked for it, which is the whole rule.
 import { useEffect } from 'react'
+import { ONESHOTS } from './oneshots.js'
+import { subscribeWalk } from '../walkBus.js'
 
 const KEY = 'vault-sound'
 
@@ -127,6 +129,42 @@ export function useRoomAudio(factory) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [factory])
 }
+
+// Wave T: one-shot foley (Touchable's `foley` prop, and anything else that
+// wants a short synthesized event without owning a whole room recipe). Same
+// never-autoplay discipline as the rest of this file: a no-op unless the
+// AudioContext already exists (built lazily, only from setSoundOn(true))
+// AND the persisted flag says sound is actually on — a room can call this
+// freely regardless of mute state, it just goes silent while muted rather
+// than every call site having to check isSoundOn() itself.
+export function playOneShot(name, opts) {
+  if (!ctx || !master || !isSoundOn()) return
+  const fn = ONESHOTS[name]
+  if (!fn) return
+  try { fn(ctx, master, opts) } catch { /* a malformed opts object is not worth crashing a room over */ }
+}
+
+// Wave T: footsteps. Subscribed once at module load — same "always
+// listening, only ever audible once sound is really on" shape as the rest
+// of this file (compare `window.__vaultWalk` in colliders.js, always
+// published, nobody has to opt in to receive it). CameraRig publishes one
+// `{type:'step', speed}` per footfall regardless of mute state; the no-op
+// guard lives here so a muted walk around a room costs nothing beyond the
+// subscription check. Alternates two very quiet tick variants (a real
+// footfall isn't tonally identical left-right-left) and scales gain with
+// how fast you're actually moving (`speed` is walkVel / room walk speed,
+// 0..~1, published by CameraRig).
+let footstepToggle = 0
+subscribeWalk((evt) => {
+  if (evt.type !== 'step') return
+  if (!ctx || !master || !isSoundOn()) return
+  const speed = evt.speed ?? 1
+  const gain = 0.01 + Math.min(1, Math.max(0, speed)) * 0.018
+  footstepToggle = footstepToggle ? 0 : 1
+  try {
+    ONESHOTS.tick(ctx, master, { freq: footstepToggle ? 820 : 640, gain })
+  } catch { /* ignore */ }
+})
 
 // Exposed for structural verification / debugging only — recipes should go
 // through setRoomRecipe, not reach in here directly.

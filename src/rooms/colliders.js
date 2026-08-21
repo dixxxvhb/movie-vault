@@ -191,3 +191,15 @@ export function publishWalkPos(x, z) {
   window.__vaultWalk.x = x
   window.__vaultWalk.z = z
 }
+
+// Wave T: the walker position GETTER for anything that needs to gate on
+// proximity (Touchable's reach check). Reads the same `window.__vaultWalk`
+// publishWalkPos already writes every frame — a module export rather than
+// `window.__vaultWalk` littered through rooms/* per the spec ("import the
+// walker position getter from colliders.js ... use the module export, never
+// window"). Before the walker's first frame (or outside a walkable room)
+// this reads {0, 0}, same default publishWalkPos seeds.
+export function walkPos() {
+  if (typeof window === 'undefined' || !window.__vaultWalk) return { x: 0, z: 0 }
+  return { x: window.__vaultWalk.x, z: window.__vaultWalk.z }
+}

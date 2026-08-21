@@ -379,7 +379,12 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
           // one footfall per half-cycle (each PI crossing) — publish, the
           // audio engine subscribes to this bus in a later wave.
           if (Math.floor(prevPhase / Math.PI) !== Math.floor(bobPhase.current / Math.PI)) {
-            publishWalkEvent({ type: 'step' })
+            // Wave T: the audio engine's footstep subscriber scales its tick
+            // gain by how fast you're actually moving — a light shuffle
+            // reads different from a near-jog. `speedMag / speed` is the
+            // room's own walk speed as the "loud" reference, same speed01
+            // math bob already uses two lines up.
+            publishWalkEvent({ type: 'step', speed: speedMag / speed })
           }
         }
 

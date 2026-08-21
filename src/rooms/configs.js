@@ -487,7 +487,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'steel' },
       props: [
-        { type: 'table', pos: [0, 0, -0.8], w: 1.2, d: 0.7, color: '#3a3f46' },
+        { type: 'table', pos: [0, 0, -0.8], w: 1.2, d: 0.7, color: '#3a3f46', touch: { kind: 'nudge', amplitude: 0.18 } },
         { type: 'chairRow', pos: [0, 0, -0.3], count: 2, spacing: 0.7 },
         { type: 'mirrorPlane', pos: [1.98, 1.5, 0], rot: [0, -Math.PI / 2, 0], w: 1.4, h: 1.6 },
         { type: 'paperScatter', pos: [-1.4, 0, -1], count: 18, area: [1, 1], color: '#e8e0c8' },
@@ -514,7 +514,7 @@ export const CONFIGS = {
       shell: 'corridor',
       shellParams: { length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#2a2620', farLight: true },
       props: [
-        { type: 'slab', pos: [1.4, 3, -6], size: [0.8, 0.15, 0.15], color: '#5a4a3a' },
+        { type: 'slab', pos: [1.4, 3, -6], size: [0.8, 0.15, 0.15], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
       ],
       systems: [
         { type: 'PulseBeat', bpm: 40, depth: 0.3 },
@@ -536,7 +536,10 @@ export const CONFIGS = {
     place: {
       shell: 'corridor',
       shellParams: { length: 6, width: 2.6, height: 9, ribs: 4, wallTint: '#141210', farLight: true },
-      props: [],
+      props: [
+        // a loose stone worked free of the well's dry wall — Wave T touch.
+        { type: 'slab', pos: [0.65, 0.15, -1], size: [0.3, 0.3, 0.3], color: '#1c1a16', touch: { kind: 'nudge', amplitude: 0.2, foley: 'thunk', reach: 4.2 } },
+      ],
       systems: [
         { type: 'SwarmEvent', period: 40, count: 60, color: '#0d0d10', origin: [0, 3, -1] },
       ],
@@ -557,7 +560,7 @@ export const CONFIGS = {
       shell: 'open',
       shellParams: { ground: 'grass', groundColor: '#e8c8a0', skyTop: '#f0b0d0', skyBottom: '#f8e8b0', horizon: true },
       props: [
-        { type: 'slab', pos: [-1.6, 1, -2], size: [0.8, 2, 0.6], color: '#e8a0c0' },
+        { type: 'slab', pos: [-1.6, 1, -2], size: [0.8, 2, 0.6], color: '#e8a0c0', touch: { kind: 'nudge', amplitude: 0.16 } },
         { type: 'slab', pos: [1.6, 1.2, -2.4], size: [0.9, 2.4, 0.6], color: '#a0c8e8' },
         { type: 'slab', pos: [0, 2, -3], size: [3, 0.3, 0.3], color: '#e8d8a0' },
       ],
@@ -574,7 +577,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 5, d: 16, h: 4, wallMat: 'flat', window: true },
       props: [
-        { type: 'slab', pos: [-1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040' },
+        { type: 'slab', pos: [-1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040', touch: { kind: 'nudge', amplitude: 0.1, foley: 'thunk' } },
         { type: 'slab', pos: [1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040' },
         { type: 'slab', pos: [-1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
         { type: 'slab', pos: [1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
@@ -604,6 +607,8 @@ export const CONFIGS = {
       props: [
         { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#c8607a' },
         { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#e8a86a' },
+        // overhead luggage, wedged in the rack above the seats — Wave T touch.
+        { type: 'slab', pos: [-0.6, 1.9, -1], size: [0.5, 0.28, 0.34], color: '#2a2420', touch: { kind: 'nudge', amplitude: 0.22, foley: 'thunk', reach: 3.2 } },
       ],
       systems: [
         { type: 'StreakLights', axis: 'z', speed: 5, colors: ['#c8d0ff'], count: 20, span: 12, y: 1, z: -1.28 },
@@ -632,7 +637,7 @@ export const CONFIGS = {
       props: [
         { type: 'slab', pos: [-1.25, 1, -2], size: [1.3, 2, 0.5], color: '#4a4438' },
         { type: 'slab', pos: [1.25, 1, -2], size: [1.3, 2, 0.5], color: '#4a4438' },
-        { type: 'lampPractical', pos: [1.5, 0.8, 0.4], color: '#ffb868', intensity: 0.9 },
+        { type: 'lampPractical', pos: [1.5, 0.8, 0.4], color: '#ffb868', intensity: 0.9, touch: { kind: 'light', reach: 4.2 } },
       ],
       systems: [
         { type: 'AdvanceGlow', from: [-6, 6, -10], axis: 'x', speed: 0.02, resetAt: 12, color: '#fff6d0', prop: 'sphere' },
@@ -653,7 +658,7 @@ export const CONFIGS = {
         { type: 'slab', pos: [-6, 1, -14], size: [2.2, 2, 1.6], color: '#2a2418' },
         { type: 'slab', pos: [6, 1, -14], size: [2.2, 2, 1.6], color: '#2a2418' },
         { type: 'slab', pos: [0, 1, -22], size: [2.2, 2, 1.6], color: '#2a2418' },
-        { type: 'lampPractical', pos: [0, 1.9, -6], color: '#ffcf7a', intensity: 0.7 },
+        { type: 'lampPractical', pos: [0, 1.9, -6], color: '#ffcf7a', intensity: 0.7, touch: { kind: 'light' } },
         { type: 'lampPractical', pos: [-6, 1.9, -14], color: '#ffcf7a', intensity: 0.7 },
         { type: 'lampPractical', pos: [6, 1.9, -14], color: '#ffcf7a', intensity: 0.7 },
       ],
@@ -672,7 +677,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'flat' },
       props: [
-        { type: 'glassWall', pos: [0, 1.3, -1.98], w: 3.8, h: 2.4, color: '#a8e0e8' },
+        { type: 'glassWall', pos: [0, 1.3, -1.98], w: 3.8, h: 2.4, color: '#a8e0e8', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
         { type: 'glassWall', pos: [-1.98, 1.3, 0], rot: [0, Math.PI / 2, 0], w: 3.8, h: 2.4, color: '#a8e0e8' },
         { type: 'tree', pos: [0, 0, -6], scale: 1.4, foliage: '#1c3a24' },
         { type: 'tree', pos: [-2, 0, -7], scale: 1.1, foliage: '#1c3a24' },
@@ -696,7 +701,7 @@ export const CONFIGS = {
         { type: 'pool', pos: [0.6, 0, -1.6], radius: 1.2, glow: '#3ac8d8' },
         { type: 'abstractFigure', pos: [0.9, 0.6, -1.1], rot: [0.9, 0, 0.3], color: '#0e1218', pose: 'crouch' },
         { type: 'paperScatter', pos: [-1, 0, 0.4], count: 16, area: [2, 1.4], color: '#e8dcc0' },
-        { type: 'slab', pos: [-2.2, 0.6, -0.4], rot: [0.4, 0.2, 0.6], size: [0.4, 1.2, 0.4], color: '#a05030' },
+        { type: 'slab', pos: [-2.2, 0.6, -0.4], rot: [0.4, 0.2, 0.6], size: [0.4, 1.2, 0.4], color: '#a05030', touch: { kind: 'nudge', amplitude: 0.2, reach: 3.4 } },
       ],
       systems: [],
     },
@@ -712,7 +717,10 @@ export const CONFIGS = {
     place: {
       shell: 'corridor',
       shellParams: { length: 14, width: 2.2, height: 2.4, ribs: 8, wallTint: '#0e0e10', farLight: true },
-      props: [],
+      props: [
+        // a supply crate shoved against the corridor wall — Wave T touch.
+        { type: 'slab', pos: [-0.75, 0.3, -2.2], size: [0.5, 0.6, 0.4], color: '#2e2a24', touch: { kind: 'nudge', amplitude: 0.16, foley: 'thunk', reach: 2.8 } },
+      ],
       systems: [
         // "from" moved off the camera's own position — at from:[0,1.3,6]
         // (behind a camera parked at z=4.4) the glow plane's travel path
@@ -733,7 +741,10 @@ export const CONFIGS = {
     place: {
       shell: 'box',
       shellParams: { w: 2.4, d: 2, h: 1.8, wallMat: 'steel', window: true },
-      props: [],
+      props: [
+        // the throttle lever, within reach of the cockpit seat — Wave T touch.
+        { type: 'slab', pos: [0.35, 0.9, -0.2], size: [0.1, 0.2, 0.28], color: '#26262a', touch: { kind: 'press', depress: 0.03 } },
+      ],
       systems: [
         { type: 'StreakLights', axis: 'x', speed: 6, colors: ['#a86a3a', '#e8b060'], count: 20, span: 8, y: 1.1, z: -1.5 },
         { type: 'PulseBeat', bpm: 90, depth: 0.15 },
@@ -763,8 +774,10 @@ export const CONFIGS = {
       shell: 'corridor',
       shellParams: { length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#d8d8dc', farLight: false },
       props: [
-        { type: 'lampPractical', pos: [-0.8, 2, -1], color: '#f0f0ff', intensity: 0.6 },
-        { type: 'lampPractical', pos: [0.8, 2, -1], color: '#f0f0ff', intensity: 0.6 },
+        // exactly two — the room's own doubling motif: nudge one, its twin
+        // answers half a second later (Wave T `pairId`).
+        { type: 'lampPractical', pos: [-0.8, 2, -1], color: '#f0f0ff', intensity: 0.6, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
+        { type: 'lampPractical', pos: [0.8, 2, -1], color: '#f0f0ff', intensity: 0.6, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
         { type: 'chairRow', pos: [0, 0, -2.4], count: 2, spacing: 0.6, color: '#c0c0c8' },
         { type: 'screenPanel', pos: [0, 1.3, -3.9], w: 1.4, h: 0.9, color: '#c8b8a0', draw: (ctx, W, H) => {
           ctx.fillStyle = '#a89880'; ctx.fillRect(0, 0, W, H)
@@ -790,7 +803,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 2.6, d: 8, h: 2.2, wallMat: 'wood', window: true },
       props: [
-        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a' },
+        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a', touch: { kind: 'nudge', amplitude: 0.12, reach: 2.8 } },
         { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a' },
       ],
       systems: [
@@ -813,7 +826,7 @@ export const CONFIGS = {
         // hiding the hot take/score/meta behind solid foliage geometry
         // (QA sweep 2026-08-21).
         { type: 'tree', pos: [-1.5, 0, -1.4], scale: 1.2, foliage: '#2c5a44' },
-        { type: 'branchTags', pos: [-1.5, 0, -1.4], count: 20, radius: 1.2, color: '#e8dcc0' },
+        { type: 'branchTags', pos: [-1.5, 0, -1.4], count: 20, radius: 1.2, color: '#e8dcc0', touch: { kind: 'swing', amplitude: 0.3 } },
       ],
       systems: [],
     },
@@ -827,7 +840,10 @@ export const CONFIGS = {
     place: {
       shell: 'deck',
       shellParams: { length: 8, width: 4, railing: true, fogWall: true, floorTint: '#2a2c30' },
-      props: [],
+      props: [
+        // the pile of scratched charms and half-finished shapes — Wave T touch.
+        { type: 'paperScatter', pos: [0.9, 0.02, -1.4], rot: [Math.PI / 2, 0, 0], count: 10, area: [0.5, 0.5], color: '#c8a860', touch: { kind: 'nudge', amplitude: 0.15 } },
+      ],
       systems: [
         { type: 'LookAwayGrow', pos: [1.2, 0, -1.6], max: 34, color: '#c8a860' },
       ],
@@ -844,7 +860,7 @@ export const CONFIGS = {
       shellParams: { w: 4.4, d: 4.4, h: 2.6, wallMat: 'flat', window: false },
       props: [
         { type: 'table', pos: [0, 0, -1], w: 1.8, d: 1.1, color: '#3a3f46' },
-        { type: 'screenPanel', pos: [0, 0.79, -1], rot: [-Math.PI / 2, 0, 0], w: 1.7, h: 1, color: '#e8e0c8', draw: (ctx, W, H) => {
+        { type: 'screenPanel', pos: [0, 0.79, -1], rot: [-Math.PI / 2, 0, 0], w: 1.7, h: 1, color: '#e8e0c8', touch: { kind: 'press', depress: 0.015 }, draw: (ctx, W, H) => {
           ctx.fillStyle = '#e8e0c8'; ctx.fillRect(0, 0, W, H)
           ctx.strokeStyle = '#3a4a8a'; ctx.lineWidth = 2
           for (let i = 0; i < 5; i++) {
@@ -872,7 +888,7 @@ export const CONFIGS = {
       shellParams: { w: 4.6, d: 4.6, h: 3, wallMat: 'flat' },
       props: [
         { type: 'pool', pos: [0, 0.02, -1.2], radius: 1.4, color: '#c8dce8', glow: '#e0eef8' },
-        { type: 'glassWall', pos: [-1.4, 1.5, -0.6], rot: [0, 0.5, 0], w: 1, h: 1.2, color: '#dce8f0' },
+        { type: 'glassWall', pos: [-1.4, 1.5, -0.6], rot: [0, 0.5, 0], w: 1, h: 1.2, color: '#dce8f0', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
         { type: 'glassWall', pos: [1.4, 1.5, -0.6], rot: [0, -0.5, 0], w: 1, h: 1.2, color: '#dce8f0' },
       ],
       systems: [
@@ -897,7 +913,11 @@ export const CONFIGS = {
       shellParams: { w: 4.6, d: 4, h: 2.8, wallMat: 'flat' },
       props: [
         { type: 'chairRow', pos: [0, 0, 0.4], count: 5, spacing: 0.66, color: '#2a2a30' },
-        { type: 'screenPanel', pos: [0, 2.6, -1.95], w: 1.2, h: 0.5, color: '#1c1c1c', draw: (ctx, W, H) => {
+        // reach bumped: the cinema chairRow (pos z:0.4) blocks the walker
+        // well short of this screen (pos z:-1.95) — closest achievable
+        // approach is ~2.9m away, past the plain 2.4m default (QA sweep,
+        // Wave T touch verification).
+        { type: 'screenPanel', pos: [0, 2.6, -1.95], w: 1.2, h: 0.5, color: '#1c1c1c', touch: { kind: 'press', depress: 0.012, reach: 3.4 }, draw: (ctx, W, H) => {
           ctx.fillStyle = '#1c1c1c'; ctx.fillRect(0, 0, W, H)
           ctx.fillStyle = '#ffdf9a'; ctx.font = 'bold 60px Georgia'; ctx.fillText('67%', 40, 90)
         } },
@@ -918,7 +938,7 @@ export const CONFIGS = {
       shellParams: { ground: 'grass', groundColor: '#2a4a3a', skyTop: '#3a2c60', skyBottom: '#4a3a70', horizon: false },
       props: [
         { type: 'glassWall', pos: [0, 1.4, -1.8], w: 3.6, h: 2.6, color: '#8ae8d8' },
-        { type: 'tree', pos: [-1.4, 0, -4], scale: 1.1, foliage: '#4fd6c8', trunk: '#2a5a4a' },
+        { type: 'tree', pos: [-1.4, 0, -4], scale: 1.1, foliage: '#4fd6c8', trunk: '#2a5a4a', touch: { kind: 'nudge', amplitude: 0.1, reach: 3.4 } },
         { type: 'tree', pos: [1.6, 0, -4.4], scale: 1.3, foliage: '#c84fd6', trunk: '#2a5a4a' },
       ],
       systems: [],
@@ -938,7 +958,7 @@ export const CONFIGS = {
       shellParams: { w: 4.6, d: 4.6, h: 2.8, wallMat: 'flat', window: true },
       props: [
         { type: 'slab', pos: [0, 0.02, -1.6], size: [3, 0.05, 1.6], color: '#dfeaf2' },
-        { type: 'glassWall', pos: [0, 1, -2.2], w: 3, h: 1, color: '#eaf4ff' },
+        { type: 'glassWall', pos: [0, 1, -2.2], w: 3, h: 1, color: '#eaf4ff', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
       ],
       systems: [
         { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#eaf4ff' },
@@ -958,6 +978,8 @@ export const CONFIGS = {
         { type: 'table', pos: [-0.8, 0, -1], w: 1, d: 0.6 },
         { type: 'chairRow', pos: [-0.8, 0, -0.5], count: 2, spacing: 0.6 },
         { type: 'counter', pos: [1, 0, -1.4], w: 1, d: 0.5 },
+        // the game piece sitting on the table, ready to be flicked spinning.
+        { type: 'slab', pos: [-0.8, 0.71, -1], size: [0.09, 0.02, 0.09], color: '#c9a24a', touch: { kind: 'spin', maxSpeed: 16 } },
       ],
       systems: [],
     },
@@ -973,7 +995,7 @@ export const CONFIGS = {
       shellParams: { ground: 'concrete', groundColor: '#1a1a24', skyTop: '#20203a', skyBottom: '#302a48', horizon: true, distantCity: 22 },
       props: [
         { type: 'pool', pos: [0, 0.02, -1.6], radius: 1.5, glow: '#4fc8d6' },
-        { type: 'screenPanel', pos: [1.6, 1.5, -2], w: 0.9, h: 0.6, color: '#0e0e18', draw: (ctx, W, H) => {
+        { type: 'screenPanel', pos: [1.6, 1.5, -2], w: 0.9, h: 0.6, color: '#0e0e18', touch: { kind: 'press', depress: 0.015 }, draw: (ctx, W, H) => {
           ctx.fillStyle = '#0e0e18'; ctx.fillRect(0, 0, W, H)
           ctx.strokeStyle = '#4fc8d6'; ctx.lineWidth = 2
           ctx.strokeRect(20, 20, W - 40, H - 40)
@@ -996,7 +1018,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 3.8, d: 3.8, h: 2.1, wallMat: 'wood', window: true },
       props: [
-        { type: 'table', pos: [0, 0, -0.8], w: 0.6, d: 0.4, h: 0.5, color: '#3a2c1c' },
+        { type: 'table', pos: [0, 0, -0.8], w: 0.6, d: 0.4, h: 0.5, color: '#3a2c1c', touch: { kind: 'nudge', amplitude: 0.12, foley: 'thunk' } },
         { type: 'chairRow', pos: [0, 0, -0.4], count: 2, spacing: 0.35, seatH: 0.28 },
         { type: 'slab', pos: [0, 1.05, -1.89], size: [3.8, 0.02, 0.02], color: '#0a0806' },
         { type: 'slab', pos: [-1.89, 1.05, 0], size: [0.02, 0.02, 3.8], color: '#0a0806' },
@@ -1016,7 +1038,7 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 3.4, d: 3.4, h: 2.4, wallMat: 'flat' },
       props: [
-        { type: 'bed', pos: [-0.4, 0, -0.6], rot: [0, 0.1, 0] },
+        { type: 'bed', pos: [-0.4, 0, -0.6], rot: [0, 0.1, 0], touch: { kind: 'nudge', amplitude: 0.1, foley: 'thunk' } },
         { type: 'mirrorPlane', pos: [1.4, 1.5, -0.8], rot: [0, -0.4, 0], w: 0.8, h: 1.4, tint: '#3a2828' },
         { type: 'abstractFigure', pos: [1.4, 0, -0.4], rot: [0, Math.PI, 0], color: '#0a0808', pose: 'stand' },
       ],

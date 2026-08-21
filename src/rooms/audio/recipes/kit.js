@@ -6,7 +6,9 @@
 // room that mounts and unmounts fast (StrictMode's dev double-invoke) never
 // leaves a dangling oscillator running under a room nobody can see anymore.
 
-function noiseBuffer(ctx, seconds, color = 'brown') {
+// Exported (Wave T) so oneshots.js can build its short one-shot foley from
+// the same primitives rather than duplicating buffer-fill / disconnect code.
+export function noiseBuffer(ctx, seconds, color = 'brown') {
   const buf = ctx.createBuffer(1, Math.max(1, Math.round(ctx.sampleRate * seconds)), ctx.sampleRate)
   const d = buf.getChannelData(0)
   let last = 0
@@ -24,10 +26,10 @@ function noiseBuffer(ctx, seconds, color = 'brown') {
 
 // disconnects a list of nodes, swallowing "already disconnected" errors —
 // the same defensive pattern roomTone.js uses on dispose
-function safeDisconnectAll(nodes) {
+export function safeDisconnectAll(nodes) {
   nodes.forEach((n) => { try { n.disconnect() } catch { /* already gone */ } })
 }
-function safeStopAll(nodes) {
+export function safeStopAll(nodes) {
   nodes.forEach((n) => { try { n.stop() } catch { /* already stopped */ } })
 }
 

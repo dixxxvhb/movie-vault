@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Prop, footprint } from './props.jsx'
 import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
 import DoorRow from './DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
+import Touchable from './Touchable.jsx'
+import { TOUCH_KINDS, DEFAULT_TOUCH_FOLEY } from './touchKinds.jsx'
 
 // The one room. Every Tier-2 (and Tier-1-stand-in) slug renders through
 // here: shell + props + systems + lighting, all driven by config (Wave B
@@ -373,6 +375,59 @@ function defaultDoorMount(place) {
   return { position: [w / 2 - 0.04, 0, d * 0.14], rotationY: -Math.PI / 2, spacing: 1.0 }
 }
 
+/* ---------------------------------------------------------- touchables */
+// Wave T: `place.props[i].touch = { kind, ...params }` wraps that one prop in
+// <Touchable>, and — if `kind` names one of touchKinds.jsx's animations —
+// wraps the <Prop> itself in that animation too. `token` is a local counter
+// bumped once per successful touch; the kind component reacts to it
+// changing (see touchKinds.jsx's useFiredAt), never its value.
+//
+// `touch.pairId` (Moon's exactly-two-props case) links two TouchedProps in
+// the same room: touching one nudges itself immediately AND, half a second
+// later, bumps a room-level pulse for that pairId. Every other TouchedProp
+// sharing the pairId watches that pulse and — if it wasn't the one that
+// caused it — nudges itself too. `pairPulse`/`onPairBump` are threaded down
+// from GenericRoom, which owns the one shared bit of state this needs.
+function TouchedProp({ pp, index, pairPulse, onPairBump }) {
+  const touch = pp.touch
+  const [token, setToken] = useState(0)
+  const pairTimer = useRef(null)
+
+  useEffect(() => () => { if (pairTimer.current) clearTimeout(pairTimer.current) }, [])
+
+  const pulse = touch?.pairId ? pairPulse[touch.pairId] : null
+  const pulseToken = pulse?.token
+  useEffect(() => {
+    if (!touch?.pairId || !pulse) return
+    if (pulse.from !== index) setToken((t) => t + 1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pulseToken])
+
+  const handleUse = useCallback(() => {
+    setToken((t) => t + 1)
+    if (touch.pairId) {
+      pairTimer.current = setTimeout(() => onPairBump(touch.pairId, index), 500)
+    }
+  }, [touch, index, onPairBump])
+
+  const kind = touch.kind
+  const Anim = TOUCH_KINDS[kind]
+  const foley = touch.foley || DEFAULT_TOUCH_FOLEY[kind] || 'tick'
+  const body = Anim ? (
+    <Anim token={token} {...touch}>
+      <Prop {...pp} />
+    </Anim>
+  ) : (
+    <Prop {...pp} />
+  )
+
+  return (
+    <Touchable onUse={handleUse} reach={touch.reach ?? 2.4} foley={foley} disabled={touch.disabled} anchor={pp.pos || [0, 0, 0]}>
+      {body}
+    </Touchable>
+  )
+}
+
 /* ------------------------------------------------------------------- room */
 
 // InfoComponent: Wave C's shoebox print rooms reuse this whole engine but
@@ -435,9 +490,21 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
   const flatSystems = systems.filter((s) => !(s.wrapsProps && SYSTEMS[s.type]))
   const keyLightRef = useRef()
 
+  // Wave T: pairId pulse bus (Moon's exactly-two-props paired nudge). One
+  // small piece of state per room instance — see TouchedProp above for how
+  // it's consumed.
+  const [pairPulse, setPairPulse] = useState({})
+  const onPairBump = useCallback((pairId, fromIndex) => {
+    setPairPulse((prev) => ({ ...prev, [pairId]: { token: (prev[pairId]?.token || 0) + 1, from: fromIndex } }))
+  }, [])
+
   let propsNode = (
     <>
-      {props.map((pp, i) => <Prop key={i} {...pp} />)}
+      {props.map((pp, i) => (
+        pp.touch
+          ? <TouchedProp key={i} pp={pp} index={i} pairPulse={pairPulse} onPairBump={onPairBump} />
+          : <Prop key={i} {...pp} />
+      ))}
     </>
   )
   wrapSystems.forEach((sys, i) => {
