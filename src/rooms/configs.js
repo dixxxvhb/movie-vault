@@ -500,7 +500,16 @@ export const CONFIGS = {
   // weight for the same reason as the-departed's/baby-driver's own entries.
   'disclosure-day': {
     family: 'intimate-tension',
-    grade: { key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8' },
+    // P1 polish pass: the boring is authored, not defaulted — slightly
+    // over-exposed (a hair of extra contrast/brightness reads as "TV-studio
+    // flat" rather than "underlit"), minimal vignette (a vignette implies
+    // mood; this room specifically has none), grain near zero (digital-clean
+    // civic broadcast, not film stock).
+    grade: {
+      key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8',
+      contrast: 0.05,
+      grain: 0.015, vignette: 0.12, bloomIntensity: 0.18,
+    },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
     place: {
       shell: 'box',
