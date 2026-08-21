@@ -259,7 +259,22 @@ export const CONFIGS = {
   // left in place as the pre-bespoke Wave B stand-in.
   enemy: {
     family: 'mind-bender',
-    grade: { key: '#c9a24a', fill: '#3a3020', sat: 0.12, contrast: 0.06 },
+    // P1 finishing pass: sat/contrast pushed past the pre-polish pass
+    // (0.12/0.06) per the brief's "yellow-sepia haze grade pushed hard" —
+    // Enemy.jsx's own setGradeOverride reads sat/contrast from here with
+    // these as its fallback. A first pass pushed to 0.22/0.12 and clipped
+    // every close-lit surface (furniture near the practical/bounce lights)
+    // to solid white once Bloom's mipmap blur piled on top — contrast that
+    // high only reads correctly on large, already-dim wall planes. Backed
+    // off to a smaller-but-still-visible push. grain/vignette/bloomIntensity
+    // are the Wave P0 grade triplet (spec #5), tuned for a grimy Toronto
+    // apartment: more grain than darkknight's proof-room baseline, vignette
+    // pulled in a touch, bloom kept modest so only the window/score stay
+    // bloom-hot.
+    grade: {
+      key: '#c9a24a', fill: '#3a3020', sat: 0.16, contrast: 0.08,
+      grain: 0.07, vignette: 0.66, bloomIntensity: 0.24,
+    },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.8], fov: 46 },
     place: {
       shell: 'box',
