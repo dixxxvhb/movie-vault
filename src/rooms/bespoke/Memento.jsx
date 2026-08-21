@@ -11,6 +11,7 @@ import { start as startMementoAudio } from '../audio/recipes/memento.js'
 import {
   makeNoteTexture, makePolaroidTexture, makeFloorPolaroidTexture, makeMirrorNumeralTexture,
 } from './mementoTextures.js'
+import DoorRow from '../DoorRow.jsx'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -468,7 +469,16 @@ function Notepad({ film }) {
 
 /* ------------------------------------------------------------------ room */
 
-export default function Memento({ film, config, goToStation }) {
+// Bloodline doors (brief §6) mount on the +Z wall — behind the entry camera
+// (config.camera looks toward -Z, at the corridor door), the one wall in
+// this room every prop list above leaves clear: the note wall and the
+// mirror/numeral both claim a SIDE wall, and nothing sits past z=1.55. Scaled
+// down and tightly spaced (four links, memento's max) so all four clear the
+// side walls with room to spare — this is the motel room zone strictly,
+// never the corridor past the door.
+const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, spacing: 1.0, scale: 0.85 }
+
+export default function Memento({ film, config, goToStation, doors = [], onDoor }) {
   const { grade } = config
   const [stationIndex, setStationIndex] = useState(-1) // -1 = standing in the room
   const [maxIndex, setMaxIndex] = useState(-1)
@@ -562,6 +572,16 @@ export default function Memento({ film, config, goToStation }) {
 
       <NoteWall />
       <FloorPolaroid film={film} />
+
+      <DoorRow
+        doors={doors}
+        position={DOOR_MOUNT.position}
+        rotationY={DOOR_MOUNT.rotationY}
+        spacing={DOOR_MOUNT.spacing}
+        scale={DOOR_MOUNT.scale}
+        grade={grade}
+        onDoor={onDoor}
+      />
 
       {/* door + corridor. The slab is purely the visual "closed door" look
           from the room side (nearly opaque black filling the frame); the

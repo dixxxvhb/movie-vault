@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { Prop } from './props.jsx'
 import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
+import DoorRow from './DoorRow.jsx'
 
 // The one room. Every Tier-2 (and Tier-1-stand-in) slug renders through
 // here: shell + props + systems + lighting, all driven by config (Wave B
@@ -261,6 +262,43 @@ function DeckShell({ grade, p }) {
 
 const SHELLS = { box: BoxShell, open: OpenShell, corridor: CorridorShell, deck: DeckShell }
 
+/* -------------------------------------------------------------- door row */
+
+// Bloodline doors (brief §6) get a sane default mount per shell type — not a
+// per-config collision check against every prop in every one of Tier 2's 25
+// configs, just a wall edge the shell's own typical staging tends to leave
+// clear (props.jsx placements cluster toward the shell's -Z "front" wall,
+// where InfoSurfaces' hot-take/score/meta trio already lives — see
+// InfoSurfaces.jsx's own defaults). A bespoke room (Memento/Departed/Baby
+// Driver) never calls this; it hand-picks its own mount instead.
+function defaultDoorMount(place) {
+  const shell = place.shell || 'box'
+  const p = place.shellParams || {}
+  if (shell === 'corridor') {
+    // near the mouth, not deep in the shaft — CorridorShell's ribs start
+    // right at the entry, so the doors sit just outside the tunnel's own
+    // footprint, on the side wall nearest the camera's starting station.
+    const width = p.width ?? 2.6
+    return { position: [width / 2 + 0.55, 0, 0.4], rotationY: -Math.PI / 2, spacing: 0.85, scale: 0.85 }
+  }
+  if (shell === 'deck') {
+    // the near rail-end, behind where the camera usually stands, rather
+    // than out past the fog wall where DeckShell's own far dressing sits.
+    const len = p.length ?? 10
+    return { position: [0, 0, len / 2 - 1.2], rotationY: Math.PI, spacing: 1.05 }
+  }
+  if (shell === 'open') {
+    // no walls to hang a door on — a standing frame a few meters out,
+    // facing back toward the room's own entry station.
+    return { position: [0, 0, 5.5], rotationY: Math.PI, spacing: 1.5 }
+  }
+  // box (default): the right wall — InfoSurfaces' own record (hot take,
+  // score, meta) lives on the -Z front wall by default, so the doors take
+  // the side wall instead, nudged toward the camera side of the room.
+  const w = p.w ?? 5, d = p.d ?? 5
+  return { position: [w / 2 - 0.04, 0, d * 0.14], rotationY: -Math.PI / 2, spacing: 1.0 }
+}
+
 /* ------------------------------------------------------------------- room */
 
 // InfoComponent: Wave C's shoebox print rooms reuse this whole engine but
@@ -268,12 +306,13 @@ const SHELLS = { box: BoxShell, open: OpenShell, corridor: CorridorShell, deck: 
 // vibe chips — a print never carries either) instead of the Ledger's
 // InfoSurfaces. Defaults to InfoSurfaces so every existing Ledger config is
 // untouched; archive/FadedRoom.jsx is the only caller that overrides it.
-export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces }) {
+export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces, doors = [], onDoor }) {
   const { grade } = config
   const place = config.place || {}
   const Shell = SHELLS[place.shell] || SHELLS.box
   const props = place.props || []
   const systems = place.systems || []
+  const doorMount = useMemo(() => defaultDoorMount(place), [place])
 
   // Duplicates and Assembler are the two systems that WRAP content (the
   // spec's own wording — "renders children twice", "props fly in ... becoming
@@ -341,6 +380,16 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
       ))}
 
       <InfoComponent film={film} config={config} visible={infoVisible} />
+
+      <DoorRow
+        doors={doors}
+        position={doorMount.position}
+        rotationY={doorMount.rotationY}
+        spacing={doorMount.spacing}
+        scale={doorMount.scale}
+        grade={grade}
+        onDoor={onDoor}
+      />
     </group>
   )
 }

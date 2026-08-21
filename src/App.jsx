@@ -13,6 +13,7 @@ import ArchiveWorld from './rooms/ArchiveWorld.jsx'
 import Develop from './rooms/Develop.jsx'
 import { getRoomConfig } from './rooms/registry.js'
 import { fadedConfigFor, hazyConfigFor } from './rooms/archive/archiveConfig.js'
+import { doorsForSlug } from './rooms/doors.js'
 import ColdOpen from './ColdOpen.jsx'
 import Guide from './Guide.jsx'
 import Lens, { useVibes } from './Lens.jsx'
@@ -181,9 +182,28 @@ export default function App() {
   // exiting can put you back rather than just dumping you at 'ledger'.
   const preEntryStation = useRef('ledger')
 
+  // Bloodline doors (brief §6). A door hop runs exit-into-enter directly —
+  // no motel in between — so it needs its own transient world shape,
+  // 'doorhop:<toKind>:<toSlug>', parallel to 'entering:'/'exiting:' but
+  // never touching the wall. `doorHopFromRef` is what keeps the FROM room
+  // mounted and resolvable (film/config) for the whole wash, since `world`
+  // itself only names the destination — see filmSlug/filmMounted below. A
+  // ref, not state: it has to be correct the instant `world` first reads
+  // 'doorhop:...', and a ref mutated synchronously in the same handler that
+  // calls setWorld() is visible on that very render; state wouldn't be.
+  const doorHopFromRef = useRef(null) // {kind:'film'|'print', slug} | null
+  // The chain of rooms hopped through this visit, and how many hops deep you
+  // are — brief §6's breadcrumb rule: after 2+ hops, back-to-the-wall skips
+  // the chain entirely; below that, one hop back is one step, not a jump to
+  // the wall. Reset to empty/0 on any fresh from-the-wall entry or normal
+  // wall exit.
+  const hopChainRef = useRef([]) // [{kind, slug}, ...] oldest first
+  const [hopCount, setHopCount] = useState(0)
+
   const filmSlug = world.startsWith('film:') ? world.slice(5)
     : world.startsWith('entering:') ? world.slice(9)
     : world.startsWith('exiting:') ? world.slice(8)
+    : (world.startsWith('doorhop:') && doorHopFromRef.current?.kind === 'film') ? doorHopFromRef.current.slug
     : null
   // The two archive rooms (Wave C, brief §3) get their own prefixes rather
   // than sharing 'film:'/'entering:'/'exiting:' — a shoebox print and a
@@ -195,6 +215,7 @@ export default function App() {
   const printSlug = world.startsWith('print:') ? world.slice(6)
     : world.startsWith('entering-print:') ? world.slice(15)
     : world.startsWith('exiting-print:') ? world.slice(14)
+    : (world.startsWith('doorhop:') && doorHopFromRef.current?.kind === 'print') ? doorHopFromRef.current.slug
     : null
   const hazySlug = world.startsWith('hazy:') ? world.slice(5)
     : world.startsWith('entering-hazy:') ? world.slice(14)
@@ -202,8 +223,13 @@ export default function App() {
     : null
   const motelMounted = world === 'motel' || world.startsWith('entering:')
     || world.startsWith('entering-print:') || world.startsWith('entering-hazy:')
+  // 'doorhop:' never mounts the motel (brief §6: "runs exit-into-enter
+  // directly, skip the wall") — instead it keeps whichever room the hop
+  // started FROM mounted for the whole wash, via doorHopFromRef.
   const filmMounted = world.startsWith('film:') || world.startsWith('exiting:')
+    || (world.startsWith('doorhop:') && doorHopFromRef.current?.kind === 'film')
   const printMounted = world.startsWith('print:') || world.startsWith('exiting-print:')
+    || (world.startsWith('doorhop:') && doorHopFromRef.current?.kind === 'print')
   const hazyMounted = world.startsWith('hazy:') || world.startsWith('exiting-hazy:')
 
   // Stepping into a photo. Only ever from the motel, only ever a Ledger film
@@ -214,6 +240,9 @@ export default function App() {
   const enterFilm = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    // a fresh trip in from the wall starts the bloodline-door breadcrumb over
+    hopChainRef.current = []
+    setHopCount(0)
     setWorld('entering:' + slug)
     setTransition({ id: 'enter:' + slug + ':' + Date.now() })
     const url = new URL(location.href)
@@ -227,8 +256,24 @@ export default function App() {
 
   // Stepping back out. Esc, the persistent "back to the wall" affordance, and
   // browser back all funnel here.
+  //
+  // Bloodline-door breadcrumb rule (brief §6): after exactly one hop, this
+  // affordance steps back ONE room (the one you hopped from) rather than
+  // going straight to the wall — after 2+ hops it skips the chain entirely
+  // and goes straight to the wall, same as a room you never hopped out of at
+  // all (hopCount === 0, the existing behaviour below, untouched).
   const exitFilm = () => {
     if (!world.startsWith('film:')) return
+    if (hopCount === 1 && hopChainRef.current.length) {
+      const prev = hopChainRef.current.pop()
+      setHopCount(0)
+      doorHopFromRef.current = { kind: 'film', slug: filmSlug }
+      setWorld('doorhop:' + prev.kind + ':' + prev.slug)
+      setTransition({ id: 'doorhop:' + prev.slug + ':' + Date.now() })
+      return
+    }
+    hopChainRef.current = []
+    setHopCount(0)
     setWorld('exiting:' + world.slice(5))
     setTransition({ id: 'exit:' + world.slice(5) + ':' + Date.now() })
   }
@@ -239,6 +284,8 @@ export default function App() {
   const enterPrint = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    hopChainRef.current = []
+    setHopCount(0)
     setWorld('entering-print:' + slug)
     setTransition({ id: 'enter-print:' + slug + ':' + Date.now() })
     const url = new URL(location.href)
@@ -249,8 +296,20 @@ export default function App() {
     url.searchParams.delete('print')
     history.pushState(null, '', url)
   }
+  // Same breadcrumb rule as exitFilm — a door can land you in an archive
+  // print room just as easily as another ledger film's.
   const exitPrint = () => {
     if (!world.startsWith('print:')) return
+    if (hopCount === 1 && hopChainRef.current.length) {
+      const prev = hopChainRef.current.pop()
+      setHopCount(0)
+      doorHopFromRef.current = { kind: 'print', slug: printSlug }
+      setWorld('doorhop:' + prev.kind + ':' + prev.slug)
+      setTransition({ id: 'doorhop:' + prev.slug + ':' + Date.now() })
+      return
+    }
+    hopChainRef.current = []
+    setHopCount(0)
     setWorld('exiting-print:' + world.slice(6))
     setTransition({ id: 'exit-print:' + world.slice(6) + ':' + Date.now() })
   }
@@ -259,6 +318,8 @@ export default function App() {
   const enterHazy = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    hopChainRef.current = []
+    setHopCount(0)
     setWorld('entering-hazy:' + slug)
     setTransition({ id: 'enter-hazy:' + slug + ':' + Date.now() })
     const url = new URL(location.href)
@@ -305,7 +366,34 @@ export default function App() {
       setOpenBox('drawer')
       setPicked(slug)
       setStation(preEntryStation.current || 'drawer')
+    } else if (world.startsWith('doorhop:')) {
+      // the FROM room (whichever one doorHopFromRef named) swaps directly
+      // for the TO room here — the wash's peak is the one moment neither is
+      // visible, same trick every other transition above uses, just landing
+      // on 'film:'/'print:' instead of 'motel'.
+      const m = world.match(/^doorhop:(film|print):(.+)$/)
+      doorHopFromRef.current = null
+      if (m) setWorld((m[1] === 'print' ? 'print:' : 'film:') + m[2])
     }
+  }
+
+  // A bloodline door was clicked and it works (rooms/doors.js already
+  // filtered out `locked` — a locked door's own onClick never calls this,
+  // see Door.jsx). Runs the hop straight from whichever room is open now
+  // into the target's room, no motel in between (brief §6).
+  const onDoorOpen = (spec) => {
+    if (xrStore.getState().session != null) return
+    if (world.startsWith('doorhop:')) return // already mid-hop; ignore a double-click
+    const fromKind = world.startsWith('film:') ? 'film' : world.startsWith('print:') ? 'print' : null
+    if (!fromKind) return
+    const fromSlug = fromKind === 'film' ? filmSlug : printSlug
+    if (!fromSlug) return
+    hopChainRef.current.push({ kind: fromKind, slug: fromSlug })
+    setHopCount((h) => h + 1)
+    doorHopFromRef.current = { kind: fromKind, slug: fromSlug }
+    const toKind = spec.kind === 'archive' ? 'print' : 'film'
+    setWorld('doorhop:' + toKind + ':' + spec.targetSlug)
+    setTransition({ id: 'doorhop:' + spec.targetSlug + ':' + Date.now() })
   }
 
   useEffect(() => {
@@ -516,6 +604,15 @@ export default function App() {
   // the two archive rooms (Wave C): a shoebox print's config is genre-mapped
   // and per-print (fadedConfigFor); every drawer film shares the one fixed
   // hazyConfigFor() — neither goes through getRoomConfig()/CONFIGS at all.
+  // Bloodline doors (brief §6): every film_link touching the room's own
+  // slug, resolved and capped by rooms/doors.js. Only a Ledger film room
+  // gets doors — the FilmScene contract they belong to (brief §4.1) is a
+  // ledger-film-only concept; a shoebox print or the Dark Drawer never had a
+  // `bloodlineDoors` field to begin with.
+  const roomDoors = useMemo(
+    () => (filmSlug && data ? doorsForSlug(filmSlug, data) : []),
+    [filmSlug, data]
+  )
   const printItem = printSlug ? (data?.shoebox || []).find((a) => a.slug === printSlug) : null
   const hazyItem = hazySlug ? (data?.drawer || []).find((a) => a.slug === hazySlug) : null
   const printConfig = useMemo(() => (printItem ? fadedConfigFor(printItem) : null), [printItem])
@@ -622,7 +719,7 @@ export default function App() {
         )}
 
         {filmMounted && roomFilm && roomConfig && (
-          <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} />
+          <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} doors={roomDoors} onDoor={onDoorOpen} />
         )}
 
         {printMounted && printItem && printConfig && (
