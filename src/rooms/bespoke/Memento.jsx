@@ -6,13 +6,13 @@ import { bed as Bed, table as Table, counter as Counter, mirrorPlane as MirrorPl
 import { makeMetaTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
+import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startMementoAudio } from '../audio/recipes/memento.js'
 import {
   makeNoteTexture, makePolaroidTexture, makeFloorPolaroidTexture, makeMirrorNumeralTexture,
 } from './mementoTextures.js'
 import DoorRow from '../DoorRow.jsx'
-import { wasDrag } from '../../pointer.js'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -59,12 +59,8 @@ const NOTE_COPY = [
   'no answer on the insulin. on purpose.',
 ]
 
-function stationFor(i) {
-  const zEye = DOOR_Z - i * CELL_LEN - 0.4
-  return { pos: [0, EYE, zEye], look: [0, EYE - 0.06, zEye - 5], fov: 54 }
-}
-
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
+const WALL_T = 0.15
 
 /* ----------------------------------------------------------- wall texture */
 
@@ -234,46 +230,6 @@ function CorridorEndCap() {
       <planeGeometry args={[CORR_W, CORR_H]} />
       <meshStandardMaterial map={tex} roughness={0.95} />
     </mesh>
-  )
-}
-
-// Click-to-advance catchers for the corridor. `onAdvance` moves one station
-// in whichever direction the camera is currently facing rather than caring
-// which cell was actually clicked — a per-cell marker keyed to its own
-// absolute index was a no-op the moment you were already standing inside
-// that cell. These are VERTICAL panes across the tunnel's cross-section, one
-// per cell boundary, not a floor-level plane: every station's look target is
-// composed almost dead-level (a corridor reads wrong shot from above or
-// below), and a ray that shallow travels many meters before it would ever
-// cross a floor- or ceiling-height plane — in practice it never reached one
-// within the corridor's own length. A pane standing upright across the
-// tunnel, by contrast, is hit by any forward-looking ray almost immediately,
-// regardless of the tiny pitch.
-function CorridorClickPlanes({ onAdvance }) {
-  // one at every 3m mark, INCLUDING the door threshold itself (i = 0) — that
-  // boundary doubles as the room/corridor doorway trigger, so there is no
-  // separate door-click handler: whichever direction you're facing when you
-  // click it decides whether you step into the corridor or back into the
-  // room. Double-sided so it catches the ray whether you're approaching from
-  // the room side or turning back to face it from inside the corridor.
-  return (
-    <>
-      {Array.from({ length: CELLS + 1 }, (_, i) => {
-        const z = DOOR_Z - i * CELL_LEN
-        return (
-          <mesh
-            key={i}
-            position={[0, CORR_H / 2, z]}
-            onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
-            onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
-            onPointerOut={() => { document.body.style.cursor = 'auto' }}
-          >
-            <planeGeometry args={[CORR_W, CORR_H]} />
-            <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
-          </mesh>
-        )
-      })}
-    </>
   )
 }
 
@@ -479,35 +435,26 @@ function Notepad({ film }) {
 // never the corridor past the door.
 const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, spacing: 1.0, scale: 0.85 }
 
-export default function Memento({ film, config, goToStation, doors = [], onDoor }) {
+// Wave M3: free walk. `goToStation` (FilmWorld's flight seam) is no longer
+// called from in here — the entry viewpoint stays config.camera, and every
+// place inside the room is reached by walking, not clicking — so it's
+// deliberately not destructured; FilmWorld still passes it, unused.
+export default function Memento({ film, config, doors = [], onDoor }) {
   const { grade } = config
-  const [stationIndex, setStationIndex] = useState(-1) // -1 = standing in the room
+  // Wave M3: the walker replaces click-to-advance. `maxIndex` is now a
+  // monotonic high-water mark derived from the walker's own z each frame
+  // (never a click count) — walking deeper raises it, walking back never
+  // lowers it, which is the un-develop law: what's behind you stays gone.
+  const maxIndexRef = useRef(-1)
   const [maxIndex, setMaxIndex] = useState(-1)
-  // read from event handlers and the per-frame grade/gaze logic alike, so
-  // neither needs to wait on a re-render to see the current station
-  const stationRef = useRef(stationIndex)
-  stationRef.current = stationIndex
 
-  useEffect(() => {
-    setMaxIndex((m) => Math.max(m, stationIndex))
-  }, [stationIndex])
-
-  const stepTo = (next) => {
-    setStationIndex(next)
-    goToStation?.(next < 0 ? config.camera : stationFor(next), next < 0 ? 'room' : 'corridor-' + next)
-  }
-  // Every click-to-advance surface (the door threshold included — see
-  // CorridorClickPlanes) funnels through this one handler: move one station
-  // in whichever direction the camera is currently facing (gaze.yaw, same
-  // signal the split grade reads). Facing deeper in advances; turning around
-  // and clicking retreats, all the way back out through the door into the
-  // room at index -1.
-  const moveOneStep = () => {
-    const facingCorridor = Math.cos(gaze.yaw) > 0
-    const dir = facingCorridor ? 1 : -1
-    const next = clamp(stationRef.current + dir, -1, CELLS - 1)
-    if (next !== stationRef.current) stepTo(next)
-  }
+  // The door: purely a visual "closed door" black plane from the room side.
+  // It fades out (~400ms) the moment the walker gets within 0.8m of the
+  // threshold, and once faded it never comes back — same monotonic shape as
+  // the un-develop high-water above, just for one plane instead of six cells.
+  const doorMatRef = useRef()
+  const doorOpacityRef = useRef(0.82)
+  const doorFadedRef = useRef(false)
 
   const corridorPolTexs = useBatchTextures(() =>
     Array.from({ length: CELLS }, (_, i) => makePolaroidTexture(300 + i))
@@ -520,12 +467,23 @@ export default function Memento({ film, config, goToStation, doors = [], onDoor 
   // fully warm regardless of which way you happen to be looking. The entry
   // viewpoint is composed staring straight at the door, and a yaw-only rule
   // would have read that as "looking down the corridor" and desaturated the
-  // room to grey on the very first frame, which is backwards: the room's
-  // stationIndex — not the compass bearing of its opening camera cut — is
-  // what actually means "you are in the corridor now."
-  useFrame(() => {
+  // room to grey on the very first frame, which is backwards: whether the
+  // walker has actually crossed DOOR_Z into the corridor — not the compass
+  // bearing of its opening camera cut — is what actually means "you are in
+  // the corridor now."
+  useFrame(({ camera }, dt) => {
+    const z = camera.position.z
+
+    // un-develop high-water, keyed to walker position per the spec formula
+    const idx = clamp(Math.floor((DOOR_Z - 0.4 - z) / CELL_LEN), -1, CELLS - 1)
+    if (idx > maxIndexRef.current) {
+      maxIndexRef.current = idx
+      setMaxIndex(idx)
+    }
+
+    const inCorridor = z < DOOR_Z
     let t
-    if (stationRef.current < 0) {
+    if (!inCorridor) {
       t = 1 // in the room: always warm
     } else {
       const yaw = gaze.yaw
@@ -546,8 +504,59 @@ export default function Memento({ film, config, goToStation, doors = [], onDoor 
       // to this room).
       bg: t > 0.5 ? '#241c14' : '#0c0a08',
     })
+
+    // door fade, gated on distance to the threshold rather than which side
+    // you're on — walking through it and turning right back around does not
+    // resurrect it, the door is gone the instant it's crossed
+    if (!doorFadedRef.current) {
+      const distToDoor = z - DOOR_Z
+      if (distToDoor <= 0.8) {
+        doorOpacityRef.current = Math.max(0, doorOpacityRef.current - dt * (0.82 / 0.4))
+        if (doorOpacityRef.current <= 0.001) doorFadedRef.current = true
+      }
+    }
+    if (doorMatRef.current) doorMatRef.current.opacity = doorOpacityRef.current
   })
   useEffect(() => clearGradeOverride, [])
+
+  // Wave M3: colliders. Room walls (door gap open at DOOR_Z/DOOR_W), the
+  // furniture, and the corridor's own side + far-end walls, all as one
+  // owner's rect list; bounds is one generous rect spanning the room and the
+  // full corridor length — the wall rects (not the bounds) are what actually
+  // give the corridor its narrower shape, same device GenericRoom's own
+  // corridor shell uses.
+  useEffect(() => {
+    const ownerId = 'bespoke:memento'
+    registerColliders(ownerId, [
+      // +Z wall, behind the entry camera
+      { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: ROOM_D / 2, maxZ: ROOM_D / 2 + WALL_T },
+      // -Z wall, split around the doorway
+      { minX: -ROOM_W / 2, maxX: -DOOR_W / 2, minZ: DOOR_Z - WALL_T, maxZ: DOOR_Z },
+      { minX: DOOR_W / 2, maxX: ROOM_W / 2, minZ: DOOR_Z - WALL_T, maxZ: DOOR_Z },
+      // room side walls
+      { minX: -ROOM_W / 2 - WALL_T, maxX: -ROOM_W / 2, minZ: DOOR_Z, maxZ: ROOM_D / 2 },
+      { minX: ROOM_W / 2, maxX: ROOM_W / 2 + WALL_T, minZ: DOOR_Z, maxZ: ROOM_D / 2 },
+      // corridor side walls
+      { minX: -CORR_W / 2 - WALL_T, maxX: -CORR_W / 2, minZ: DOOR_Z - CELLS * CELL_LEN, maxZ: DOOR_Z },
+      { minX: CORR_W / 2, maxX: CORR_W / 2 + WALL_T, minZ: DOOR_Z - CELLS * CELL_LEN, maxZ: DOOR_Z },
+      // corridor far end (the dead-end cap)
+      { minX: -CORR_W / 2, maxX: CORR_W / 2, minZ: DOOR_Z - CELLS * CELL_LEN - WALL_T, maxZ: DOOR_Z - CELLS * CELL_LEN },
+      // furniture (approximate axis-aligned footprints, expanded a little
+      // past each mesh's own local extent to absorb its small authored yaw)
+      { minX: -2.1, maxX: -0.6, minZ: 0.05, maxZ: 2.25 }, // bed
+      { minX: -1.9, maxX: -1.2, minZ: -0.68, maxZ: -0.12 }, // dresser
+      { minX: 1.1, maxX: 1.7, minZ: 1.1, maxZ: 1.6 }, // nightstand
+      { minX: 0.9, maxX: 2.2, minZ: -1.05, maxZ: -0.45 }, // bathroom sink counter
+    ])
+    setBounds(ownerId, {
+      kind: 'rect',
+      minX: -ROOM_W / 2 + 0.02,
+      maxX: ROOM_W / 2 - 0.02,
+      minZ: DOOR_Z - CELLS * CELL_LEN - 0.3,
+      maxZ: ROOM_D / 2 - 0.02,
+    })
+    return () => clearOwner(ownerId)
+  }, [])
 
   useRoomAudio(startMementoAudio)
 
@@ -585,15 +594,14 @@ export default function Memento({ film, config, goToStation, doors = [], onDoor 
       />
 
       {/* door + corridor. The slab is purely the visual "closed door" look
-          from the room side (nearly opaque black filling the frame); the
-          actual click target is the i=0 boundary catcher in
-          CorridorClickPlanes just behind it. */}
+          from the room side (nearly opaque black filling the frame); its
+          opacity is driven imperatively in the useFrame above (a distance-
+          to-threshold fade, not a station index). */}
       <mesh position={[0, DOOR_H / 2 - 0.05, DOOR_Z + 0.01]}>
         <planeGeometry args={[DOOR_W - 0.06, DOOR_H - 0.1]} />
-        <meshBasicMaterial color="#000000" transparent opacity={stationIndex < 0 ? 0.82 : 0} depthWrite={false} />
+        <meshBasicMaterial ref={doorMatRef} color="#000000" transparent opacity={0.82} depthWrite={false} />
       </mesh>
 
-      <CorridorClickPlanes onAdvance={moveOneStep} />
       <CorridorEndCap />
       {Array.from({ length: CELLS }, (_, i) => {
         const level = clamp(maxIndex - i, 0, 2)
