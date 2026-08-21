@@ -165,15 +165,15 @@
  "lessons": [
   {
    "weight": 5,
-   "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them."
+   "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them. Weight recency of influence when reaching for older classics."
   },
   {
    "weight": 5,
-   "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes."
+   "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes. He does line-item accounting: strong acts still get paid even when one act fumbles."
   },
   {
    "weight": 5,
-   "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time."
+   "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time. Corollary: a film that plays deliberately flat for an hour to hide a swerve is paying in the wrong currency, because he clocks it early anyway and resents the decoy hour."
   },
   {
    "weight": 4,
@@ -181,19 +181,23 @@
   },
   {
    "weight": 4,
-   "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them."
+   "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them. This is the strongest argument for mining the Hazy Wing."
   },
   {
    "weight": 4,
-   "rule": "The antibodies tax is not automatic. It applies when the pleasure is located in the surprise itself. When the pleasure is craft and scale-of-con, the movie wins anyway."
+   "rule": "The antibodies tax is not automatic on pre-2000 twist classics. It only applies when the film's pleasure is located in the surprise itself (The Game, 6.8). When the pleasure is located in craft and scale-of-con, a 2026 twist-brain fires past the movie and the movie wins anyway (The Sting, 9.6, highest pre-2000 score on the wall and a three-way tie at the 9.6 step). Pitch old classics on where the pleasure lives, not on spoiler-safety."
+  },
+  {
+   "weight": 4,
+   "rule": "The rating measures resonance, not craft. Well-made but no personal pull lands low-mid 7s; recommendation-worthy starts around 8. Quality is the floor, the number is what the film did to HIM."
   },
   {
    "weight": 3,
-   "rule": "Soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight."
+   "rule": "Runtime: soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight. Night owl, asleep around 2am, awake around 10am."
   },
   {
    "weight": 3,
-   "rule": "Group watches skew crowd-pleaser. His solo lane is headier."
+   "rule": "Group watches skew crowd-pleaser. His solo lane is headier. Factor guest context into recommendations when John and Tori are involved."
   },
   {
    "weight": 3,
@@ -205,27 +209,39 @@
   },
   {
    "weight": 3,
-   "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s. Character investment is a separate line item he docks for."
+   "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s for him. Visual and concept execution can be near perfect and it still falls short, because character investment is a separate line item he docks for, not a bonus."
   },
   {
    "weight": 3,
-   "rule": "A great post-movie conversation does not equal a great score. Discussion value and rating are separate currencies."
+   "rule": "A great post-movie conversation does not equal a great score. Sprawling ambient weirdness that never closes its hand lands mid-6s for him even when he theorizes about it enthusiastically the next morning. Discussion value and rating are separate currencies."
   },
   {
    "weight": 3,
-   "rule": "Structure films score by their human anchor. A loop executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9."
+   "rule": "Structure films score by their human anchor. A loop or puzzle executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9. Extends the thin-ensemble tax into the loop genre."
   },
   {
    "weight": 3,
-   "rule": "Movement and music are amplifiers, not foundations. They add real points to films that already have brains; alone they do not close a pitch."
+   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not."
   },
   {
    "weight": 3,
-   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys."
+   "rule": "Movement and music are amplifiers, not foundations. Choreography and score excellence add real points to films that already have brains; alone they do not close a pitch."
+  },
+  {
+   "weight": 3,
+   "rule": "Dread-marination pacing (slow zooms, held silences, refusing to cut, withholding) taxes Dixon even when he acknowledges it works. Anxiety and excitement are different currencies and his board only pays in excitement/momentum. Films that also demand rewatch homework to assemble their lore cap out in the high 6s regardless of craft or back-half payoff."
+  },
+  {
+   "weight": 3,
+   "rule": "His villain currency is theatrical relish, not menace. A villain who is having fun and knows what movie he is in (sassy, campy, quotable) outranks dread-based villains on his board. Camp spectacle is a live pick lane, not just counterprogramming filler."
+  },
+  {
+   "weight": 3,
+   "rule": "LANE SATURATION: a 9.5+ score closes its lane for roughly a week. Do not pitch the same lane's other masterpiece as the very next card, even a same-director continuation with a rotated key. The meal is finished; counterprogram instead and let him raise the lane himself."
   }
  ],
- "count": 35,
- "avg": 8.51,
+ "count": 41,
+ "avg": 8.46,
  "films": [
   {
    "slug": "memento",
@@ -295,37 +311,38 @@
    "rewatch": false
   },
   {
-   "slug": "matrix",
-   "title": "The Matrix",
+   "slug": "the-departed",
+   "title": "The Departed",
    "score": 9.9,
-   "watched": "2026-08-04",
+   "watched": "2026-08-18",
    "state": "ledger",
    "palette": {
-    "bg": "#0B0E0C",
-    "fg": "#DCE8DE",
-    "sub": "#3F6B4A",
-    "acc": "#3F6B4A",
-    "glyph": "◑"
+    "bg": "#1A130C",
+    "fg": "#EFE3CE",
+    "sub": "#8A7355",
+    "acc": "#C9A227",
+    "glyph": "✕"
    },
-   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='0' x2='40' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 10' opacity='.6'/><line x1='80' y1='0' x2='80' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 14' opacity='.4'/><line x1='156' y1='0' x2='156' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 8' opacity='.5'/><line x1='196' y1='0' x2='196' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 12' opacity='.3'/><circle cx='98' cy='118' r='18' fill='#DCE8DE' opacity='.15'/><path d='M98 100 a18 18 0 0 1 0 36 Z' fill='#DCE8DE'/><path d='M98 100 a18 18 0 0 0 0 36 Z' fill='#0B0E0C' stroke='#DCE8DE' stroke-width='1.5'/></svg>",
-   "poster": "posters/matrix.jpg",
-   "year": 1999,
-   "runtime": 136,
+   "front": null,
+   "poster": "posters/the-departed.jpg",
+   "year": 2006,
+   "runtime": 151,
    "genres": [
-    "Action",
-    "Science Fiction"
+    "Drama",
+    "Thriller",
+    "Crime"
    ],
    "director": [
-    "Lana Wachowski",
-    "Lilly Wachowski"
+    "Martin Scorsese"
    ],
-   "panel": "<section class=\"panel matrix\">\n  <div class=\"no\">No. 3</div>\n  <div class=\"head\"><div class=\"film\">The Matrix<span>1999</span></div><div class=\"score\">9.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, evening banger &middot; Peacock &middot; first watch of a classic</div>\n  <p class=\"plot\">Neo takes the red pill and finds out the world he has been living in is a simulation running on top of humanity as a power source, and that he might be the one person who can fight back inside it. The Wachowskis built an entire visual language for slowed and bent physics that everything after has been quoting since.</p>\n  <p class=\"quote\">\"HOWWWW have i never seen that movie before?! Screamed out loud at 'dodge this.'\"</p>\n  <p class=\"debrief\">The single highest first-watch score on the wall not named Sicario. First-time viewing of a 26-year-old film that still landed as an event, straight into the antibodies conversation: this is the movie the antibodies doctrine explicitly does not apply to, because the reveal itself was never the pleasure, the movement and the execution were, and both still hit at full strength decades and a thousand imitators later.</p>\n</section>",
+   "panel": "<section class=\"panel the-departed\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">The Departed<span>2006</span></div><div class=\"score\">9.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 18 &middot; solo &middot; divorce papers signed that morning &middot; rental &middot; MR. SCORSESE</div>\n  <p class=\"plot\">South Boston. Frank Costello buys a boy with groceries and comic books and grows him into a cop. The state takes another boy, erases his record, and plants him in the gang. Two moles, one war, and every scene is information changing hands at a price. Billy pays in pills and identity. Colin pays nothing, collects promotions, decorates his lie with a view of the golden dome. Then both organizations learn there is a rat, and the movie becomes two men racing to identify each other before they are identified. The elevator doors open and the smartest man in the film dies of a one-fact gap, mid-sentence, no music, no warning. The city moves on. Dignam does not.</p>\n  <p class=\"verdict\">Rat on rat on rat on rat and not believing anybody on not believing anybody. Sided with Billy the whole way, fuck Colin, then stopped mid-sentence: Colin was a child, he was groomed, he was made to be that. The movie hands you the hate and then hands you the asterisk. The elevator is the reveal doctrine in its purest form ever logged: an event, not an exposition, detonating in real time. Full cast overload in the first fifteen minutes and nobody coasts. Took the 9.9 and pushed The Matrix down a tenth to make room. The rat on the railing is on the nose and earned it.</p>\n</section>",
    "vibes": [
-    "mind-blowing",
-    "fun",
-    "movement-design",
-    "sci-fi",
-    "first-watch-of-a-classic"
+    "momentum",
+    "paranoia",
+    "reveal-as-event",
+    "ensemble",
+    "crime",
+    "scorsese"
    ],
    "rewatch": false
   },
@@ -396,6 +413,41 @@
     "chaos"
    ],
    "rewatch": true
+  },
+  {
+   "slug": "matrix",
+   "title": "The Matrix",
+   "score": 9.8,
+   "watched": "2026-08-04",
+   "state": "ledger",
+   "palette": {
+    "bg": "#0B0E0C",
+    "fg": "#DCE8DE",
+    "sub": "#3F6B4A",
+    "acc": "#3F6B4A",
+    "glyph": "◑"
+   },
+   "front": "<svg viewBox='0 0 236 236' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='0' x2='40' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 10' opacity='.6'/><line x1='80' y1='0' x2='80' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 14' opacity='.4'/><line x1='156' y1='0' x2='156' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 8' opacity='.5'/><line x1='196' y1='0' x2='196' y2='236' stroke='#3F6B4A' stroke-width='2' stroke-dasharray='3 12' opacity='.3'/><circle cx='98' cy='118' r='18' fill='#DCE8DE' opacity='.15'/><path d='M98 100 a18 18 0 0 1 0 36 Z' fill='#DCE8DE'/><path d='M98 100 a18 18 0 0 0 0 36 Z' fill='#0B0E0C' stroke='#DCE8DE' stroke-width='1.5'/></svg>",
+   "poster": "posters/matrix.jpg",
+   "year": 1999,
+   "runtime": 136,
+   "genres": [
+    "Action",
+    "Science Fiction"
+   ],
+   "director": [
+    "Lana Wachowski",
+    "Lilly Wachowski"
+   ],
+   "panel": "<section class=\"panel matrix\">\n  <div class=\"no\">No. 3</div>\n  <div class=\"head\"><div class=\"film\">The Matrix<span>1999</span></div><div class=\"score\">9.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, evening banger &middot; Peacock &middot; first watch of a classic</div>\n  <p class=\"plot\">Neo takes the red pill and finds out the world he has been living in is a simulation running on top of humanity as a power source, and that he might be the one person who can fight back inside it. The Wachowskis built an entire visual language for slowed and bent physics that everything after has been quoting since.</p>\n  <p class=\"quote\">\"HOWWWW have i never seen that movie before?! Screamed out loud at 'dodge this.'\"</p>\n  <p class=\"debrief\">The single highest first-watch score on the wall not named Sicario. First-time viewing of a 26-year-old film that still landed as an event, straight into the antibodies conversation: this is the movie the antibodies doctrine explicitly does not apply to, because the reveal itself was never the pleasure, the movement and the execution were, and both still hit at full strength decades and a thousand imitators later.</p>\n</section>",
+   "vibes": [
+    "mind-blowing",
+    "fun",
+    "movement-design",
+    "sci-fi",
+    "first-watch-of-a-classic"
+   ],
+   "rewatch": false
   },
   {
    "slug": "enemy",
@@ -908,6 +960,76 @@
    "rewatch": false
   },
   {
+   "slug": "masters-of-the-universe-2026",
+   "title": "Masters of the Universe",
+   "score": 8.5,
+   "watched": "2026-08-20",
+   "state": "ledger",
+   "palette": {
+    "bg": "#120B1E",
+    "fg": "#EDE6F7",
+    "sub": "#7E6C9E",
+    "acc": "#7FD34E",
+    "glyph": "⚔"
+   },
+   "front": null,
+   "poster": "posters/masters-of-the-universe-2026.jpg",
+   "year": 2026,
+   "runtime": 141,
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Science Fiction"
+   ],
+   "director": [
+    "Travis Knight"
+   ],
+   "panel": "<section class=\"panel masters-of-the-universe-2026\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Masters of the Universe<span>2026</span></div><div class=\"score\">8.5<small> /10</small></div></div>\n  <div class=\"meta\">Aug 20 &middot; solo &middot; independent-woman night &middot; Prime &middot; found it himself</div>\n  <p class=\"plot\">Prince Adam crash-lands on Earth as a kid and grows up separated from the Sword of Power. Fifteen years later the sword calls him home to Eternia, where Skeletor has the whole planet in a chokehold and is having the time of his life about it. Adam teams with Teela and Man-At-Arms, retrieves the sword, and has to stop being a lost boy long enough to become the most powerful man in the universe, a title the movie knows is ridiculous and says out loud anyway. Bombed in theaters, resurrected as a streaming monster, which is a very He-Man arc when you think about it.</p>\n  <p class=\"verdict\">Loved every minute. Skeletor claimed the favorite-villain throne on arrival: Leto in full sassy theatrical relish while the hero stays shirted, a costuming decision logged here as a crime. The bad names are the point, the muscles are the text, the queer read is barely a read. Found it alone after bailing on Goodfellas in twenty seconds, which tells you what the week actually wanted: not another tragedy, a party.</p>\n</section>",
+   "vibes": [
+    "camp",
+    "fun",
+    "spectacle",
+    "villain-forward",
+    "queer-read"
+   ],
+   "rewatch": false
+  },
+  {
+   "slug": "baby-driver",
+   "title": "Baby Driver",
+   "score": 8.4,
+   "watched": "2026-08-15",
+   "state": "ledger",
+   "palette": {
+    "bg": "#2A2620",
+    "fg": "#EDE7DA",
+    "sub": "#8B92A0",
+    "acc": "#8B92A0",
+    "glyph": ""
+   },
+   "front": null,
+   "poster": "posters/baby-driver.jpg",
+   "year": 2017,
+   "runtime": 113,
+   "genres": [
+    "Action",
+    "Crime"
+   ],
+   "director": [
+    "Edgar Wright"
+   ],
+   "panel": null,
+   "vibes": [
+    "music-sync",
+    "choreographed",
+    "heist",
+    "momentum",
+    "iconic-soundtrack",
+    "fun"
+   ],
+   "rewatch": false
+  },
+  {
    "slug": "ncfom",
    "title": "No Country for Old Men",
    "score": 8.3,
@@ -941,6 +1063,35 @@
     "split-watch",
     "masterful"
    ],
+   "rewatch": false
+  },
+  {
+   "slug": "rogue-one",
+   "title": "Rogue One: A Star Wars Story",
+   "score": 8.2,
+   "watched": "2026-08-17",
+   "state": "ledger",
+   "palette": {
+    "bg": "#2A2620",
+    "fg": "#EDE7DA",
+    "sub": "#8B92A0",
+    "acc": "#8B92A0",
+    "glyph": ""
+   },
+   "front": null,
+   "poster": "posters/rogue-one.jpg",
+   "year": 2016,
+   "runtime": 133,
+   "genres": [
+    "Action",
+    "Adventure",
+    "Science Fiction"
+   ],
+   "director": [
+    "Gareth Edwards"
+   ],
+   "panel": null,
+   "vibes": [],
    "rewatch": false
   },
   {
@@ -1257,6 +1408,43 @@
    "rewatch": false
   },
   {
+   "slug": "oblivion",
+   "title": "Oblivion",
+   "score": 7.4,
+   "watched": "2026-08-15",
+   "state": "ledger",
+   "palette": {
+    "bg": "#2A2620",
+    "fg": "#EDE7DA",
+    "sub": "#8B92A0",
+    "acc": "#8B92A0",
+    "glyph": ""
+   },
+   "front": null,
+   "poster": "posters/oblivion.jpg",
+   "year": 2013,
+   "runtime": 124,
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure",
+    "Mystery"
+   ],
+   "director": [
+    "Joseph Kosinski"
+   ],
+   "panel": null,
+   "vibes": [
+    "space",
+    "high-tech",
+    "slick",
+    "reveal-driven",
+    "kosinski",
+    "momentum"
+   ],
+   "rewatch": false
+  },
+  {
    "slug": "sunshine",
    "title": "Sunshine",
    "score": 7.4,
@@ -1320,6 +1508,42 @@
     "twisty",
     "well-made",
     "predictable"
+   ],
+   "rewatch": false
+  },
+  {
+   "slug": "hereditary",
+   "title": "Hereditary",
+   "score": 6.7,
+   "watched": "2026-08-14",
+   "state": "ledger",
+   "palette": {
+    "bg": "#2A2620",
+    "fg": "#EDE7DA",
+    "sub": "#8B92A0",
+    "acc": "#8B92A0",
+    "glyph": ""
+   },
+   "front": null,
+   "poster": "posters/hereditary.jpg",
+   "year": 2018,
+   "runtime": 128,
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "Ari Aster"
+   ],
+   "panel": null,
+   "vibes": [
+    "dread",
+    "slow-burn",
+    "grief-horror",
+    "shock",
+    "coronation",
+    "endurance-event"
    ],
    "rewatch": false
   },
@@ -1587,6 +1811,22 @@
    "relation": "bad-memory-asset",
    "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
    "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "the-departed",
+   "to": "memento",
+   "relation": "calibration duel",
+   "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-departed",
+   "to": "matrix",
+   "relation": "displaced by decree",
+   "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
+   "weight": 3,
    "directional": true
   },
   {
@@ -2347,6 +2587,45 @@
    "affinity": null
   },
   {
+   "slug": "apollo-13",
+   "title": "Apollo 13",
+   "year": 1995,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
+   "poster": "posters/apollo-13.jpg",
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Ron Howard"
+   ],
+   "runtime": 140,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "armageddon",
+   "title": "Armageddon",
+   "year": 1998,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
+   "poster": "posters/armageddon.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Michael Bay"
+   ],
+   "runtime": 151,
+   "snap": null,
+   "affinity": null
+  },
+  {
    "slug": "black-swan",
    "title": "Black Swan",
    "year": 2010,
@@ -2363,6 +2642,38 @@
     "Darren Aronofsky"
    ],
    "runtime": 108,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "cosmos",
+   "title": "Cosmos",
+   "year": 2019,
+   "kind": "drawer",
+   "memory": null,
+   "note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "district-9",
+   "title": "District 9",
+   "year": 2009,
+   "kind": "drawer",
+   "memory": null,
+   "note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
+   "poster": "posters/district-9.jpg",
+   "genres": [
+    "Science Fiction"
+   ],
+   "director": [
+    "Neill Blomkamp"
+   ],
+   "runtime": 112,
    "snap": null,
    "affinity": null
   },
@@ -2384,6 +2695,46 @@
    "runtime": 114,
    "snap": null,
    "affinity": "liked"
+  },
+  {
+   "slug": "gravity",
+   "title": "Gravity",
+   "year": 2013,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
+   "poster": "posters/gravity.jpg",
+   "genres": [
+    "Science Fiction",
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "Alfonso Cuarón"
+   ],
+   "runtime": 91,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "guardians-of-the-galaxy",
+   "title": "Guardians of the Galaxy",
+   "year": 2014,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen — confirmed 2026-08-17 lightning round",
+   "poster": "posters/guardians-of-the-galaxy.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "James Gunn"
+   ],
+   "runtime": 121,
+   "snap": null,
+   "affinity": null
   },
   {
    "slug": "james-bond",
@@ -2464,7 +2815,7 @@
    "year": 2015,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago, rewatch overdue",
+   "note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
    "poster": "posters/mad-max-fury-road.jpg",
    "genres": [
     "Action",
@@ -2579,6 +2930,26 @@
    "affinity": null
   },
   {
+   "slug": "project-hail-mary",
+   "title": "Project Hail Mary",
+   "year": 2026,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
+   "poster": "posters/project-hail-mary.jpg",
+   "genres": [
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Phil Lord",
+    "Christopher Miller"
+   ],
+   "runtime": 157,
+   "snap": "a science teacher wakes up alone in deep space and has to save the sun with chemistry.",
+   "affinity": "favorite"
+  },
+  {
    "slug": "shutter-island",
    "title": "Shutter Island",
    "year": 2010,
@@ -2593,6 +2964,26 @@
    ],
    "director": [
     "Martin Scorsese"
+   ],
+   "runtime": 138,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "sinners",
+   "title": "Sinners",
+   "year": 2025,
+   "kind": "drawer",
+   "memory": null,
+   "note": "confirmed seen 2026-08-14 at pick time, no memory score yet",
+   "poster": "posters/sinners.jpg",
+   "genres": [
+    "Horror",
+    "Action",
+    "Thriller"
+   ],
+   "director": [
+    "Ryan Coogler"
    ],
    "runtime": 138,
    "snap": null,
@@ -2622,6 +3013,46 @@
    "affinity": null
   },
   {
+   "slug": "star-trek",
+   "title": "Star Trek",
+   "year": 2009,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen — confirmed 2026-08-17 during pitch",
+   "poster": "posters/star-trek.jpg",
+   "genres": [
+    "Science Fiction",
+    "Action",
+    "Adventure"
+   ],
+   "director": [
+    "J.J. Abrams"
+   ],
+   "runtime": 127,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "the-cabin-in-the-woods",
+   "title": "The Cabin in the Woods",
+   "year": 2012,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen — confirmed 2026-08-17 during slate pitch",
+   "poster": "posters/the-cabin-in-the-woods.jpg",
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Comedy"
+   ],
+   "director": [
+    "Drew Goddard"
+   ],
+   "runtime": 95,
+   "snap": null,
+   "affinity": null
+  },
+  {
    "slug": "dragon-tattoo",
    "title": "The Girl with the Dragon Tattoo",
    "year": 2011,
@@ -2647,7 +3078,7 @@
    "year": 2015,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago",
+   "note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
    "poster": "posters/the-martian.jpg",
    "genres": [
     "Science Fiction",
@@ -2660,6 +3091,46 @@
    "runtime": 141,
    "snap": "an astronaut left for dead on Mars decides to science his way home.",
    "affinity": "favorite"
+  },
+  {
+   "slug": "us",
+   "title": "Us",
+   "year": 2019,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen — confirmed 2026-08-17 during slate pitch",
+   "poster": "posters/us.jpg",
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "Jordan Peele"
+   ],
+   "runtime": 116,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "war-of-the-worlds",
+   "title": "War of the Worlds",
+   "year": 2005,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
+   "poster": "posters/war-of-the-worlds.jpg",
+   "genres": [
+    "Adventure",
+    "Thriller",
+    "Science Fiction"
+   ],
+   "director": [
+    "Steven Spielberg"
+   ],
+   "runtime": 117,
+   "snap": null,
+   "affinity": null
   },
   {
    "slug": "west-side-story",

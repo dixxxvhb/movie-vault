@@ -294,7 +294,10 @@ _dupes = []
 
 for a in ARCHIVE_IN:
     note = a.get("seen_note") or ""
-    m = MEMORY_RE.search(note)
+    # Parenthesized asides can cite ANOTHER film's memory score ("asteroid
+    # rematch vs Deep Impact (memory 10.0)") — classify on the note with the
+    # asides removed, or the aside's number gets pinned on the wrong film.
+    m = MEMORY_RE.search(re.sub(r"\([^)]*\)", "", note))
     memory = float(m.group(1)) if m else None
     if memory is None and not KNOWN_DARK_RE.search(note):
         _unclassified.append("%s -> %r" % (a["slug"], note))

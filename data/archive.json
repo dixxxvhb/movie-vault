@@ -1,5 +1,4 @@
 {
- "_source": "film_titles where seen_before and no film_log row -- re-pulled 2026-08-13 from swjqlfcqvcrnydpyjyog after two DB repairs: the duplicate bare 'The Prestige' row was deleted (it was referenced by nothing), and the six rows with no poster_path were filled in. Nope / Old / The Girl with the Dragon Tattoo got their real TMDB records. The four franchise-or-run rows have NO single film behind them, so each carries the poster of the entry that stands for the run -- Bond: Casino Royale (2006), Bourne: The Bourne Identity (2002), LOTR: The Fellowship of the Ring (2001), Apes: Rise of the Planet of the Apes (2011). Deliberately still no runtime or director on those four: the row is a run, and one film's credits would be a lie. seen_note stays RAW -- emit_vault_data.py parses 'memory N.N' out of it to split the Shoebox from the Dark Drawer. Do not pre-parse here; the note is the evidence, the split is code.",
  "archive": [
   {
    "slug": "10-cloverfield-lane",
@@ -17,6 +16,37 @@
     "Dan Trachtenberg"
    ],
    "runtime": 104
+  },
+  {
+   "slug": "apollo-13",
+   "title": "Apollo 13",
+   "year": 1995,
+   "seen_note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
+   "poster": "/tVeKscCm2fY1xDXZk8PgnZ87h9S.jpg",
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Ron Howard"
+   ],
+   "runtime": 140
+  },
+  {
+   "slug": "armageddon",
+   "title": "Armageddon",
+   "year": 1998,
+   "seen_note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
+   "poster": "/eTM3qtGhDU8cvjpoa6KEt5E2auU.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Michael Bay"
+   ],
+   "runtime": 151
   },
   {
    "slug": "arrival",
@@ -129,6 +159,16 @@
    "runtime": 150
   },
   {
+   "slug": "cosmos",
+   "title": "Cosmos",
+   "year": 2019,
+   "seen_note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
+   "poster": null,
+   "genres": [],
+   "director": [],
+   "runtime": null
+  },
+  {
    "slug": "deep-impact",
    "title": "Deep Impact",
    "year": 1998,
@@ -143,6 +183,20 @@
     "Mimi Leder"
    ],
    "runtime": 122
+  },
+  {
+   "slug": "district-9",
+   "title": "District 9",
+   "year": 2009,
+   "seen_note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
+   "poster": "/tuGlQkqLxnodDSk6mp5c2wvxUEd.jpg",
+   "genres": [
+    "Science Fiction"
+   ],
+   "director": [
+    "Neill Blomkamp"
+   ],
+   "runtime": 112
   },
   {
    "slug": "dont-look-up",
@@ -273,6 +327,38 @@
    "runtime": 149
   },
   {
+   "slug": "gravity",
+   "title": "Gravity",
+   "year": 2013,
+   "seen_note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
+   "poster": "/kZ2nZw8D681aphje8NJi8EfbL1U.jpg",
+   "genres": [
+    "Science Fiction",
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "Alfonso Cuarón"
+   ],
+   "runtime": 91
+  },
+  {
+   "slug": "guardians-of-the-galaxy",
+   "title": "Guardians of the Galaxy",
+   "year": 2014,
+   "seen_note": "seen — confirmed 2026-08-17 lightning round",
+   "poster": "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg",
+   "genres": [
+    "Action",
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "James Gunn"
+   ],
+   "runtime": 121
+  },
+  {
    "slug": "inception",
    "title": "Inception",
    "year": 2010,
@@ -382,7 +468,7 @@
    "slug": "mad-max-fury-road",
    "title": "Mad Max: Fury Road",
    "year": 2015,
-   "seen_note": "hazy — seen long ago, rewatch overdue",
+   "seen_note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
    "poster": "/ulcAi4dKpAjHwYGS08vNyx9H6I9.jpg",
    "genres": [
     "Action",
@@ -532,6 +618,22 @@
    "runtime": 153
   },
   {
+   "slug": "project-hail-mary",
+   "title": "Project Hail Mary",
+   "year": 2026,
+   "seen_note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
+   "poster": "/yihdXomYb5kTeSivtFndMy5iDmf.jpg",
+   "genres": [
+    "Science Fiction",
+    "Adventure"
+   ],
+   "director": [
+    "Phil Lord",
+    "Christopher Miller"
+   ],
+   "runtime": 157
+  },
+  {
    "slug": "saw",
    "title": "Saw",
    "year": 2004,
@@ -560,6 +662,22 @@
    ],
    "director": [
     "Martin Scorsese"
+   ],
+   "runtime": 138
+  },
+  {
+   "slug": "sinners",
+   "title": "Sinners",
+   "year": 2025,
+   "seen_note": "confirmed seen 2026-08-14 at pick time, no memory score yet",
+   "poster": "/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
+   "genres": [
+    "Horror",
+    "Action",
+    "Thriller"
+   ],
+   "director": [
+    "Ryan Coogler"
    ],
    "runtime": 138
   },
@@ -597,6 +715,22 @@
     "Rodney Rothman"
    ],
    "runtime": 117
+  },
+  {
+   "slug": "star-trek",
+   "title": "Star Trek",
+   "year": 2009,
+   "seen_note": "seen — confirmed 2026-08-17 during pitch",
+   "poster": "/9vaRPXj44Q2meHgt3VVfQufiHOJ.jpg",
+   "genres": [
+    "Science Fiction",
+    "Action",
+    "Adventure"
+   ],
+   "director": [
+    "J.J. Abrams"
+   ],
+   "runtime": 127
   },
   {
    "slug": "step-up",
@@ -642,6 +776,22 @@
    "runtime": null
   },
   {
+   "slug": "the-cabin-in-the-woods",
+   "title": "The Cabin in the Woods",
+   "year": 2012,
+   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "poster": "/zZZe5wn0udlhMtdlDjN4NB72R6e.jpg",
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Comedy"
+   ],
+   "director": [
+    "Drew Goddard"
+   ],
+   "runtime": 95
+  },
+  {
    "slug": "dragon-tattoo",
    "title": "The Girl with the Dragon Tattoo",
    "year": 2011,
@@ -671,7 +821,7 @@
    "slug": "the-martian",
    "title": "The Martian",
    "year": 2015,
-   "seen_note": "hazy — seen long ago",
+   "seen_note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
    "poster": "/fASz8A0yFE3QB6LgGoOfwvFSseV.jpg",
    "genres": [
     "Science Fiction",
@@ -760,6 +910,38 @@
     "James Cameron"
    ],
    "runtime": 194
+  },
+  {
+   "slug": "us",
+   "title": "Us",
+   "year": 2019,
+   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "poster": "/ux2dU1jQ2ACIMShzB3yP93Udpzc.jpg",
+   "genres": [
+    "Horror",
+    "Mystery",
+    "Thriller"
+   ],
+   "director": [
+    "Jordan Peele"
+   ],
+   "runtime": 116
+  },
+  {
+   "slug": "war-of-the-worlds",
+   "title": "War of the Worlds",
+   "year": 2005,
+   "seen_note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
+   "poster": "/6Biy7R9LfumYshur3YKhpj56MpB.jpg",
+   "genres": [
+    "Adventure",
+    "Thriller",
+    "Science Fiction"
+   ],
+   "director": [
+    "Steven Spielberg"
+   ],
+   "runtime": 117
   },
   {
    "slug": "west-side-story",

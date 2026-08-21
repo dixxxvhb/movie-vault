@@ -443,5 +443,83 @@
   "director": [
    "Steven Spielberg"
   ]
+ },
+ "the-departed": {
+  "year": 2006,
+  "runtime": 151,
+  "poster": "/nT97ifVT2J1yMQmeq20Qblg61T.jpg",
+  "genres": [
+   "Drama",
+   "Thriller",
+   "Crime"
+  ],
+  "director": [
+   "Martin Scorsese"
+  ]
+ },
+ "masters-of-the-universe-2026": {
+  "year": 2026,
+  "runtime": 141,
+  "poster": "/oRuyGUHdoaQxWP3SDfafGkStxTC.jpg",
+  "genres": [
+   "Action",
+   "Fantasy",
+   "Science Fiction"
+  ],
+  "director": [
+   "Travis Knight"
+  ]
+ },
+ "baby-driver": {
+  "year": 2017,
+  "runtime": 113,
+  "poster": "/tYzFuYXmT8LOYASlFCkaPiAFAl0.jpg",
+  "genres": [
+   "Action",
+   "Crime"
+  ],
+  "director": [
+   "Edgar Wright"
+  ]
+ },
+ "hereditary": {
+  "year": 2018,
+  "runtime": 128,
+  "poster": "/4GFPuL14eXi66V96xBWY73Y9PfR.jpg",
+  "genres": [
+   "Horror",
+   "Mystery",
+   "Thriller"
+  ],
+  "director": [
+   "Ari Aster"
+  ]
+ },
+ "oblivion": {
+  "year": 2013,
+  "runtime": 124,
+  "poster": "/bYLM3GpNUZnoFElPXp1zlhDPdtv.jpg",
+  "genres": [
+   "Action",
+   "Science Fiction",
+   "Adventure",
+   "Mystery"
+  ],
+  "director": [
+   "Joseph Kosinski"
+  ]
+ },
+ "rogue-one": {
+  "year": 2016,
+  "runtime": 133,
+  "poster": "/i0yw1mFbB7sNGHCs7EXZPzFkdA1.jpg",
+  "genres": [
+   "Action",
+   "Adventure",
+   "Science Fiction"
+  ],
+  "director": [
+   "Gareth Edwards"
+  ]
  }
 }

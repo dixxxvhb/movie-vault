@@ -1,20 +1,80 @@
 {
- "_source": "film_lessons where scope = 'taste' and active, pulled 2026-08-13. Deliberately taste only: the protocol/design/ritual rows are instructions for how Claude behaves, not facts about what Dixon likes, and hanging those on the wall would be the room talking to itself.",
  "lessons": [
-  {"weight": 5, "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them."},
-  {"weight": 5, "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes."},
-  {"weight": 5, "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time."},
-  {"weight": 4, "rule": "Never split a tension movie across two nights. The held breath breaks and it costs the film real points."},
-  {"weight": 4, "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them."},
-  {"weight": 4, "rule": "The antibodies tax is not automatic. It applies when the pleasure is located in the surprise itself. When the pleasure is craft and scale-of-con, the movie wins anyway."},
-  {"weight": 3, "rule": "Soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight."},
-  {"weight": 3, "rule": "Group watches skew crowd-pleaser. His solo lane is headier."},
-  {"weight": 3, "rule": "Sleepy nights need brains WITH the motion. The choreography button alone does not close a pitch."},
-  {"weight": 3, "rule": "The light and fun shelf is viable and was understocked. Counterprogramming against his dread lane works."},
-  {"weight": 3, "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s. Character investment is a separate line item he docks for."},
-  {"weight": 3, "rule": "A great post-movie conversation does not equal a great score. Discussion value and rating are separate currencies."},
-  {"weight": 3, "rule": "Structure films score by their human anchor. A loop executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9."},
-  {"weight": 3, "rule": "Movement and music are amplifiers, not foundations. They add real points to films that already have brains; alone they do not close a pitch."},
-  {"weight": 3, "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys."}
+  {
+   "weight": 5,
+   "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them. Weight recency of influence when reaching for older classics."
+  },
+  {
+   "weight": 5,
+   "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes. He does line-item accounting: strong acts still get paid even when one act fumbles."
+  },
+  {
+   "weight": 5,
+   "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time. Corollary: a film that plays deliberately flat for an hour to hide a swerve is paying in the wrong currency, because he clocks it early anyway and resents the decoy hour."
+  },
+  {
+   "weight": 4,
+   "rule": "Never split a tension movie across two nights. The held breath breaks and it costs the film real points."
+  },
+  {
+   "weight": 4,
+   "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them. This is the strongest argument for mining the Hazy Wing."
+  },
+  {
+   "weight": 4,
+   "rule": "The antibodies tax is not automatic on pre-2000 twist classics. It only applies when the film's pleasure is located in the surprise itself (The Game, 6.8). When the pleasure is located in craft and scale-of-con, a 2026 twist-brain fires past the movie and the movie wins anyway (The Sting, 9.6, highest pre-2000 score on the wall and a three-way tie at the 9.6 step). Pitch old classics on where the pleasure lives, not on spoiler-safety."
+  },
+  {
+   "weight": 4,
+   "rule": "The rating measures resonance, not craft. Well-made but no personal pull lands low-mid 7s; recommendation-worthy starts around 8. Quality is the floor, the number is what the film did to HIM."
+  },
+  {
+   "weight": 3,
+   "rule": "Runtime: soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight. Night owl, asleep around 2am, awake around 10am."
+  },
+  {
+   "weight": 3,
+   "rule": "Group watches skew crowd-pleaser. His solo lane is headier. Factor guest context into recommendations when John and Tori are involved."
+  },
+  {
+   "weight": 3,
+   "rule": "Sleepy nights need brains WITH the motion. The choreography button alone does not close a pitch."
+  },
+  {
+   "weight": 3,
+   "rule": "The light and fun shelf is viable and was understocked. Counterprogramming against his dread lane works."
+  },
+  {
+   "weight": 3,
+   "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s for him. Visual and concept execution can be near perfect and it still falls short, because character investment is a separate line item he docks for, not a bonus."
+  },
+  {
+   "weight": 3,
+   "rule": "A great post-movie conversation does not equal a great score. Sprawling ambient weirdness that never closes its hand lands mid-6s for him even when he theorizes about it enthusiastically the next morning. Discussion value and rating are separate currencies."
+  },
+  {
+   "weight": 3,
+   "rule": "Structure films score by their human anchor. A loop or puzzle executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9. Extends the thin-ensemble tax into the loop genre."
+  },
+  {
+   "weight": 3,
+   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not."
+  },
+  {
+   "weight": 3,
+   "rule": "Movement and music are amplifiers, not foundations. Choreography and score excellence add real points to films that already have brains; alone they do not close a pitch."
+  },
+  {
+   "weight": 3,
+   "rule": "Dread-marination pacing (slow zooms, held silences, refusing to cut, withholding) taxes Dixon even when he acknowledges it works. Anxiety and excitement are different currencies and his board only pays in excitement/momentum. Films that also demand rewatch homework to assemble their lore cap out in the high 6s regardless of craft or back-half payoff."
+  },
+  {
+   "weight": 3,
+   "rule": "His villain currency is theatrical relish, not menace. A villain who is having fun and knows what movie he is in (sassy, campy, quotable) outranks dread-based villains on his board. Camp spectacle is a live pick lane, not just counterprogramming filler."
+  },
+  {
+   "weight": 3,
+   "rule": "LANE SATURATION: a 9.5+ score closes its lane for roughly a week. Do not pitch the same lane's other masterpiece as the very next card, even a same-director continuation with a rotated key. The meal is finished; counterprogram instead and let him raise the lane himself."
+  }
  ]
 }
