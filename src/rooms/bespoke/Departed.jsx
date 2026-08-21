@@ -186,6 +186,11 @@ function RoofShell({ grade }) {
           skyline height for a layered, filmic haze rather than a flat fog
           density number */}
       <FogLayers pos={[0, 2.4, -18]} size={[70, 10]} color="rgba(232,176,96,0.35)" opacity={0.22} speed={0.01} />
+      {/* Iteration 2: a second haze layer sitting BETWEEN the skyline's own
+          depth rows (z runs -16 to -46 in 5m steps) rather than only at the
+          front row — the missing depth cue the architect's "flat paper
+          cutout" verdict was really pointing at. */}
+      <FogLayers pos={[0, 2.1, -30]} size={[80, 9]} color="rgba(200,150,90,0.28)" opacity={0.16} speed={0.007} />
       {/* parapet: four low walls, gap-free — the rat gets its own segment.
           Bevel gives each run a manufactured concrete-cap edge instead of a
           naked box, and a Trim cap along the top catches the low golden key
@@ -225,9 +230,67 @@ function Skyline({ grade }) {
     ref.current.instanceMatrix.needsUpdate = true
   }, [boxes, dummy])
   return (
-    <instancedMesh ref={ref} args={[null, null, count]} key={count}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="#120e08" emissive={grade.key || '#e8b060'} emissiveIntensity={0.22} roughness={0.85} />
+    <>
+      <instancedMesh ref={ref} args={[null, null, count]} key={count}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="#120e08" emissive={grade.key || '#e8b060'} emissiveIntensity={0.22} roughness={0.85} />
+      </instancedMesh>
+      <SkylineWindows boxes={boxes} />
+    </>
+  )
+}
+
+// Iteration 2: sparse emissive window dots on the skyline's own front
+// (+Z-facing, camera-facing) faces — flat paper-cutout silhouettes read as
+// game-screenshot buildings once a scatter of lit windows breaks them up.
+// One instancedMesh, count keyed, seeded per-building so it's the same
+// scatter every mount rather than reshuffling on re-render. Deliberately
+// sparse (5-10% of each building's own window grid) and weighted toward
+// the lower floors, per the architect's own numbers.
+function SkylineWindows({ boxes }) {
+  const ref = useRef()
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const windows = useMemo(() => {
+    const out = []
+    boxes.forEach((b, bi) => {
+      let s = (bi * 92821 + 7) >>> 0
+      const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+      const rows = Math.max(2, Math.floor(b.h / 0.75))
+      const cols = Math.max(2, Math.floor(b.w / 0.4))
+      for (let row = 0; row < rows; row++) {
+        // denser toward lower floors: probability falls off going up
+        const fracUp = row / rows
+        const p = 0.1 * (1 - fracUp * 0.75)
+        for (let col = 0; col < cols; col++) {
+          if (r() < p) {
+            out.push({
+              x: b.x + (col + 0.5) / cols * b.w - b.w / 2,
+              y: (row + 0.5) / rows * b.h,
+              z: b.z + b.w / 2 + 0.02,
+            })
+          }
+        }
+      }
+    })
+    return out
+  }, [boxes])
+
+  useEffect(() => {
+    if (!ref.current) return
+    windows.forEach((w, i) => {
+      dummy.position.set(w.x, w.y, w.z)
+      dummy.scale.setScalar(0.09)
+      dummy.updateMatrix()
+      ref.current.setMatrixAt(i, dummy.matrix)
+    })
+    ref.current.instanceMatrix.needsUpdate = true
+  }, [windows, dummy])
+
+  if (!windows.length) return null
+  return (
+    <instancedMesh ref={ref} args={[null, null, windows.length]} key={windows.length}>
+      <planeGeometry args={[1, 1.5]} />
+      <meshBasicMaterial color="#fff3d0" toneMapped={false} fog={false} />
     </instancedMesh>
   )
 }
@@ -450,6 +513,67 @@ function CigaretteButts() {
 
 const ventBodyMat = standardMat({ kind: 'metal', tint: '#4a4438', wear: 0.55, roughness: 0.82, metalness: 0.3 })
 
+// Iteration 2: the bottom third of the wide frame — the roof foreground
+// right in front of the arrival station (camera at z=3.4, looking toward
+// -3.3) — was empty gravel with nothing to catch the eye or the low key
+// light. A low pipe run + a tar-seam patch crossing that zone, plus a
+// second huddle of cigarette butts under the room's own near-camera
+// practical (Departed.jsx's lights.practicals[1], pos [0,2.6,1.4]), gives
+// that band something to hold.
+const pipeMat = standardMat({ kind: 'metal', tint: '#3e382c', wear: 0.6, roughness: 0.75, metalness: 0.4 })
+const FOREGROUND_BUTT_SEEDS = [
+  [1.15, 2.05, 0.4], [1.32, 2.3, 1.1], [0.95, 2.5, -0.3], [1.4, 1.85, 2.0],
+]
+
+function ForegroundClutter() {
+  const tarTex = useMemo(() => makeTarSeamTexture(3.2, 1.6), [])
+  return (
+    <group>
+      {/* a low conduit/pipe run crossing the foreground, elbowed once so it
+          reads as routed plumbing rather than a stray cylinder */}
+      <group position={[1.1, 0, 1.6]}>
+        <mesh position={[0, 0.09, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.05, 0.05, 1.7, 10]} />
+          <primitive object={pipeMat} attach="material" />
+        </mesh>
+        <mesh position={[-0.85, 0.09, 0.5]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.05, 0.05, 1.0, 10]} />
+          <primitive object={pipeMat} attach="material" />
+        </mesh>
+        <mesh position={[-0.85, 0.09, 0]} rotation={[Math.PI / 4, 0, 0]}>
+          <cylinderGeometry args={[0.052, 0.052, 0.14, 10]} />
+          <primitive object={pipeMat} attach="material" />
+        </mesh>
+        {/* mounting brackets, small dark blocks pinning the run to the roof */}
+        {[-0.6, 0, 0.6].map((x, i) => (
+          <mesh key={i} position={[x, 0.05, 0]}>
+            <boxGeometry args={[0.06, 0.1, 0.1]} />
+            <meshStandardMaterial color="#211d16" roughness={0.7} />
+          </mesh>
+        ))}
+      </group>
+      {/* a tar-seam patch crossing the same zone — reuses the same texture
+          generator as the roof's own overlay, just a tighter local patch */}
+      <mesh position={[0.4, 0.004, 2.0]} rotation={[-Math.PI / 2, 0, 0.35]}>
+        <planeGeometry args={[3.2, 1.6]} />
+        <meshBasicMaterial map={tarTex} transparent opacity={0.7} depthWrite={false} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
+      </mesh>
+      {FOREGROUND_BUTT_SEEDS.map(([x, z, rot], i) => (
+        <group key={i} position={[x, 0.009, z]} rotation={[Math.PI / 2, 0, rot]}>
+          <mesh position={[0, -0.02, 0]}>
+            <cylinderGeometry args={[0.007, 0.007, 0.07, 6]} />
+            <meshStandardMaterial color="#e8e0cc" roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.025, 0]}>
+            <cylinderGeometry args={[0.0075, 0.0075, 0.02, 6]} />
+            <meshStandardMaterial color="#c9793a" roughness={0.7} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
 function RoofVentDossier({ film }) {
   const palette = sheetOf(film.palette)
   const [dossierTex, setDossierTex] = useState(null)
@@ -637,6 +761,7 @@ export default function Departed({ film, config, doors = [], onDoor }) {
       ))}
 
       <RoofVentDossier film={film} />
+      <ForegroundClutter />
 
       <DoorRow
         doors={doors}
