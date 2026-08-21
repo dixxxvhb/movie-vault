@@ -100,7 +100,10 @@ export function PressKind({ token, depress = 0.03, axis = 'y', event, children }
 }
 
 // slides or hinges a child open/closed; each touch toggles the state.
-export function OpenKind({ token, mode = 'slide', distance = 0.3, angle = Math.PI / 2, axis = 'z', children }) {
+// `hingeAxis` (Wave T bespoke reuse: Memento's note flip, Sicario's page
+// flip) lets hinge mode spin on Y instead of the drawer/door default X —
+// same toggle-and-damp shape, just a different rotation axis.
+export function OpenKind({ token, mode = 'slide', distance = 0.3, angle = Math.PI / 2, axis = 'z', hingeAxis = 'x', children }) {
   const group = useRef(null)
   const openState = useRef(false)
   const t = useRef(0)
@@ -118,7 +121,7 @@ export function OpenKind({ token, mode = 'slide', distance = 0.3, angle = Math.P
     t.current = THREE.MathUtils.damp(t.current, target, 6, dt)
     if (mode === 'hinge') {
       g.rotation.set(0, 0, 0)
-      g.rotation.x = -angle * t.current
+      g.rotation[hingeAxis] = -angle * t.current
     } else {
       g.position.set(0, 0, 0)
       g.position[axis] = distance * t.current

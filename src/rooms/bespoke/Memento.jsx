@@ -10,9 +10,11 @@ import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startMementoAudio } from '../audio/recipes/memento.js'
 import {
-  makeNoteTexture, makePolaroidTexture, makeFloorPolaroidTexture, makeMirrorNumeralTexture,
+  makeNoteTexture, makeNoteBackTexture, makePolaroidTexture, makeFloorPolaroidTexture, makeMirrorNumeralTexture,
 } from './mementoTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import Touchable from '../Touchable.jsx'
+import { OpenKind } from '../touchKinds.jsx'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -289,6 +291,40 @@ const WALL_ITEMS = (() => {
   return items
 })()
 
+// Wave T: a note quad you can touch to flip over. The wall's own base
+// orientation (position + rotation.y=PI/2 + the item's little per-note tilt)
+// stays on a static outer group, never animated — OpenKind's hinge mode
+// resets rotation before applying its own single axis, so the flip lives on
+// an INNER group instead, spinning on its own local Y on top of that fixed
+// orientation. Front/back are two coincident FrontSide planes rather than
+// one DoubleSide plane with two textures: rotating the pair 180 degrees is a
+// rigid transform, so the back page reads correctly (not mirrored) the
+// instant it's the one facing you.
+function FlippableNote({ it, w, h, frontTex }) {
+  const [token, setToken] = useState(0)
+  const backTex = useMemo(() => makeNoteBackTexture(it.seed), [it.seed])
+  useEffect(() => () => backTex.dispose(), [backTex])
+
+  return (
+    <group position={[-ROOM_W / 2 + 0.012, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
+      <Touchable onUse={() => setToken((t) => t + 1)} reach={2.4} foley="paper" anchor={[0, 0, 0]}>
+        <OpenKind token={token} mode="hinge" hingeAxis="y" angle={Math.PI}>
+          <mesh position={[0, 0, 0.0015]}>
+            <planeGeometry args={[w, h]} />
+            {frontTex
+              ? <meshStandardMaterial key="mapped" map={frontTex} emissiveMap={frontTex} emissive="#ffffff" emissiveIntensity={0.3} roughness={0.92} side={THREE.FrontSide} />
+              : <meshStandardMaterial key="blank" color="#e8dfc8" roughness={0.92} side={THREE.FrontSide} />}
+          </mesh>
+          <mesh position={[0, 0, -0.0015]} rotation={[0, Math.PI, 0]}>
+            <planeGeometry args={[w, h]} />
+            <meshStandardMaterial map={backTex} emissiveMap={backTex} emissive="#ffffff" emissiveIntensity={0.22} roughness={0.94} side={THREE.FrontSide} />
+          </mesh>
+        </OpenKind>
+      </Touchable>
+    </group>
+  )
+}
+
 function NoteWall() {
   const wallX = -ROOM_W / 2 + 0.012
   const texs = useBatchTextures(() =>
@@ -300,6 +336,11 @@ function NoteWall() {
         const tex = texs?.[i]
         const w = it.type === 'note' ? 0.24 : 0.165
         const h = it.type === 'note' ? 0.18 : 0.195
+        // every note quad flips (8 of them, comfortably past the "at least
+        // 6" law); polaroids stay static wall dressing, unchanged.
+        if (it.type === 'note') {
+          return <FlippableNote key={i} it={it} w={w} h={h} frontTex={tex} />
+        }
         return (
           <mesh key={i} position={[wallX, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
             <planeGeometry args={[w, h]} />
@@ -404,7 +445,17 @@ function ColdFlicker({ position }) {
 
 /* ------------------------------------------------------------- meta note */
 
-function Notepad({ film }) {
+// Wave T: the nightstand drawer. The nightstand itself is the plain `Table`
+// at [1.4,0,1.35] rot.y=-0.15 rendered below (the collider list already
+// calls this footprint "nightstand") — an open-leg table with no drawer body
+// of its own, so the drawer is new geometry mounted in its own local frame,
+// slid open/closed with the shared OpenKind. The meta notepad already sits
+// on this exact nightstand (film.slug's own record propped on top), so it's
+// reparented in here at the same local offset that reproduces its old world
+// position exactly when the drawer is closed — it rides out with the drawer
+// front rather than floating independently.
+function NightstandDrawer({ film }) {
+  const [token, setToken] = useState(0)
   const palette = sheetOf(film.palette)
   const [tex, setTex] = useState(null)
   useEffect(() => {
@@ -414,13 +465,37 @@ function Notepad({ film }) {
     return () => { live = false; t.dispose() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [film.slug])
+
   return (
-    <mesh position={[1.35, 0.66, 1.55]} rotation={[-Math.PI / 2, 0, -0.1]}>
-      <planeGeometry args={[0.42, 0.1]} />
-      {tex
-        ? <meshBasicMaterial key="mapped" map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
-        : <meshBasicMaterial key="blank" transparent opacity={0} />}
-    </mesh>
+    <group position={[1.4, 0, 1.35]} rotation={[0, -0.15, 0]}>
+      <Touchable onUse={() => setToken((t) => t + 1)} reach={2.2} foley="creak" anchor={[0, 0.4, 0.2]}>
+        <OpenKind token={token} mode="slide" axis="z" distance={0.16}>
+          {/* drawer carcass */}
+          <mesh position={[0, 0.34, 0.02]}>
+            <boxGeometry args={[0.4, 0.14, 0.34]} />
+            <meshStandardMaterial color="#1c1408" roughness={0.85} />
+          </mesh>
+          {/* drawer front */}
+          <mesh position={[0, 0.34, 0.19]}>
+            <boxGeometry args={[0.42, 0.16, 0.04]} />
+            <meshStandardMaterial color="#241a10" roughness={0.7} />
+          </mesh>
+          {/* pull */}
+          <mesh position={[0, 0.34, 0.215]}>
+            <boxGeometry args={[0.12, 0.02, 0.02]} />
+            <meshStandardMaterial color="#0e0a06" metalness={0.4} roughness={0.5} />
+          </mesh>
+          {/* the notepad, riding along — local offset chosen so the closed
+              pose lands exactly on its old world position [1.35,0.66,1.55] */}
+          <mesh position={[-0.02, 0.66, 0.205]} rotation={[-Math.PI / 2, 0.15, -0.1]}>
+            <planeGeometry args={[0.42, 0.1]} />
+            {tex
+              ? <meshBasicMaterial key="mapped" map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
+              : <meshBasicMaterial key="blank" transparent opacity={0} />}
+          </mesh>
+        </OpenKind>
+      </Touchable>
+    </group>
   )
 }
 
@@ -573,7 +648,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       <Table pos={[-1.55, 0, -0.4]} rot={[0, 0.1, 0]} w={0.6} d={0.45} h={0.55} color="#2c2014" />
       <PaperScatter pos={[-1.5, 0.56, -0.4]} rot={[Math.PI / 2, 0, 0]} count={10} area={[0.5, 0.4]} color="#e6dcc0" />
       <Table pos={[1.4, 0, 1.35]} rot={[0, -0.15, 0]} w={0.5} d={0.4} h={0.5} color="#3a2c1c" />
-      <Notepad film={film} />
+      <NightstandDrawer film={film} />
 
       {/* bathroom nook */}
       <Counter pos={[1.55, 0, -0.75]} rot={[0, -0.2, 0]} w={1.1} d={0.5} h={0.85} color="#8a8f92" />

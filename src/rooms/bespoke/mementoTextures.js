@@ -87,6 +87,40 @@ export function makeNoteTexture(text, seed) {
   return tex
 }
 
+// The back of a flippable wall note (Wave T): blank paper, one faint
+// scrawled stroke — never text, never a second fragment of the record. The
+// note wall's own "there's nothing else written here" beat.
+export function makeNoteBackTexture(seed) {
+  const W = 320, H = 240
+  const c = canvas(W, H)
+  const ctx = c.getContext('2d')
+  const r = rngFor(seed + 5500)
+
+  ctx.fillStyle = '#e8dfc6'
+  ctx.fillRect(0, 0, W, H)
+  paperGrain(ctx, W, H, r, 0.06)
+  ctx.strokeStyle = 'rgba(40,32,20,.14)'
+  ctx.lineWidth = 3
+  ctx.strokeRect(1.5, 1.5, W - 3, H - 3)
+
+  // one faint scrawled stroke, a loose pen gesture rather than a letterform
+  ctx.strokeStyle = 'rgba(28,23,16,.22)'
+  ctx.lineWidth = 2.5
+  ctx.lineCap = 'round'
+  const x0 = W * (0.22 + r() * 0.1), y0 = H * (0.4 + r() * 0.15)
+  const x1 = W * (0.4 + r() * 0.15), y1 = y0 + (r() - 0.5) * 40
+  const x2 = W * (0.7 + r() * 0.15), y2 = y0 + (r() - 0.5) * 50
+  ctx.beginPath()
+  ctx.moveTo(x0, y0)
+  ctx.quadraticCurveTo(x1, y1, x2, y2)
+  ctx.stroke()
+
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.needsUpdate = true
+  return tex
+}
+
 // A small polaroid on the wall: a moody, unresolved smear of a photo — never
 // an actual frame from anything, just enough shape to read as "a picture of
 // somewhere" from across the room.
