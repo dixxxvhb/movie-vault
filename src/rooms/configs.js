@@ -184,7 +184,23 @@ export const CONFIGS = {
     // as this room's resting state — the brief's base grade is cold blue-
     // grey night, with the orange only rolling through periodically
     // (ScheduledCut, mounted in the bespoke room itself, owns that beat).
-    grade: { bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.12 },
+    // Wave P1 finishing pass: grain/vignette/bloomIntensity tuned like a
+    // colorist for this film specifically — moody cold night, heavier
+    // vignette than a lit interior room since the sea wall is meant to feel
+    // like it's closing in at the edges of frame, and enough bloom to catch
+    // the billboard glow + the wet-concrete sheen pools without blowing out
+    // (the InfoPlinth's hot-take paper stays non-emissive, so it never
+    // competes with those two intended bloom sources).
+    // ambient lifted from 0.12: this room is a wide-open exterior (a 14m
+    // sea wall, not a tight box), so the point-light falloff alone leaves a
+    // bigger unlit gap between fixtures than a small interior does — a
+    // slightly higher floor keeps far reaches of the wall/deck from reading
+    // as pure void without flattening the grazing sheen the wetconcrete
+    // material depends on (see BR2049.jsx's own LightRig comment).
+    grade: {
+      bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.17,
+      grain: 0.07, vignette: 0.84, bloomIntensity: 0.4,
+    },
     camera: { pos: [0, 1.35, 3], look: [0, 1.05, -8], fov: 50, far: 200 },
     place: {
       shell: 'deck',

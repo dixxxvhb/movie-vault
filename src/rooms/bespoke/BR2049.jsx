@@ -14,6 +14,10 @@ import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim } from '../detail.jsx'
+import LightRig from '../lightRig.js'
+import { Rainlight } from '../atmosphere.jsx'
 
 // BLADE RUNNER 2049 (2017) · 9.8 · "the sea wall." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): night, driving rain, waves detonating
@@ -38,28 +42,6 @@ const STATIONS = { entry: ENTRY_STATION, wall: WALL_STATION, reflection: REFLECT
 /* ------------------------------------------------------------------ shell */
 
 const texCache = new Map()
-function concreteTexture(tint) {
-  const key = 'concrete|' + tint
-  if (texCache.has(key)) return texCache.get(key)
-  const S = 512
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  let s = 33
-  const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-  ctx.globalAlpha = 0.07
-  for (let i = 0; i < 2600; i++) {
-    ctx.fillStyle = r() > 0.5 ? '#000' : '#4a5a62'
-    ctx.fillRect(r() * S, r() * S, 1.6, 1.6)
-  }
-  ctx.globalAlpha = 1
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  texCache.set(key, tex)
-  return tex
-}
 
 // A 2-pixel-wide vertical gradient strip, stretched across the sky dome by
 // the geometry's own UVs — NOT a 512x512 canvas with a 2px-wide painted
@@ -84,14 +66,53 @@ function skyTexture(top, bottom) {
 }
 
 function SeaWallShell({ grade, onTouchDeck }) {
-  // Lightened from the first pass (#141a1e/#1c2226): against this room's
-  // low key light and heavy fog, that near-black concrete tint was
-  // indistinguishable from the void — the wall and deck effectively
-  // vanished even though they were rendering (QA sweep). A lighter
-  // blue-grey stock still reads as wet concrete under a cold key, but
-  // actually catches the light.
-  const floorTex = useMemo(() => concreteTexture('#2a3540'), [])
-  const wallTex = useMemo(() => concreteTexture('#333f48'), [])
+  // materials.js standardMat surfaces (Wave P1 finishing pass) replace the
+  // room's own hand-rolled canvas helper. `wetconcrete` gives the deck real
+  // sheen pools that catch the cold key at a grazing angle — the "wet
+  // concrete everywhere" the brief calls for. The wall and the two
+  // breakwater faces are all `concrete` but never share params (spec rule:
+  // no two adjacent surfaces get an identical material instance) — tint,
+  // scale and wear all drift a little between the three, and the two
+  // breakwater sides drift from EACH OTHER too so the room doesn't read as
+  // one material stamped three times.
+  const floorMat = useMemo(() => standardMat({
+    kind: 'wetconcrete', tint: '#2f3c46', scale: 1.15, wear: 0.62,
+    repeat: [5, 3], seed: 101, roughness: 0.85, bumpScale: 0.022,
+  }), [])
+  // wear stays under drawConcrete's own 0.45 "damp pool" threshold on every
+  // vertical face here — standing-water pools read as sensible weathering
+  // on the horizontal deck (wetconcrete, below) but as odd blotches on a
+  // wall, since water doesn't pool on a vertical surface. Variance between
+  // the three still comes through via tint/scale/form-line seams alone.
+  // roughness pulled well down from dry-concrete's usual 0.85-0.95: it's
+  // raining on all of this (brief's own "wet concrete everywhere"), and a
+  // high-roughness surface barely shows a specular hotspot at all under a
+  // single distant point key — the diffuse term alone is nearly uniform
+  // across one big flat face, which is what was reading as a textureless
+  // void in the QA pass. A tighter specular lobe (plus a touch of
+  // metalness for the sheen) is what actually lets the grazing key paint a
+  // visible highlight gradient across the wall/breakwater instead of a
+  // flat tone — the SAME fix the deck's own wetconcrete kind already gets
+  // for free from its baked-in shine pools.
+  const wallMat = useMemo(() => standardMat({
+    kind: 'concrete', tint: '#3c4a54', scale: 1.3, wear: 0.4,
+    repeat: [7, 3], seed: 202, roughness: 0.58, metalness: 0.1, bumpScale: 0.022,
+  }), [])
+  const breakwaterMatL = useMemo(() => standardMat({
+    kind: 'concrete', tint: '#333f48', scale: 1.0, wear: 0.38,
+    repeat: [1.4, 4.5], seed: 303, roughness: 0.62, metalness: 0.12, bumpScale: 0.026,
+  }), [])
+  const breakwaterMatR = useMemo(() => standardMat({
+    kind: 'concrete', tint: '#404e58', scale: 1.55, wear: 0.3,
+    repeat: [1.4, 4.5], seed: 404, roughness: 0.54, metalness: 0.09, bumpScale: 0.02,
+  }), [])
+  // the coping cap running the top of the sea wall — a real breakwater
+  // pours a distinct finishing course along its top edge, and it doubles as
+  // a rim-catching silhouette break instead of one flat sharp top edge.
+  const copingMat = useMemo(() => standardMat({
+    kind: 'concrete', tint: '#4a5862', scale: 0.8, wear: 0.35,
+    repeat: [7, 1], seed: 505, roughness: 0.7, bumpScale: 0.012,
+  }), [])
   const sky = useMemo(() => skyTexture(grade.fogColor || '#0a1620', '#03060a'), [grade.fogColor])
   return (
     <group>
@@ -115,20 +136,53 @@ function SeaWallShell({ grade, onTouchDeck }) {
       <Touchable reach={7} foley="glass" anchor={[0, 0, 2]} onUse={(e) => onTouchDeck && onTouchDeck(e)}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 2]}>
           <planeGeometry args={[10, 6]} />
-          <meshStandardMaterial map={floorTex} roughness={0.5} metalness={0.15} />
+          <primitive object={floorMat} attach="material" />
         </mesh>
       </Touchable>
-      {/* the wall itself */}
-      <mesh position={[0, 3, WALL_Z]}>
-        <boxGeometry args={[14, 6, 1]} />
-        <meshStandardMaterial map={wallTex} roughness={0.85} />
-      </mesh>
+      {/* the wall itself: two segments flanking a center gap, not one solid
+          14m box. QA sweep found the billboard (24x6 at y=7, z=-28) was
+          fully hidden behind a solid wall from EVERY station — the wall's
+          own top edge, 9.5m out, subtends a steeper angle from the camera
+          than the billboard's top ever can at 31m out, however tall it
+          gets, so nothing above the wall was ever going to peek over its
+          silhouette. Camera (0,1.35,3) and the billboard both sit on x=0,
+          so a breached center channel (a real sea wall's boat gap, and
+          thematically the spot the waves come through) puts the line of
+          sight straight through instead — no camera retune needed, and the
+          two segments still register a full-height collider each. */}
       {[-1, 1].map((side) => (
-        <mesh key={side} position={[side * 5, 1.2, -3]} rotation={[0, 0, 0]}>
-          <boxGeometry args={[1.4, 2.4, 6]} />
-          <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <mesh key={side} position={[side * 4, 3, WALL_Z]}>
+          <boxGeometry args={[6, 6, 1]} />
+          <primitive object={wallMat} attach="material" />
         </mesh>
       ))}
+      {/* coping cap on each wall segment's top edge — the raised finishing
+          course a real sea wall pours along its run, breaking the flat top
+          edge in silhouette and catching the cold key along its length. */}
+      {[-1, 1].map((side) => (
+        <Trim
+          key={side}
+          pos={[side * 4, 6.08, WALL_Z]} wallLength={6.3} along="x"
+          height={0.18} depth={1.16} color="#4a5862"
+        />
+      ))}
+      {[-1, 1].map((side) => {
+        const mat = side < 0 ? breakwaterMatL : breakwaterMatR
+        return (
+          <group key={side}>
+            <mesh position={[side * 5, 1.2, -3]}>
+              <boxGeometry args={[1.4, 2.4, 6]} />
+              <primitive object={mat} attach="material" />
+            </mesh>
+            {/* coping cap on each breakwater arm too, so the silhouette
+                break isn't limited to the main wall alone */}
+            <mesh position={[side * 5, 2.44, -3]}>
+              <boxGeometry args={[1.55, 0.14, 6.2]} />
+              <primitive object={copingMat} attach="material" />
+            </mesh>
+          </group>
+        )
+      })}
     </group>
   )
 }
@@ -263,9 +317,15 @@ function Billboard() {
   const tex = useMemo(() => makeBillboardTexture(HEARTBREAK_FRAGMENT), [])
   useEffect(() => () => tex.dispose(), [tex])
   return (
+    // fog={false}: at 31m through this room's fogExp2 (density 0.05) the
+    // billboard was being fully swallowed by fog before it ever reached
+    // camera — a light source this room treats as deliberately readable
+    // "at a distance" (spec #5/brief) can't also be the one thing the fog
+    // erases entirely. The sky backdrop plane already sets the same
+    // precedent for a background element that ignores fog.
     <mesh position={[0, 7, -28]}>
       <planeGeometry args={[24, 6]} />
-      <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
+      <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} fog={false} side={THREE.DoubleSide} />
     </mesh>
   )
 }
@@ -334,10 +394,7 @@ function InfoPlinth({ film }) {
 
   return (
     <group position={[2.4, 0, 1.7]} rotation={[0, -0.5, 0]}>
-      <mesh position={[0, 0.55, 0]}>
-        <boxGeometry args={[0.06, 1.1, 0.06]} />
-        <meshStandardMaterial color="#161c20" roughness={0.9} />
-      </mesh>
+      <Bevel pos={[0, 0.55, 0]} w={0.07} h={1.1} d={0.07} radius={0.014} segments={2} color="#161c20" roughness={0.75} metalness={0.15} />
       <mesh position={[0, 1.22, 0.02]}>
         <planeGeometry args={[1.0, 0.62]} />
         {hotTex
@@ -359,7 +416,7 @@ function InfoPlinth({ film }) {
 const DOOR_MOUNT = { position: [-4.6, 0, 1.4], rotationY: Math.PI / 2, spacing: 1.0, scale: 0.85 }
 const OWNER_ID = 'bespoke:br2049'
 
-export default function BR2049({ film, config, doors = [], goToStation, onDoor }) {
+export default function BR2049({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationKey, setStationKey] = useState('entry')
   const rippleTriggerRef = useRef(null)
@@ -404,14 +461,38 @@ export default function BR2049({ film, config, doors = [], goToStation, onDoor }
   return (
     <group>
       <fogExp2 attach="fog" args={[grade.fogColor || '#0a1620', 0.05]} />
-      {/* QA sweep: the first-pass keyIntensity*10 read as a near-black void
-          on the wall/floor's own dark concrete tint — this room's textures
-          are all cold, low-albedo stock, so the multiplier needs to sit
-          well above GenericRoom's already-empirical 16x/4x range rather
-          than under it. */}
-      <pointLight position={[3, 5, 1]} intensity={(grade.keyIntensity ?? 1) * 30} color={grade.key || '#3a6a8a'} distance={40} decay={1.6} />
-      <pointLight position={[0, 3, -6]} intensity={(grade.keyIntensity ?? 1) * 14} color={grade.key || '#3a6a8a'} distance={20} decay={1.8} />
-      <ambientLight intensity={0.5} color={grade.fill || '#0a1620'} />
+      {/* Wave P1 finishing pass: the toolkit's LightRig doctrine replaces
+          this room's original two raw pointLights + a flat 0.5 ambient.
+          FilmWorld already renders its own ambientLight off grade.ambient
+          (0.12, per br2049's config block) — the old local ambientLight
+          here stacked ANOTHER 0.5 on top of that, which is what was making
+          the wall/deck's own material read as a near-void even before this
+          pass swapped the canvas textures out: a flat 0.5 ambient floods
+          every surface evenly and drowns the grazing highlight that sells
+          "wet concrete", it doesn't restore it. Corners/breakwater reach is
+          handled instead by two extra cold bounce lights aimed at exactly
+          those risk areas (spec #3's own grazing-light check), plus a rim
+          light behind the monumental figure so its silhouette edge actually
+          catches light through the rain haze, per the brief, instead of
+          reading as a flat emissive blob. QA sweep: the original
+          keyIntensity*30/*14 tuning was the starting point, but LightRig's
+          SCALE constants were empirically tuned against darkknight — a
+          tight 4.2x4.2 box, not a 14m-wide open sea wall with a wall 8+
+          units from its own key. Matching darkknight's per-unit intensity
+          left the wall/deck under-lit again at this room's actual scale
+          (2nd QA pass), so the multipliers below sit well above a literal
+          old-value match — tuned empirically against this room's own
+          screenshots until the wall/deck/breakwater read as lit surfaces
+          rather than silhouettes. */}
+      <LightRig lights={{
+        key: { pos: [3, 5, 1], color: grade.key || '#3a6a8a', intensity: (grade.keyIntensity ?? 1) * 3.2, distance: 46, decay: 1.45 },
+        bounce: [
+          { pos: [0, 3.4, -6], color: grade.key || '#3a6a8a', intensity: (grade.keyIntensity ?? 1) * 3.4, distance: 24, decay: 1.5 },
+          { pos: [-4.6, 1.9, -2.6], color: '#3a6478', intensity: 1.5, distance: 10, decay: 1.6 },
+          { pos: [4.6, 1.9, -2.6], color: '#3a6478', intensity: 1.5, distance: 10, decay: 1.6 },
+        ],
+        rim: { pos: [1.1, 4.6, -7.6], color: '#a8d8ec', intensity: 1.7, distance: 12, decay: 1.5 },
+      }} />
 
       <SeaWallShell grade={grade} onTouchDeck={handleTouchDeck} />
       <RippleField triggerRef={rippleTriggerRef} />
@@ -419,13 +500,21 @@ export default function BR2049({ film, config, doors = [], goToStation, onDoor }
       <SplashBursts />
       <Billboard />
       <ReflectedScore film={film} />
-      <InfoPlinth film={film} />
+      {infoVisible && <InfoPlinth film={film} />}
 
       {/* the monumental figure: holographic-scale, facing away (-Z),
-          never toward you, standing just this side of the wall */}
+          never toward you, standing just this side of the wall — the rim
+          light in the LightRig block above is aimed at its far side so the
+          silhouette edge actually catches light through the rain haze. */}
       {abstractFigure({ pos: [1.6, 0, -5.3], scale: 3.2, color: '#05070a', pose: 'stand', emissive: '#3a6a8a' })}
 
-      <RainField density={500} wind={0.22} area={[9, 6, 8]} color="#bcd6e0" />
+      {/* dense driving rain (brief) — pushed up from the P0 baseline now
+          that fps headroom was confirmed in the harness (see room's own P1
+          polish note). A faint shimmer on the wall face stands in for rain
+          catching what little light there is without a second particle
+          system. */}
+      <RainField density={720} wind={0.24} area={[9, 6, 8]} color="#bcd6e0" />
+      <Rainlight pos={[0, 3, WALL_Z + 0.51]} w={12} h={5} color="#9fc4d8" intensity={0.14} speed={0.5} />
       <ScheduledCut period={90} duration={8000} altGrade="#e8874a" />
 
       {/* three click stations: entry, up at the wall, and down at the
