@@ -5,7 +5,7 @@ import { ROOM } from './Room.jsx'
 import { setDragDistance, exitPointerLock } from './pointer.js'
 import { useXR } from '@react-three/xr'
 import { keyVec } from './walkKeys.js'
-import { resolveStep, floorYAt, publishWalkPos } from './rooms/colliders.js'
+import { resolveStep, floorYAt, publishWalkPos, consumeTeleport } from './rooms/colliders.js'
 import { publishWalkEvent } from './rooms/walkBus.js'
 
 const HD = ROOM.D / 2
@@ -322,6 +322,14 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       if (w) {
         if (!walkPos.current) {
           walkPos.current = { x: camera.position.x, z: camera.position.z }
+        }
+        // Wave M3: a queued teleport (Predestination's real loop wrap) wins
+        // over this frame's own integration — consumed once, applied to the
+        // canonical position before anything below reads it, so walkPos and
+        // camera.position never disagree for even one frame.
+        const teleport = consumeTeleport()
+        if (teleport) {
+          walkPos.current = { x: teleport.x, z: teleport.z }
         }
         const speed = w.speed ?? 2.2
         const radius = w.radius ?? 0.28

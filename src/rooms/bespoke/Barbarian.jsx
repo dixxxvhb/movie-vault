@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { gaze } from '../../CameraRig.jsx'
 import { lampPractical as LampPractical } from '../props.jsx'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
 import { useRoomAudio } from '../audio/engine.js'
@@ -9,36 +8,40 @@ import { start as startBarbarianAudio } from '../audio/recipes/barbarian.js'
 import { notifyDepth } from './barbarianBus.js'
 import { makeIndexCardTexture, makeDoorRatingTexture, makeRainWindowTexture } from './barbarianTextures.js'
 import DoorRow from '../DoorRow.jsx'
-import { wasDrag } from '../../pointer.js'
+import { registerColliders, setBounds, registerFloor, clearOwner } from '../colliders.js'
 
 // 7.6 — "the house on Barbary." The living room first (cozy, tidy, rain
 // outside), the basement door standing open, then a straight descent
-// through three composed stations: the corridor of doors, the hidden room,
-// the rope-marked passage into handheld dark. Eye height drops a little at
-// each station rather than a modeled staircase — this app's own doctrine is
-// click-to-station, never free-walk (CameraRig.jsx's own header comment),
-// so the "descent" is a sequence of places you land, the same trick
-// Memento's corridor and Predestination's loop already use.
+// through the corridor of doors, the hidden room, and the rope-marked
+// passage into handheld dark.
 //
-// Mid-visit, on an independent ~70s timer regardless of which station
-// you're standing at: a full second of oversaturated sunny daylight, hard
-// swap via gradeBus (no easing, same doctrine as Stby's own swerve), then
-// back with no explanation — the Justin Long cut.
+// Wave M3: converted from click-to-station to free walk. "Depth" is no
+// longer a station index you click through — it's a zone derived from the
+// walker's own z each frame (readDepthZ below), using the exact same z
+// thresholds the old click-plane boundaries sat at, so every gated visual
+// (living room props, the smash-cut timer, HandheldSway, DescentGlow) fires
+// at the same physical spot it always did.
+//
+// Mid-visit, on an independent ~70s timer regardless of where you're
+// standing: a full second of oversaturated sunny daylight, hard swap via
+// gradeBus (no easing, same doctrine as Stby's own swerve), then back with
+// no explanation — the Justin Long cut.
 const PEEK = typeof window !== 'undefined' &&
   (window.location.search.includes('peekSmash') || window.location.hash.includes('peekSmash'))
 const SMASH_PERIOD_MS = PEEK ? 3000 : 70000 + Math.random() * 6000
 const SMASH_DURATION_MS = PEEK ? 1400 : 1000
 
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
-
-const STATIONS = [
-  { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 }, // -1, in code index 0: living room
-  { pos: [0, 1.45, -3.0], look: [0, 1.28, -6], fov: 48 },    // 0: corridor of doors
-  { pos: [0, 1.35, -5.4], look: [0, 1.18, -8], fov: 50 },    // 1: hidden room
-  { pos: [0, 1.25, -7.6], look: [0, 1.05, -10.5], fov: 52 }, // 2: rope passage, deepest
-]
-// index into STATIONS is (stationIndex + 1); stationIndex -1 = living room
-const stationFor = (i) => STATIONS[i + 1]
+// The three old click-plane boundaries, kept as the depth thresholds: a
+// walker south of DEPTH_BOUNDS[0] is depth 0 (corridor of doors), south of
+// [1] is depth 1 (hidden room), south of [2] is depth 2 (rope passage).
+// North of [0] is depth -1, the living room.
+const DEPTH_BOUNDS = [-2.7, -4.2, -6.5]
+function depthForZ(z) {
+  if (z > DEPTH_BOUNDS[0]) return -1
+  if (z > DEPTH_BOUNDS[1]) return 0
+  if (z > DEPTH_BOUNDS[2]) return 1
+  return 2
+}
 
 /* ------------------------------------------------------------ living room */
 
@@ -144,12 +147,34 @@ function RainWindow() {
 // The stairs, glimpsed through the open basement doorway rather than walked
 // as a continuous mesh — a handful of descending step slabs fading into
 // the dark past the door frame, enough to read as "stairs down."
+const STAIR_N = 6
+const STAIR_STEP_H = 0.16
+const STAIR_STEP_D = 0.32
+const STAIR_Z0 = LR_DOOR_Z - 0.05    // matches StairsGlimpse's own group z
+const STAIR_DEPTH = STAIR_N * STAIR_STEP_D
+const STAIR_DROP = STAIR_N * STAIR_STEP_H
+
+// Wave M3: the walker's floor fn, reconstructed straight from StairsGlimpse's
+// own module constants above rather than authored separately — the walker's
+// eye eases down exactly as far as the six visible slabs actually descend
+// (0.96m over 1.92m of depth), flat before the top step and flat again once
+// past the last one. The corridor/prop groups below call this same function
+// so their rendered geometry sinks in lockstep with where the camera's feet
+// actually are; nothing here is stepped, it is one continuous ramp, same as
+// a real staircase reads while you're walking down it rather than looking at
+// it from the side.
+function stairRampY(z) {
+  const into = STAIR_Z0 - z
+  if (into <= 0) return 0
+  if (into >= STAIR_DEPTH) return -STAIR_DROP
+  return -STAIR_DROP * (into / STAIR_DEPTH)
+}
+
 function StairsGlimpse() {
-  const steps = 6
   return (
-    <group position={[0, 0, LR_DOOR_Z - 0.05]}>
-      {Array.from({ length: steps }, (_, i) => (
-        <mesh key={i} position={[0, -i * 0.16, -i * 0.32]}>
+    <group position={[0, 0, STAIR_Z0]}>
+      {Array.from({ length: STAIR_N }, (_, i) => (
+        <mesh key={i} position={[0, -i * STAIR_STEP_H, -i * STAIR_STEP_D]}>
           <boxGeometry args={[LR_DOOR_W - 0.1, 0.14, 0.3]} />
           <meshStandardMaterial color="#1c1712" roughness={0.95} />
         </mesh>
@@ -190,8 +215,9 @@ function Passage({ z0, z1, tint, dim }) {
   const tex = useMemo(() => wallTex(tint, Math.round(z0 * 97) + 900), [tint, z0])
   const len = z0 - z1
   const mid = (z0 + z1) / 2
+  const yOff = stairRampY(mid)
   return (
-    <group position={[0, 0, mid]}>
+    <group position={[0, yOff, mid]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[TUBE_W, len]} />
         <meshStandardMaterial map={tex} roughness={0.95} color={dim ? '#888' : '#fff'} />
@@ -224,7 +250,7 @@ function DoorRecesses() {
   return (
     <>
       {items.map((it, i) => (
-        <mesh key={i} position={[it.x, 1.05, it.z]} rotation={[0, it.ry, 0]}>
+        <mesh key={i} position={[it.x, 1.05 + stairRampY(it.z), it.z]} rotation={[0, it.ry, 0]}>
           <planeGeometry args={[0.7, 1.9]} />
           <meshStandardMaterial color="#221c16" roughness={0.9} />
         </mesh>
@@ -238,7 +264,7 @@ function DoorRecesses() {
 // three legs and a dark box, a bucket that is just a bucket.
 function HiddenRoomProps() {
   return (
-    <group position={[0, 0, -5.4]}>
+    <group position={[0, stairRampY(-5.4), -5.4]}>
       {/* bed frame, skeletal */}
       <group position={[-0.5, 0, -0.3]}>
         {[[-0.55, -0.45], [0.55, -0.45], [-0.55, 0.45], [0.55, 0.45]].map(([x, z], i) => (
@@ -287,7 +313,7 @@ function RopeMarks() {
     rot: (i % 2 ? 1 : -1) * 0.3,
   })), [])
   return (
-    <group>
+    <group position={[0, -STAIR_DROP, 0]}>
       {segs.map((s, i) => (
         <mesh key={i} position={[-TUBE_W / 2 + 0.05, s.y, s.z]} rotation={[0, 0, s.rot]}>
           <cylinderGeometry args={[0.025, 0.025, 0.4, 8]} />
@@ -319,32 +345,91 @@ function DescentGlow() {
 
 const DOOR_MOUNT = { position: [1.7, 0, 1.75], rotationY: Math.PI, spacing: 0.9, scale: 0.72 }
 
+/* -------------------------------------------------------------- colliders */
+// Wave M3: walls for the living room (split around the basement doorway) +
+// the couch, then walls for the whole basement corridor run (a dead end at
+// its deepest point — nobody descends further than the rope). Registered as
+// plain axis-aligned rects; the corridor never turns, so this is exact, not
+// an approximation.
+const WALL_T = 0.15
+const CORRIDOR_Z_FAR = -9.4
+
+function livingRoomColliders() {
+  return [
+    // NOTE: no +Z wall. LivingRoomShell never draws one — the front of the
+    // box is the "camera side," an intentionally open composition (the
+    // entry station itself sits at z=2.5, past LR_D/2=1.8, looking back in
+    // through the missing wall). A collider there would seal the player
+    // out of their own spawn point, so the LR_D/2..2.8 stretch stays open
+    // and the bounds rect below is what keeps the player from wandering off
+    // past it.
+    // -X / +X walls
+    { minX: -LR_W / 2 - WALL_T, maxX: -LR_W / 2, minZ: -LR_D / 2, maxZ: LR_D / 2 },
+    { minX: LR_W / 2, maxX: LR_W / 2 + WALL_T, minZ: -LR_D / 2, maxZ: LR_D / 2 },
+    // -Z wall, split around the basement doorway
+    { minX: -LR_W / 2, maxX: -LR_DOOR_W / 2, minZ: LR_DOOR_Z - WALL_T, maxZ: LR_DOOR_Z },
+    { minX: LR_DOOR_W / 2, maxX: LR_W / 2, minZ: LR_DOOR_Z - WALL_T, maxZ: LR_DOOR_Z },
+    // the couch — a conservative AABB around its own 0.25rad rotation
+    { minX: -1.95, maxX: -0.45, minZ: 0.4, maxZ: 1.4 },
+  ]
+}
+
+// NOTE: no far dead-end rect on purpose. A rect that caps the FULL width of
+// a passage head-on trips the solver's own "already penetrating" fallback
+// (pushAxis's cross-axis check treats "your x sits inside this wall's full-
+// width span" as embedded-in-a-prop rather than "walking straight at a
+// wall," and shoves you sideways out of the corridor entirely — reproduced
+// while building this room: holding W into the rope passage's end walked
+// the player clean through the side wall). The bounds rect's own minZ below
+// is the real stop here: a plain independent clamp has no such cross-talk,
+// and it sits snug against the same depth the dead end would have capped.
+function corridorColliders() {
+  return [
+    { minX: -TUBE_W / 2 - WALL_T, maxX: -TUBE_W / 2, minZ: CORRIDOR_Z_FAR, maxZ: LR_DOOR_Z },
+    { minX: TUBE_W / 2, maxX: TUBE_W / 2 + WALL_T, minZ: CORRIDOR_Z_FAR, maxZ: LR_DOOR_Z },
+  ]
+}
+
 /* ------------------------------------------------------------------ room */
 
-export default function Barbarian({ film, config, goToStation, doors = [], onDoor }) {
+export default function Barbarian({ film, config, doors = [], onDoor }) {
   const { grade } = config
-  const [stationIndex, setStationIndex] = useState(-1)
-  const stationRef = useRef(-1)
-  stationRef.current = stationIndex
 
-  const stepTo = (next) => {
-    setStationIndex(next)
-    notifyDepth(next)
-    goToStation?.(stationFor(next), 'depth-' + next)
-  }
-  const moveOneStep = () => {
-    // forward.z = -cos(yaw): cos(yaw) > 0 means forward.z < 0, i.e. facing
-    // further into -Z — deeper down the descent (same convention Memento's
-    // own split-grade read of gaze.yaw uses).
-    const facingDeeper = Math.cos(gaze.yaw) > 0
-    const dir = facingDeeper ? 1 : -1
-    const next = clamp(stationRef.current + dir, -1, 2)
-    if (next !== stationRef.current) stepTo(next)
-  }
+  // Wave M3: depth is now read straight off the walker every frame instead
+  // of being a station index you click through. depthRef avoids a setState
+  // (and a notifyDepth call) on every single frame — only on the frames
+  // where the zone actually changes.
+  const [depthIndex, setDepthIndex] = useState(-1)
+  const depthRef = useRef(-1)
+
+  useFrame(({ camera }) => {
+    const d = depthForZ(camera.position.z)
+    if (d !== depthRef.current) {
+      depthRef.current = d
+      setDepthIndex(d)
+      notifyDepth(d)
+    }
+  })
+
+  useEffect(() => {
+    const ownerId = 'room:' + (film?.slug ?? 'barbarian')
+    registerColliders(ownerId, [...livingRoomColliders(), ...corridorColliders()])
+    setBounds(ownerId, {
+      kind: 'rect',
+      minX: -LR_W / 2 + 0.05,
+      maxX: LR_W / 2 - 0.05,
+      minZ: CORRIDOR_Z_FAR + 0.05,
+      // +0.9 past the entry station (z=2.5), not LR_D/2 — see the "no +Z
+      // wall" note in livingRoomColliders above.
+      maxZ: 2.8,
+    })
+    registerFloor(ownerId, stairRampY)
+    return () => clearOwner(ownerId)
+  }, [film?.slug])
 
   useEffect(() => notifyDepth(-1), [])
 
-  // Mid-visit smash cut, independent of station: one hard second of
+  // Mid-visit smash cut, independent of depth: one hard second of
   // oversaturated daylight, then back, no easing either direction — same
   // "zero easing" doctrine as Stby's own swerve.
   const [smashed, setSmashed] = useState(false)
@@ -377,7 +462,7 @@ export default function Barbarian({ film, config, goToStation, doors = [], onDoo
 
   useRoomAudio(startBarbarianAudio)
 
-  const deep = stationIndex >= 0
+  const deep = depthIndex >= 0
 
   return (
     <group>
@@ -386,7 +471,7 @@ export default function Barbarian({ film, config, goToStation, doors = [], onDoo
       <pointLight position={[-1.0, 1.9, 0.6]} intensity={(grade.keyIntensity ?? 1) * 10} color={grade.key || '#e8a860'} distance={6} decay={2} />
       <pointLight position={[0.8, 1.3, 1.4]} intensity={6} color="#e8a860" distance={5} decay={2} />
 
-      {stationIndex < 0 && (
+      {depthIndex < 0 && (
         <>
           <LivingRoomShell />
           <Couch />
@@ -398,7 +483,7 @@ export default function Barbarian({ film, config, goToStation, doors = [], onDoo
       )}
 
       {deep && <DescentGlow />}
-      <HandheldSway active={stationIndex === 2} />
+      <HandheldSway active={depthIndex === 2} />
 
       <Passage z0={LR_DOOR_Z - 0.3} z1={-4.6} tint="#3a342c" dim={false} />
       <DoorRecesses />
@@ -416,23 +501,6 @@ export default function Barbarian({ film, config, goToStation, doors = [], onDoo
         grade={grade}
         onDoor={onDoor}
       />
-
-      {/* click-to-advance boundaries, one per station gap, double-sided so
-          whichever way you're facing (moveOneStep reads gaze.yaw) steps you
-          one station in that direction — same trick as Memento's own
-          CorridorClickPlanes */}
-      {[LR_DOOR_Z - 0.9, -4.2, -6.5].map((z, i) => (
-        <mesh
-          key={i}
-          position={[0, 1.3, z]}
-          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; moveOneStep() }}
-          onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
-          onPointerOut={() => { document.body.style.cursor = 'auto' }}
-        >
-          <planeGeometry args={[TUBE_W, TUBE_H]} />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
-        </mesh>
-      ))}
     </group>
   )
 }
