@@ -14,6 +14,10 @@ import {
 import DoorRow from '../DoorRow.jsx'
 import Touchable from '../Touchable.jsx'
 import { OpenKind } from '../touchKinds.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, wireRun as WireRun } from '../detail.jsx'
+import LightRig, { LIGHT_SCALE } from '../lightRig.js'
+import { HazeCone } from '../atmosphere.jsx'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -60,8 +64,13 @@ function rawDepthAt(z) { return clamp(-z / CELL_LEN, 0, CELLS) }
 function tunnelFloorAt(z) { return floorY(rawDepthAt(z)) }
 
 // ------------------------------------------------------------ grade zones
-const GREEN = { sat: -0.3, contrast: 0.18, hue: 0.05, key: '#4fae6a', fill: '#16261a', bg: '#050a06' }
-const THERMAL = { sat: -1, contrast: 0.36, hue: -0.02, key: '#ffdca0', fill: '#3a2412', bg: '#160c04' }
+// grain/vignette/bloomIntensity (Wave P1 triplet): night-vision green reads
+// grainier and more vignetted (cheap optics, narrow FOV); thermal white-hot
+// tightens the vignette but pushes bloom harder (the film's own thermal
+// bloom-to-white look) — capped well short of clipping per the "confirm
+// feet stay planted, never blow the last stretch to solid white" standard.
+const GREEN = { sat: -0.3, contrast: 0.18, hue: 0.05, key: '#4fae6a', fill: '#16261a', bg: '#050a06', grain: 0.1, vignette: 0.84, bloomIntensity: 0.22 }
+const THERMAL = { sat: -1, contrast: 0.36, hue: -0.02, key: '#ffdca0', fill: '#3a2412', bg: '#160c04', grain: 0.07, vignette: 0.7, bloomIntensity: 0.3 }
 
 function lerpGrade(a, b, t) {
   return {
@@ -71,6 +80,9 @@ function lerpGrade(a, b, t) {
     key: mix(a.key, b.key, t),
     fill: mix(a.fill, b.fill, t),
     bg: mix(a.bg, b.bg, t),
+    grain: THREE.MathUtils.lerp(a.grain, b.grain, t),
+    vignette: THREE.MathUtils.lerp(a.vignette, b.vignette, t),
+    bloomIntensity: THREE.MathUtils.lerp(a.bloomIntensity, b.bloomIntensity, t),
   }
 }
 
@@ -91,6 +103,11 @@ function DuskGround({ grade }) {
     () => makeDuskSkyTexture(grade.fill || '#2a3a55', grade.key || '#e8935a', '#1a1410'),
     [grade.fill, grade.key]
   )
+  // dusty staging-area ground: gravel near the mouth (kicked-up, well-
+  // trodden), plain asphalt-dry dirt further out — materials.js rule again,
+  // the two patches get their own params rather than sharing one instance.
+  const nearMat = useMemo(() => standardMat({ kind: 'gravel', tint: '#39311f', scale: 1.3, wear: 0.55, repeat: [7, 2] }), [])
+  const farMat = useMemo(() => standardMat({ kind: 'asphalt', tint: '#332c1c', scale: 1, wear: 0.4, repeat: [7, 5] }), [])
   return (
     <group>
       {/* two ground patches, not one continuous plane — there's a gap
@@ -101,11 +118,11 @@ function DuskGround({ grade }) {
           hole's rim; the far one grounds the silhouette line. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, 1.85]}>
         <planeGeometry args={[16, 4.3]} />
-        <meshStandardMaterial color="#3a3226" roughness={0.96} />
+        <primitive object={nearMat} attach="material" />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.001, -10.4]}>
         <planeGeometry args={[16, 11.2]} />
-        <meshStandardMaterial color="#3a3226" roughness={0.96} />
+        <primitive object={farMat} attach="material" />
       </mesh>
       <mesh position={[0, 0, -22]}>
         <sphereGeometry args={[60, 24, 16, 0, Math.PI * 2, 0, Math.PI / 1.7]} />
@@ -158,6 +175,40 @@ function SilhouetteLine() {
   )
 }
 
+// Staging-area props: a low crate/barrier line off to one side, well clear
+// of the figures' own silhouette line and the tunnel mouth so the entry
+// composition (brief's "silhouette-line-at-sunset frame") isn't crowded —
+// these read as dark, low shapes against the dusk sky, not as detail.
+function StagingCrates() {
+  const crateMat = useMemo(() => standardMat({ kind: 'metal', tint: '#22201a', scale: 0.7, wear: 0.6, roughness: 0.85, metalness: 0.15 }), [])
+  const crates = [
+    { pos: [-6.4, 0.24, 0.6], size: [0.9, 0.48, 0.7], rot: 0.2 },
+    { pos: [-5.6, 0.32, 1.4], size: [0.7, 0.64, 0.7], rot: -0.15 },
+    { pos: [6.2, 0.26, 1.0], size: [1.0, 0.52, 0.6], rot: -0.3 },
+  ]
+  return (
+    <group>
+      {crates.map((c, i) => (
+        <Bevel key={i} pos={c.pos} rot={[0, c.rot, 0]} w={c.size[0]} h={c.size[1]} d={c.size[2]} radius={0.02} mat={crateMat} />
+      ))}
+      {/* a low barrier bar, silhouette-only (basic material, no lighting
+          fuss needed for something that should read as a flat dark shape) */}
+      <mesh position={[6.0, 0.5, 1.1]}>
+        <boxGeometry args={[1.6, 0.06, 0.06]} />
+        <meshStandardMaterial color="#0c0a06" roughness={0.9} />
+      </mesh>
+      <mesh position={[5.3, 0.25, 1.1]}>
+        <boxGeometry args={[0.06, 0.5, 0.06]} />
+        <meshStandardMaterial color="#0c0a06" roughness={0.9} />
+      </mesh>
+      <mesh position={[6.7, 0.25, 1.1]}>
+        <boxGeometry args={[0.06, 0.5, 0.06]} />
+        <meshStandardMaterial color="#0c0a06" roughness={0.9} />
+      </mesh>
+    </group>
+  )
+}
+
 // The tunnel mouth: a dark opening ringed by a low frame, sitting in the
 // ground between the camera's entry position and the silhouette line.
 function TunnelMouth() {
@@ -189,56 +240,77 @@ function TunnelCell({ index, tex }) {
   const midZ = (z0 + z1) / 2
   const tilt = Math.atan2(y1 - y0, -(z1 - z0))
 
+  // wet sheen near the bottom: the last two cells swap to wetconcrete (low
+  // roughness pools baked right into the material, not a decal) — concrete
+  // pores everywhere else, floor gets its own wear/tint from the walls per
+  // the no-shared-instance rule.
+  const wet = index >= CELLS - 2
+  const kind = wet ? 'wetconcrete' : 'concrete'
+  const depthWear = clamp(0.42 + index * 0.045, 0.42, 0.82)
+  const floorMat = useMemo(() => standardMat({ kind, tint: '#211f1a', scale: 1.1, wear: depthWear, repeat: [1.3, 1.3], seed: 700 + index }), [kind, depthWear, index])
+  const ceilMat = useMemo(() => standardMat({ kind: 'concrete', tint: '#1c1a16', scale: 1, wear: depthWear * 0.8, repeat: [1.3, 1.3], seed: 800 + index }), [depthWear, index])
+  const wallMat = useMemo(() => standardMat({ kind: 'concrete', tint: '#221f1a', scale: 1.15, wear: depthWear * 0.9, repeat: [1.3, 1.3], seed: 900 + index }), [depthWear, index])
+  const ribMat = useMemo(() => standardMat({ kind: 'metal', tint: '#17150f', scale: 0.5, wear: 0.5, roughness: 0.7, metalness: 0.3 }), [])
+
   return (
     <group>
       <group position={[0, midY, midZ]} rotation={[tilt, 0, 0]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[TUNNEL_W, CELL_LEN * 1.02]} />
-          <meshStandardMaterial map={tex} roughness={0.95} />
+          <primitive object={floorMat} attach="material" />
         </mesh>
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, TUNNEL_H, 0]}>
           <planeGeometry args={[TUNNEL_W, CELL_LEN * 1.02]} />
-          <meshStandardMaterial map={tex} roughness={0.96} />
+          <primitive object={ceilMat} attach="material" />
         </mesh>
         <mesh position={[-TUNNEL_W / 2, TUNNEL_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[CELL_LEN * 1.02, TUNNEL_H]} />
-          <meshStandardMaterial map={tex} roughness={0.92} />
+          <primitive object={wallMat} attach="material" />
         </mesh>
         <mesh position={[TUNNEL_W / 2, TUNNEL_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[CELL_LEN * 1.02, TUNNEL_H]} />
-          <meshStandardMaterial map={tex} roughness={0.92} />
+          <primitive object={wallMat} attach="material" />
         </mesh>
       </group>
-      {/* a rib arch at this cell's near boundary — four short beams framing
-          the tunnel's cross-section, the "ribbed" read from the brief */}
+      {/* a rib arch at this cell's near boundary — beveled beams (was naked
+          boxGeometry) with a dark worn-metal surface, the "ribbed" read from
+          the brief */}
       <group position={[0, y0, z0]}>
-        <mesh position={[-TUNNEL_W / 2, TUNNEL_H / 2, 0]}>
-          <boxGeometry args={[0.1, TUNNEL_H, 0.14]} />
-          <meshStandardMaterial color="#1c1a16" roughness={0.9} />
-        </mesh>
-        <mesh position={[TUNNEL_W / 2, TUNNEL_H / 2, 0]}>
-          <boxGeometry args={[0.1, TUNNEL_H, 0.14]} />
-          <meshStandardMaterial color="#1c1a16" roughness={0.9} />
-        </mesh>
-        <mesh position={[0, TUNNEL_H, 0]}>
-          <boxGeometry args={[TUNNEL_W + 0.1, 0.1, 0.14]} />
-          <meshStandardMaterial color="#1c1a16" roughness={0.9} />
-        </mesh>
+        <Bevel pos={[-TUNNEL_W / 2, TUNNEL_H / 2, 0]} w={0.1} h={TUNNEL_H} d={0.14} radius={0.015} mat={ribMat} />
+        <Bevel pos={[TUNNEL_W / 2, TUNNEL_H / 2, 0]} w={0.1} h={TUNNEL_H} d={0.14} radius={0.015} mat={ribMat} />
+        <Bevel pos={[0, TUNNEL_H, 0]} w={TUNNEL_W + 0.1} h={0.1} d={0.14} radius={0.015} mat={ribMat} />
       </group>
     </group>
   )
 }
 
 function TunnelEndCap() {
-  const tex = useMemo(() => makeTunnelTexture('#100e0a'), [])
+  // the literal bottom: wetconcrete, darkest sheen in the tunnel — the wet
+  // grade note from the polish spec culminates here rather than fading out.
+  const mat = useMemo(() => standardMat({ kind: 'wetconcrete', tint: '#181611', scale: 0.9, wear: 0.75, repeat: [1, 1] }), [])
   const y = floorY(CELLS) + TUNNEL_H / 2
   const z = -CELLS * CELL_LEN
   return (
     <mesh position={[0, y, z]}>
       <planeGeometry args={[TUNNEL_W, TUNNEL_H]} />
-      <meshStandardMaterial map={tex} roughness={0.96} />
+      <primitive object={mat} attach="material" />
     </mesh>
   )
+}
+
+// Cable run: a sagged tube along the tunnel's upper-left corner, riding the
+// slope the same way TunnelCell's own floor/ceiling do (each point matches
+// that cell's floorY so it visually tracks the ramp rather than floating
+// through it).
+function CableRun() {
+  const points = useMemo(() => {
+    const pts = []
+    for (let i = 0; i <= CELLS; i++) {
+      pts.push([-TUNNEL_W / 2 + 0.12, floorY(i) + TUNNEL_H - 0.18, -i * CELL_LEN])
+    }
+    return pts
+  }, [])
+  return <WireRun points={points} sag={0.06} radius={0.012} color="#0e0d0a" />
 }
 
 /* --------------------------------------------------------------- descent light */
@@ -482,6 +554,17 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
 
   const tint = nearBottom ? '#ffdca0' : '#4fae6a'
 
+  // Harsh work-light practicals bolted at the tunnel mouth — the spec's
+  // "harsh work-light practicals at the tunnel mouth" layered on top of the
+  // dusk key. Cool white-ish, tight falloff (this is a job-site lamp, not a
+  // room fixture), one on each side of the ring frame.
+  const mouthLights = useMemo(() => ({
+    practicals: [
+      { pos: [0.9, 0.55, -1.15], color: '#dce8f0', intensity: 1.3, distance: 3.4, decay: 2.4 },
+      { pos: [-0.85, 0.5, -1.3], color: '#cfe0ea', intensity: 0.95, distance: 3, decay: 2.4 },
+    ],
+  }), [])
+
   return (
     <group>
       {inTunnel ? (
@@ -500,14 +583,18 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
         <>
           <DuskGround grade={grade} />
           <SilhouetteLine />
+          <StagingCrates />
           <TunnelMouth />
           <MissionBrief film={film} />
+          <LightRig lights={mouthLights} />
+          <HazeCone pos={[0, 0.75, -1.2]} rot={[Math.PI, 0, 0]} length={0.9} radius={1.05} color="#dce8f0" opacity={0.1} />
         </>
       )}
 
       {Array.from({ length: CELLS }, (_, i) => (
         <TunnelCell key={i} index={i} tex={tunnelTex} />
       ))}
+      <CableRun />
       <TunnelEndCap />
       <DescentGlow decayRef={decayRef} tint={tint} />
       <ThermalScore film={film} />

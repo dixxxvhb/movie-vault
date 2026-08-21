@@ -105,7 +105,11 @@ export const CONFIGS = {
   // Wave B stand-in.
   sicario: {
     family: 'dread',
-    grade: { key: '#e8935a', fill: '#2a3a55', sat: 0.05, ambient: 0.3, keyIntensity: 1 },
+    // grain/vignette/bloomIntensity: the dusk-ground baseline — Deakins-dusk
+    // reads clean (low grain, wide-open vignette), the tunnel's own
+    // green/thermal triplet (Sicario.jsx's GREEN/THERMAL) takes over the
+    // instant you're underground.
+    grade: { key: '#e8935a', fill: '#2a3a55', sat: 0.05, ambient: 0.3, keyIntensity: 1, grain: 0.045, vignette: 0.6, bloomIntensity: 0.26 },
     camera: { pos: [0, 1.9, 3.2], look: [0, 0.85, -2.4], fov: 56, far: 90 },
     place: {
       shell: 'corridor',
