@@ -349,7 +349,7 @@ export const CONFIGS = {
   // Wave B stand-in.
   predestination: {
     family: 'mind-bender',
-    grade: { bg: '#241a10', fogColor: '#241a10', key: '#e8b860', fill: '#3a2414', ambient: 0.14 },
+    grade: { bg: '#241a10', fogColor: '#241a10', key: '#e8b860', fill: '#3a2414', ambient: 0.14, grain: 0.06, vignette: 0.6, bloomIntensity: 0.22 },
     camera: { pos: [0.3, 1.5, 1.3], look: [-0.7, 1.35, -1.3], fov: 48 },
     place: {
       shell: 'box',

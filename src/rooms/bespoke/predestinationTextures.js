@@ -52,13 +52,22 @@ export function makeRingTextTexture(text) {
   const ctx = c.getContext('2d')
   ctx.fillStyle = 'rgba(0,0,0,0)'
   ctx.clearRect(0, 0, W, H)
-  ctx.fillStyle = '#e8b860'
   ctx.font = '700 64px Georgia, serif'
   ctx.textBaseline = 'middle'
   const unit = (text || '').toUpperCase() + '   ·   '
   const unitW = ctx.measureText(unit).width
   const repeats = Math.max(1, Math.ceil(W / unitW) + 1)
   let x = 0
+  // PUNCH LIST: "engraved... legible up close" — a dark recessed shadow
+  // offset under each pass, THEN the bright letterform on top, so the text
+  // reads as cut into the ring rather than painted floating in front of it.
+  for (let i = 0; i < repeats; i++) {
+    ctx.fillStyle = 'rgba(20,14,4,0.75)'
+    ctx.fillText(unit, x + 2, H / 2 + 3)
+    x += unitW
+  }
+  x = 0
+  ctx.fillStyle = '#f0c878'
   for (let i = 0; i < repeats; i++) {
     ctx.fillText(unit, x, H / 2)
     x += unitW

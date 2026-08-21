@@ -5,11 +5,13 @@ import { counter as Counter } from '../props.jsx'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startPredestinationAudio } from '../audio/recipes/predestination.js'
 import {
-  makeLoopWallTexture, makeRingTextTexture, makeFixedScoreTexture, makeCertifiedBadgeTexture,
+  makeRingTextTexture, makeFixedScoreTexture, makeCertifiedBadgeTexture,
 } from './predestinationTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, teleportWalker } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { FrameOn } from '../detail.jsx'
 
 // 9.1 — "the bar." Low amber light, bottle shelf, two stools mid-
 // conversation, 70s-brown grade. Behind the bar a doorway opens onto a
@@ -112,15 +114,17 @@ function BarRoom() {
 }
 
 function Stools() {
+  const leatherMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a2818', scale: 2.2, wear: 0.4, roughness: 0.55, metalness: 0.02 }), [])
+  const legMat = useMemo(() => standardMat({ kind: 'metal', tint: '#1c1410', scale: 1.2, wear: 0.35, roughness: 0.45, metalness: 0.55 }), [])
   const stool = (x, z, rotY) => (
     <group key={x + '_' + z} position={[x, 0, z]} rotation={[0, rotY, 0]}>
       <mesh position={[0, 0.5, 0]}>
         <cylinderGeometry args={[0.18, 0.16, 0.06, 16]} />
-        <meshStandardMaterial color="#4a3020" roughness={0.7} />
+        <primitive object={leatherMat} attach="material" />
       </mesh>
       <mesh position={[0, 0.25, 0]}>
         <cylinderGeometry args={[0.05, 0.05, 0.5, 10]} />
-        <meshStandardMaterial color="#1c1410" roughness={0.5} metalness={0.4} />
+        <primitive object={legMat} attach="material" />
       </mesh>
     </group>
   )
@@ -159,9 +163,26 @@ function shelfBottles() {
 // wobble-only: a rotational spring nudge, same feel as touchKinds' NudgeKind
 // but hand-rolled here (no `token` plumbing needed — this bottle owns its
 // own one-shot fired-at timestamp directly).
+// Emissive discipline (spec #3/#6): bottle glass should not glow evenly all
+// over — that's paper-bloom territory. The body now reads as glass through
+// PBR alone (low roughness, faint transmission-like opacity, no emissive at
+// all); a single small BottleGlint mesh at the shoulder carries the only
+// emissive on the whole prop, a tiny catch-light rather than a lit body.
+const bottleBodyMat = { kind: 'metal', tint: '#2e4a2a', scale: 1.6, wear: 0.2, roughness: 0.14, metalness: 0.05 }
+
+function BottleGlint({ h }) {
+  return (
+    <mesh position={[0.014, h * 0.72, 0.016]}>
+      <sphereGeometry args={[0.006, 8, 8]} />
+      <meshStandardMaterial color={SHELF_GLINT} emissive={SHELF_GLINT} emissiveIntensity={1.4} roughness={0.2} />
+    </mesh>
+  )
+}
+
 function WobbleBottle({ x, y, h }) {
   const group = useRef(null)
   const firedAt = useRef(0)
+  const bodyMat = useMemo(() => standardMat(bottleBodyMat), [])
   const handleUse = useCallback(() => { firedAt.current = performance.now() }, [])
   useFrame(() => {
     const g = group.current
@@ -180,8 +201,9 @@ function WobbleBottle({ x, y, h }) {
         <group ref={group} position={[0, h / 2, 0]}>
           <mesh position={[0, -h / 2, 0]}>
             <cylinderGeometry args={[0.035, 0.045, h, 8]} />
-            <meshStandardMaterial color={SHELF_GLINT} emissive={SHELF_GLINT} emissiveIntensity={0.35} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+            <primitive object={bodyMat} attach="material" />
           </mesh>
+          <BottleGlint h={h} />
         </group>
       </group>
     </Touchable>
@@ -196,6 +218,7 @@ function ToppleBottle({ x, y, h }) {
   const pivot = useRef(null)
   const [fallen, setFallen] = useState(false)
   const firedAt = useRef(0)
+  const bodyMat = useMemo(() => standardMat(bottleBodyMat), [])
   const handleUse = useCallback(() => {
     if (fallen) return
     firedAt.current = performance.now()
@@ -217,8 +240,9 @@ function ToppleBottle({ x, y, h }) {
         <group ref={pivot}>
           <mesh position={[0, h / 2, 0]}>
             <cylinderGeometry args={[0.035, 0.045, h, 8]} />
-            <meshStandardMaterial color={SHELF_GLINT} emissive={SHELF_GLINT} emissiveIntensity={0.35} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+            <primitive object={bodyMat} attach="material" />
           </mesh>
+          <BottleGlint h={h} />
         </group>
       </group>
     </Touchable>
@@ -257,13 +281,29 @@ function CertifiedCoaster() {
 
 /* ---------------------------------------------------------- ring of text */
 
+// PUNCH LIST: the timeline ribbon needed real material presence, not just a
+// flat text decal. A brushed-metal torus (materials.js 'metal' kind) gives
+// it an actual physical band — the engraved text texture rides flush on its
+// own thin face ring so up close it reads as lettering cut into the metal,
+// not paint floating in front of it.
 function TextRing({ film }) {
   const tex = useMemo(() => makeRingTextTexture(film.hot_take), [film.slug, film.hot_take])
   const scoreTex = useMemo(() => makeFixedScoreTexture(film.score), [film.score])
+  const bandMat = useMemo(() => standardMat({ kind: 'metal', tint: '#c9a227', scale: 1.6, wear: 0.35, roughness: 0.32, metalness: 0.85 }), [])
   const cx = -1.0, cz = -1.4, cy = 1.95
   return (
     <group position={[cx, cy, cz]}>
-      <mesh>
+      {/* the brushed-metal ribbon body */}
+      <mesh rotation={[0, 0, 0]}>
+        <torusGeometry args={[0.5, 0.07, 16, 64]} />
+        <primitive object={bandMat} attach="material" />
+      </mesh>
+      {/* the engraved text, flush on the ring's own face */}
+      <mesh position={[0, 0, 0.065]}>
+        <ringGeometry args={[0.42, 0.58, 64]} />
+        <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[0, 0, -0.065]} rotation={[0, Math.PI, 0]}>
         <ringGeometry args={[0.42, 0.58, 64]} />
         <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
@@ -278,30 +318,48 @@ function TextRing({ film }) {
 
 /* ------------------------------------------------------------- the loop */
 
-function RingCell({ from, to, tex }) {
+// PUNCH LIST: the corridor kept its own geometry (a real closed hexagon,
+// untouched) but now gets wallpapered/paneled walls matching the bar's own
+// wood-and-amber palette instead of a flat repeating grain texture — real
+// materials.js wood on floor/ceiling, and FrameOn panel mouldings marching
+// down each side wall so it reads as the SAME building as the bar, not a
+// generic connector tube.
+function RingCell({ from, to, wallMat, floorMat, ceilMat }) {
   const dx = to.x - from.x
   const dz = to.z - from.z
   const len = Math.hypot(dx, dz)
   const angle = Math.atan2(dx, dz)
   const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 }
+  const panelCount = Math.max(1, Math.floor(len / 0.85))
   return (
     <group position={[mid.x, 0, mid.z]} rotation={[0, angle, 0]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[TUBE_W, len * 1.05]} />
-        <meshStandardMaterial map={tex} roughness={0.92} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, TUBE_H, 0]}>
         <planeGeometry args={[TUBE_W, len * 1.05]} />
-        <meshStandardMaterial map={tex} roughness={0.95} />
+        <primitive object={ceilMat} attach="material" />
       </mesh>
       <mesh position={[-TUBE_W / 2, TUBE_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[len * 1.05, TUBE_H]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[TUBE_W / 2, TUBE_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[len * 1.05, TUBE_H]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
+      {/* wall panelling — thin proud mouldings breaking each side wall into
+          bar-matching panels, same detail.jsx kit the bar itself would use */}
+      {Array.from({ length: panelCount }, (_, i) => {
+        const px = (i + 0.5) / panelCount * len - len / 2
+        return (
+          <React.Fragment key={i}>
+            <FrameOn pos={[-TUBE_W / 2 + 0.015, TUBE_H * 0.42, px]} rot={[0, Math.PI / 2, 0]} w={0.62} h={1.3} bar={0.045} color="#241a10" />
+            <FrameOn pos={[TUBE_W / 2 - 0.015, TUBE_H * 0.42, px]} rot={[0, -Math.PI / 2, 0]} w={0.62} h={1.3} bar={0.045} color="#241a10" />
+          </React.Fragment>
+        )
+      })}
       {/* a thin amber ribbon along the wall, echoing the bar's own ring
           motif into the corridor */}
       <mesh position={[-TUBE_W / 2 + 0.01, 1.6, 0]} rotation={[0, Math.PI / 2, 0]}>
@@ -397,7 +455,9 @@ export default function Predestination({ film, config, doors = [], onDoor }) {
   const [inLoop, setInLoop] = useState(false)
   const inLoopRef = useRef(false)
 
-  const loopTex = useMemo(() => makeLoopWallTexture('#2c2016'), [])
+  const loopWallMat = useMemo(() => standardMat({ kind: 'wood', tint: '#3a2818', scale: 1.3, wear: 0.4, repeat: [1, 1.4], roughness: 0.85 }), [])
+  const loopFloorMat = useMemo(() => standardMat({ kind: 'wood', tint: '#241a10', scale: 1.1, wear: 0.55, repeat: [1, 3], roughness: 0.88 }), [])
+  const loopCeilMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#2c2016', scale: 1.2, wear: 0.3, repeat: [1, 2.4], roughness: 0.95 }), [])
 
   const ownerIdRef = useRef(null)
   useEffect(() => {
@@ -486,7 +546,7 @@ export default function Predestination({ film, config, doors = [], onDoor }) {
       {Array.from({ length: RING_N }, (_, i) => {
         const from = ringPoint(i)
         const to = ringPoint(i + 1)
-        return <RingCell key={i} from={from} to={to} tex={loopTex} />
+        return <RingCell key={i} from={from} to={to} wallMat={loopWallMat} floorMat={loopFloorMat} ceilMat={loopCeilMat} />
       })}
       {inLoop && <LoopGlow />}
 
