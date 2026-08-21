@@ -68,3 +68,23 @@ export function getFamilyComponent(family) {
 export function getRoomComponent(slug, family) {
   return BESPOKE[slug] || getFamilyComponent(family)
 }
+
+// ---------------------------------------------------------------- ARCHIVE
+// Wave C (three-state treatments, VAULT-IMMERSION-BRIEF-v2.md §3): neither
+// archive room resolves through the Ledger merge logic above — a shoebox
+// print's room comes from a genre-mapped preset (archive/archiveConfig.js's
+// fadedConfigFor), never a CONFIGS[slug] entry, and every drawer film shares
+// the exact same room. Kept in its own section, at the bottom of the file,
+// so it never touches BESPOKE/FAMILIES/getRoomConfig above — those are
+// mid-edit for the Tier 1 bespoke-room pass landing alongside this one.
+import FadedRoom from './archive/FadedRoom.jsx'
+import Undeveloped from './archive/Undeveloped.jsx'
+
+const ARCHIVE_ROOMS = {
+  print: FadedRoom,
+  hazy: Undeveloped,
+}
+
+export function getArchiveRoomComponent(kind) {
+  return ARCHIVE_ROOMS[kind] || FadedRoom
+}

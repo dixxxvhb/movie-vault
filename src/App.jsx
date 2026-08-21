@@ -9,8 +9,10 @@ import { CARD_W, CARD_H } from './Polaroid.jsx'
 import { setDragDistance } from './pointer.js'
 import MotelWorld from './MotelWorld.jsx'
 import FilmWorld from './rooms/FilmWorld.jsx'
+import ArchiveWorld from './rooms/ArchiveWorld.jsx'
 import Develop from './rooms/Develop.jsx'
 import { getRoomConfig } from './rooms/registry.js'
+import { fadedConfigFor, hazyConfigFor } from './rooms/archive/archiveConfig.js'
 import ColdOpen from './ColdOpen.jsx'
 import Guide from './Guide.jsx'
 import Lens, { useVibes } from './Lens.jsx'
@@ -183,8 +185,26 @@ export default function App() {
     : world.startsWith('entering:') ? world.slice(9)
     : world.startsWith('exiting:') ? world.slice(8)
     : null
+  // The two archive rooms (Wave C, brief §3) get their own prefixes rather
+  // than sharing 'film:'/'entering:'/'exiting:' — a shoebox print and a
+  // drawer film are never resolved through getRoomConfig()/CONFIGS the way a
+  // Ledger film is (see rooms/archive/archiveConfig.js), so keeping their
+  // world strings visually distinct ('print:'/'hazy:', 'entering-print:'/
+  // 'entering-hazy:') means every startsWith() check above stays exactly as
+  // it was — 'entering-print:' does not start with 'entering:'.
+  const printSlug = world.startsWith('print:') ? world.slice(6)
+    : world.startsWith('entering-print:') ? world.slice(15)
+    : world.startsWith('exiting-print:') ? world.slice(14)
+    : null
+  const hazySlug = world.startsWith('hazy:') ? world.slice(5)
+    : world.startsWith('entering-hazy:') ? world.slice(14)
+    : world.startsWith('exiting-hazy:') ? world.slice(13)
+    : null
   const motelMounted = world === 'motel' || world.startsWith('entering:')
+    || world.startsWith('entering-print:') || world.startsWith('entering-hazy:')
   const filmMounted = world.startsWith('film:') || world.startsWith('exiting:')
+  const printMounted = world.startsWith('print:') || world.startsWith('exiting-print:')
+  const hazyMounted = world.startsWith('hazy:') || world.startsWith('exiting-hazy:')
 
   // Stepping into a photo. Only ever from the motel, only ever a Ledger film
   // that is currently inspected (CaseFile is the only place this is called
@@ -200,6 +220,8 @@ export default function App() {
     url.searchParams.set('room', slug)
     url.searchParams.delete('film')
     url.searchParams.delete('print')
+    url.searchParams.delete('printroom')
+    url.searchParams.delete('hazyroom')
     history.pushState(null, '', url)
   }
 
@@ -211,8 +233,51 @@ export default function App() {
     setTransition({ id: 'exit:' + world.slice(5) + ':' + Date.now() })
   }
 
+  // Stepping into a held shoebox print — the faded room. Same shape as
+  // enterFilm; only ever called from the print HUD's "step inside" button
+  // (below) while a shoebox print is held up.
+  const enterPrint = (slug) => {
+    if (world !== 'motel' || !slug || xrStore.getState().session != null) return
+    preEntryStation.current = station
+    setWorld('entering-print:' + slug)
+    setTransition({ id: 'enter-print:' + slug + ':' + Date.now() })
+    const url = new URL(location.href)
+    url.searchParams.set('printroom', slug)
+    url.searchParams.delete('room')
+    url.searchParams.delete('hazyroom')
+    url.searchParams.delete('film')
+    url.searchParams.delete('print')
+    history.pushState(null, '', url)
+  }
+  const exitPrint = () => {
+    if (!world.startsWith('print:')) return
+    setWorld('exiting-print:' + world.slice(6))
+    setTransition({ id: 'exit-print:' + world.slice(6) + ':' + Date.now() })
+  }
+
+  // Stepping into a held drawer print — the Dark Drawer's one shared room.
+  const enterHazy = (slug) => {
+    if (world !== 'motel' || !slug || xrStore.getState().session != null) return
+    preEntryStation.current = station
+    setWorld('entering-hazy:' + slug)
+    setTransition({ id: 'enter-hazy:' + slug + ':' + Date.now() })
+    const url = new URL(location.href)
+    url.searchParams.set('hazyroom', slug)
+    url.searchParams.delete('room')
+    url.searchParams.delete('printroom')
+    url.searchParams.delete('film')
+    url.searchParams.delete('print')
+    history.pushState(null, '', url)
+  }
+  const exitHazy = () => {
+    if (!world.startsWith('hazy:')) return
+    setWorld('exiting-hazy:' + world.slice(5))
+    setTransition({ id: 'exit-hazy:' + world.slice(5) + ':' + Date.now() })
+  }
+
   // The wash's peak is where the world actually swaps underneath the white-
-  // out — MotelWorld/FilmWorld trade places while the screen is fully covered.
+  // out — MotelWorld/FilmWorld (or ArchiveWorld) trade places while the
+  // screen is fully covered.
   const handleDevelopPeak = () => {
     setDragDistance(0)
     document.body.style.cursor = 'auto'
@@ -224,6 +289,22 @@ export default function App() {
       setWorld('motel')
       setSelected(slug)
       setStation(preEntryStation.current || 'ledger')
+    } else if (world.startsWith('entering-print:')) {
+      setWorld('print:' + world.slice(15))
+    } else if (world.startsWith('exiting-print:')) {
+      const slug = world.slice(14)
+      setWorld('motel')
+      setOpenBox('shoebox')
+      setPicked(slug)
+      setStation(preEntryStation.current || 'shoebox')
+    } else if (world.startsWith('entering-hazy:')) {
+      setWorld('hazy:' + world.slice(14))
+    } else if (world.startsWith('exiting-hazy:')) {
+      const slug = world.slice(13)
+      setWorld('motel')
+      setOpenBox('drawer')
+      setPicked(slug)
+      setStation(preEntryStation.current || 'drawer')
     }
   }
 
@@ -234,17 +315,26 @@ export default function App() {
         setData(d)
         const b = document.getElementById('boot'); if (b) b.style.display = 'none'
         // Addresses. ?room=<slug> is standing inside a film's own world;
-        // ?film= is a card on the Ledger wall; ?print= is a print in one of
-        // the two archives. Reload lands you back in front of the thing you
-        // were looking at instead of in the middle of the room, and any one
-        // of the three is a link you can send someone. room and film are
-        // mutually exclusive — room wins, straight in, no transition.
+        // ?printroom=/?hazyroom=<slug> are the same for the two archive
+        // rooms (Wave C); ?film= is a card on the Ledger wall; ?print= is a
+        // print in one of the two archives. Reload lands you back in front
+        // of the thing you were looking at instead of in the middle of the
+        // room, and any one of these is a link you can send someone. The
+        // room-shaped params win over film/print, straight in, no transition
+        // — same rule the original ?room= carried, just extended to two more
+        // prefixes instead of relitigated.
         const q = new URLSearchParams(location.search)
         const room = q.get('room')
+        const printroom = q.get('printroom')
+        const hazyroom = q.get('hazyroom')
         const want = q.get('film')
         const print = q.get('print')
         if (room && d.films.some((f) => f.slug === room)) {
           setWorld('film:' + room)
+        } else if (printroom && (d.shoebox || []).some((a) => a.slug === printroom)) {
+          setWorld('print:' + printroom)
+        } else if (hazyroom && (d.drawer || []).some((a) => a.slug === hazyroom)) {
+          setWorld('hazy:' + hazyroom)
         } else if (want && d.films.some((f) => f.slug === want)) {
           setStation('ledger')
           setSelected(want)
@@ -261,11 +351,16 @@ export default function App() {
       .catch((e) => console.error('vault-data load failed', e))
   }, [])
 
-  // Browser back exits a film room. On entering we push a history entry
-  // (?room=<slug>); the mechanism for film/print stays replaceState, as
-  // before this feature existed.
+  // Browser back exits whichever room is open. On entering any of the three
+  // we push a history entry (?room=/?printroom=/?hazyroom=); the mechanism
+  // for film/print (motel-side selection) stays replaceState, as before this
+  // feature existed.
   useEffect(() => {
-    const onPop = () => { if (world.startsWith('film:')) exitFilm() }
+    const onPop = () => {
+      if (world.startsWith('film:')) return exitFilm()
+      if (world.startsWith('print:')) return exitPrint()
+      if (world.startsWith('hazy:')) return exitHazy()
+    }
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -278,13 +373,18 @@ export default function App() {
         e.preventDefault()
         return setFinding(true)
       }
-      if (e.key === 'Enter' && world === 'motel' && selected && xrStore.getState().session == null) {
-        return enterFilm(selected)
+      if (e.key === 'Enter' && world === 'motel' && xrStore.getState().session == null) {
+        if (selected) return enterFilm(selected)
+        // a held print gets the same shortcut as an inspected card — Enter
+        // steps into whichever archive room its container implies
+        if (picked) return openBox === 'drawer' ? enterHazy(picked) : enterPrint(picked)
       }
       if (e.key !== 'Escape') return
-      // a film room is the outermost layer there is — Esc closes it before it
+      // a room is the outermost layer there is — Esc closes it before it
       // starts closing anything back in the motel
       if (world.startsWith('film:')) return exitFilm()
+      if (world.startsWith('print:')) return exitPrint()
+      if (world.startsWith('hazy:')) return exitHazy()
       // panels first: Esc should shut what is in front of you before it starts
       // walking you back across the room
       if (finding) return setFinding(false)
@@ -307,8 +407,11 @@ export default function App() {
   // makes a case file something you can send someone, and makes reload land you
   // back where you were instead of in the middle of the room. Standing inside
   // a film's own room writes `?room=<slug>` instead, and the two never coexist.
-  // Mid-transition (entering/exiting) the address bar is left alone —
-  // transient, and enterFilm() already pushed the room address once.
+  // The two archive rooms (Wave C) get the same treatment under their own
+  // params, `?printroom=`/`?hazyroom=` — none of the four room-shaped params
+  // ever coexist with each other or with film/print. Mid-transition
+  // (entering/exiting) the address bar is left alone — transient, and
+  // enterFilm()/enterPrint()/enterHazy() already pushed the room address once.
   useEffect(() => {
     if (!data) return
     const url = new URL(location.href)
@@ -316,8 +419,24 @@ export default function App() {
       url.searchParams.set('room', world.slice(5))
       url.searchParams.delete('film')
       url.searchParams.delete('print')
+      url.searchParams.delete('printroom')
+      url.searchParams.delete('hazyroom')
+    } else if (world.startsWith('print:')) {
+      url.searchParams.set('printroom', world.slice(6))
+      url.searchParams.delete('room')
+      url.searchParams.delete('hazyroom')
+      url.searchParams.delete('film')
+      url.searchParams.delete('print')
+    } else if (world.startsWith('hazy:')) {
+      url.searchParams.set('hazyroom', world.slice(5))
+      url.searchParams.delete('room')
+      url.searchParams.delete('printroom')
+      url.searchParams.delete('film')
+      url.searchParams.delete('print')
     } else if (world === 'motel') {
       url.searchParams.delete('room')
+      url.searchParams.delete('printroom')
+      url.searchParams.delete('hazyroom')
       if (selected) url.searchParams.set('film', selected)
       else url.searchParams.delete('film')
       if (picked) url.searchParams.set('print', picked)
@@ -394,6 +513,17 @@ export default function App() {
     () => (roomFilm ? getRoomConfig(filmSlug, roomFilm) : null),
     [filmSlug, roomFilm]
   )
+  // the two archive rooms (Wave C): a shoebox print's config is genre-mapped
+  // and per-print (fadedConfigFor); every drawer film shares the one fixed
+  // hazyConfigFor() — neither goes through getRoomConfig()/CONFIGS at all.
+  const printItem = printSlug ? (data?.shoebox || []).find((a) => a.slug === printSlug) : null
+  const hazyItem = hazySlug ? (data?.drawer || []).find((a) => a.slug === hazySlug) : null
+  const printConfig = useMemo(() => (printItem ? fadedConfigFor(printItem) : null), [printItem])
+  const hazyConfig = useMemo(() => (hazyItem ? hazyConfigFor() : null), [hazyItem])
+  // whichever of the three rooms is (becoming) active, for the background
+  // colour and the Post grade pass below — at most one of these is ever
+  // non-null at a time.
+  const activeRoomConfig = filmMounted ? roomConfig : printMounted ? printConfig : hazyMounted ? hazyConfig : null
 
   // string is strung between pins, which sit at the top of each card
   const pinPoints = useMemo(
@@ -452,7 +582,7 @@ export default function App() {
             and config.grade.bg falls back to that same palette when a
             bespoke room's CONFIGS entry doesn't set its own; the bus lets
             the room correct it without configs.js needing a matching edit */}
-        <color attach="background" args={[filmMounted && roomConfig ? (gradeOverride?.bg || roomConfig.grade.bg) : '#05040a']} />
+        <color attach="background" args={[activeRoomConfig ? (gradeOverride?.bg || activeRoomConfig.grade.bg) : '#05040a']} />
 
         <XRPlayer station={view.station} />
         {motelMounted && (
@@ -495,9 +625,17 @@ export default function App() {
           <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} />
         )}
 
+        {printMounted && printItem && printConfig && (
+          <ArchiveWorld kind="print" slug={printSlug} item={printItem} config={printConfig} />
+        )}
+
+        {hazyMounted && hazyItem && hazyConfig && (
+          <ArchiveWorld kind="hazy" slug={hazySlug} item={hazyItem} config={hazyConfig} />
+        )}
+
         <Post
-          grade={filmMounted && roomConfig
-            ? (gradeOverride ? { ...roomConfig.grade, ...gradeOverride } : roomConfig.grade)
+          grade={activeRoomConfig
+            ? (gradeOverride ? { ...activeRoomConfig.grade, ...gradeOverride } : activeRoomConfig.grade)
             : null}
         />
        </XR>
@@ -507,6 +645,10 @@ export default function App() {
         <Develop
           key={transition.id}
           slow={SLOW_WASH_SLUGS.has(transition.id.split(':')[1])}
+          // the Dark Drawer never develops (brief §3) — its own wash settles
+          // darker and never fully covers, rather than the standard chemical
+          // white-out (Develop.jsx's `dark` flag)
+          dark={transition.id.startsWith('enter-hazy:') || transition.id.startsWith('exit-hazy:')}
           onPeak={handleDevelopPeak}
           onDone={() => setTransition(null)}
         />
@@ -651,6 +793,50 @@ export default function App() {
         </>
       )}
 
+      {/* The shoebox print's own HUD: same shape as a Ledger room's strip,
+          the score styled as "from memory" rather than a Ledger score — this
+          room is the archive, not the wall. */}
+      {world.startsWith('print:') && printItem && (
+        <>
+          <div style={hud.filmStrip}>
+            <div style={hud.filmTitle}>
+              {printItem.title}{printItem.year ? ` (${printItem.year})` : ''}
+            </div>
+            <div style={hud.filmScore}>
+              {printItem.memory != null ? `${printItem.memory.toFixed(1)} from memory` : 'never scored'}
+            </div>
+            <div style={hud.filmHint}>the archive, faded</div>
+          </div>
+          <button
+            onClick={exitPrint}
+            style={hud.backToWall}
+            title="esc, or browser back, does the same thing"
+          >
+            back to the wall
+          </button>
+        </>
+      )}
+
+      {/* The Dark Drawer's own HUD: title only (brief §3 — "Title in the HUD
+          strip is the only identification"). No score line: none exists. */}
+      {world.startsWith('hazy:') && hazyItem && (
+        <>
+          <div style={hud.filmStrip}>
+            <div style={hud.filmTitle}>
+              {hazyItem.title}{hazyItem.year ? ` (${hazyItem.year})` : ''}
+            </div>
+            <div style={hud.filmHint}>undeveloped</div>
+          </div>
+          <button
+            onClick={exitHazy}
+            style={hud.backToWall}
+            title="esc, or browser back, does the same thing"
+          >
+            back to the wall
+          </button>
+        </>
+      )}
+
       {lensOpen && (
         <Lens vibes={vibes} value={lens} onPick={setLens} onClose={() => setLensOpen(false)} />
       )}
@@ -658,8 +844,10 @@ export default function App() {
       {finding && <Find index={findIndex} onGo={goTo} onClose={() => setFinding(false)} />}
 
       {/* What a print says when you hold it up. Deliberately thin next to a
-          case file — there is no hot take here, because he never wrote one. */}
-      {pickedFilm && (
+          case file — there is no hot take here, because he never wrote one.
+          Only at the wall (`world === 'motel'`) — once you've stepped inside,
+          the room's own HUD strip above takes over this same information. */}
+      {world === 'motel' && pickedFilm && (
         <div style={hud.print}>
           <div style={hud.printTitle}>
             {pickedFilm.title}{pickedFilm.year ? ` (${pickedFilm.year})` : ''}
@@ -681,6 +869,17 @@ export default function App() {
               the seen_note, which is bookkeeping ("vault archive — memory
               10.0") and reads like the machinery talking. */}
           <div style={hud.printNote}>{pickedFilm.snap || pickedFilm.note}</div>
+          {/* Wave C: step inside. A shoebox print steps into its own faded
+              room; a drawer print steps into the one shared Dark Drawer room
+              — which container is open (openBox) is what tells them apart,
+              since both live in the same `picked` state. */}
+          <button
+            onClick={() => (openBox === 'drawer' ? enterHazy(pickedFilm.slug) : enterPrint(pickedFilm.slug))}
+            style={hud.stepInside}
+            title={openBox === 'drawer' ? 'step into the undeveloped room' : 'step into the faded room'}
+          >
+            step inside
+          </button>
         </div>
       )}
 
@@ -762,4 +961,15 @@ const hud = {
   printScore: { marginTop: 7, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9a927f' },
   printMeta: { marginTop: 12, fontSize: 12.5, lineHeight: 1.65, color: '#8d8472' },
   printNote: { marginTop: 12, fontSize: 12.5, lineHeight: 1.55, color: '#6f6857', fontStyle: 'italic' },
+  // the card itself is pointerEvents:'none' (it must not block a click
+  // through to the box behind it) — this button opts itself back in, same
+  // pattern as filmSoundBtn inside the pointerEvents:'none' filmStrip
+  stepInside: {
+    marginTop: 14, pointerEvents: 'auto', cursor: 'pointer',
+    background: 'rgba(20,15,10,.68)', color: '#cdbfa4',
+    border: '1px solid rgba(180,160,120,.3)', borderRadius: 2,
+    padding: '8px 14px', fontSize: 10.5, letterSpacing: '.16em',
+    textTransform: 'uppercase', fontFamily: 'system-ui, sans-serif',
+    display: 'block', width: '100%',
+  },
 }

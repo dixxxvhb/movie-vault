@@ -25,11 +25,21 @@ const PEAK_PCT = (PEAK / TOTAL) * 100
 // identical; only the wall-clock duration changes.
 const SLOW_FACTOR = 1.55
 
-export default function Develop({ onPeak, onDone, slow = false }) {
+// Wave C's cold detail: the Dark Drawer never develops (brief §3 — "Hazy
+// Wing ... Room exists UNDEVELOPED"). Stepping into or out of it plays the
+// same wash shape as every other room, but it settles DARKER instead of the
+// warm chemical bath, and the peak is capped under full opacity — the world
+// underneath is never fully hidden, because what's underneath was never
+// meant to fully resolve either. `slow` and `dark` are independent (nothing
+// currently needs both at once, but there's no reason they couldn't stack).
+const DARK_PEAK_OPACITY = 0.86
+
+export default function Develop({ onPeak, onDone, slow = false, dark = false }) {
   const peak = slow ? Math.round(PEAK * SLOW_FACTOR) : PEAK
   const fade = slow ? Math.round(FADE * SLOW_FACTOR) : FADE
   const total = peak + fade
   const peakPct = (peak / total) * 100
+  const peakOpacity = dark ? DARK_PEAK_OPACITY : 1
 
   const [done, setDone] = useState(false)
   const peaked = useRef(false)
@@ -38,7 +48,7 @@ export default function Develop({ onPeak, onDone, slow = false }) {
   const wash = `
 @keyframes vault-develop-wash {
    0%   { opacity: 0; }
-  ${peakPct}% { opacity: 1; }
+  ${peakPct}% { opacity: ${peakOpacity}; }
  100%   { opacity: 0; }
 }
 @keyframes vault-develop-grain {
@@ -88,7 +98,9 @@ export default function Develop({ onPeak, onDone, slow = false }) {
       <div
         style={{
           position: 'fixed', inset: 0, zIndex: 60, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center, #fdf7e9 0%, #e9dcbc 68%, #ccba8f 100%)',
+          background: dark
+            ? 'radial-gradient(ellipse at center, #2a2a2c 0%, #101012 55%, #030304 100%)'
+            : 'radial-gradient(ellipse at center, #fdf7e9 0%, #e9dcbc 68%, #ccba8f 100%)',
           animation: `vault-develop-wash ${total}ms ease-in-out forwards`,
           willChange: 'opacity',
         }}
