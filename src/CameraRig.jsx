@@ -121,6 +121,18 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
   const walkY = useRef(null)
   const bobPhase = useRef(0)
 
+  // Wave P0: the flight-landing micro-dip (IMMERSION-V2-POLISH-SPEC.md #4 —
+  // "eased stop ... plus landing micro-dip after a flight, 2cm/250ms").
+  // `active` flips true the instant a flight's own t reaches 1 below; a
+  // half-sine impulse (down, then back to zero) is added to camera.position.y
+  // for the next 250ms of idle frames. Gated on the same walk-bob toggle as
+  // the rest of the camera's physical polish — a visitor who turned bob off
+  // asked for a steadier eye, and a sudden 2cm dip is exactly what that
+  // toggle exists to suppress.
+  const landDip = useRef({ active: false, t: 0 })
+  const LAND_DIP_DUR = 0.25
+  const LAND_DIP_AMP = 0.02
+
   // begin a flight whenever the station changes
   useEffect(() => {
     // Wave M2: every flight — a landmark click, a door hop, an exit — passes
@@ -311,7 +323,10 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       shown.current.pitch = THREE.MathUtils.lerp(f.fromPitch, f.toPitch, e)
       const fov = THREE.MathUtils.lerp(f.fromFov, f.toFov, e)
       applyFov(camera, fov / zoomShown.current)
-      if (f.t >= 1) flight.current = null
+      if (f.t >= 1) {
+        flight.current = null
+        landDip.current = { active: true, t: 0 }
+      }
     } else {
       // WALK — inserted ahead of the yaw/pitch settle so a same-frame lens
       // reset (walking resets the zoom) and the position write both land
@@ -399,6 +414,21 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       }
 
       applyFov(camera, latest.current.fov / zoomShown.current)
+
+      // Wave P0: the landing micro-dip itself — a half-sine impulse added
+      // on top of whatever y the flight/walk logic above already settled
+      // on, decaying to exactly 0 by LAND_DIP_DUR so it never leaves a
+      // residual offset behind.
+      if (landDip.current.active) {
+        landDip.current.t += dt
+        if (landDip.current.t >= LAND_DIP_DUR) {
+          landDip.current.active = false
+        } else if (bobEnabled) {
+          const p = landDip.current.t / LAND_DIP_DUR
+          camera.position.y -= LAND_DIP_AMP * Math.sin(Math.PI * p)
+        }
+      }
+
       // settle toward base + the user's drag offset
       const wantYaw = base.current.yaw + off.current.yaw
       const wantPitch = base.current.pitch + off.current.pitch

@@ -7,6 +7,10 @@ import DoorRow from './DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
 import Touchable from './Touchable.jsx'
 import { TOUCH_KINDS, DEFAULT_TOUCH_FOLEY } from './touchKinds.jsx'
+import { standardMat } from './materials.js'
+import { Trim, FrameOn, Clutter } from './detail.jsx'
+import { Atmosphere } from './atmosphere.jsx'
+import LightRig from './lightRig.js'
 
 // The one room. Every Tier-2 (and Tier-1-stand-in) slug renders through
 // here: shell + props + systems + lighting, all driven by config (Wave B
@@ -89,36 +93,68 @@ function skyCanvas(top, bottom) {
 
 /* ------------------------------------------------------------------ shell */
 
+// Wave P0: `p.mat = {walls, floor, ceiling}` (each a kind name from
+// materials.js, e.g. 'concrete'/'tile'/'metal') opts a box shell into the
+// real PBR-feel surface factory instead of the flat wallCanvas() swatch
+// below. Purely additive — a config that never sets `p.mat` renders through
+// the exact same wallCanvas() path as before (motel/other-24-rooms
+// byte-identical).
+function surfaceMat(kind, tint, repeat, wear = 0.35) {
+  return standardMat({ kind, tint, wear, repeat, roughness: 1 })
+}
+
 function BoxShell({ grade, p }) {
   const w = p.w ?? 5, d = p.d ?? 5, h = p.h ?? 2.8
   const tex = useMemo(() => wallCanvas(p.wallMat || 'flat', grade.fill), [p.wallMat, grade.fill])
   const floorTex = useMemo(() => wallCanvas('flat', grade.bg), [grade.bg])
+  const mat = p.mat
+  const wallSurface = useMemo(
+    () => (mat?.walls ? surfaceMat(mat.walls, grade.fill, [Math.max(1, w / 2), Math.max(1, h / 2)], mat.wallWear) : null),
+    [mat?.walls, mat?.wallWear, grade.fill, w, h]
+  )
+  const floorSurface = useMemo(
+    () => (mat?.floor ? surfaceMat(mat.floor, grade.bg, [Math.max(1, w / 1.6), Math.max(1, d / 1.6)], mat.floorWear) : null),
+    [mat?.floor, mat?.floorWear, grade.bg, w, d]
+  )
+  const ceilSurface = useMemo(
+    () => (mat?.ceiling ? surfaceMat(mat.ceiling, grade.fill, [Math.max(1, w / 2), Math.max(1, d / 2)], mat.ceilingWear) : null),
+    [mat?.ceiling, mat?.ceilingWear, grade.fill, w, d]
+  )
+  const castsShadow = !!p.shadow
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow={castsShadow}>
         <planeGeometry args={[w, d]} />
-        <meshStandardMaterial map={floorTex} roughness={0.92} />
+        {floorSurface ? <primitive object={floorSurface} attach="material" /> : <meshStandardMaterial map={floorTex} roughness={0.92} />}
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, h, 0]}>
         <planeGeometry args={[w, d]} />
-        <meshStandardMaterial map={floorTex} roughness={0.96} />
+        {ceilSurface ? <primitive object={ceilSurface} attach="material" /> : <meshStandardMaterial map={floorTex} roughness={0.96} />}
       </mesh>
       <mesh position={[0, h / 2, -d / 2]}>
         <planeGeometry args={[w, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
       <mesh position={[0, h / 2, d / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[w, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
       <mesh position={[-w / 2, h / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[d, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
       <mesh position={[w / 2, h / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[d, h]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
       </mesh>
+      {p.trim && (
+        <>
+          <Trim pos={[0, 0.045, -d / 2 + 0.014]} wallLength={w} along="x" kind="baseboard" {...p.trim} />
+          <Trim pos={[0, 0.045, d / 2 - 0.014]} wallLength={w} along="x" kind="baseboard" {...p.trim} />
+          <Trim pos={[-w / 2 + 0.014, 0.045, 0]} rot={[0, Math.PI / 2, 0]} wallLength={d} along="x" kind="baseboard" {...p.trim} />
+          <Trim pos={[w / 2 - 0.014, 0.045, 0]} rot={[0, Math.PI / 2, 0]} wallLength={d} along="x" kind="baseboard" {...p.trim} />
+        </>
+      )}
       {p.window && (
         <mesh position={[w / 2 - 0.01, h * 0.55, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[Math.min(d * 0.7, 3), h * 0.5]} />
@@ -547,12 +583,32 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
           worth chasing further this pass. Reverted to the single fixed
           position; the three corridor rooms that ran too close to it now
           carry their own lower keyIntensity in configs.js instead. */}
-      <pointLight ref={keyLightRef} position={[0, 2.0, -0.7]} intensity={(grade.keyIntensity ?? 2.2) * 16} color={grade.key} distance={16} decay={2} />
-      <pointLight position={[0, 1.2, 2]} intensity={(grade.keyIntensity ?? 2.2) * 4} color={grade.fill} distance={12} decay={2} />
+      {/* Wave P0: `config.lights` (lightRig.js) is an OPT-IN full layered
+          rig — key/practicals/bounce/rim — that REPLACES the two fixed
+          point lights below rather than sitting alongside them (two key
+          lights would double-expose the room). No config sets `lights` yet
+          except darkknight's own upgrade, so every other room's fixed pair
+          is untouched. keyLightRef still resolves to the rig's own key
+          light (lightRig.js accepts the same ref) so PulseBeat and any
+          other system reading keyLightRef keeps working unmodified. */}
+      {config.lights ? (
+        <LightRig lights={config.lights} keyRef={keyLightRef} />
+      ) : (
+        <>
+          <pointLight ref={keyLightRef} position={[0, 2.0, -0.7]} intensity={(grade.keyIntensity ?? 2.2) * 16} color={grade.key} distance={16} decay={2} />
+          <pointLight position={[0, 1.2, 2]} intensity={(grade.keyIntensity ?? 2.2) * 4} color={grade.fill} distance={12} decay={2} />
+        </>
+      )}
 
       <Shell grade={grade} p={place.shellParams || {}} />
 
       {propsNode}
+
+      {/* Wave P0: authored clutter (place.clutter) and atmosphere
+          (place.atmosphere) — both opt-in, both empty arrays by default, so
+          a config that never sets them renders nothing extra here. */}
+      {(place.clutter || []).map((c, i) => <Clutter key={i} {...c} />)}
+      {(place.atmosphere || []).map((a, i) => <Atmosphere key={i} {...a} />)}
 
       {flatSystems.map((sys, i) => (
         <System key={i} {...sys} lightRef={sys.type === 'PulseBeat' ? keyLightRef : undefined} />

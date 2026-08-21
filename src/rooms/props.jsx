@@ -1,6 +1,8 @@
 import React, { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { Bevel, FrameOn as FrameOnDetail } from './detail.jsx'
+import { standardMat } from './materials.js'
 
 // The prop kit: parameterized primitive set pieces. Every export is a pure
 // component — pos/rot/scale/color/emissive props, no config reads, no
@@ -456,10 +458,29 @@ export function lampPractical({ pos, rot, scale = 1, color = '#ffb968', intensit
   )
 }
 
+// bevelBox: a chamfered box prop body (Wave P0 detail.jsx's Bevel), for a
+// hero prop that should read as manufactured rather than extruded stock —
+// `mat` names a materials.js kind ({kind, tint, wear}) instead of a flat
+// color when the prop should carry real surface variance (a steel table,
+// not a gray box).
+export function bevelBox({ pos, rot, scale = 1, w = 1, h = 1, d = 1, radius = 0.02, segments = 3, mat, color = '#666', roughness = 0.6, metalness = 0.1, castShadow = false, receiveShadow = false }) {
+  const material = mat ? standardMat({ ...mat, roughness: mat.roughness ?? 1 }) : null
+  return (
+    <Bevel pos={pos} rot={rot} scale={scale} w={w} h={h} d={d} radius={radius} segments={segments}
+      mat={material} color={color} roughness={roughness} metalness={metalness}
+      castShadow={castShadow} receiveShadow={receiveShadow} />
+  )
+}
+
+// frameOn: props.jsx wrapper around detail.jsx's FrameOn — a picture-
+// frame/panel-moulding rectangle standing proud of a flat wall, placeable
+// like any other config prop.
+export function frameOn(rest) { return <FrameOnDetail {...rest} /> }
+
 export const PROPS = {
   slab, table, chairRow, counter, barShelf, bed, screenPanel, podium, throne,
   tree, branchTags, waterPlane, glassWall, mirrorPlane, vehicleMass,
-  abstractFigure, paperScatter, pool, lampPractical,
+  abstractFigure, paperScatter, pool, lampPractical, bevelBox, frameOn,
 }
 
 export function Prop({ type, ...rest }) {
@@ -587,12 +608,20 @@ const FOOTPRINTS = {
     const [px, , pz] = p.pos || [0, 0, 0]
     return [rectXZ(px, pz, 0.1, 0.1)]
   },
+  bevelBox: (p) => {
+    const w = p.w ?? 1, d = p.d ?? 1
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, d / 2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [{ ...rectXZ(px, pz, hx, hz), top: p.h ?? 1 }]
+  },
   // Scenery you're meant to walk through/past: no collider.
   paperScatter: () => [],
   pool: () => [],
   waterPlane: () => [],
   branchTags: () => [],
   screenPanel: () => [],
+  frameOn: () => [],
 }
 
 // footprint(propConfig) -> rects[] in world XZ (propConfig.pos already

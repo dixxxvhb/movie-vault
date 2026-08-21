@@ -174,6 +174,15 @@ def check_walk(page, failures, args):
     else:
         print("  %-14s %.2fm in 700ms  %s -> %s" % ("walk arrowup", d2, start2, after2))
 
+    # Wave P0 #6: window.__vaultFps is a rolling average App.jsx's FpsMeter
+    # publishes every ~0.5s inside the Canvas. Sampled here (already sitting
+    # in darkknight, already settled from the walk checks above) rather than
+    # its own page load — informational only, no failure threshold, since a
+    # headless CI runner's GPU throughput varies too much to gate on.
+    fps = page.evaluate("window.__vaultFps")
+    if fps:
+        print("  %-14s %.1f fps (darkknight, headless)" % ("walk fps", fps))
+
 
 def check_crosshair(page, failures, args):
     """Wave M2 gate: the pointer-lock crosshair dot actually renders.

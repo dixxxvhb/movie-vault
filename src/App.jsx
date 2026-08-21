@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react'
 import * as THREE from 'three'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { ROOM } from './Room.jsx'
@@ -122,6 +122,15 @@ function layout(films, scoreToY) {
 // carries changes.
 function Post({ grade }) {
   if (useInXR()) return null
+  // Wave P0 (IMMERSION-V2-POLISH-SPEC.md #5): `grade.grain`/`vignette`/
+  // `bloomIntensity` are an OPTIONAL per-room triplet on top of the
+  // existing hue/sat/contrast grade — a room that never sets them (every
+  // room except darkknight today) gets the exact same 0.3/0.05/0.92
+  // defaults this composer already shipped, so the motel and every
+  // untouched film room stay byte-identical.
+  const grain = grade?.grain ?? 0.05
+  const vignette = grade?.vignette ?? 0.92
+  const bloomIntensity = grade?.bloomIntensity ?? 0.3
   return (
     <EffectComposer>
       {/* QA sweep 2026-08-21: 0.42/0.72 let several rooms' hot-take sheet
@@ -129,16 +138,35 @@ function Post({ grade }) {
           solid wash that ate the verbatim text — backed off intensity and
           raised the threshold so accents still glow but a lit card doesn't
           detonate. */}
-      <Bloom intensity={0.3} luminanceThreshold={0.85} luminanceSmoothing={0.25} mipmapBlur />
+      <Bloom intensity={bloomIntensity} luminanceThreshold={0.85} luminanceSmoothing={0.25} mipmapBlur />
       {/* barely there. At 0.0006 the fringing read as a rendering fault on
           every card edge rather than as lens character. */}
       <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
-      <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
-      <Vignette eskil={false} offset={0.24} darkness={0.92} />
+      <Noise opacity={grain} blendFunction={BlendFunction.OVERLAY} />
+      <Vignette eskil={false} offset={0.24} darkness={vignette} />
       {grade && <HueSaturation hue={grade.hue || 0} saturation={grade.sat || 0} />}
       {grade && <BrightnessContrast brightness={0} contrast={grade.contrast || 0} />}
     </EffectComposer>
   )
+}
+
+// Wave P0 #6: a rolling fps average published to window.__vaultFps — a tiny
+// useFrame hook mounted inside the Canvas (fps is a render-loop question,
+// not a React-state one) so scripts/shot.py's walk check can read and log
+// it without adding its own timing harness.
+function FpsMeter() {
+  const acc = useRef({ frames: 0, time: 0 })
+  useFrame((_, dt) => {
+    const a = acc.current
+    a.frames += 1
+    a.time += dt
+    if (a.time >= 0.5) {
+      window.__vaultFps = Math.round((a.frames / a.time) * 10) / 10
+      a.frames = 0
+      a.time = 0
+    }
+  })
+  return null
 }
 
 export default function App() {
@@ -693,7 +721,12 @@ export default function App() {
   return (
     <>
       <Canvas
-        shadows={false}
+        // Wave P0 #3: shadows enabled at the renderer level, but every
+        // existing light in the game keeps castShadow=false — only
+        // lightRig.js's opt-in `key.castShadow` (darkknight, so far) ever
+        // sets one. No light casting means no visual change at all, which
+        // is what keeps the motel byte-identical (shot suite's own gate).
+        shadows
         dpr={[1, 2]}
         camera={{ position: STATIONS.center.pos, fov: STATIONS.center.fov, near: 0.05, far: 60 }}
         gl={{ antialias: true }}
@@ -712,6 +745,7 @@ export default function App() {
         }}
       >
        <XR store={xrStore}>
+        <FpsMeter />
         {/* gradeOverride can carry `bg` too — Memento's own film-palette bg
             is card-front white (right for a Polaroid, wrong for a 3D void),
             and config.grade.bg falls back to that same palette when a
