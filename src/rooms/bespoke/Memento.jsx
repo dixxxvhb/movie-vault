@@ -378,13 +378,31 @@ function FloorPolaroid({ film }) {
     return () => { live = false; t.dispose() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [film.slug])
+  // ARCHITECT FIX: "light reaching it" — this was floor-level with nothing
+  // dedicated to it, relying on whatever spill made it down from the room
+  // lamp at [0,2.15,0.6]/1.55m away. A small warm practical directly above
+  // does the rest of the "read as a photo, not a beige rectangle" fix
+  // (paired with mementoTextures.js's own repaint: lighter photo area,
+  // bold dark marker text, a drawn border stroke).
   return (
-    <mesh position={[0.3, 0.008, 0.35]} rotation={[-Math.PI / 2, 0, 0.06]}>
-      <planeGeometry args={[1.76, 2.2]} />
-      {tex
-        ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.45} roughness={0.95} />
-        : <meshStandardMaterial key="blank" color="#efe9dc" roughness={0.95} />}
-    </mesh>
+    <group>
+      <pointLight position={[0.3, 0.85, 0.35]} color="#d8c8a8" intensity={LIGHT_SCALE.practicals * 0.08} distance={1.8} decay={2.4} />
+      <mesh position={[0.3, 0.008, 0.35]} rotation={[-Math.PI / 2, 0, 0.06]}>
+        <planeGeometry args={[1.76, 2.2]} />
+        {tex
+          ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.22} roughness={0.7} />
+          : <meshStandardMaterial key="blank" color="#efe9dc" roughness={0.95} />}
+      </mesh>
+      {/* a faint gloss sheen — a soft additive highlight quad standing a
+          hair proud of the photo surface, the way a printed photo catches
+          an overhead light as a soft streak rather than a hard specular
+          dot (this material has no clearcoat layer to fake with roughness
+          alone). */}
+      <mesh position={[0.1, 0.012, 0.55]} rotation={[-Math.PI / 2, 0, 0.06]}>
+        <planeGeometry args={[0.7, 1.1]} />
+        <meshBasicMaterial color="#fff6e0" transparent opacity={0.06} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
   )
 }
 
@@ -457,6 +475,19 @@ function CorridorGlow({ warmthRef }) {
     ref.current.intensity = LIGHT_SCALE.practicals * 0.95 * fade
   })
   return <pointLight ref={ref} color="#cfd8dc" intensity={LIGHT_SCALE.practicals * 0.95} distance={7.5} decay={2} />
+}
+
+// ARCHITECT FIX: CorridorGlow (above) now correctly fades to 0 while
+// standing in the room (the corridor-blowout fix) — but that left the
+// corridor with NO light source at all when viewed from the room side,
+// reading as a flat black panel past the door instead of a hallway. This
+// is the missing piece: a small, fixed (NOT camera-following, so it can
+// never repeat the colocated-blowout bug) cold practical sitting inside
+// the first corridor cell. Deliberately faint — just enough for the near
+// wall/floor to read as space receding into dark, not a lit room.
+function CorridorFirstCellLight() {
+  const z = DOOR_Z - CELL_LEN * 0.75
+  return <pointLight position={[0, 1.3, z]} color="#8a9aa0" intensity={LIGHT_SCALE.practicals * 0.3} distance={4} decay={2.1} />
 }
 
 function ColdFlicker({ position }) {
@@ -700,7 +731,13 @@ export default function Memento({ film, config, doors = [], onDoor }) {
   // threshold, and once faded it never comes back — same monotonic shape as
   // the un-develop high-water above, just for one plane instead of six cells.
   const doorMatRef = useRef()
-  const doorOpacityRef = useRef(0.82)
+  // ARCHITECT FIX: was 0.82 — nearly fully opaque, and combined with the
+  // room's own low ambient meant the door read as a flat black panel with
+  // zero depth cue that there's a hallway (now dimly lit by
+  // CorridorFirstCellLight) on the other side. 0.6 still reads as "shut" —
+  // door slabs are dark wood, not glass — but lets the faintest hint of
+  // the corridor's own cool practical bleed through at the edges.
+  const doorOpacityRef = useRef(0.6)
   const doorFadedRef = useRef(false)
 
   const corridorPolTexs = useBatchTextures(() =>
@@ -775,7 +812,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
     if (!doorFadedRef.current) {
       const distToDoor = z - DOOR_Z
       if (distToDoor <= 0.8) {
-        doorOpacityRef.current = Math.max(0, doorOpacityRef.current - dt * (0.82 / 0.4))
+        doorOpacityRef.current = Math.max(0, doorOpacityRef.current - dt * (0.6 / 0.4))
         if (doorOpacityRef.current <= 0.001) doorFadedRef.current = true
       }
     }
@@ -850,6 +887,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
 
       <RoomShell grade={grade} />
       <CorridorGlow warmthRef={warmthRef} />
+      <CorridorFirstCellLight />
 
       <Bed pos={[-1.35, 0, 1.15]} rot={[0, 0.14, 0]} />
       <DuvetFold />
@@ -901,7 +939,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
           to-threshold fade, not a station index). */}
       <mesh position={[0, DOOR_H / 2 - 0.05, DOOR_Z + 0.01]}>
         <planeGeometry args={[DOOR_W - 0.06, DOOR_H - 0.1]} />
-        <meshBasicMaterial ref={doorMatRef} color="#000000" transparent opacity={0.82} depthWrite={false} />
+        <meshBasicMaterial ref={doorMatRef} color="#000000" transparent opacity={0.6} depthWrite={false} />
       </mesh>
 
       <CorridorEndCap />

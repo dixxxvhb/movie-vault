@@ -45,7 +45,16 @@ export const CONFIGS = {
     // vs. silver corridor) — these three are just what shows before the
     // first useFrame tick and the floor gradeBus falls back to.
     grade: { key: '#c98a4a', fill: '#3a5560', sat: 0.05, grain: 0.06, vignette: 0.75, bloomIntensity: 0.24 },
-    camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1.6], fov: 46 },
+    // ARCHITECT FIX (arrival composition): the old aim stood near the +Z
+    // wall staring straight down -Z at the corridor door — at this room's
+    // depth that put the door (a 2m-wide near-black slab) at ~45% of the
+    // frame, with the bed and the whole note wall (on the far -X side
+    // wall, nearly edge-on to a forward-only look) off-frame or clipped.
+    // Pulled toward the +X corner and aimed diagonally across the room:
+    // bed + nightstand read left-of-center, the note wall's near columns
+    // catch the left edge, and the door still sits in frame but well off
+    // to the right rather than dead center — "in frame, not the frame."
+    camera: { pos: [1.35, 1.55, 1.95], look: [-1.1, 1.25, -0.75], fov: 52 },
     place: {
       shell: 'box',
       shellParams: { w: 3.6, d: 4.2, h: 2.5, wallMat: 'wood', window: false },

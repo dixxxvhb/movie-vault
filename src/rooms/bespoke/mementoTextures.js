@@ -173,6 +173,16 @@ function mixGray(t) {
 // The floor-sized polaroid: this room's own hot-take sheet, standing in for
 // the standard one. Verbatim take, handwritten in big marker strokes across
 // a photo area rather than typeset on paper.
+// ARCHITECT FIX: at arrival exposure (dim room, floor level, no dedicated
+// light) this read as a bare beige rectangle — the photo area was a near-
+// black gradient (#141414-#2a2a2a) with pale cream text on top, which is
+// legible in isolation but the photo area itself simply disappeared into
+// the room's own shadow, leaving only the pale outer border visible. Fixed
+// on both ends: the photo area is now a lit, warm motel-toned image (not
+// near-black) so it actually reads as a PHOTO instead of a void, a drawn
+// border stroke separates border from photo at any exposure, and the
+// hot-take is bold dark marker (not pale cream) so it has real contrast
+// against the now-lighter photo underneath it.
 export function makeFloorPolaroidTexture(film) {
   const W = 1600, H = 2000
   const c = canvas(W, H)
@@ -181,20 +191,31 @@ export function makeFloorPolaroidTexture(film) {
   ctx.fillStyle = '#f2ede0'
   ctx.fillRect(0, 0, W, H)
   const bx = 60, by = 60, bw = W - 120, bh = H - 320
+  // cooler/grayer than the warm wood floor and dresser around it on
+  // purpose — a same-hue photo blended into the floor under the room's own
+  // warm key light, which was the real reason this read as "a bare
+  // rectangle" rather than a framed photo standing apart from its floor.
   const g = ctx.createLinearGradient(0, by, 0, by + bh)
-  g.addColorStop(0, '#141414')
-  g.addColorStop(0.5, '#2a2a2a')
-  g.addColorStop(1, '#0c0c0c')
+  g.addColorStop(0, '#8a8478')
+  g.addColorStop(0.45, '#6a655a')
+  g.addColorStop(1, '#48453c')
   ctx.fillStyle = g
   ctx.fillRect(bx, by, bw, bh)
 
   const r = rngFor(1016)
   paperGrain(ctx, bw, bh, r, 0.06)
 
+  // border stroke: a crisp dark line right at the photo/border seam so the
+  // two areas read as distinct materials (photo vs. white foot) at any
+  // exposure, not just where the lighting happens to catch the gradient.
+  ctx.strokeStyle = '#241c12'
+  ctx.lineWidth = 6
+  ctx.strokeRect(bx, by, bw, bh)
+
   ctx.save()
   ctx.translate(bx, by)
-  ctx.fillStyle = '#f4f0e4'
-  ctx.font = 'italic 900 92px "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive'
+  ctx.fillStyle = '#1a1210'
+  ctx.font = 'italic 900 108px "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive'
   ctx.textBaseline = 'alphabetic'
 
   const text = film.hot_take || ''
@@ -202,7 +223,7 @@ export function makeFloorPolaroidTexture(film) {
   const maxW = bw - 90
   const lines = []
   let line = ''
-  let size = 92
+  let size = 108
   ctx.font = `italic 900 ${size}px "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive`
   // shrink until it fits the photo area at a readable line count
   for (;;) {
@@ -215,7 +236,7 @@ export function makeFloorPolaroidTexture(film) {
       else line = test
     }
     if (line) lines.push(line)
-    if (lines.length * size * 1.18 <= bh - 80 || size <= 40) break
+    if (lines.length * size * 1.18 <= bh - 80 || size <= 52) break
     size -= 4
   }
   const lh = size * 1.18
