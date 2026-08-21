@@ -9,6 +9,7 @@ import {
 } from './nightcrawlerTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 9.4 — "the overlook." A Mulholland-style turnout: guardrail, dry brush,
 // LA laid out as a sodium-orange grid to the horizon, clean digital night
@@ -167,6 +168,12 @@ function ViewfinderFrame({ film }) {
   const [capTex, setCapTex] = useState(null)
   const lastLenRef = useRef(-1)
   const pauseRef = useRef(0)
+  // Wave T: press the REC dot -> the frame LOCKS to whatever it's currently
+  // framing for 5s (stops reframing entirely — position/quaternion just
+  // stop being overwritten below), and the dot blinks noticeably faster
+  // while locked so the lock reads even in a still frame comparison.
+  const lockUntilRef = useRef(0)
+  const handleRecPress = () => { lockUntilRef.current = performance.now() + 5000 }
 
   const text = film.hot_take || ''
 
@@ -185,20 +192,26 @@ function ViewfinderFrame({ film }) {
 
   useFrame(({ camera, clock }, dt) => {
     if (!groupRef.current) return
-    camera.getWorldDirection(dir)
-    groupRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(FRAME_DIST))
-    groupRef.current.quaternion.copy(camera.quaternion)
+    const locked = performance.now() < lockUntilRef.current
+    if (!locked) {
+      camera.getWorldDirection(dir)
+      groupRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(FRAME_DIST))
+      groupRef.current.quaternion.copy(camera.quaternion)
 
-    if (spotRef.current) {
-      spotRef.current.position.copy(camera.position)
+      if (spotRef.current) {
+        spotRef.current.position.copy(camera.position)
+      }
+      if (targetRef.current) {
+        targetRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(6))
+      }
     }
-    if (targetRef.current) {
-      targetRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(6))
-    }
+    // locked: position/quaternion/spotlight simply stop being overwritten —
+    // the frame stays exactly where it was the instant the lock engaged.
 
-    // REC dot pulse
+    // REC dot pulse — noticeably faster (3x) while locked
     if (dotRef.current) {
-      const p = 0.55 + Math.sin(clock.elapsedTime * 5.2) * 0.45
+      const rate = locked ? 15.6 : 5.2
+      const p = 0.55 + Math.sin(clock.elapsedTime * rate) * 0.45
       dotRef.current.material.emissiveIntensity = 1.2 + p * 1.4
     }
 
@@ -278,15 +291,23 @@ function ViewfinderFrame({ film }) {
             <meshBasicMaterial color="#ff8a2a" transparent opacity={0.35} toneMapped={false} />
           </mesh>
         ))}
-        {/* REC dot, upper left */}
-        <mesh ref={dotRef} position={[-FRAME_W / 2 + 0.09, FRAME_H / 2 - 0.07, 0]}>
-          <circleGeometry args={[0.018, 16]} />
-          <meshStandardMaterial color="#ff2020" emissive="#ff2020" emissiveIntensity={1.6} toneMapped={false} />
-        </mesh>
-        <mesh position={[-FRAME_W / 2 + 0.14, FRAME_H / 2 - 0.07, 0]}>
-          <planeGeometry args={[0.09, 0.03]} />
-          <meshBasicMaterial color="#ff2020" transparent opacity={0.85} toneMapped={false} />
-        </mesh>
+        {/* REC dot, upper left — pressable: locks the frame for 5s */}
+        <Touchable
+          reach={3}
+          foley="switch"
+          noDip
+          anchor={[-FRAME_W / 2 + 0.11, FRAME_H / 2 - 0.07, 0]}
+          onUse={handleRecPress}
+        >
+          <mesh ref={dotRef} position={[-FRAME_W / 2 + 0.09, FRAME_H / 2 - 0.07, 0]}>
+            <circleGeometry args={[0.018, 16]} />
+            <meshStandardMaterial color="#ff2020" emissive="#ff2020" emissiveIntensity={1.6} toneMapped={false} />
+          </mesh>
+          <mesh position={[-FRAME_W / 2 + 0.14, FRAME_H / 2 - 0.07, 0]}>
+            <planeGeometry args={[0.09, 0.03]} />
+            <meshBasicMaterial color="#ff2020" transparent opacity={0.85} toneMapped={false} />
+          </mesh>
+        </Touchable>
 
         {/* lower-third caption bar */}
         <mesh ref={capMeshRef} position={[0, -FRAME_H / 2 + 0.09, 0]}>
