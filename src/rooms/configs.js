@@ -344,7 +344,16 @@ export const CONFIGS = {
   // pre-bespoke Wave B stand-in.
   stby: {
     family: 'intimate-tension',
-    grade: { bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfe8ff', fill: '#20242a', sat: -0.05, ambient: 0.35 },
+    // P1 polish pass: key nudged green (fluorescent-tube cast, per the
+    // brief) and the grade triplet set deliberately for the mundane
+    // call-floor half of the cut — flat, slightly grainy, bloom kept low so
+    // only the actual strip fixtures (never the paper/monitor clutter) ever
+    // bloom. The penthouse half gets its own distinct triplet via
+    // setGradeOverride in Stby.jsx (richer bloom, tighter vignette).
+    grade: {
+      bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfffe0', fill: '#20242a', sat: -0.05, ambient: 0.35,
+      grain: 0.045, vignette: 0.88, bloomIntensity: 0.24,
+    },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
     place: {
       shell: 'box',

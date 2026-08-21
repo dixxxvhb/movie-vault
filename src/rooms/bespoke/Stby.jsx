@@ -1,16 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { chairRow as ChairRow, table as Table } from '../props.jsx'
+import { chairRow as ChairRow } from '../props.jsx'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startStbyAudio } from '../audio/recipes/stby.js'
 import { notifySwerve } from './stbyBus.js'
 import {
-  makeOfficeScoreTexture, makeCubicleScreenTexture, makeScreamTexture, makeFleshTexture,
+  makeOfficeScoreTexture, makeMonitorUITexture, makeScreamTexture, makeFleshTexture,
 } from './stbyTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
 import { playOneShot } from '../audio/engine.js'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim, crumpledPaper as CrumpledPaper, cup as Cup, wireRun as WireRun, boxPile as BoxPile } from '../detail.jsx'
+import { DustField } from '../atmosphere.jsx'
 
 // 9.4 — "the call floor, then the swerve." One fixed station, like The
 // Departed's roof: the RegalView cubicle grid, fluorescent and mundane, cut
@@ -97,6 +100,26 @@ const OFFICE_SHELL_RECTS = [
 // (nothing here touches visuals), you just don't bump into them; the office
 // cubicle grid is the one persistent walkable structure through both states.
 
+// A spot light with a REAL aimed target, same fix as lightRig.js's own
+// SpotWithTarget: SpotLight.target only updates its world matrix while it's
+// part of the scene graph, so a bare `target-position` dash-prop silently
+// freezes at the origin. Local copy rather than importing lightRig's
+// internal (unexported) helper, since this bespoke room hand-assembles its
+// own lights instead of going through LightRig's config path.
+function AimedSpot({ pos, target, ...rest }) {
+  const lightRef = useRef()
+  const targetRef = useRef()
+  useEffect(() => {
+    if (lightRef.current && targetRef.current) lightRef.current.target = targetRef.current
+  }, [])
+  return (
+    <>
+      <spotLight ref={lightRef} position={pos} {...rest} />
+      <object3D ref={targetRef} position={target} />
+    </>
+  )
+}
+
 const ROOM_ID = 'bespoke:stby'
 
 function StbyColliders({ spawn }) {
@@ -123,29 +146,67 @@ function StbyColliders({ spawn }) {
   return null
 }
 
+// The desk: a Bevel'd laminate top on a dark support frame, replacing the
+// shared props.jsx Table (flat-colored, no material hook) so it can carry a
+// standardMat laminate surface per P1 checklist item 2. `tint` is nudged per
+// cubicle so no two desks in the grid share one literal material instance.
+function Desk({ tint, seed }) {
+  const topMat = standardMat({ kind: 'wood', tint, scale: 2.2, wear: 0.2, seed, roughness: 0.32, bumpScale: 0.006 })
+  return (
+    <group>
+      <Bevel pos={[0, 0.7, 0.15]} w={0.9} h={0.05} d={0.5} radius={0.015} segments={2} mat={topMat} />
+      {[[-0.39, -0.04], [0.39, -0.04], [-0.39, 0.34], [0.39, 0.34]].map(([sx, sz], i) => (
+        <mesh key={i} position={[sx, 0.34, sz]}>
+          <boxGeometry args={[0.05, 0.68, 0.05]} />
+          <meshStandardMaterial color="#2a2822" roughness={0.7} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// Monitor: a Bevel'd bezel body (was a naked plane before) fronted by a DIM
+// gibberish-CRM screen — meshStandardMaterial with a low emissiveIntensity
+// rather than the old toneMapped-false meshBasicMaterial, so it reads as an
+// office monitor left on, not a light source (P1 checklist item 3).
+function Monitor({ seed }) {
+  const tex = useMemo(() => makeMonitorUITexture(seed), [seed])
+  return (
+    <group position={[0, 0.98, -0.42]}>
+      <Bevel w={0.56} h={0.4} d={0.03} radius={0.015} segments={2} color="#1c1e22" roughness={0.55} metalness={0.15} />
+      <mesh position={[0, 0, 0.017]}>
+        <planeGeometry args={[0.5, 0.34]} />
+        <meshStandardMaterial map={tex} color="#ffffff" roughness={0.7} emissive="#3a5648" emissiveIntensity={0.16} toneMapped={false} />
+      </mesh>
+    </group>
+  )
+}
+
 function Cubicle({ x, z, seed, onHeadsetPress }) {
-  const tex = useMemo(() => makeCubicleScreenTexture(seed), [seed])
+  // Fabric partitions: a distinct tint per wall of the same cubicle (left /
+  // right / back) so the three panels that actually meet at a corner never
+  // share one flat material instance — the P0 toolkit's own adjacency rule.
+  const leftMat = standardMat({ kind: 'fabric', tint: '#7c8792', scale: 1.1, wear: 0.3, seed: seed * 3 })
+  const rightMat = standardMat({ kind: 'fabric', tint: '#727d88', scale: 1.3, wear: 0.35, seed: seed * 3 + 1 })
+  const backMat = standardMat({ kind: 'fabric', tint: '#848d78', scale: 1.2, wear: 0.28, seed: seed * 3 + 2 })
+  const deskTint = seed % 2 === 0 ? '#6a6252' : '#625a4a'
   return (
     <group position={[x, 0, z]}>
       {/* low partitions, three sides */}
       <mesh position={[-0.55, 0.55, 0]}>
         <boxGeometry args={[0.04, 1.1, 1]} />
-        <meshStandardMaterial color="#8a9098" roughness={0.85} />
+        <primitive object={leftMat} attach="material" />
       </mesh>
       <mesh position={[0.55, 0.55, 0]}>
         <boxGeometry args={[0.04, 1.1, 1]} />
-        <meshStandardMaterial color="#8a9098" roughness={0.85} />
+        <primitive object={rightMat} attach="material" />
       </mesh>
       <mesh position={[0, 0.55, -0.48]}>
         <boxGeometry args={[1.14, 1.1, 0.04]} />
-        <meshStandardMaterial color="#8a9098" roughness={0.85} />
+        <primitive object={backMat} attach="material" />
       </mesh>
-      <Table pos={[0, 0, 0.15]} w={0.9} d={0.5} h={0.72} color="#5a5648" />
-      {/* the cubicle screen */}
-      <mesh position={[0, 0.98, -0.42]}>
-        <planeGeometry args={[0.5, 0.34]} />
-        <meshBasicMaterial map={tex} toneMapped={false} />
-      </mesh>
+      <Desk tint={deskTint} seed={seed} />
+      <Monitor seed={seed} />
       {/* headset prop: a thin arc + two small pads, propped on the desk —
           Wave T: pressable. Foley is handled by hand (a 3-ring phone
           pattern) rather than Touchable's own single-shot `foley`, so no
@@ -175,40 +236,66 @@ function Cubicle({ x, z, seed, onHeadsetPress }) {
   )
 }
 
+// Fluorescent strip fixture: a housing box + a bright emissive tube (the
+// true light source per the bloom-discipline rule) — a matching pointLight
+// is added separately in the room's own LightRig block below, positioned
+// right under each fixture, cool with a slight green cast per the brief.
 function FluorescentStrip({ x }) {
   return (
-    <mesh position={[x, 2.35, -0.5]}>
-      <boxGeometry args={[0.14, 0.06, 3.2]} />
-      <meshStandardMaterial color="#eef4ff" emissive="#dfe8ff" emissiveIntensity={1.4} roughness={0.4} />
-    </mesh>
+    <group position={[x, 2.35, -0.5]}>
+      <mesh>
+        <boxGeometry args={[0.18, 0.05, 3.24]} />
+        <meshStandardMaterial color="#c8ccc4" roughness={0.6} metalness={0.15} />
+      </mesh>
+      <mesh position={[0, -0.02, 0]}>
+        <boxGeometry args={[0.13, 0.035, 3.1]} />
+        <meshStandardMaterial color="#eef8ea" emissive="#d8ffdc" emissiveIntensity={1.6} roughness={0.35} />
+      </mesh>
+    </group>
   )
 }
+
+const OFFICE_FLOOR_MAT = standardMat({ kind: 'carpet', tint: '#585c50', scale: 1.4, wear: 0.55, repeat: [4, 3.4] })
+const OFFICE_CEIL_MAT = standardMat({ kind: 'plaster', tint: '#c6cad0', scale: 1, wear: 0.15, repeat: [3, 2.6] })
+const OFFICE_BACKWALL_MAT = standardMat({ kind: 'plaster', tint: '#9a9c94', scale: 1.1, wear: 0.3, repeat: [3, 1.2] })
+const OFFICE_FRONTWALL_MAT = standardMat({ kind: 'plaster', tint: '#8a8c82', scale: 0.9, wear: 0.4, repeat: [3, 1.2] })
 
 function OfficeShell() {
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[7, 6]} />
-        <meshStandardMaterial color="#5a5c54" roughness={0.9} />
+        <primitive object={OFFICE_FLOOR_MAT} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 2.6, 0]}>
         <planeGeometry args={[7, 6]} />
-        <meshStandardMaterial color="#c8ccd0" roughness={0.95} />
+        <primitive object={OFFICE_CEIL_MAT} attach="material" />
       </mesh>
       <mesh position={[0, 1.3, -2.9]}>
         <planeGeometry args={[7, 2.6]} />
-        <meshStandardMaterial color="#9a9c94" roughness={0.9} />
+        <primitive object={OFFICE_BACKWALL_MAT} attach="material" />
       </mesh>
       <mesh position={[0, 1.3, 2.9]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[7, 2.6]} />
-        <meshStandardMaterial color="#9a9c94" roughness={0.9} />
+        <primitive object={OFFICE_FRONTWALL_MAT} attach="material" />
       </mesh>
+      {/* baseboards along both rendered walls — breaks the flat wall/floor
+          seam under grazing light, P1 checklist item 1 */}
+      <Trim pos={[0, 0.045, -2.87]} along="x" wallLength={7} color="#2a2c26" />
+      <Trim pos={[0, 0.045, 2.87]} along="x" wallLength={7} color="#2a2c26" />
     </group>
   )
 }
 
-function OfficeScoreScreen({ film }) {
+// `infoVisible` (Wave M/T's own "press i to hide the record" convention,
+// same prop every other bespoke room already honors — BR2049's InfoPlinth,
+// Sting's ParlorRecord, Baby Driver's own record) was never wired into this
+// room before the P1 pass; the office's score plaque and the penthouse's
+// scream sign now both fold under it, so the mood-shot check `i` promises
+// actually works here too.
+function OfficeScoreScreen({ film, visible = true }) {
   const tex = useMemo(() => makeOfficeScoreTexture(film.score, film.title), [film.slug, film.score, film.title])
+  if (!visible) return null
   return (
     <group position={[-2.2, 0, -1.6]} rotation={[0, 0.35, 0]}>
       <mesh position={[0, 0.9, 0]}>
@@ -225,6 +312,10 @@ function OfficeScoreScreen({ film }) {
 
 /* ----------------------------------------------------------- the penthouse */
 
+const GOLD_COLUMN_MAT = standardMat({ kind: 'metal', tint: '#e8c060', scale: 1.6, wear: 0.15, roughness: 0.28, metalness: 0.75, emissive: '#e8c060', emissiveIntensity: 0.32 })
+const TABLE_TOP_MAT = standardMat({ kind: 'wood', tint: '#3a2412', scale: 1.6, wear: 0.08, roughness: 0.2, seed: 71 })
+const TABLE_LEG_MAT = standardMat({ kind: 'metal', tint: '#2a1c10', scale: 1.2, wear: 0.12, roughness: 0.4, metalness: 0.5, seed: 72 })
+
 function GoldColumns() {
   const positions = [[-2.6, -2.2], [2.6, -2.2], [-2.6, 1.6], [2.6, 1.6]]
   return (
@@ -232,24 +323,25 @@ function GoldColumns() {
       {positions.map(([x, z], i) => (
         <mesh key={i} position={[x, 1.4, z]}>
           <cylinderGeometry args={[0.16, 0.18, 2.8, 16]} />
-          <meshStandardMaterial color="#e8c060" emissive="#e8c060" emissiveIntensity={0.5} roughness={0.3} metalness={0.6} />
+          <primitive object={GOLD_COLUMN_MAT} attach="material" />
         </mesh>
       ))}
     </group>
   )
 }
 
+// The long table: bevelled top in a marble-esque low-roughness "wood" surface
+// (materials.js has no literal marble kind — a warm-tinted wood/tile at low
+// roughness reads as polished stone from typical viewing distance, per the
+// spec's own note) rather than a flat-colored box, per P1 checklist item 4.
 function LongTable() {
   return (
     <group position={[0, 0, -0.6]}>
-      <mesh position={[0, 0.72, 0]}>
-        <boxGeometry args={[1.1, 0.06, 3.6]} />
-        <meshStandardMaterial color="#2a1c10" roughness={0.25} metalness={0.4} />
-      </mesh>
+      <Bevel pos={[0, 0.72, 0]} w={1.1} h={0.06} d={3.6} radius={0.02} segments={2} mat={TABLE_TOP_MAT} />
       {[-1.6, -0.5, 0.6, 1.6].map((z, i) => (
         <mesh key={i} position={[0, 0.36, z]}>
           <boxGeometry args={[0.9, 0.72, 0.06]} />
-          <meshStandardMaterial color="#1c140c" roughness={0.4} />
+          <primitive object={TABLE_LEG_MAT} attach="material" />
         </mesh>
       ))}
     </group>
@@ -295,9 +387,10 @@ function screamLine(hotTake) {
   return m ? m[1] : (hotTake || '').slice(0, 40)
 }
 
-function Scream({ text }) {
+function Scream({ text, visible = true }) {
   const line = screamLine(text)
   const tex = useMemo(() => makeScreamTexture(line), [line])
+  if (!visible) return null
   return (
     <mesh position={[0, 1.85, -2.85]}>
       <planeGeometry args={[5.2, 2.1]} />
@@ -306,20 +399,29 @@ function Scream({ text }) {
   )
 }
 
+// Gold-lit excess, marble-ish surfaces: `tile` at a large cell scale + a
+// warm dark tint + low roughness/moderate metalness fakes polished stone
+// (materials.js has no literal marble generator — this is the spec's own
+// suggested substitute), swapped in for the flat-colored planes so grazing
+// light off the gold key actually paints texture across the floor.
+const PENTHOUSE_FLOOR_MAT = standardMat({ kind: 'tile', tint: '#33200e', scale: 2.2, wear: 0.05, roughness: 0.18, metalness: 0.3, repeat: [3, 3] })
+const PENTHOUSE_CEIL_MAT = standardMat({ kind: 'concrete', tint: '#1a1006', scale: 1.4, wear: 0.05, roughness: 0.45, repeat: [2.4, 2.1] })
+const PENTHOUSE_WALL_MAT = standardMat({ kind: 'tile', tint: '#2c1c0c', scale: 2.6, wear: 0.08, roughness: 0.25, metalness: 0.22, repeat: [3.4, 1.3] })
+
 function PenthouseShell() {
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[8, 7]} />
-        <meshStandardMaterial color="#1c1408" roughness={0.35} metalness={0.5} />
+        <primitive object={PENTHOUSE_FLOOR_MAT} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 3, 0]}>
         <planeGeometry args={[8, 7]} />
-        <meshStandardMaterial color="#120c06" roughness={0.6} />
+        <primitive object={PENTHOUSE_CEIL_MAT} attach="material" />
       </mesh>
       <mesh position={[0, 1.5, -3.4]}>
         <planeGeometry args={[8, 3]} />
-        <meshStandardMaterial color="#140e08" roughness={0.5} />
+        <primitive object={PENTHOUSE_WALL_MAT} attach="material" />
       </mesh>
     </group>
   )
@@ -335,7 +437,7 @@ const DOOR_MOUNT = { position: [2.4, 0, -1.9], rotationY: -0.3, spacing: 0.95, s
 
 /* ------------------------------------------------------------------ room */
 
-export default function Stby({ film, config, doors = [], onDoor }) {
+export default function Stby({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const [inPenthouse, setInPenthouse] = useState(false)
   const inPenthouseRef = useRef(false)
@@ -393,9 +495,16 @@ export default function Stby({ film, config, doors = [], onDoor }) {
 
   // hard cut on the GRADE too: no lerp, an instant swap the moment the state
   // flips, matching "zero easing, no wash" for the visuals as much as the mix.
+  // P1 grade triplet (checklist item 5): the penthouse gets its own
+  // grain/vignette/bloomIntensity distinct from the office's — richer bloom
+  // for "gold-lit excess", a tighter vignette for the party's crush, a touch
+  // more grain than the clean office fluorescents.
   useEffect(() => {
     if (inPenthouse) {
-      setGradeOverride({ bg: '#160e04', fogColor: '#160e04', sat: 0.15, contrast: 0.08, key: '#ffb84a', fill: '#3a1c0c' })
+      setGradeOverride({
+        bg: '#160e04', fogColor: '#160e04', sat: 0.15, contrast: 0.08, key: '#ffb84a', fill: '#3a1c0c',
+        grain: 0.06, vignette: 0.72, bloomIntensity: 0.42,
+      })
     } else {
       clearGradeOverride()
     }
@@ -421,20 +530,44 @@ export default function Stby({ film, config, doors = [], onDoor }) {
           <FleshMass pos={[3.2, 0, -2.2]} rot={[0, -0.9, 0]} scale={0.7} seed={2} />
           <pointLight position={[-2.7, 1.3, -2]} intensity={5} color="#e8a840" distance={3} decay={2} />
           <pointLight position={[2.8, 1.1, -1.8]} intensity={4} color="#e8a840" distance={3} decay={2} />
-          <Scream text={film.hot_take} />
+          {/* two more fixture practicals at the far gold columns — reaches
+              the room's far corners so no wall plane goes flat black there */}
+          <pointLight position={[-2.6, 2.5, 1.5]} intensity={3.5} color="#ffcf7a" distance={4.2} decay={2} />
+          <pointLight position={[2.6, 2.5, -2.2]} intensity={3.5} color="#ffcf7a" distance={4.2} decay={2} />
+          <Scream text={film.hot_take} visible={infoVisible} />
         </>
       ) : (
         <>
           <fogExp2 attach="fog" args={[grade.fogColor || '#3a3c36', 0.05]} />
-          <pointLight position={[0, 2.4, 0]} intensity={(grade.keyIntensity ?? 1) * 10} color={grade.key || '#dfe8ff'} distance={9} decay={2} />
+          {/* KEY: a wide, low-penumbra spot standing in for the overhead
+              panel wash — cool with a slight green cast, per the brief's
+              "fluorescent grade." PRACTICALS: a point light under each of
+              the three fluorescent fixtures. BOUNCE: two low cool fills so
+              the far wall corners still read something instead of black. */}
+          <AimedSpot pos={[0, 2.45, -0.3]} target={[0, 0, -0.3]} intensity={6} color={grade.key || '#e6ffe0'} distance={9} angle={0.58} penumbra={0.15} decay={2} />
+          {[-1.3, 0, 1.3].map((x) => (
+            <pointLight key={x} position={[x, 2.15, -0.5]} intensity={4.5} color="#dfffe0" distance={4.4} decay={2} />
+          ))}
+          <pointLight position={[0, 0.7, 2.7]} intensity={3.5} color="#3a4a42" distance={6} decay={2} />
+          <pointLight position={[0, 1.8, -2.75]} intensity={3} color="#2e3a34" distance={6} decay={2} />
           <ambientLight intensity={grade.ambient ?? 0.35} />
+          <DustField pos={[0, 1.3, -0.4]} density={40} size={0.01} color="#c8d0c4" area={[6, 2, 5]} opacity={0.14} />
 
           <OfficeShell />
           {[-1.3, 0, 1.3].map((x) => <FluorescentStrip key={x} x={x} />)}
           {CUBICLES.map(([x, z], i) => (
             <Cubicle key={i} x={x} z={z} seed={i + 40} onHeadsetPress={handleHeadsetPress} />
           ))}
-          <OfficeScoreScreen film={film} />
+          {/* environmental-storytelling clutter — authored, not confetti:
+              a coffee cup and crumpled scripts at one desk, a stray cable
+              run off another, a box of old script binders parked by the
+              score screen */}
+          <CrumpledPaper pos={[-1.55, 0.76, -1.05]} rot={[0.3, 0.6, 0.1]} radius={0.045} seed={11} />
+          <CrumpledPaper pos={[-1.42, 0.76, -0.95]} rot={[-0.2, 1.4, 0.3]} radius={0.04} seed={12} />
+          <Cup pos={[-1.08, 0.76, -1.15]} />
+          <WireRun points={[[1.72, 0.68, -1.02], [1.6, 0.3, -0.75], [1.42, 0.02, -0.45]]} sag={0.08} color="#141414" />
+          <BoxPile pos={[-2.6, 0, -2.3]} count={3} color="#8a7a58" spread={0.4} />
+          <OfficeScoreScreen film={film} visible={infoVisible} />
         </>
       )}
 

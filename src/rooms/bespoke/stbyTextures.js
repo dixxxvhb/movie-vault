@@ -73,6 +73,56 @@ export function makeCubicleScreenTexture(seed) {
   return tex
 }
 
+// P1 polish pass: the call-floor monitor is a DIM screen, not a light
+// source — a dark CRM-gray field with our own gibberish dialer UI (a fake
+// waveform, a status ledger, a progress bar), meant to be read as "a screen
+// left on, mid-shift" from across a cubicle, not stared at. Paired in
+// Stby.jsx with meshStandardMaterial + a low emissiveIntensity rather than
+// the old meshBasicMaterial/toneMapped-false combo, so it never blooms.
+export function makeMonitorUITexture(seed) {
+  const W = 320, H = 220
+  const c = canvas(W, H)
+  const ctx = c.getContext('2d')
+  const r = rngFor(seed)
+  ctx.fillStyle = '#141a1e'
+  ctx.fillRect(0, 0, W, H)
+  // header bar
+  ctx.fillStyle = '#22303a'
+  ctx.fillRect(0, 0, W, 22)
+  ctx.fillStyle = '#5a7a8a'
+  ctx.font = '600 12px system-ui, sans-serif'
+  ctx.fillText('DIALER v' + (2 + Math.floor(r() * 3)) + '.' + Math.floor(r() * 9), 8, 15)
+  // a fake waveform strip
+  ctx.strokeStyle = '#3a8a5a'
+  ctx.lineWidth = 1.4
+  ctx.beginPath()
+  for (let x = 0; x < W; x += 3) {
+    const y = 46 + Math.sin(x * 0.15 + seed) * 10 * r() + (r() - 0.5) * 6
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+  }
+  ctx.stroke()
+  // gibberish ledger rows — never legible film dialogue, just field/value
+  // pairs that read as "a CRM" from a normal standing distance
+  ctx.fillStyle = '#3a444c'
+  ctx.font = '500 11px system-ui, sans-serif'
+  const fields = ['LEAD', 'REGION', 'SCRIPT', 'ATTEMPT', 'DISPO']
+  fields.forEach((f, i) => {
+    const y = 84 + i * 18
+    ctx.fillText(f, 10, y)
+    ctx.fillStyle = '#242c32'
+    ctx.fillRect(80, y - 10, 210 * (0.3 + r() * 0.6), 12)
+    ctx.fillStyle = '#3a444c'
+  })
+  // a status progress bar, mid-drag
+  ctx.strokeStyle = '#2a343a'
+  ctx.strokeRect(10, H - 26, W - 20, 12)
+  ctx.fillStyle = '#2a5a3a'
+  ctx.fillRect(11, H - 25, (W - 22) * (0.2 + r() * 0.5), 10)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
 // The scream itself: "YOURE FUCKING KIDDING", verbatim, sized and jagged
 // like an actual scream — uneven baseline, jittered rotation per word, hot
 // gold-on-black so it reads as the loudest object in the penthouse.
