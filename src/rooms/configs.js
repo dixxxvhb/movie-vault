@@ -384,9 +384,15 @@ export const CONFIGS = {
   },
 
   // -------------------------------------------------------------------- ncfom
+  // Bespoke now (Phase 2, src/rooms/bespoke/Ncfom.jsx): grade/camera below
+  // match the bespoke room's own front-of-counter station (the entry
+  // viewpoint FilmWorld lands on; the room itself flies to a second,
+  // behind-the-counter station via goToStation when you walk around). `place`
+  // is dead weight for the same reason as the-departed's/baby-driver's own
+  // entries above — the bespoke component never reads it.
   ncfom: {
     family: 'dread',
-    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.3 },
+    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.32, bg: '#8a7a5a', fogColor: '#8a7a5a' },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.4], fov: 44 },
     place: {
       shell: 'box',
@@ -402,10 +408,14 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------------------------------- barbarian
+  // Bespoke now (Phase 2, src/rooms/bespoke/Barbarian.jsx): grade/camera
+  // below match the bespoke room's own living-room entry station (index -1;
+  // the descent below it moves via goToStation). `place` is dead weight for
+  // the same reason as the-departed's/baby-driver's own entries above.
   barbarian: {
     family: 'dread',
-    grade: { key: '#e8a860', fill: '#141416', ambient: 0.12 },
-    camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1], fov: 46 },
+    grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416' },
+    camera: { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 },
     place: {
       shell: 'box',
       shellParams: { w: 3.8, d: 3.8, h: 2.5, wallMat: 'flat', doorGap: true },
@@ -420,9 +430,12 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------- masters-of-the-universe-2026
+  // Bespoke now (Phase 2, src/rooms/bespoke/Motu.jsx): grade/camera below
+  // match the bespoke room's own fixed throne-hall station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries.
   'masters-of-the-universe-2026': {
     family: 'spectacle',
-    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.14 },
+    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424' },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
     place: {
       shell: 'box',
@@ -438,9 +451,12 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------ disclosure-day
+  // Bespoke now (Phase 2, src/rooms/bespoke/DisclosureDay.jsx): grade/camera
+  // below match the bespoke room's own fixed podium station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries.
   'disclosure-day': {
     family: 'intimate-tension',
-    grade: { key: '#d8d0b8', fill: '#8a8470', ambient: 0.34, sat: -0.1 },
+    grade: { key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8' },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
     place: {
       shell: 'box',
