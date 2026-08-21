@@ -136,12 +136,15 @@ export function resolveStep(x, z, dx, dz, radius) {
 }
 
 export function floorYAt(x, z) {
-  let y = 0
+  // Highest registered floor wins, but the default 0 only applies when no
+  // floor fn is registered at all — a room that descends (Sicario's tunnel
+  // runs to negative y) must be allowed to report below zero.
+  let y = -Infinity
   for (const fn of floorByOwner.values()) {
     const v = fn(x, z)
     if (v > y) y = v
   }
-  return y
+  return y === -Infinity ? 0 : y
 }
 
 // A tiny always-on export so scripts/shot.py (and anyone poking the console)

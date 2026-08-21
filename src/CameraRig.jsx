@@ -312,7 +312,9 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
           }
         }
 
-        camera.position.set(next.x + bobX, walkY.current + bobY, next.z)
+        // lateral bob sways along the camera's RIGHT vector, not world X —
+        // along world X it reads as forward judder whenever you face east/west
+        camera.position.set(next.x + bobX * rx, walkY.current + bobY, next.z + bobX * rz)
 
         // you cannot sprint around zoomed to 3.4x — walking resets the lens
         if (moving) {
