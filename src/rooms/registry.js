@@ -14,6 +14,7 @@ import Predestination from './bespoke/Predestination.jsx'
 import Ncfom from './bespoke/Ncfom.jsx'
 import Barbarian from './bespoke/Barbarian.jsx'
 import Motu from './bespoke/Motu.jsx'
+import DisclosureDay from './bespoke/DisclosureDay.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -35,6 +36,7 @@ const BESPOKE = {
   ncfom: Ncfom,
   barbarian: Barbarian,
   'masters-of-the-universe-2026': Motu,
+  'disclosure-day': DisclosureDay,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

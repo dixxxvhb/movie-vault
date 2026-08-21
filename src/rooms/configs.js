@@ -444,9 +444,12 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------ disclosure-day
+  // Bespoke now (Phase 2, src/rooms/bespoke/DisclosureDay.jsx): grade/camera
+  // below match the bespoke room's own fixed podium station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries.
   'disclosure-day': {
     family: 'intimate-tension',
-    grade: { key: '#d8d0b8', fill: '#8a8470', ambient: 0.34, sat: -0.1 },
+    grade: { key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8' },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
     place: {
       shell: 'box',
