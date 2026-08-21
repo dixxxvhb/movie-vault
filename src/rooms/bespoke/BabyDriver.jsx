@@ -28,7 +28,11 @@ function BankFacade({ grade }) {
     const c = document.createElement('canvas')
     c.width = c.height = 512
     const ctx = c.getContext('2d')
-    ctx.fillStyle = '#c8b898'
+    // QA pass: was '#c8b898' (a muted tan that, under the old dim lighting,
+    // read as dusk stone rather than sun-bleached daytime limestone) —
+    // brightened toward the pale warm stone a bank facade actually throws
+    // back at midday.
+    ctx.fillStyle = '#e8dcc0'
     ctx.fillRect(0, 0, 512, 512)
     let s = 331
     const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
@@ -52,25 +56,66 @@ function BankFacade({ grade }) {
     <group>
       <mesh position={[0, 2.6, -4.3]}>
         <boxGeometry args={[10, 5.2, 0.3]} />
-        <meshStandardMaterial map={tex} roughness={0.9} />
+        <meshStandardMaterial map={tex} roughness={0.85} />
       </mesh>
       {/* columns — a bank facade's own vocabulary, no signage, no badging */}
       {[-4.2, -1.4, 1.4, 4.2].map((x, i) => (
         <mesh key={i} position={[x, 1.9, -4.1]}>
           <boxGeometry args={[0.42, 3.8, 0.42]} />
-          <meshStandardMaterial color="#d8cca8" roughness={0.7} />
+          <meshStandardMaterial color="#f0e6cc" roughness={0.65} />
         </mesh>
       ))}
       {windows.map((w, i) => (
         <mesh key={i} position={[w.x, w.y, -4.14]}>
           <planeGeometry args={[0.9, 1.3]} />
-          <meshStandardMaterial color="#20242a" emissive={grade.key || '#f0c860'} emissiveIntensity={0.06} roughness={0.2} metalness={0.2} />
+          {/* windows read as glare-blown daylight glass, not dark night
+              panes — a pale sky-tinted surface with a soft emissive kick,
+              never the near-black '#20242a' the dusk stand-in used */}
+          <meshStandardMaterial color="#dce8ee" emissive="#eaf2f6" emissiveIntensity={0.22} roughness={0.15} metalness={0.15} />
         </mesh>
       ))}
       {/* the awning-height shadow line, sunny-grade Atlanta rather than a shop sign */}
       <mesh position={[0, 4.6, -4.14]}>
         <planeGeometry args={[9.6, 0.5]} />
-        <meshStandardMaterial color="#8a7a5a" roughness={0.85} />
+        <meshStandardMaterial color="#c8b088" roughness={0.8} />
+      </mesh>
+    </group>
+  )
+}
+
+/* ------------------------------------------------------------------ sky */
+
+// QA fix: this room had NO sky/backdrop of its own, so the visible far
+// background was whatever App-level `<color>` the scene falls back to —
+// this film's own dark card-front palette (bg:'#160D0D'), which is what was
+// actually reading as "dim night-amber" rather than any single light being
+// too weak. A proper bright daytime sky dome + sun disc (same device as
+// Departed's, tuned warm-blue instead of golden-hour) fixes the backdrop
+// directly instead of only cranking lights against a black horizon.
+function DaySky() {
+  const tex = useMemo(() => {
+    const c = document.createElement('canvas')
+    c.width = 2; c.height = 512
+    const ctx = c.getContext('2d')
+    const g = ctx.createLinearGradient(0, 0, 0, 512)
+    g.addColorStop(0, '#5fa8d8')
+    g.addColorStop(0.55, '#bfe0ee')
+    g.addColorStop(1, '#eef2e0')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, 2, 512)
+    const t = new THREE.CanvasTexture(c)
+    t.colorSpace = THREE.SRGBColorSpace
+    return t
+  }, [])
+  return (
+    <group>
+      <mesh position={[0, 0, -20]}>
+        <sphereGeometry args={[60, 24, 16, 0, Math.PI * 2, 0, Math.PI / 1.7]} />
+        <meshBasicMaterial map={tex} side={THREE.BackSide} fog={false} />
+      </mesh>
+      <mesh position={[-8, 7, -28]}>
+        <circleGeometry args={[2.6, 24]} />
+        <meshBasicMaterial color="#fff8e0" transparent opacity={0.95} fog={false} toneMapped={false} />
       </mesh>
     </group>
   )
@@ -271,7 +316,18 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
 
   return (
     <group>
-      <mesh position={[-2.6, 2.1, -4.1]} rotation={[0, 0.15, 0]}>
+      {/* QA fix: these used to sit at z=-4.1/-4.08, a few cm in front of the
+          bank facade's front face (z=-4.15) — fine face-on, but rotated 0.15
+          rad on Y that near-coplanar gap put the FAR edge of each plane
+          (half-width 0.65 -> a ~0.10 depth swing) physically behind the
+          wall's front face. The facade won that depth test for the embedded
+          slice, so a chunk of the verbatim hot take ("nouns. Big") rendered
+          as simply gone — not a wrap/fit bug (infoTextures.js's own wrap
+          draws the complete string every time; confirmed by re-rendering
+          makeHotTakeTexture in isolation), a geometry-clipping bug local to
+          this room's placement. Pulled both well clear of the wall and
+          dropped the rotation so no viewing angle can reintroduce it. */}
+      <mesh position={[-2.6, 2.1, -3.5]}>
         <planeGeometry args={[1.3, 0.82]} />
         {hotTakeTex
           ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
@@ -285,7 +341,7 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
             : <meshBasicMaterial key="blank" transparent opacity={0} />}
         </mesh>
       </group>
-      <mesh position={[-2.6, 1.55, -4.08]} rotation={[0, 0.15, 0]}>
+      <mesh position={[-2.6, 1.55, -3.5]}>
         <planeGeometry args={[1.2, 0.3]} />
         {metaTex
           ? <meshBasicMaterial key="mapped" map={metaTex} transparent depthWrite={false} side={THREE.DoubleSide} />
@@ -305,18 +361,32 @@ export default function BabyDriver({ film, config, infoVisible = true }) {
 
   return (
     <group>
-      <fogExp2 attach="fog" args={[grade.fogColor || '#e8d8b0', 0.02]} />
-      <pointLight position={[0, 3, 1]} intensity={(grade.keyIntensity ?? 1.4) * 18} color={grade.key || '#f0c860'} distance={16} decay={2} />
-      <pointLight position={[0, 1.4, 3]} intensity={6} color={grade.fill || '#5a7a8a'} distance={10} decay={2} />
+      {/* QA fix: grade.fogColor now carries a light sky-blue override from
+          configs.js (was falling through to this component's own '#e8d8b0'
+          fallback only when unset — but the film's dark card-front bg WAS
+          set as fogColor by default, near-black, which is most of why this
+          room read as dusk rather than the brief's sunny daylight). Density
+          dropped too: outdoor daylight haze should barely tint the facade
+          14m back, not fog it out like an interior. */}
+      <fogExp2 attach="fog" args={[grade.fogColor || '#cfe8f2', 0.007]} />
+      {/* FilmWorld already supplies an ambientLight from config.grade.ambient
+          (configs.js's own baby-driver entry raises that to 0.55 for this
+          fix) — no second hardcoded ambient here, same convention every
+          other room follows. */}
+      <pointLight position={[-6, 8, 2]} intensity={(grade.keyIntensity ?? 1.9) * 30} color={grade.key || '#ffe6b0'} distance={26} decay={1.8} />
+      <pointLight position={[0, 1.4, 3]} intensity={10} color={grade.fill || '#bcdce8'} distance={12} decay={2} />
 
-      {/* ground: sidewalk + street, sunny concrete */}
+      <DaySky />
+
+      {/* ground: sidewalk + street, sunny concrete — brightened off the
+          '#8c8c86'/'#68656a' dusk-grey stand-in the same way the facade was */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[16, 12]} />
-        <meshStandardMaterial color="#8c8c86" roughness={0.9} />
+        <meshStandardMaterial color="#c9c9c0" roughness={0.9} />
       </mesh>
       <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[16, 2.2]} />
-        <meshStandardMaterial color="#68656a" roughness={0.85} />
+        <meshStandardMaterial color="#a8a6a0" roughness={0.85} />
       </mesh>
 
       <BankFacade grade={grade} />

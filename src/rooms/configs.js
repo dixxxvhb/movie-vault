@@ -325,9 +325,20 @@ export const CONFIGS = {
   // already framed the car/facade well for the hand-built room, so it's
   // unchanged from the Wave B stand-in. `place` is dead weight for the same
   // reason as the-departed's above — the bespoke component never reads it.
+  //
+  // QA pass (architect review): grade had no bg/fogColor override, so both
+  // fell back to defaultConfigFor()'s film-palette bg — this film's card
+  // front is '#160D0D', near-black, which is most of why the room read as
+  // dim night-amber rather than the brief's sunny Atlanta daylight (the
+  // room's own lighting was never the whole story; the backdrop it was
+  // fogging into was almost black). bg/fogColor now carry an explicit light
+  // sky blue, and ambient/keyIntensity are both raised for daytime exposure.
   'baby-driver': {
     family: 'momentum',
-    grade: { key: '#f0c860', fill: '#5a7a8a', ambient: 0.28 },
+    grade: {
+      key: '#ffe6b0', fill: '#bcdce8', ambient: 0.55, keyIntensity: 1.9,
+      bg: '#cfe8f2', fogColor: '#cfe8f2',
+    },
     camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52, far: 60 },
     place: {
       shell: 'open',
