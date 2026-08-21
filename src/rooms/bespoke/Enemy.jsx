@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { gaze } from '../../CameraRig.jsx'
@@ -14,6 +14,7 @@ import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { footprint } from '../props.jsx'
+import Touchable from '../Touchable.jsx'
 
 // ENEMY (2013) · 9.6 · "the apartment, doubled." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the Toronto apartment, venetian-blind
@@ -35,6 +36,71 @@ const STATIONS = { entry: ENTRY_STATION, lying: LYING_STATION }
 
 const CHALK_TEXT =
   'He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good.'
+
+/* ------------------------------------------------------- twin furniture */
+// Wave T: "touching the wrong twin of any pair -> it snaps to match its
+// partner for 3s, then drifts wrong again." Every piece of furniture used
+// to render through the generic <Duplicates> wrapper (a static offset
+// group, both copies identical geometry, no per-copy state) — that still
+// covers the twinned camera-shadow blob below, but the FURNITURE now
+// renders each twin through its own TwinFurniture instead, since a snap
+// needs somewhere to hold "am I currently wrong / snapping / true / drifting
+// back" per pair. The "wrong" offset math is copied straight from
+// Duplicates.jsx (offset, offset*0.4*w, offset*0.6 / rotY offset*0.5*w) so
+// the twin sits exactly where <Duplicates offset={0.11} wrongness="high">
+// used to put it — this is a drop-in replacement, not a new look.
+const ZERO_V = new THREE.Vector3(0, 0, 0)
+
+function TwinFurniture({ offset = 0.11, wrongness = 'high', reach = 2.0, foley = 'tick', children }) {
+  const w = wrongness === 'high' ? 1 : wrongness === 'subtle' ? 0.35 : Number(wrongness) || 0.35
+  const wrongPos = useMemo(() => new THREE.Vector3(offset, offset * 0.4 * w, offset * 0.6), [offset, w])
+  const wrongRotY = offset * 0.5 * w
+
+  const group = useRef(null)
+  const [mode, setMode] = useState('wrong') // wrong -> snapping -> snapped -> drifting -> wrong
+  const modeRef = useRef('wrong')
+  const t0 = useRef(0)
+
+  const setModeBoth = (m) => { modeRef.current = m; setMode(m) }
+
+  const handleUse = useCallback(() => {
+    if (modeRef.current !== 'wrong') return
+    t0.current = performance.now()
+    setModeBoth('snapping')
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.info('[enemy] twin snap fired, offset=%s', offset)
+    }
+  }, [offset])
+
+  useFrame(() => {
+    const g = group.current
+    if (!g) return
+    const now = performance.now()
+    const elapsed = now - t0.current
+    if (modeRef.current === 'snapping') {
+      const t = Math.min(1, elapsed / 200)
+      g.position.lerpVectors(wrongPos, ZERO_V, t)
+      g.rotation.y = THREE.MathUtils.lerp(wrongRotY, 0, t)
+      if (t >= 1) { t0.current = now; setModeBoth('snapped') }
+    } else if (modeRef.current === 'snapped') {
+      if (elapsed >= 3000) { t0.current = now; setModeBoth('drifting') }
+    } else if (modeRef.current === 'drifting') {
+      const t = Math.min(1, elapsed / 2000)
+      g.position.lerpVectors(ZERO_V, wrongPos, t)
+      g.rotation.y = THREE.MathUtils.lerp(0, wrongRotY, t)
+      if (t >= 1) setModeBoth('wrong')
+    }
+  })
+
+  return (
+    <Touchable onUse={handleUse} reach={reach} foley={foley} disabled={mode !== 'wrong'} anchor={[wrongPos.x, wrongPos.y, wrongPos.z]}>
+      <group ref={group} position={[wrongPos.x, wrongPos.y, wrongPos.z]} rotation={[0, wrongRotY, 0]}>
+        {children}
+      </group>
+    </Touchable>
+  )
+}
 
 /* ------------------------------------------------------------------ shell */
 
@@ -418,11 +484,21 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
       <BlindLight />
       <Skyline />
 
-      {/* every object twinned, the second copy slightly wrong — Duplicates
-          renders its children twice with a small offset/rotation delta */}
-      <Duplicates offset={0.11} wrongness="high">
-        {furniture}
-      </Duplicates>
+      {/* every object twinned, the second copy slightly wrong. Wave T: the
+          wrong twin of each pair is individually touchable now — touch it
+          and it snaps to match its true partner for 3s, then drifts wrong
+          again — so each of the three furniture groups gets its own
+          TwinFurniture instead of sharing one static <Duplicates> offset. */}
+      {furniture}
+      <TwinFurniture offset={0.11} wrongness="high" foley="tick">
+        <Table pos={[-0.4, 0, -0.4]} w={1} d={0.6} color="#3a2c1a" />
+      </TwinFurniture>
+      <TwinFurniture offset={0.11} wrongness="high" foley="tick">
+        <ChairRow pos={[-0.4, 0, -0.1]} count={2} spacing={0.6} color="#241c10" />
+      </TwinFurniture>
+      <TwinFurniture offset={0.11} wrongness="high" foley="tick">
+        <Bed pos={[1.3, 0, -1.0]} rot={[0, -0.2, 0]} color="#5a5040" frame="#241c10" />
+      </TwinFurniture>
 
       {/* "your camera casts two shadows": a soft dark floor blob at the
           entry standpoint, twinned by the same Duplicates offset as the

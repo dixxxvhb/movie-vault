@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { counter as Counter, barShelf as BarShelf, footprint } from '../props.jsx'
@@ -9,10 +9,11 @@ import { useRoomAudio } from '../audio/engine.js'
 import { start as startStingAudio } from '../audio/recipes/the-sting.js'
 import {
   makeWoodTexture, makeLumberTexture, makeChalkboardTexture,
-  makeHotTakeBrushTexture, makeFbiSignTexture,
+  makeHotTakeBrushTexture, makeFbiSignTexture, flatHorseCount, ALT_HORSES,
 } from './stingTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
+import Touchable from '../Touchable.jsx'
 
 // 9.6 — "the wire room builds itself." The betting parlor assembles on
 // entry (flats/scaffold/backdrop flying in over ~6s, staggered per wall,
@@ -323,6 +324,31 @@ function BrassRail({ pos, length = 2.2 }) {
   )
 }
 
+// Wave T: a rag on the chalkboard's own rail — touch it and one odds line
+// wipes (canvas redraw, blank), then rewrites with a different fake name
+// 1.2s later (another redraw). `onUse` is the room's own handler (owns the
+// edit state + the setTimeout); this component only renders the rail/rag
+// and forwards the touch through Touchable, same split every other bespoke
+// touchable in this batch uses.
+function ChalkRag({ pos, onUse }) {
+  return (
+    <Touchable onUse={onUse} reach={2.2} foley="swish" anchor={pos}>
+      <group position={pos}>
+        {/* the rail — a thin ledge along the chalkboard's own bottom edge */}
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[1.5, 0.035, 0.05]} />
+          <meshStandardMaterial color="#241a10" roughness={0.85} />
+        </mesh>
+        {/* the rag itself */}
+        <mesh position={[0.58, 0.045, 0.02]} rotation={[0, 0, 0.18]}>
+          <boxGeometry args={[0.16, 0.045, 0.09]} />
+          <meshStandardMaterial color="#cfc6b4" roughness={0.95} />
+        </mesh>
+      </group>
+    </Touchable>
+  )
+}
+
 /* -------------------------------------------------------------- colliders */
 
 // Each flat is a thin blocking slab, inset from its own full span so BOTH
@@ -435,7 +461,33 @@ export default function Sting({ film, config, infoVisible = true, doors = [], go
     goToStation?.(STATIONS[name], name)
   }
 
-  const chalkTex = useMemo(() => makeChalkboardTexture(), [])
+  // Wave T: chalkEdit is null (the board as authored) or {index, text} —
+  // text null/undefined mid-wipe, a different fake name once the rewrite
+  // timer fires. Every change redraws the whole canvas fresh (stingTextures
+  // .js's own makeChalkboardTexture takes the edit and draws the full board
+  // around it) and this effect disposes the texture it's replacing, same
+  // convention as BackWall's hotTakeTex/ParlorRecord's scoreTex above.
+  const [chalkEdit, setChalkEdit] = useState(null)
+  const [chalkTex, setChalkTex] = useState(null)
+  const rewriteTimer = useRef(null)
+  useEffect(() => {
+    let live = true
+    const t = makeChalkboardTexture(chalkEdit)
+    if (live) setChalkTex(t)
+    return () => { live = false; t.dispose() }
+  }, [chalkEdit])
+  useEffect(() => () => { if (rewriteTimer.current) clearTimeout(rewriteTimer.current) }, [])
+
+  const handleWipeRag = useCallback(() => {
+    const count = flatHorseCount()
+    const index = Math.floor(Math.random() * count)
+    setChalkEdit({ index, text: null }) // erase
+    if (rewriteTimer.current) clearTimeout(rewriteTimer.current)
+    rewriteTimer.current = setTimeout(() => {
+      const alt = ALT_HORSES[Math.floor(Math.random() * ALT_HORSES.length)]
+      setChalkEdit({ index, text: alt }) // rewritten different
+    }, 1200)
+  }, [])
 
   useEffect(() => {
     registerColliders(OWNER_ID, stingRects())
@@ -477,8 +529,11 @@ export default function Sting({ film, config, infoVisible = true, doors = [], go
         <BrassRail pos={[-1.4, 0.55, BACK_Z + 0.86]} length={2.1} />
         <mesh position={[-1.3, 2.0, BACK_Z + 0.2]} rotation={[0, 0, 0]}>
           <planeGeometry args={[1.6, 1.1]} />
-          <meshBasicMaterial map={chalkTex} toneMapped={false} side={THREE.DoubleSide} />
+          {chalkTex
+            ? <meshBasicMaterial key="mapped" map={chalkTex} toneMapped={false} side={THREE.DoubleSide} />
+            : <meshBasicMaterial key="blank" color="#1c2418" toneMapped={false} />}
         </mesh>
+        <ChalkRag pos={[-1.3, 1.42, BACK_Z + 0.22]} onUse={handleWipeRag} />
       </BuildRide>
 
       {/* named landmarks: free walk gets you anywhere in the room, these

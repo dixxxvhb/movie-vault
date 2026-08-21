@@ -75,7 +75,15 @@ const RACES = [
   { name: 'UNION MILE', horses: ["HOOKER'S LUCK 6-5", 'SILENT PARTNER 4-1', 'SNYDER FALLS 12-1'] },
   { name: "GONDORF'S PURSE", horses: ['SURE THING 7-2', 'PAPER TRAIL 9-1', 'DOUBLE CROSS EVEN'] },
 ]
-export function makeChalkboardTexture() {
+// Wave T: touching the rag wipes ONE odds line — the board redraws with
+// that line blank, then (1.2s later) redraws again with a different fake
+// name in its place. `edit` is {index, text}: index is a flat position
+// across every race's horse list (0..flatHorseCount()-1), text is the
+// replacement string, or null/undefined to render that line blank (the
+// "erased" mid-state). Every call is a fresh canvas — the caller disposes
+// the outgoing texture itself (Sting.jsx's own effect cleanup), same
+// pattern as every other bespoke room's redrawn textures.
+export function makeChalkboardTexture(edit) {
   const W = 900, H = 620
   const c = canvas(W, H)
   const ctx = c.getContext('2d')
@@ -91,16 +99,21 @@ export function makeChalkboardTexture() {
   ctx.fillText("TODAY'S CARD", 30, 60)
 
   let y = 120
+  let flat = 0
   RACES.forEach((race) => {
     ctx.fillStyle = '#d8cca0'
     ctx.font = 'italic 700 30px Georgia, serif'
     ctx.fillText(race.name, 30, y)
     y += 42
     race.horses.forEach((h) => {
-      ctx.fillStyle = '#f0e6cc'
-      ctx.font = '28px "Segoe Print", "Bradley Hand", cursive'
-      ctx.fillText(h, 60, y)
+      const text = (edit && edit.index === flat) ? (edit.text || '') : h
+      if (text) {
+        ctx.fillStyle = '#f0e6cc'
+        ctx.font = '28px "Segoe Print", "Bradley Hand", cursive'
+        ctx.fillText(text, 60, y)
+      }
       y += 40
+      flat += 1
     })
     y += 20
   })
@@ -110,6 +123,18 @@ export function makeChalkboardTexture() {
   tex.anisotropy = 4
   return tex
 }
+
+export function flatHorseCount() {
+  return RACES.reduce((sum, race) => sum + race.horses.length, 0)
+}
+
+// Replacement names for a wiped-then-rewritten line — our own invented
+// cards, same discipline as RACES above: never a real track's actual card.
+export const ALT_HORSES = [
+  'FAST CHANGE 5-1', 'LOOSE LIPS 9-2', 'BACK DOOR MAN 3-1',
+  'TRUE BILL 11-2', 'SLIPPED DISC 7-1', 'FALSE FRONT 6-1',
+  'CROOKED MILE EVEN', 'CLEAN GETAWAY 4-1', 'THE WIRE HAND 8-1',
+]
 
 // The hot take, painted in big brush strokes on the back of the largest
 // flat — found only by walking behind it. Verbatim, per the standing rule.

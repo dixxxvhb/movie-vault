@@ -28,13 +28,17 @@ export function tick(ctx, out, { freq = 1600, gain = 0.05 } = {}) {
   return { stop: cleanup }
 }
 
-// low sine drop + a brown-noise thump — doors, furniture, anything heavy
-export function thunk(ctx, out, { gain = 0.22 } = {}) {
+// low sine drop + a brown-noise thump — doors, furniture, anything heavy.
+// `startFreq`/`endFreq` let a caller pitch the drop down further (Barbarian's
+// heaviest basement door wants a lower-pitched thunk than the default) —
+// defaults match the original hardcoded 120->38 sweep exactly, so every
+// existing call site is byte-identical.
+export function thunk(ctx, out, { gain = 0.22, startFreq = 120, endFreq = 38 } = {}) {
   const t0 = ctx.currentTime
   const o = ctx.createOscillator()
   o.type = 'sine'
-  o.frequency.setValueAtTime(120, t0)
-  o.frequency.exponentialRampToValueAtTime(38, t0 + 0.16)
+  o.frequency.setValueAtTime(startFreq, t0)
+  o.frequency.exponentialRampToValueAtTime(endFreq, t0 + 0.16)
   const og = ctx.createGain()
   og.gain.setValueAtTime(gain, t0)
   og.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22)
