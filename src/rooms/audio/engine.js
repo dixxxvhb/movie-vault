@@ -171,3 +171,12 @@ subscribeWalk((evt) => {
 export function _debugState() {
   return { hasContext: !!ctx, contextState: ctx?.state ?? null, mediaGraphReady, soundOn: isSoundOn() }
 }
+
+// Same always-on headless-verification pattern as window.__vaultFps
+// (App.jsx) and window.__vaultWalk (colliders.js) — scripts/sound_smoke.py
+// reads this to confirm the AudioContext genuinely never exists until the
+// first real unmute, from outside the module (Playwright can't import an ES
+// module straight into page context).
+if (typeof window !== 'undefined') {
+  window.__vaultDebugAudio = _debugState
+}

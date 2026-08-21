@@ -11,6 +11,8 @@ import { standardMat } from './materials.js'
 import { Trim, FrameOn, Clutter } from './detail.jsx'
 import { Atmosphere } from './atmosphere.jsx'
 import LightRig from './lightRig.js'
+import { useRoomAudio } from './audio/engine.js'
+import { TEMPLATE_RECIPES } from './audio/recipes/index.js'
 
 // The one room. Every Tier-2 (and Tier-1-stand-in) slug renders through
 // here: shell + props + systems + lighting, all driven by config (Wave B
@@ -500,6 +502,15 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
   const props = place.props || []
   const systems = place.systems || []
   const doorMount = useMemo(() => defaultDoorMount(place), [place])
+
+  // Phase 3: template-room audio. Keyed by film.slug against
+  // audio/recipes/index.js's TEMPLATE_RECIPES map — a slug with no entry
+  // there (every bespoke slug, since those mount their own useRoomAudio
+  // call directly; every archive print/drawer slug, since FadedRoom also
+  // renders through this same GenericRoom but has no staged Tier 2 scene to
+  // score) gets `undefined`, which engine.js's setRoomRecipe already no-ops
+  // on rather than needing a guard here.
+  useRoomAudio(TEMPLATE_RECIPES[film?.slug])
 
   // Wave M1: auto-colliders. One owner per room instance (film.slug is
   // stable for the room's lifetime; falls back to a constant so a caller
