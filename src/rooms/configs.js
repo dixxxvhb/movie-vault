@@ -211,6 +211,10 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------- enemy
+  // Bespoke now (Phase 2, src/rooms/bespoke/Enemy.jsx): camera/grade below
+  // already matched the bespoke room's own entry station, so no change was
+  // needed here. `place` is dead weight the bespoke component never reads —
+  // left in place as the pre-bespoke Wave B stand-in.
   enemy: {
     family: 'mind-bender',
     grade: { key: '#c9a24a', fill: '#3a3020', sat: 0.12, contrast: 0.06 },
