@@ -120,18 +120,21 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------ matrix
+  // Bespoke now (Phase 2, src/rooms/bespoke/Matrix.jsx): camera/grade below
+  // match the bespoke room's own entry station exactly, same convention
+  // 'the-sting' uses, so FilmWorld's ambientLight and the pre-enter camera
+  // agree with what the hand-built rooftop actually shows. `place` is dead
+  // weight the bespoke component never reads — left in place as the
+  // pre-bespoke Wave B stand-in.
   matrix: {
     family: 'spectacle',
     grade: { key: '#7fae5a', fill: '#2a3a22', sat: -0.05, hue: 0.03 },
-    camera: { pos: [0, 1.7, 3.4], look: [0, 1.5, 0], fov: 52, far: 300 },
+    camera: { pos: [0, 1.7, 3.4], look: [0, 1.3, 0], fov: 52, far: 300 },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#3a3c34', skyTop: '#8aae7a', skyBottom: '#4a5238', horizon: true, distantCity: 18 },
       props: [
         { type: 'abstractFigure', pos: [0, 0, 0], scale: 1, color: '#12140f', pose: 'crouch' },
-        // frame recolored from the default near-black outline: at this
-        // scale/FOV the dark edgesGeometry frame read as a stray debug
-        // rectangle rather than a shockwave shell (QA sweep 2026-08-21).
         { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, 0, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
         { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, Math.PI / 2, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
       ],
@@ -140,10 +143,6 @@ export const CONFIGS = {
         { type: 'GlyphRain', pos: [-3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
       ],
     },
-    // QA sweep 2026-08-21: default scorePos was landing behind the crossed
-    // glassWall shells (0,1.2,0) with nothing rendering it visibly against
-    // the city/sky backdrop — moved it to open sky off to the side, closer
-    // to camera, where it reads clean.
     info: { scorePos: [1.7, 1.9, 1.4] },
   },
 
