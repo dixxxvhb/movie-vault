@@ -423,9 +423,12 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------- masters-of-the-universe-2026
+  // Bespoke now (Phase 2, src/rooms/bespoke/Motu.jsx): grade/camera below
+  // match the bespoke room's own fixed throne-hall station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries.
   'masters-of-the-universe-2026': {
     family: 'spectacle',
-    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.14 },
+    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424' },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
     place: {
       shell: 'box',
