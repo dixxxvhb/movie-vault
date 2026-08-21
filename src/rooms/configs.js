@@ -61,7 +61,12 @@ export const CONFIGS = {
       props: [
         { type: 'bed', pos: [-0.9, 0, -0.8], rot: [0, 0.15, 0] },
         { type: 'table', pos: [1.1, 0, -1.3], rot: [0, -0.2, 0], w: 0.9, d: 0.5, h: 0.7, color: '#3a2c1c' },
-        { type: 'paperScatter', pos: [1.1, 1.3, -1.75], rot: [Math.PI / 2, 0, 0], count: 16, area: [1.4, 1], color: '#e6dcc0' },
+        // NOTE: paperScatter's own per-instance rotation already flattens
+        // the sheet (props.jsx) — a group-level rot=[PI/2,0,0] on top of
+        // that stacks a second X rotation and stands every sheet on edge
+        // (the same double-rotation bug fixed in Memento/BabyDriver's
+        // bespoke rooms). No outer rot needed here.
+        { type: 'paperScatter', pos: [1.1, 1.3, -1.75], count: 16, area: [1.4, 1], color: '#e6dcc0' },
         { type: 'mirrorPlane', pos: [-1.6, 1.5, 0.2], rot: [0, Math.PI / 2, 0], w: 0.7, h: 1.1 },
         { type: 'lampPractical', pos: [1.1, 1.7, -1.3], color: '#e8b070', intensity: 0.8 },
       ],
@@ -717,16 +722,38 @@ export const CONFIGS = {
     // fixed key sits right where this room's camera also lives.
     // fill brightened — see sicario's note; a near-black fill caps the
     // ambientLight (which uses grade.fill as its color) near zero.
-    grade: { key: '#c8a860', fill: '#3a3428', ambient: 0.4, keyIntensity: 0.4 },
+    // P2 sweep fix: the P0 lightRig scale change (grade.keyIntensity now
+    // scales the WHOLE preset rig, not just an old fixed pair) still left
+    // this room reading as a near-total void — the preset's directional key
+    // (aimed down from y=10 toward the origin) barely grazes a corridor
+    // shell built as a horizontal shaft, so the "pit" had nothing lighting
+    // its walls. Raised ambient/keyIntensity and gave the walls a lighter
+    // stone tint + real materials.js surface so the little light there is
+    // has something to catch.
+    grade: { key: '#e0c080', fill: '#4a4030', ambient: 0.6, keyIntensity: 1.3, grain: 0.03, vignette: 0.4, bloomIntensity: 0.32 },
     // QA sweep 2026-08-21: the old look-at [0,5,-0.5] from a camera at
     // y=0.6 was almost straight up — the frame was ~70% empty sky with the
     // pit itself, the info surfaces and the score all cropped out the
     // bottom. Eased the tilt so the well walls and the light disc share
     // the frame with the record.
     camera: { pos: [0, 1, 0.5], look: [0, 3, -3], fov: 56, far: 60 },
+    // P2 hand-tune: a practical or two inside the shaft, since the
+    // preset's own directional key + bounce (spectacle family, tuned for
+    // an open outdoor shell) doesn't reach down a vertical corridor well.
+    lights: {
+      key: { pos: [0, 5, -2], intensity: 1.1, distance: 14, decay: 2, color: '#e8c890' },
+      practicals: [
+        { pos: [1.2, 2.4, -3], intensity: 0.7, distance: 8, color: '#c8a860', decay: 2 },
+        { pos: [-1.2, 1.4, -1.6], intensity: 0.6, distance: 7, color: '#8a7050', decay: 2 },
+      ],
+      bounce: [{ pos: [0, 0.6, 0], intensity: 0.5, distance: 6, color: '#5a4a34', decay: 2 }],
+    },
     place: {
       shell: 'corridor',
-      shellParams: { length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#2a2620', farLight: true },
+      shellParams: {
+        length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#4a4030', farLight: true,
+        mat: { walls: 'concrete', floor: 'concrete', ceiling: 'concrete', wallWear: 0.5, floorWear: 0.4 },
+      },
       props: [
         { type: 'slab', pos: [1.4, 3, -6], size: [0.8, 0.15, 0.15], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
       ],
@@ -934,6 +961,10 @@ export const CONFIGS = {
       props: [
         // a supply crate shoved against the corridor wall — Wave T touch.
         { type: 'slab', pos: [-0.75, 0.3, -2.2], size: [0.5, 0.6, 0.4], color: '#2e2a24', touch: { kind: 'nudge', amplitude: 0.16, foley: 'thunk', reach: 2.8 } },
+        // P2 sweep fix: this was sitting in `systems` (a props.jsx type, not
+        // a SYSTEMS one) and never rendered — moved into `props` where it
+        // actually resolves. No outer rot: paperScatter already lays flat.
+        { type: 'paperScatter', count: 20, area: [1.8, 8], color: '#c8c0a8', pos: [0, 0.02, -3] },
       ],
       systems: [
         // "from" moved off the camera's own position — at from:[0,1.3,6]
@@ -942,7 +973,6 @@ export const CONFIGS = {
         // a solid red wash (QA sweep 2026-08-21). Starting it further back
         // keeps the advancing light behind the camera without occluding it.
         { type: 'AdvanceGlow', from: [0, 1.3, 9], axis: 'z', speed: 0.2, resetAt: 12, color: '#c22e2e' },
-        { type: 'paperScatter', count: 20, area: [1.8, 8], color: '#c8c0a8', pos: [0, 0.02, -3] },
       ],
     },
   },
@@ -979,19 +1009,27 @@ export const CONFIGS = {
   // -------------------------------------------------------------------------- moon
   moon: {
     family: 'intimate-tension',
-    // keyIntensity dropped: an already-near-white key/wallTint combo (the
-    // "white minimalist" module interior) plus the default 16x multiplier
-    // blew the whole corridor to solid white (QA sweep 2026-08-21).
-    grade: { key: '#e8e8f0', fill: '#8a8a90', ambient: 0.26, sat: -0.15, keyIntensity: 0.3 },
+    // P2 sweep fix: keyIntensity 0.3 correctly muted the preset's OWN rig
+    // (see lightRig.js's scale), but the two lampPractical props are
+    // separate point lights baked into props.jsx (not scaled by
+    // keyIntensity at all) — at 0.6 authored intensity each, 2m from a
+    // near-white 2.6m-wide corridor, those two alone blew the room to
+    // solid white regardless of the rig fix. Dimmed both, darkened the
+    // wall tint a shade off pure white, and gave the corridor a real
+    // materials.js surface now that CorridorShell supports one (P2 lift).
+    grade: { key: '#e8e8f0', fill: '#7a7a84', ambient: 0.2, sat: -0.15, keyIntensity: 0.5, grain: 0.03, vignette: 0.4, bloomIntensity: 0.22 },
     camera: { pos: [0, 1.5, 2.2], look: [0, 1.4, -4], fov: 48, far: 40 },
     place: {
       shell: 'corridor',
-      shellParams: { length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#d8d8dc', farLight: false },
+      shellParams: {
+        length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#b8b8bc', farLight: false,
+        mat: { walls: 'tile', floor: 'tile', ceiling: 'plaster', wallWear: 0.15, floorWear: 0.2 },
+      },
       props: [
         // exactly two — the room's own doubling motif: nudge one, its twin
         // answers half a second later (Wave T `pairId`).
-        { type: 'lampPractical', pos: [-0.8, 2, -1], color: '#f0f0ff', intensity: 0.6, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
-        { type: 'lampPractical', pos: [0.8, 2, -1], color: '#f0f0ff', intensity: 0.6, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
+        { type: 'lampPractical', pos: [-0.8, 2, -1], color: '#f0f0ff', intensity: 0.28, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
+        { type: 'lampPractical', pos: [0.8, 2, -1], color: '#f0f0ff', intensity: 0.28, touch: { kind: 'nudge', amplitude: 0.14, pairId: 'moon-lamps' } },
         { type: 'chairRow', pos: [0, 0, -2.4], count: 2, spacing: 0.6, color: '#c0c0c8' },
         { type: 'screenPanel', pos: [0, 1.3, -3.9], w: 1.4, h: 0.9, color: '#c8b8a0', draw: (ctx, W, H) => {
           ctx.fillStyle = '#a89880'; ctx.fillRect(0, 0, W, H)
@@ -1056,7 +1094,10 @@ export const CONFIGS = {
       shellParams: { length: 8, width: 4, railing: true, fogWall: true, floorTint: '#2a2c30' },
       props: [
         // the pile of scratched charms and half-finished shapes — Wave T touch.
-        { type: 'paperScatter', pos: [0.9, 0.02, -1.4], rot: [Math.PI / 2, 0, 0], count: 10, area: [0.5, 0.5], color: '#c8a860', touch: { kind: 'nudge', amplitude: 0.15 } },
+        // no outer rot — paperScatter already lays flat on its own (see the
+        // memento note above); the old rot=[PI/2,0,0] here double-rotated
+        // the pile onto its edge instead of scattered flat on the deck.
+        { type: 'paperScatter', pos: [0.9, 0.02, -1.4], count: 10, area: [0.5, 0.5], color: '#c8a860', touch: { kind: 'nudge', amplitude: 0.15 } },
       ],
       systems: [
         { type: 'LookAwayGrow', pos: [1.2, 0, -1.6], max: 34, color: '#c8a860' },
@@ -1117,16 +1158,30 @@ export const CONFIGS = {
   // -------------------------------------------------------------------------- sunshine
   sunshine: {
     family: 'spectacle',
-    // keyIntensity kept low deliberately — this room's "wall" IS the sun
-    // (a bright screenPanel, not a light), so the key only needs to warm
-    // the room, not compete with it and wash the hot take out entirely.
-    grade: { key: '#ffdf9a', fill: '#3a2c18', ambient: 0.2, keyIntensity: 0.7 },
-    camera: { pos: [0, 1.5, 2.4], look: [0, 1.5, -2], fov: 50 },
+    // P2 sweep fix: "the wall IS the sun" read as a near-total void — the
+    // room's actual sun was a 1.2x0.5 screenPanel floating high on an
+    // otherwise flat, dark, unlit wall, well outside the camera's own
+    // look-at height. Raised ambient/keyIntensity enough that the room
+    // itself is visible (chairs, walls), added real materials so grazing
+    // light has grain to catch, and grew the sun panel into a wall-filling
+    // dimming-filter disc — the thing this room is actually about.
+    grade: { key: '#ffdf9a', fill: '#4a3820', ambient: 0.42, keyIntensity: 1.4, grain: 0.03, vignette: 0.32, bloomIntensity: 0.4 },
+    camera: { pos: [0, 1.5, 2.4], look: [0, 1.6, -1.95], fov: 50 },
     place: {
       shell: 'box',
-      shellParams: { w: 4.6, d: 4, h: 2.8, wallMat: 'flat' },
+      shellParams: {
+        w: 4.6, d: 4, h: 2.8, wallMat: 'flat',
+        mat: { walls: 'concrete', floor: 'metal', ceiling: 'concrete', wallWear: 0.3, floorWear: 0.2 },
+      },
       props: [
         { type: 'chairRow', pos: [0, 0, 0.4], count: 5, spacing: 0.66, color: '#2a2a30' },
+        // the sun itself: a wall-filling emissive disc behind a dimming
+        // filter, per the brief's own staging ("chairs facing the light").
+        { type: 'screenPanel', pos: [0, 1.7, -1.97], w: 3, h: 2.2, color: '#3a2c18', draw: (ctx, W, H) => {
+          const g = ctx.createRadialGradient(W / 2, H / 2, 20, W / 2, H / 2, W / 2)
+          g.addColorStop(0, '#fff2c8'); g.addColorStop(0.55, '#ffcf6a'); g.addColorStop(1, '#3a2410')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+        } },
         // reach bumped: the cinema chairRow (pos z:0.4) blocks the walker
         // well short of this screen (pos z:-1.95) — closest achievable
         // approach is ~2.9m away, past the plain 2.4m default (QA sweep,
@@ -1162,20 +1217,30 @@ export const CONFIGS = {
   // ------------------------------------------------------------------------ oblivion
   oblivion: {
     family: 'spectacle',
-    // keyIntensity dropped: near-white key on an already-pale flat-white
-    // room blew out to a solid white void (QA sweep 2026-08-21, same class
-    // as moon's fix).
-    grade: { key: '#eaf4ff', fill: '#c8d8e0', ambient: 0.3, sat: -0.1, keyIntensity: 0.3 },
+    // P2 sweep fix: keyIntensity 0.3 muted the point lights fine, but
+    // BoxShell's `window` mesh is an UNLIT meshBasicMaterial painted
+    // straight from grade.key — a near-white key at full opacity is a
+    // bright unlit plane no light-intensity scale can dim. That's what was
+    // actually blowing this room to a solid white void. Backed the key off
+    // pure white to a pale sky-blue (still reads as "glass pool edge, sky
+    // tower" bright) and gave the shell a real material so there's texture
+    // to see once the window stops being the whole frame.
+    grade: { key: '#bfe0f0', fill: '#8aa8b8', ambient: 0.16, sat: -0.1, keyIntensity: 1.1, grain: 0.03, vignette: 0.36, bloomIntensity: 0.3 },
     camera: { pos: [0, 1.5, 2], look: [0, 1.4, -1.4], fov: 52, far: 200 },
     place: {
       shell: 'box',
-      shellParams: { w: 4.6, d: 4.6, h: 2.8, wallMat: 'flat', window: true },
+      shellParams: {
+        w: 4.6, d: 4.6, h: 2.8, wallMat: 'flat', window: true,
+        mat: { walls: 'metal', floor: 'tile', ceiling: 'metal', wallWear: 0.1, floorWear: 0.1 },
+      },
       props: [
-        { type: 'slab', pos: [0, 0.02, -1.6], size: [3, 0.05, 1.6], color: '#dfeaf2' },
+        // darkened off near-white — this flat slab under the key light was
+        // the last blown-out patch in the P2 sweep fix above.
+        { type: 'slab', pos: [0, 0.02, -1.6], size: [3, 0.05, 1.6], color: '#9ab0bc', roughness: 0.35, metalness: 0.15 },
         { type: 'glassWall', pos: [0, 1, -2.2], w: 3, h: 1, color: '#eaf4ff', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
       ],
       systems: [
-        { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#eaf4ff' },
+        { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#bfe0f0' },
       ],
     },
   },
@@ -1226,11 +1291,20 @@ export const CONFIGS = {
   // -------------------------------------------------------------------------- hereditary
   hereditary: {
     family: 'dread',
-    grade: { key: '#c8b060', fill: '#141210', ambient: 0.14 },
+    // P2 sweep fix: dread's low ambient is the right instinct for this
+    // room (miniature-dollhouse dread, brief: "the room does not
+    // apologize") but at 0.14 with no wall material it read as a near-
+    // total void — nothing to actually see the dread IN. Lifted just
+    // enough to make out the low ceiling/dollhouse walls, added real wood
+    // grain so the one window's light has something to graze.
+    grade: { key: '#c8b060', fill: '#241e14', ambient: 0.22, keyIntensity: 1.4, grain: 0.08, vignette: 0.62, bloomIntensity: 0.14 },
     camera: { pos: [0, 1.3, 1.8], look: [0, 1.1, -1.4], fov: 44 },
     place: {
       shell: 'box',
-      shellParams: { w: 3.8, d: 3.8, h: 2.1, wallMat: 'wood', window: true },
+      shellParams: {
+        w: 3.8, d: 3.8, h: 2.1, wallMat: 'wood', window: true,
+        mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.4, floorWear: 0.45 },
+      },
       props: [
         { type: 'table', pos: [0, 0, -0.8], w: 0.6, d: 0.4, h: 0.5, color: '#3a2c1c', touch: { kind: 'nudge', amplitude: 0.12, foley: 'thunk' } },
         { type: 'chairRow', pos: [0, 0, -0.4], count: 2, spacing: 0.35, seatH: 0.28 },
