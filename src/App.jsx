@@ -16,11 +16,18 @@ import Guide from './Guide.jsx'
 import Lens, { useVibes } from './Lens.jsx'
 import Find, { buildIndex } from './Find.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
+import { isSoundOn, setSoundOn } from './rooms/audio/engine.js'
+import { subscribeGrade } from './rooms/gradeBus.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
+
+// Phase 2 spec's "cold detail": Memento's own wash runs longer and settles
+// its grain slower than every other film's (Develop.jsx's `slow` flag). A
+// set, not a single string check, so a later bespoke room can opt in too.
+const SLOW_WASH_SLUGS = new Set(['memento'])
 
 // deterministic tiny hash -> pinned-photo jitter, stable per slug
 function jitter(slug) {
@@ -140,6 +147,16 @@ export default function App() {
   const [openBox, setOpenBox] = useState(null)
   const [picked, setPicked] = useState(null)     // archive print held up
   const [tone, setTone] = useState(false)
+  // The film room's own sound toggle — independent of the motel's `tone`
+  // (roomTone.js's air handler). Lazy-init from whatever's persisted so a
+  // returning visitor who already unmuted once doesn't have to again.
+  const [sound, setSound] = useState(() => isSoundOn())
+  // A bespoke room (Memento's gaze-driven split) can publish a grade override
+  // via rooms/gradeBus.js without rooms/* ever importing this file — this is
+  // the one subscription that closes the loop, merged onto the room's own
+  // config.grade below, at the Post call site.
+  const [gradeOverride, setGradeOverrideState] = useState(null)
+  useEffect(() => subscribeGrade(setGradeOverrideState), [])
   const [lens, setLens] = useState(null)        // a vibe tag, or null
   const [lensOpen, setLensOpen] = useState(false)
   const [finding, setFinding] = useState(false)
@@ -430,7 +447,12 @@ export default function App() {
         onPointerMissed={() => setSelected(null)}
       >
        <XR store={xrStore}>
-        <color attach="background" args={[filmMounted && roomConfig ? roomConfig.grade.bg : '#05040a']} />
+        {/* gradeOverride can carry `bg` too — Memento's own film-palette bg
+            is card-front white (right for a Polaroid, wrong for a 3D void),
+            and config.grade.bg falls back to that same palette when a
+            bespoke room's CONFIGS entry doesn't set its own; the bus lets
+            the room correct it without configs.js needing a matching edit */}
+        <color attach="background" args={[filmMounted && roomConfig ? (gradeOverride?.bg || roomConfig.grade.bg) : '#05040a']} />
 
         <XRPlayer station={view.station} />
         {motelMounted && (
@@ -473,13 +495,18 @@ export default function App() {
           <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} />
         )}
 
-        <Post grade={filmMounted && roomConfig ? roomConfig.grade : null} />
+        <Post
+          grade={filmMounted && roomConfig
+            ? (gradeOverride ? { ...roomConfig.grade, ...gradeOverride } : roomConfig.grade)
+            : null}
+        />
        </XR>
       </Canvas>
 
       {transition && (
         <Develop
           key={transition.id}
+          slow={SLOW_WASH_SLUGS.has(transition.id.split(':')[1])}
           onPeak={handleDevelopPeak}
           onDone={() => setTransition(null)}
         />
@@ -606,6 +633,13 @@ export default function App() {
             </div>
             <div style={hud.filmScore}>{roomFilm.score.toFixed(1)}</div>
             <div style={hud.filmHint}>i to hide the record</div>
+            <button
+              onClick={() => { const next = !sound; setSoundOn(next); setSound(next) }}
+              style={{ ...hud.filmSoundBtn, ...(sound ? hud.navOn : null) }}
+              title="this room's generative audio — independent of the motel's room tone"
+            >
+              {sound ? 'sound ·on' : 'sound'}
+            </button>
           </div>
           <button
             onClick={exitFilm}
@@ -698,6 +732,15 @@ const hud = {
   filmHint: {
     marginLeft: 'auto', fontSize: 11.5, letterSpacing: '.08em', color: '#a99c85',
     fontFamily: 'system-ui, sans-serif', textTransform: 'uppercase',
+  },
+  // independent of the motel's room-tone toggle (`navBtn` in the dock) — this
+  // one lives in the film room's own strip, which is otherwise pointerEvents
+  // 'none', so the button opts itself back in
+  filmSoundBtn: {
+    pointerEvents: 'auto', cursor: 'pointer', background: 'rgba(14,10,8,.62)',
+    color: '#a99c85', border: '1px solid rgba(180,160,120,.22)', borderRadius: 2,
+    padding: '6px 11px', fontSize: 11, letterSpacing: '.12em', textTransform: 'uppercase',
+    fontFamily: 'system-ui, sans-serif', backdropFilter: 'blur(3px)',
   },
   backToWall: {
     position: 'fixed', left: 20, bottom: 22, cursor: 'pointer',

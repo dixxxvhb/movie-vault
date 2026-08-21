@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 import CameraRig from '../CameraRig.jsx'
-import { getFamilyComponent } from './registry.js'
+import { getRoomComponent } from './registry.js'
 
 // The room a film opens into. Mounted only while world is 'film:<slug>' or
 // 'exiting:<slug>' (App.jsx) — MotelWorld's lights and walls die with
@@ -36,13 +36,30 @@ export default function FilmWorld({ slug, film, config }) {
     }
   }, [camera, config.camera?.far])
 
-  const Family = getFamilyComponent(config.family)
+  const Family = getRoomComponent(slug, config.family)
+
+  // A bespoke room's own interior navigation (Memento's corridor stations)
+  // needs to move CameraRig's station without FilmWorld's single fixed
+  // camera prop getting in the way — this is that seam. Defaults to (and
+  // resets to, on a slug change) the config's own entry viewpoint; a bespoke
+  // room calls `goToStation` to fly the rig anywhere else, passing a key
+  // suffix so CameraRig's flight actually re-triggers (an ad-hoc station
+  // object has no stable identity of its own — see CameraRig.jsx's `key`).
+  const [cam, setCam] = useState(() => ({ station: config.camera, key: 'film:' + slug }))
+  useEffect(() => {
+    setCam({ station: config.camera, key: 'film:' + slug })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, config.camera])
+  const goToStation = useMemo(
+    () => (station, keySuffix) => setCam({ station, key: 'film:' + slug + ':' + keySuffix }),
+    [slug]
+  )
 
   return (
     <>
       <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
-      <CameraRig station={config.camera} stationKey={'film:' + slug} />
-      <Family film={film} config={config} infoVisible={infoOn} />
+      <CameraRig station={cam.station} stationKey={cam.key} />
+      <Family film={film} config={config} infoVisible={infoOn} goToStation={goToStation} />
     </>
   )
 }

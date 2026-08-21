@@ -2,6 +2,18 @@ import { defaultConfigFor, CONFIGS } from './configs.js'
 import { PRESETS } from './presets.js'
 import Default from './families/Default.jsx'
 import GenericRoom from './GenericRoom.jsx'
+import Memento from './bespoke/Memento.jsx'
+
+// Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
+// composition for a Tier 1 film that still resolves through the same
+// getRoomConfig() (grade/camera/far), so FilmWorld's own plumbing (ambient
+// light, camera.far restore, the develop wash) stays uniform whether a slug
+// is bespoke or template-engine. Plain imports for now; if bespoke code
+// grows past ~150KB gzip, switch these to per-room dynamic import() and note
+// it here.
+const BESPOKE = {
+  memento: Memento,
+}
 
 // Wave B: "family" is a PRESET, not a component — the six families named in
 // the brief (mind-bender, dread, momentum, spectacle, intimate-tension,
@@ -47,4 +59,12 @@ export function getRoomConfig(slug, film) {
 
 export function getFamilyComponent(family) {
   return FAMILIES[family] || FAMILIES.default
+}
+
+// What FilmWorld actually renders for a given slug: a bespoke room if one
+// exists, otherwise whatever the family resolves to. Bespoke is a slug-level
+// override, not a family — a slug with a BESPOKE entry never touches
+// GenericRoom at all.
+export function getRoomComponent(slug, family) {
+  return BESPOKE[slug] || getFamilyComponent(family)
 }

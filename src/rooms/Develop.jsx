@@ -18,10 +18,27 @@ const FADE = 600
 const TOTAL = PEAK + FADE
 const PEAK_PCT = (PEAK / TOTAL) * 100
 
-const WASH = `
+// Memento's own cold detail: entering the room that IS the origin myth gets a
+// wash that runs slightly longer and settles its grain slower than every
+// other film's — the one wash in the whole app that isn't the standard beat.
+// `slow` scales peak/fade together so PEAK_PCT (and the keyframe shape) stays
+// identical; only the wall-clock duration changes.
+const SLOW_FACTOR = 1.55
+
+export default function Develop({ onPeak, onDone, slow = false }) {
+  const peak = slow ? Math.round(PEAK * SLOW_FACTOR) : PEAK
+  const fade = slow ? Math.round(FADE * SLOW_FACTOR) : FADE
+  const total = peak + fade
+  const peakPct = (peak / total) * 100
+
+  const [done, setDone] = useState(false)
+  const peaked = useRef(false)
+  const finished = useRef(false)
+
+  const wash = `
 @keyframes vault-develop-wash {
    0%   { opacity: 0; }
-  ${PEAK_PCT}% { opacity: 1; }
+  ${peakPct}% { opacity: 1; }
  100%   { opacity: 0; }
 }
 @keyframes vault-develop-grain {
@@ -31,11 +48,6 @@ const WASH = `
   75%      { transform: translate(-1%,1.5%); }
 }
 `
-
-export default function Develop({ onPeak, onDone }) {
-  const [done, setDone] = useState(false)
-  const peaked = useRef(false)
-  const finished = useRef(false)
 
   useEffect(() => {
     const firePeak = () => {
@@ -50,8 +62,8 @@ export default function Develop({ onPeak, onDone }) {
       setDone(true)
       onDone?.()
     }
-    const t1 = setTimeout(firePeak, PEAK)
-    const t2 = setTimeout(finish, TOTAL)
+    const t1 = setTimeout(firePeak, peak)
+    const t2 = setTimeout(finish, total)
     // any input at all skips straight to the end state
     const evts = ['pointerdown', 'keydown', 'wheel']
     evts.forEach((e) => window.addEventListener(e, finish, { once: true, passive: true }))
@@ -65,14 +77,19 @@ export default function Develop({ onPeak, onDone }) {
 
   if (done) return null
 
+  // grain settles slower too, not just the overall wash — a flat 130ms step
+  // rate scaled by the same factor so Memento's chemical bath reads as
+  // thicker/slower rather than just longer
+  const grainStep = slow ? Math.round(130 * SLOW_FACTOR) : 130
+
   return (
     <>
-      <style>{WASH}</style>
+      <style>{wash}</style>
       <div
         style={{
           position: 'fixed', inset: 0, zIndex: 60, pointerEvents: 'none',
           background: 'radial-gradient(ellipse at center, #fdf7e9 0%, #e9dcbc 68%, #ccba8f 100%)',
-          animation: `vault-develop-wash ${TOTAL}ms ease-in-out forwards`,
+          animation: `vault-develop-wash ${total}ms ease-in-out forwards`,
           willChange: 'opacity',
         }}
       />
@@ -84,8 +101,8 @@ export default function Develop({ onPeak, onDone }) {
           backgroundSize: '3px 3px',
           mixBlendMode: 'multiply',
           animation:
-            `vault-develop-wash ${TOTAL}ms ease-in-out forwards, ` +
-            `vault-develop-grain 130ms steps(3) infinite`,
+            `vault-develop-wash ${total}ms ease-in-out forwards, ` +
+            `vault-develop-grain ${grainStep}ms steps(3) infinite`,
         }}
       />
     </>
