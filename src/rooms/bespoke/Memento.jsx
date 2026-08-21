@@ -316,12 +316,12 @@ function FlippableNote({ it, w, h, frontTex }) {
           <mesh position={[0, 0, 0.0015]}>
             <planeGeometry args={[w, h]} />
             {frontTex
-              ? <meshStandardMaterial key="mapped" map={frontTex} emissiveMap={frontTex} emissive="#ffffff" emissiveIntensity={0.3} roughness={0.92} side={THREE.FrontSide} />
+              ? <meshStandardMaterial key="mapped" map={frontTex} emissiveMap={frontTex} emissive="#ffffff" emissiveIntensity={0.05} roughness={0.92} side={THREE.FrontSide} />
               : <meshStandardMaterial key="blank" color="#e8dfc8" roughness={0.92} side={THREE.FrontSide} />}
           </mesh>
           <mesh position={[0, 0, -0.0015]} rotation={[0, Math.PI, 0]}>
             <planeGeometry args={[w, h]} />
-            <meshStandardMaterial map={backTex} emissiveMap={backTex} emissive="#ffffff" emissiveIntensity={0.22} roughness={0.94} side={THREE.FrontSide} />
+            <meshStandardMaterial map={backTex} emissiveMap={backTex} emissive="#ffffff" emissiveIntensity={0.04} roughness={0.94} side={THREE.FrontSide} />
           </mesh>
         </OpenKind>
       </Touchable>
@@ -356,7 +356,7 @@ function NoteWall() {
             <mesh position={[depthX, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
               <planeGeometry args={[w, h]} />
               {tex
-                ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.3} roughness={0.92} side={THREE.DoubleSide} />
+                ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.05} roughness={0.92} side={THREE.DoubleSide} />
                 : <meshStandardMaterial key="blank" color="#e8dfc8" roughness={0.92} side={THREE.DoubleSide} />}
             </mesh>
             <TapeCorners x={wallX} y={it.y} z={it.z} rot={Math.PI / 2} w={w} h={h} seed={it.seed} />
@@ -390,7 +390,7 @@ function FloorPolaroid({ film }) {
       <mesh position={[0.3, 0.008, 0.35]} rotation={[-Math.PI / 2, 0, 0.06]}>
         <planeGeometry args={[1.76, 2.2]} />
         {tex
-          ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.22} roughness={0.7} />
+          ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.05} roughness={0.7} />
           : <meshStandardMaterial key="blank" color="#efe9dc" roughness={0.95} />}
       </mesh>
       {/* a faint gloss sheen — a soft additive highlight quad standing a
@@ -691,6 +691,51 @@ function InstantCameraProp({ pos, rot }) {
   )
 }
 
+// The dresser lamp: base + neck + fabric shade + a warm bulb sitting inside
+// it, standing on the dresser's back-left corner (clear of the ashtray/
+// camera/scattered-paper clutter already claiming the rest of the top).
+// Punch-list fix: the room's key light had no visible body anywhere in the
+// scene, so nothing on the dresser explained where its warm cast was coming
+// from — the notes/papers ended up reading as the source instead, since they
+// were the only bright things in frame. This gives the light an origin; the
+// shade is deliberately not lit from inside beyond its own small bulb glow,
+// so it reads as a fixture catching light, not a second emissive slab.
+function DresserLamp() {
+  const baseMat = useMemo(() => standardMat({ kind: 'metal', tint: '#1c1810', scale: 0.4, wear: 0.35, roughness: 0.5, metalness: 0.5 }), [])
+  const shadeMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#d8b878', scale: 0.6, wear: 0.2, roughness: 0.85 }), [])
+  return (
+    <group position={[-1.82, 0.51, -0.58]}>
+      {/* weighted foot */}
+      <mesh position={[0, 0.012, 0]}>
+        <cylinderGeometry args={[0.05, 0.06, 0.024, 16]} />
+        <primitive object={baseMat} attach="material" />
+      </mesh>
+      {/* neck */}
+      <mesh position={[0, 0.15, 0]}>
+        <cylinderGeometry args={[0.008, 0.009, 0.26, 8]} />
+        <primitive object={baseMat} attach="material" />
+      </mesh>
+      {/* the shade — an open cone, catching the bulb's own glow rather than
+          emitting one of its own */}
+      <mesh position={[0, 0.32, 0]}>
+        <cylinderGeometry args={[0.045, 0.085, 0.15, 16, 1, true]} />
+        <primitive object={shadeMat} attach="material" side={THREE.DoubleSide} />
+      </mesh>
+      {/* the bulb: the one small, deliberately bright point the eye can land
+          on as "this is where the light comes from" */}
+      <mesh position={[0, 0.29, 0]}>
+        <sphereGeometry args={[0.02, 10, 10]} />
+        <meshStandardMaterial color="#3a2410" emissive="#ffcf8a" emissiveIntensity={2.4} roughness={0.4} toneMapped={false} />
+      </mesh>
+      {/* a small, tightly-falling-off practical local to the shade itself —
+          not a rebalance of the room's key, just enough for the shade's
+          underside and the dresser top right around the base to read as lit
+          FROM this fixture rather than from nowhere */}
+      <pointLight position={[0, 0.29, 0]} color="#e8b878" intensity={LIGHT_SCALE.practicals * 0.16} distance={1.4} decay={2.6} />
+    </group>
+  )
+}
+
 function Pen({ pos, rot }) {
   return (
     <mesh position={V3AsArray(pos)} rotation={rot ? V3AsArray(rot) : [0, 0, Math.PI / 2]}>
@@ -892,6 +937,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       <Bed pos={[-1.35, 0, 1.15]} rot={[0, 0.14, 0]} />
       <DuvetFold />
       <Dresser />
+      <DresserLamp />
       {/* NOTE: paperScatter's own per-instance rotation already flattens the
           quads onto the local XZ plane — passing an extra outer rot here
           (the pattern several other rooms/configs.js entries copy) double-

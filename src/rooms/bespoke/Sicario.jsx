@@ -335,10 +335,23 @@ function TunnelEndCap() {
 // slope the same way TunnelCell's own floor/ceiling do (each point matches
 // that cell's floorY so it visually tracks the ramp rather than floating
 // through it).
+//
+// ARCHITECT FIX: this used to start at i=0 (the mouth, z=0) and render
+// unconditionally, including at the ground station — but TunnelCell hides
+// cells 0-1 outside the tunnel (the "documented quirk," their own ceiling
+// pokes above y=0 near the mouth and breaks the skyline), so the cable had
+// no geometry to read as attached to for that whole stretch. The result was
+// exactly what it looked like: a rope hanging in open air across the entry
+// frame, dead center-left, with nothing supporting either end. Starting the
+// run at the SAME cell index (2) that TunnelCell starts showing outside the
+// tunnel grounds its near end against a rib arch that is actually visible —
+// no floating segment ever enters the arrival composition, in or out of the
+// tunnel.
+const CABLE_START_CELL = 2
 function CableRun() {
   const points = useMemo(() => {
     const pts = []
-    for (let i = 0; i <= CELLS; i++) {
+    for (let i = CABLE_START_CELL; i <= CELLS; i++) {
       pts.push([-TUNNEL_W / 2 + 0.12, floorY(i) + TUNNEL_H - 0.18, -i * CELL_LEN])
     }
     return pts
