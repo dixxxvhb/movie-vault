@@ -211,7 +211,7 @@ export const CONFIGS = {
   // Wave B stand-in.
   'the-sting': {
     family: 'weird-fable',
-    grade: { key: '#c8964a', fill: '#3a2c1a', sat: 0.1, ambient: 0.24 },
+    grade: { key: '#c8964a', fill: '#3a2c1a', sat: 0.1, ambient: 0.24, grain: 0.07, vignette: 0.55, bloomIntensity: 0.26 },
     camera: { pos: [0, 1.5, 2.2], look: [0, 1.3, -1.6], fov: 50 },
     place: {
       shell: 'box',

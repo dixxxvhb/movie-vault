@@ -89,6 +89,18 @@ export function makeChalkboardTexture(edit) {
   const ctx = c.getContext('2d')
   ctx.fillStyle = '#1c2418'
   ctx.fillRect(0, 0, W, H)
+  // chalk dust: faint smeared speckle over the whole board, denser near the
+  // bottom edge where a real chalk tray's dust settles and drags
+  const dustR = rngFor(4471)
+  for (let i = 0; i < 2200; i++) {
+    const x = dustR() * W, y = dustR() * H
+    const bottomBias = 0.15 + (y / H) * 0.5
+    if (dustR() > bottomBias) continue
+    ctx.globalAlpha = 0.06 + dustR() * 0.1
+    ctx.fillStyle = '#e8dcc0'
+    ctx.fillRect(x, y, 1 + dustR() * 1.6, 1 + dustR() * 1.2)
+  }
+  ctx.globalAlpha = 1
   ctx.strokeStyle = '#3a4a30'
   ctx.lineWidth = 10
   ctx.strokeRect(5, 5, W - 10, H - 10)

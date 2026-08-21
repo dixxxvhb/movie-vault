@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { counter as Counter, barShelf as BarShelf, footprint } from '../props.jsx'
+import { counter as Counter, barShelf as BarShelf, footprint, lampPractical as LampPractical } from '../props.jsx'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { makeMetaTexture, makeScoreTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
@@ -14,6 +14,8 @@ import {
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Trim, boxPile, rag } from '../detail.jsx'
 
 // 9.6 — "the wire room builds itself." The betting parlor assembles on
 // entry (flats/scaffold/backdrop flying in over ~6s, staggered per wall,
@@ -142,7 +144,7 @@ function LumberFrame({ w, h, tex }) {
 // studs, a stage weight, and the hot take painted across the raw wood.
 function BackWall({ elapsedRef, film }) {
   const group = useRef()
-  const woodTex = useMemo(() => makeWoodTexture('#4a3018'), [])
+  const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 1.1, wear: 0.5, repeat: [2, 1], roughness: 0.95 }), [])
   const lumberTex = useMemo(() => makeLumberTexture(), [])
   const [hotTakeTex, setHotTakeTex] = useState(null)
 
@@ -162,11 +164,14 @@ function BackWall({ elapsedRef, film }) {
 
   return (
     <group ref={group} position={[0, 0, BACK_Z]}>
-      {/* front face — normal points +Z, into the room */}
+      {/* front face — normal points +Z, into the room. painted-canvas flat
+          front (materials.js fabric kind), not raw wood — the wood tone
+          reads on the trim/frame around it instead */}
       <mesh position={[0, ROOM_H / 2, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.85} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
+      <Trim pos={[0, 0.001, 0.08]} wallLength={ROOM_W} along="x" kind="baseboard" height={0.1} color="#1c1409" />
       {/* raw back, clear of the painted face so front-station occlusion
           hides it entirely until you've actually gone around */}
       <group position={[0, 0, -0.14]} rotation={[0, Math.PI, 0]}>
@@ -189,7 +194,7 @@ function BackWall({ elapsedRef, film }) {
 // "one wall" rather than "half the room vanishing").
 function LeftWall({ elapsedRef }) {
   const group = useRef()
-  const woodTex = useMemo(() => makeWoodTexture('#3a2814'), [])
+  const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#3a2814', scale: 1.2, wear: 0.55, repeat: [2, 1], roughness: 0.95 }), [])
   const lumberTex = useMemo(() => makeLumberTexture(), [])
 
   useFrame(() => {
@@ -202,8 +207,9 @@ function LeftWall({ elapsedRef }) {
     <group ref={group} position={[LEFT_X, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
       <mesh position={[0, ROOM_H / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.85} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
+      <Trim pos={[0, 0.001, 0.08]} wallLength={ROOM_D} along="x" kind="baseboard" height={0.1} color="#1c1409" />
       <group position={[0, 0, -0.14]} rotation={[0, Math.PI, 0]}>
         <LumberFrame w={ROOM_D * 0.94} h={ROOM_H * 0.94} tex={lumberTex} />
       </group>
@@ -213,7 +219,8 @@ function LeftWall({ elapsedRef }) {
 
 function FrontWall({ elapsedRef }) {
   const group = useRef()
-  const woodTex = useMemo(() => makeWoodTexture('#4a3018'), [])
+  const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 1.05, wear: 0.45, repeat: [2, 1], roughness: 0.95 }), [])
+  const lumberTex = useMemo(() => makeLumberTexture(), [])
   useFrame(() => {
     if (!group.current) return
     const drop = buildOffset(elapsedRef.current, 1.6, false)
@@ -223,8 +230,15 @@ function FrontWall({ elapsedRef }) {
     <group ref={group} position={[0, 0, FRONT_Z]} rotation={[0, Math.PI, 0]}>
       <mesh position={[0, ROOM_H / 2, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.9} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
+      <Trim pos={[0, 0.001, 0.08]} wallLength={ROOM_W} along="x" kind="baseboard" height={0.1} color="#1c1409" />
+      {/* the front flat's own raw back — the punch list's "backstage void
+          must be dressed": this wall's back was previously bare fog, now
+          it gets the same lumber-frame treatment as back/left */}
+      <group position={[0, 0, -0.14]} rotation={[0, Math.PI, 0]}>
+        <LumberFrame w={ROOM_W * 0.94} h={ROOM_H * 0.94} tex={lumberTex} />
+      </group>
     </group>
   )
 }
@@ -233,7 +247,8 @@ function FrontWall({ elapsedRef }) {
 // Memento's door wall.
 function RightWall({ elapsedRef }) {
   const group = useRef()
-  const woodTex = useMemo(() => makeWoodTexture('#4a3018'), [])
+  const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 0.95, wear: 0.5, repeat: [1.6, 1], roughness: 0.95 }), [])
+  const lumberTex = useMemo(() => makeLumberTexture(), [])
   const panelD = (ROOM_D - DOOR_W) / 2
 
   useFrame(() => {
@@ -246,16 +261,22 @@ function RightWall({ elapsedRef }) {
     <group ref={group} position={[RIGHT_X, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
       <mesh position={[-(panelD / 2 + DOOR_W / 2), ROOM_H / 2, 0]}>
         <planeGeometry args={[panelD, ROOM_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.85} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
       <mesh position={[panelD / 2 + DOOR_W / 2, ROOM_H / 2, 0]}>
         <planeGeometry args={[panelD, ROOM_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.85} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
       <mesh position={[0, (DOOR_H + ROOM_H) / 2, 0]}>
         <planeGeometry args={[DOOR_W, ROOM_H - DOOR_H]} />
-        <meshStandardMaterial map={woodTex} roughness={0.85} />
+        <primitive object={flatMat} attach="material" />
       </mesh>
+      {/* this panel's raw back, matching the other three flats — walk
+          around the RIGHT panel (past the FBI office, per its own open
+          bounds) and the framing continues instead of dying to fog */}
+      <group position={[-(panelD / 2 + DOOR_W / 2), 0, -0.14]} rotation={[0, Math.PI, 0]}>
+        <LumberFrame w={panelD * 0.92} h={ROOM_H * 0.94} tex={lumberTex} />
+      </group>
     </group>
   )
 }
@@ -316,11 +337,59 @@ function BuildRide({ elapsedRef, delay = 0, children }) {
 // A thin brass rail along the counter's front edge — the one unmistakably
 // "betting parlor" detail besides the odds board itself.
 function BrassRail({ pos, length = 2.2 }) {
+  const mat = useMemo(() => standardMat({ kind: 'metal', tint: '#c9a227', scale: 1.4, wear: 0.3, roughness: 0.3, metalness: 0.9 }), [])
   return (
     <mesh position={pos} rotation={[0, 0, Math.PI / 2]}>
       <cylinderGeometry args={[0.018, 0.018, length, 10]} />
-      <meshStandardMaterial color="#c9a227" roughness={0.25} metalness={0.85} />
+      <primitive object={mat} attach="material" />
     </mesh>
+  )
+}
+
+// PUNCH LIST: the backstage void behind the flats was empty fog. Dresses the
+// three walkable backstage strips (behind the back wall, behind the left
+// wall, past the front wall) with bare lumber scaffolding cross-bracing,
+// stage-weight/sandbag piles, and a single work lamp practical — the one
+// actual light source back there, so the space reads as a working shop
+// rather than a void with props floating in it.
+function StageWeights({ pos, rot }) {
+  return <group position={pos} rotation={rot}>{boxPile({ pos: [0, 0, 0], count: 5, color: '#332a1c', spread: 0.5, seed: 41 })}</group>
+}
+
+function BackstageDressing() {
+  const scaffoldMat = useMemo(() => standardMat({ kind: 'wood', tint: '#8a6a44', scale: 0.8, wear: 0.75, roughness: 0.95 }), [])
+  const crossBrace = (x, z, ry, len) => (
+    <mesh key={x + '_' + z} position={[x, 1.35, z]} rotation={[0, ry, Math.PI / 5]}>
+      <boxGeometry args={[0.045, len, 0.045]} />
+      <primitive object={scaffoldMat} attach="material" />
+    </mesh>
+  )
+  return (
+    <group>
+      {/* behind the back wall */}
+      {crossBrace(-0.9, BACK_Z - 0.55, 0, 2.6)}
+      {crossBrace(0.9, BACK_Z - 0.55, 0, 2.6)}
+      <StageWeights pos={[-1.7, 0, BACK_Z - 0.6]} />
+      <StageWeights pos={[1.4, 0, BACK_Z - 0.5]} />
+      {rag({ pos: [-0.4, 0.02, BACK_Z - 0.4], rot: [-Math.PI / 2, 0, 0.4], w: 0.4, h: 0.3, color: '#5a4a34', seed: 12 })}
+      {/* behind the left wall */}
+      {crossBrace(LEFT_X - 0.55, -0.7, Math.PI / 2, 2.6)}
+      <StageWeights pos={[LEFT_X - 0.6, 0, 1.2]} />
+      {/* the work lamp: a bare bulb on a stand, the ONE light source that
+          actually justifies the backstage space being visible at all */}
+      <group position={[LEFT_X - 0.9, 0, -1.3]}>
+        <mesh position={[0, 0.7, 0]}>
+          <cylinderGeometry args={[0.02, 0.03, 1.4, 8]} />
+          <meshStandardMaterial color="#1c1a16" roughness={0.7} metalness={0.3} />
+        </mesh>
+        <LampPractical pos={[0, 1.42, 0]} color="#ffcf8c" intensity={1.3} distance={4.5} />
+      </group>
+      {/* beyond the front wall */}
+      {crossBrace(-0.9, FRONT_Z + 0.55, 0, 2.6)}
+      {crossBrace(0.9, FRONT_Z + 0.55, 0, 2.6)}
+      <StageWeights pos={[1.6, 0, FRONT_Z + 0.6]} />
+      {rag({ pos: [-1.5, 0.02, FRONT_Z + 0.5], rot: [-Math.PI / 2, 0, -0.3], w: 0.36, h: 0.28, color: '#4a4034', seed: 27 })}
+    </group>
   )
 }
 
@@ -453,6 +522,7 @@ const BOUNDS = { kind: 'rect', minX: LEFT_X - 1.8, maxX: RIGHT_X + FBI_W + 0.3, 
 
 export default function Sting({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
+  const floorMat = useMemo(() => standardMat({ kind: 'wood', tint: '#2a2014', scale: 1.6, wear: 0.55, repeat: [5, 5], roughness: 0.9 }), [])
   const [station, setStation] = useState('front')
   const elapsedRef = useMountElapsed()
 
@@ -503,16 +573,18 @@ export default function Sting({ film, config, infoVisible = true, doors = [], go
       <pointLight position={[0, 2.3, 0.4]} intensity={(grade.keyIntensity ?? 1) * 24} color={grade.key || '#c8964a'} distance={12} decay={2} />
       <pointLight position={[0, 1.3, 1.6]} intensity={8} color={grade.fill || '#3a2c1a'} distance={10} decay={2} />
 
-      {/* shell: floor + ceiling, plain — the walls are the story here */}
+      {/* shell: floor + ceiling — floor now a real materials.js wood pass,
+          the flats' painted canvas fronts read against real plank grain */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial color="#2a2014" roughness={0.9} />
+        <planeGeometry args={[ROOM_W * 2.4, ROOM_D * 2.4]} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
         <meshStandardMaterial color="#241a10" roughness={0.95} />
       </mesh>
 
+      <BackstageDressing />
       <BackWall elapsedRef={elapsedRef} film={film} />
       <LeftWall elapsedRef={elapsedRef} />
       <FrontWall elapsedRef={elapsedRef} />
