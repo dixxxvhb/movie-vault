@@ -14,7 +14,7 @@ import Touchable from '../Touchable.jsx'
 import { playOneShot } from '../audio/engine.js'
 import { standardMat } from '../materials.js'
 import { Bevel, Scuff, crumpledPaper } from '../detail.jsx'
-import { makeWordTexture, makeCrosswalkBarTexture } from './babyDriverTextures.js'
+import { makeWordTexture, makeCrosswalkBarTexture, makeFacadeTexture, makeContactShadowTexture } from './babyDriverTextures.js'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -24,6 +24,14 @@ import { makeWordTexture, makeCrosswalkBarTexture } from './babyDriverTextures.j
 const BPM = 110
 const CAR_POS = [1.5, 0, -1.7]
 const CAR_ROT = 0.08
+
+// Iteration 2: the car's own real proportions, per the architect's spec —
+// ~4.5 x 1.75 x 1.35m (D x W x H), lower/longer than the old near-cube
+// mass that read as a red sofa. Shared between the collider box below and
+// the Car mesh itself so they never drift apart.
+const CAR_W = 1.78
+const CAR_H = 1.3
+const CAR_D = 4.5
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v))
 const decay = (frac, k = 3) => Math.pow(clamp01(1 - frac), k)
@@ -44,11 +52,11 @@ function rotatedHalfExtentsRad(hx, hz, rotY) {
   return { hx: hx * c + hz * s, hz: hx * s + hz * c }
 }
 
-// The car: CAR_POS/CAR_ROT, W=1.7 H=1.05 D=3.7 (Car's own local consts).
-const CAR_EXT = rotatedHalfExtentsRad(0.85, 1.85, CAR_ROT)
+// The car: CAR_POS/CAR_ROT, CAR_W/CAR_H/CAR_D above.
+const CAR_EXT = rotatedHalfExtentsRad(CAR_W / 2, CAR_D / 2, CAR_ROT)
 const CAR_RECT = {
   minX: CAR_POS[0] - CAR_EXT.hx, maxX: CAR_POS[0] + CAR_EXT.hx,
-  minZ: CAR_POS[2] - CAR_EXT.hz, maxZ: CAR_POS[2] + CAR_EXT.hz, top: 1.05,
+  minZ: CAR_POS[2] - CAR_EXT.hz, maxZ: CAR_POS[2] + CAR_EXT.hz, top: CAR_H,
 }
 
 // BankFacade's own wall box [10, 5.2, 0.3] at z=-4.3, widened on Z to also
@@ -83,8 +91,17 @@ function BabyDriverColliders({ spawn }) {
 
 /* -------------------------------------------------------------- facade */
 
-const facadeMat = standardMat({ kind: 'concrete', tint: '#e8dcc0', wear: 0.3, scale: 2.2, repeat: [5, 3] })
-const columnMat = standardMat({ kind: 'concrete', tint: '#f0e6cc', wear: 0.2, scale: 1.4 })
+// Iteration 2: facade tone shifted from mustard toward limestone, and the
+// blotchy weathering moved into a bespoke, single-draw panel texture
+// (babyDriverTextures.js's makeFacadeTexture) instead of the shared
+// materials.js `concrete` kind — that generator's blotches are tuned for
+// every room using it and read as "too large/regular" at this facade's
+// scale; a bespoke panel also lets the cornice shadow + base course sit at
+// exact heights instead of tiling.
+const facadeTex = makeFacadeTexture(5)
+const facadeMat = new THREE.MeshStandardMaterial({ map: facadeTex, roughness: 0.88 })
+const columnMat = standardMat({ kind: 'concrete', tint: '#ece4d2', wear: 0.15, scale: 1.4 })
+const baseCourseMat = standardMat({ kind: 'concrete', tint: '#8c8270', wear: 0.35, scale: 1.6 })
 const signBandMat = standardMat({ kind: 'flat', tint: '#3a3226', wear: 0.15 })
 const sidewalkMat = standardMat({ kind: 'concrete', tint: '#c9c9c0', wear: 0.35, scale: 1.8, repeat: [6, 5] })
 const streetMat = standardMat({ kind: 'asphalt', tint: '#a8a6a0', wear: 0.5, scale: 1.4, repeat: [7, 1] })
@@ -104,6 +121,12 @@ function BankFacade({ grade }) {
       <mesh position={[0, 2.6, -4.3]} receiveShadow>
         <boxGeometry args={[10, 5.2, 0.3]} />
         <primitive object={facadeMat} attach="material" />
+      </mesh>
+      {/* darker base course at street level — foot-traffic-grimed stone,
+          standing a hair proud of the facade plane */}
+      <mesh position={[0, 0.32, -4.145]}>
+        <boxGeometry args={[10, 0.64, 0.02]} />
+        <primitive object={baseCourseMat} attach="material" />
       </mesh>
       {/* columns — a bank facade's own vocabulary, no signage, no badging.
           Beveled bodies + a capital/base ring so they read as architecture
@@ -163,6 +186,12 @@ function BankFacade({ grade }) {
         <planeGeometry args={[6.2, 0.4]} />
         <meshBasicMaterial map={signTex} transparent toneMapped={false} />
       </mesh>
+      {/* cornice shadow line — a thin dark strip under the sign band,
+          reading as the shadow cast by the band's own lip */}
+      <mesh position={[0, 3.29, -4.145]}>
+        <boxGeometry args={[9.2, 0.06, 0.02]} />
+        <meshStandardMaterial color="#241e14" roughness={0.85} />
+      </mesh>
       {/* the awning-height shadow line, sunny-grade Atlanta rather than a shop sign */}
       <mesh position={[0, 4.6, -4.14]}>
         <planeGeometry args={[9.6, 0.5]} />
@@ -217,14 +246,48 @@ function DaySky() {
 /* ------------------------------------------------------------------ car */
 
 // "build your own rounded-box car, zero badging" — per the spec, verbatim.
-// Front faces -Z (toward the camera/facade axis this room is composed on).
+// Front faces +Z (toward this room's one camera station).
+//
+// Iteration 2, per the architect's "reads as a red sofa" verdict: real
+// proportions (CAR_W/CAR_H/CAR_D, lower and longer than the old near-cube
+// mass), four DISTINCT body masses (rocker/hood/cabin/trunk instead of one
+// slab), a windshield actually seated between A-pillar masses instead of a
+// detached floating pane, wheels docked inside visible fender flares +
+// wheel-arch liners with tire + rim discs, front grille + bumpers, door
+// seam lines, and a soft contact-shadow ellipse under the body so it reads
+// as parked ON the asphalt rather than hovering over it.
+const bumperMat = new THREE.MeshStandardMaterial({ color: '#141414', roughness: 0.55, metalness: 0.15 })
+const grilleMat = new THREE.MeshStandardMaterial({ color: '#0a0a0a', roughness: 0.6, metalness: 0.2 })
+const tireMat = new THREE.MeshStandardMaterial({ color: '#0c0c0c', roughness: 0.88 })
+const rimMat = new THREE.MeshStandardMaterial({ color: '#b8b8b8', roughness: 0.32, metalness: 0.65 })
+const archMat = new THREE.MeshStandardMaterial({ color: '#100404', roughness: 0.7 })
+const seamMat = new THREE.MeshStandardMaterial({ color: '#340707', roughness: 0.5 })
+
 function Car({ beatRef }) {
   const wiperL = useRef()
   const wiperR = useRef()
   const brakeL = useRef()
   const brakeR = useRef()
 
-  const W = 1.7, H = 1.05, D = 3.7
+  const W = CAR_W, H = CAR_H, D = CAR_D
+  const shadowTex = useMemo(() => makeContactShadowTexture(), [])
+
+  // body masses, distinct from each other so the silhouette reads as
+  // "car" rather than one continuous slab
+  const loH = 0.5, loTop = 0.09 + loH // rocker/chassis, full length, low
+  const hoodH = 0.22, hoodTop = loTop + hoodH, hoodZ0 = D * 0.5 - 0.05, hoodZ1 = D * 0.14
+  const ghH = 0.46, ghTop = loTop + 0.23 + ghH, ghZ0 = D * 0.09, ghZ1 = -D * 0.30
+  const trH = 0.26, trZ0 = ghZ1, trZ1 = -D * 0.5 + 0.05
+
+  // windshield seated in the hood/cabin gap: bottom-front at the hood's
+  // trailing top edge, top-back at the cabin's leading roof edge.
+  const wsBottom = [0, hoodTop, hoodZ1]
+  const wsTop = [0, loTop + 0.23 + ghH, ghZ0]
+  const wsDy = wsTop[1] - wsBottom[1]
+  const wsDz = wsTop[2] - wsBottom[2]
+  const wsLen = Math.hypot(wsDy, wsDz)
+  const wsAngle = -Math.atan2(wsDz, wsDy)
+  const wsCenter = [0, (wsBottom[1] + wsTop[1]) / 2, (wsBottom[2] + wsTop[2]) / 2]
 
   // Wave T: press the brake -> a flash lands ON the next downbeat, never
   // immediately. `armed` just marks intent; the actual flash + the
@@ -265,88 +328,178 @@ function Car({ beatRef }) {
     if (brakeR.current) brakeR.current.material.emissiveIntensity = brakeGlow
   })
 
+  const wheelX = W * 0.47
+  const wheelZ = D * 0.34
+  const tireR = 0.34, tireW = 0.26
+  const rimR = 0.19
+
   return (
     <group position={CAR_POS} rotation={[0, CAR_ROT, 0]}>
-      <RoundedBox args={[W, H * 0.55, D]} radius={0.09} smoothness={4} position={[0, H * 0.32, 0]}>
+      {/* soft contact shadow — sells "parked on the asphalt" before a
+          single body panel even loads */}
+      <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[1, 24]} />
+        <meshBasicMaterial map={shadowTex} transparent opacity={0.9} depthWrite={false} toneMapped={false} />
+      </mesh>
+
+      {/* rocker/chassis mass — the low full-length slab everything else sits on */}
+      <RoundedBox args={[W * 0.92, loH, D * 0.96]} radius={0.07} smoothness={4} position={[0, 0.09 + loH / 2, 0]}>
         <meshStandardMaterial color="#c81818" roughness={0.28} metalness={0.35} />
       </RoundedBox>
-      <RoundedBox args={[W * 0.84, H * 0.42, D * 0.48]} radius={0.1} smoothness={4} position={[0, H * 0.62, -D * 0.06]}>
+      {/* hood mass — front nose, distinct from the cabin, sits lower */}
+      <RoundedBox args={[W * 0.86, hoodH, hoodZ0 - hoodZ1]} radius={0.06} smoothness={4}
+        position={[0, loTop + hoodH / 2, (hoodZ0 + hoodZ1) / 2]}>
+        <meshStandardMaterial color="#b41414" roughness={0.24} metalness={0.32} />
+      </RoundedBox>
+      {/* cabin/greenhouse mass — taller, narrower */}
+      <RoundedBox args={[W * 0.78, ghH, ghZ0 - ghZ1]} radius={0.1} smoothness={4}
+        position={[0, loTop + 0.23 + ghH / 2, (ghZ0 + ghZ1) / 2]}>
         <meshStandardMaterial color="#a01414" roughness={0.22} metalness={0.3} />
       </RoundedBox>
-      {/* windshield — QA pass: mounted on the +Z end (facing this room's one
-          camera station) rather than -Z, since the wipers are the more
-          important beat-tell to have visible from the entry view and a
-          RoundedBox is opaque — whichever end faces away from the camera is
-          permanently occluded from a single fixed station. */}
-      <mesh position={[0, H * 0.66, D * 0.28]} rotation={[0.35, 0, 0]}>
-        <planeGeometry args={[W * 0.7, 0.42]} />
+      {/* trunk mass — rear deck, lower than the cabin */}
+      <RoundedBox args={[W * 0.84, trH, trZ0 - trZ1]} radius={0.07} smoothness={4}
+        position={[0, loTop + trH / 2, (trZ0 + trZ1) / 2]}>
+        <meshStandardMaterial color="#b01414" roughness={0.26} metalness={0.3} />
+      </RoundedBox>
+
+      {/* windshield — seated between A-pillar masses in the hood/cabin gap,
+          raked from the hood's trailing edge up to the cabin's roof line,
+          instead of a detached floating pane */}
+      <mesh position={wsCenter} rotation={[wsAngle, 0, 0]}>
+        <planeGeometry args={[W * 0.66, wsLen]} />
         <meshStandardMaterial color="#9fc0cc" transparent opacity={0.55} roughness={0.1} metalness={0.1} side={THREE.DoubleSide} />
       </mesh>
+      {[-1, 1].map((sx) => (
+        <RoundedBox key={sx} args={[0.07, wsLen, 0.06]} radius={0.02} smoothness={2}
+          position={[sx * (W * 0.33), wsCenter[1], wsCenter[2]]} rotation={[wsAngle, 0, 0]}>
+          <meshStandardMaterial color="#2c0606" roughness={0.4} metalness={0.2} />
+        </RoundedBox>
+      ))}
+      {/* cowl (hood/windshield join) + header (windshield/roof join) close
+          the seam top and bottom so the glass reads as set INTO the body */}
+      <mesh position={wsBottom}>
+        <boxGeometry args={[W * 0.8, 0.03, 0.06]} />
+        <meshStandardMaterial color="#2c0606" roughness={0.4} />
+      </mesh>
+      <mesh position={wsTop}>
+        <boxGeometry args={[W * 0.74, 0.03, 0.06]} />
+        <meshStandardMaterial color="#2c0606" roughness={0.4} />
+      </mesh>
       {/* wipers: pivoted at the windshield's base, sweeping in its own plane */}
-      <group ref={wiperL} position={[-W * 0.22, H * 0.5, D * 0.16]} rotation={[0.35, 0, 0]}>
+      <group ref={wiperL} position={[-W * 0.2, wsBottom[1] + 0.04, wsBottom[2] - 0.03]} rotation={[wsAngle, 0, 0]}>
         <mesh position={[0, 0.16, 0]}>
           <boxGeometry args={[0.02, 0.32, 0.015]} />
           <meshStandardMaterial color="#111" roughness={0.5} />
         </mesh>
       </group>
-      <group ref={wiperR} position={[W * 0.22, H * 0.5, D * 0.16]} rotation={[0.35, 0, 0]}>
+      <group ref={wiperR} position={[W * 0.2, wsBottom[1] + 0.04, wsBottom[2] - 0.03]} rotation={[wsAngle, 0, 0]}>
         <mesh position={[0, 0.16, 0]}>
           <boxGeometry args={[0.02, 0.32, 0.015]} />
           <meshStandardMaterial color="#111" roughness={0.5} />
         </mesh>
       </group>
-      {/* brake lights, rear = -Z (away from camera; the glow still blooms
-          around the car's silhouette from back there) — Wave T: pressable,
-          the rear of the vehicle mass */}
-      <Touchable reach={9} noDip anchor={[0, H * 0.36, -D * 0.49]} onUse={handleBrakePress}>
-        <mesh ref={brakeL} position={[-W * 0.4, H * 0.36, -D * 0.49]}>
+
+      {/* front bumper + grille, +Z end */}
+      <RoundedBox args={[W * 0.98, 0.22, 0.1]} radius={0.03} smoothness={2} position={[0, 0.3, D / 2 - 0.05]}>
+        <primitive object={bumperMat} attach="material" />
+      </RoundedBox>
+      <mesh position={[0, 0.55, D / 2 - 0.03]}>
+        <boxGeometry args={[W * 0.5, 0.22, 0.03]} />
+        <primitive object={grilleMat} attach="material" />
+      </mesh>
+      {[-0.06, 0, 0.06].map((dy, i) => (
+        <mesh key={i} position={[0, 0.55 + dy, D / 2 - 0.015]}>
+          <boxGeometry args={[W * 0.46, 0.015, 0.012]} />
+          <meshStandardMaterial color="#3a3a3a" roughness={0.4} metalness={0.4} />
+        </mesh>
+      ))}
+
+      {/* brake lights, rear = -Z — Wave T: pressable, the rear of the
+          vehicle mass */}
+      <RoundedBox args={[W * 0.98, 0.22, 0.1]} radius={0.03} smoothness={2} position={[0, 0.3, -D / 2 + 0.05]}>
+        <primitive object={bumperMat} attach="material" />
+      </RoundedBox>
+      <Touchable reach={9} noDip anchor={[0, 0.42, -D / 2 + 0.06]} onUse={handleBrakePress}>
+        <mesh ref={brakeL} position={[-W * 0.4, 0.42, -D / 2 + 0.05]}>
           <boxGeometry args={[0.22, 0.14, 0.04]} />
           <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
         </mesh>
-        <mesh ref={brakeR} position={[W * 0.4, H * 0.36, -D * 0.49]}>
+        <mesh ref={brakeR} position={[W * 0.4, 0.42, -D / 2 + 0.05]}>
           <boxGeometry args={[0.22, 0.14, 0.04]} />
           <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
         </mesh>
         {/* invisible sensor spanning the rear bumper — the two small brake
             boxes alone are a thin click target */}
-        <mesh position={[0, H * 0.36, -D * 0.49]}>
-          <boxGeometry args={[W, H * 0.7, 0.4]} />
+        <mesh position={[0, 0.42, -D / 2 + 0.05]}>
+          <boxGeometry args={[W, 0.7, 0.4]} />
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       </Touchable>
-      {/* wheels, each in its own wheel well — a dark arch trim standing
-          proud of the body just above the tire so the silhouette reads as
-          "fender cut", not a wheel bolted to a flat slab */}
+      {/* brake-light housings — a beveled black frame the lamps sit inside */}
+      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[-W * 0.4, 0.42, -D / 2 + 0.005]}>
+        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
+      </RoundedBox>
+      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[W * 0.4, 0.42, -D / 2 + 0.005]}>
+        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
+      </RoundedBox>
+
+      {/* wheels — each seated inside a fender flare + a wheel-arch liner
+          bigger than the tire, so the arch reads as a real cutout rather
+          than a wheel floating beside a smooth box */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
-        <group key={i} position={[sx * W * 0.42, 0.14, sz * D * 0.36]}>
-          <mesh rotation={[0, 0, Math.PI / 2]}>
-            <cylinderGeometry args={[0.16, 0.16, 0.15, 16]} />
-            <meshStandardMaterial color="#111" roughness={0.8} />
+        <group key={i} position={[sx * wheelX, 0, sz * wheelZ]}>
+          {/* fender flare — a body-colored bulge the wheel tucks under */}
+          <RoundedBox args={[0.15, 0.32, 0.6]} radius={0.05} smoothness={2}
+            position={[sx * (W * 0.46 - wheelX), loTop - 0.1, 0]}>
+            <meshStandardMaterial color="#b81616" roughness={0.3} metalness={0.32} />
+          </RoundedBox>
+          {/* wheel-arch liner — dark half-ring, larger radius than the
+              tire, standing proud of the flare */}
+          <mesh position={[0, tireR, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <torusGeometry args={[tireR + 0.06, 0.045, 8, 20, Math.PI]} />
+            <primitive object={archMat} attach="material" />
           </mesh>
-          <mesh rotation={[0, 0, Math.PI / 2]}>
-            <torusGeometry args={[0.185, 0.02, 6, 16, Math.PI]} />
-            <meshStandardMaterial color="#1c0808" roughness={0.6} metalness={0.1} />
+          {/* tire */}
+          <mesh position={[0, tireR, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[tireR, tireR, tireW, 20]} />
+            <primitive object={tireMat} attach="material" />
+          </mesh>
+          {/* rim disc — lighter, seated inside the tire's outboard face */}
+          <mesh position={[sx * (tireW * 0.42), tireR, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[rimR, rimR, 0.05, 16]} />
+            <primitive object={rimMat} attach="material" />
           </mesh>
         </group>
       ))}
-      {/* panel gap seams — hood/cabin and cabin/trunk shut lines, thin dark
-          strokes that read as real body panel breaks under a grazing sun */}
-      <mesh position={[0, H * 0.58, D * 0.16]}>
-        <boxGeometry args={[W * 0.86, 0.006, 0.006]} />
-        <meshStandardMaterial color="#3a0808" roughness={0.5} />
+
+      {/* door seam lines — thin dark inset strokes, front door + rear
+          quarter-panel, reading as real panel breaks under a grazing sun */}
+      {[-1, 1].map((sx) => (
+        <group key={sx}>
+          <mesh position={[sx * (W * 0.46), 0.56, -0.05]}>
+            <boxGeometry args={[0.006, 0.86, 0.006]} />
+            <primitive object={seamMat} attach="material" />
+          </mesh>
+          <mesh position={[sx * (W * 0.46), 0.56, -1.15]}>
+            <boxGeometry args={[0.006, 0.86, 0.006]} />
+            <primitive object={seamMat} attach="material" />
+          </mesh>
+          {/* character line — a horizontal crease along the body side */}
+          <mesh position={[sx * (W * 0.46), 0.5, -0.2]}>
+            <boxGeometry args={[0.006, 0.006, D * 0.8]} />
+            <primitive object={seamMat} attach="material" />
+          </mesh>
+        </group>
+      ))}
+      {/* hood/cowl and cabin/trunk shut lines */}
+      <mesh position={[0, hoodTop, hoodZ1]}>
+        <boxGeometry args={[W * 0.8, 0.005, 0.005]} />
+        <primitive object={seamMat} attach="material" />
       </mesh>
-      <mesh position={[0, H * 0.58, -D * 0.18]}>
-        <boxGeometry args={[W * 0.86, 0.006, 0.006]} />
-        <meshStandardMaterial color="#3a0808" roughness={0.5} />
+      <mesh position={[0, loTop + trH, trZ0]}>
+        <boxGeometry args={[W * 0.78, 0.005, 0.005]} />
+        <primitive object={seamMat} attach="material" />
       </mesh>
-      {/* brake-light housings — a beveled black frame the lamps sit inside,
-          instead of the lamp plane floating directly on the bumper */}
-      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[-W * 0.4, H * 0.36, -D * 0.495]}>
-        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
-      </RoundedBox>
-      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[W * 0.4, H * 0.36, -D * 0.495]}>
-        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
-      </RoundedBox>
     </group>
   )
 }
@@ -424,6 +577,42 @@ function SyncBursts({ beatRef }) {
   )
 }
 
+// A couple of scraps actually caught up and tumbling — kept to 2, and only
+// airborne because they visibly move with the room's own beat system (the
+// same syncopation "and" offsets SyncBursts uses), per the architect's
+// "at most 2-3 airborne and ONLY if they visibly move" ruling.
+function AirbornePapers({ beatRef }) {
+  const refs = [useRef(), useRef()]
+  const seeds = [
+    { x: 2.6, z: -0.6, r: 0.7, amp: 0.5 },
+    { x: -1.9, z: 1.5, r: 2.2, amp: 0.42 },
+  ]
+  useFrame(() => {
+    const b = beatRef.current
+    const pos = b.beat + b.phase
+    const d1 = Math.abs(pos - 1.5)
+    const d2 = Math.abs(pos - 3.5)
+    const burst = Math.exp(-Math.min(d1, d2) * 8)
+    seeds.forEach((s, i) => {
+      const g = refs[i].current
+      if (!g) return
+      const lift = 0.05 + burst * s.amp
+      g.position.set(s.x + Math.cos(s.r + burst * 2) * burst * 0.3, lift, s.z + Math.sin(s.r + burst * 2) * burst * 0.3)
+      g.rotation.set(Math.PI / 2 + burst * 1.4, s.r + burst * 3, burst * 0.8)
+    })
+  })
+  return (
+    <>
+      {seeds.map((s, i) => (
+        <mesh key={i} ref={refs[i]} position={[s.x, 0.05, s.z]} rotation={[Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.14, 0.2]} />
+          <meshStandardMaterial color="#e8e0c8" roughness={0.95} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
+    </>
+  )
+}
+
 /* -------------------------------------------------------------- record */
 
 function BabyDriverRecord({ film, beatRef, infoVisible }) {
@@ -482,12 +671,29 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
           makeHotTakeTexture in isolation), a geometry-clipping bug local to
           this room's placement. Pulled both well clear of the wall and
           dropped the rotation so no viewing angle can reintroduce it. */}
-      <mesh position={[-2.6, 2.1, -3.5]}>
-        <planeGeometry args={[1.3, 0.82]} />
-        {hotTakeTex
-          ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
-          : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
-      </mesh>
+      {/* Iteration 2: moved off the window it was slapped over onto the
+          solid pier between the two center windows (x in [-0.28, 0.28] is
+          clear wall, below the window band which starts at y=1.44), sized
+          down and framed like a posted notice rather than a wall-filling
+          sheet. */}
+      <group position={[0, 1.28, -4.09]}>
+        <mesh position={[0, 0, -0.006]}>
+          <planeGeometry args={[0.7, 0.72]} />
+          <meshStandardMaterial color="#241e14" roughness={0.7} />
+        </mesh>
+        <mesh position={[0, 0.13, 0]}>
+          <planeGeometry args={[0.6, 0.4]} />
+          {hotTakeTex
+            ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
+            : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
+        </mesh>
+        <mesh position={[0, -0.2, 0]}>
+          <planeGeometry args={[0.56, 0.14]} />
+          {metaTex
+            ? <meshBasicMaterial key="mapped" map={metaTex} transparent depthWrite={false} side={THREE.DoubleSide} />
+            : <meshBasicMaterial key="blank" transparent opacity={0} />}
+        </mesh>
+      </group>
       <group ref={scoreGroup} position={[2.3, 1.9, -2.6]}>
         <mesh>
           <planeGeometry args={[0.5, 0.5]} />
@@ -496,12 +702,6 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
             : <meshBasicMaterial key="blank" transparent opacity={0} />}
         </mesh>
       </group>
-      <mesh position={[-2.6, 1.55, -3.5]}>
-        <planeGeometry args={[1.2, 0.3]} />
-        {metaTex
-          ? <meshBasicMaterial key="mapped" map={metaTex} transparent depthWrite={false} side={THREE.DoubleSide} />
-          : <meshBasicMaterial key="blank" transparent opacity={0} />}
-      </mesh>
     </group>
   )
 }
@@ -566,16 +766,26 @@ export default function BabyDriver({ film, config, infoVisible = true, doors = [
 
       <BankFacade grade={grade} />
       <Car beatRef={beatRef} />
-      <PaperScatter pos={[-1, 0, 0.4]} rot={[Math.PI / 2, 0, 0]} count={16} area={[2.4, 1.6]} color="#e8e0c8" />
-      {/* street clutter: a couple of authored crumpled scraps near the
-          curb, distinct from the loose paperScatter drift by the car */}
-      {crumpledPaper({ pos: [-3.4, 0.03, 1.35], scale: 0.7, color: '#e8e0c8', seed: 71 })}
-      {crumpledPaper({ pos: [3.9, 0.03, -1.3], scale: 0.55, color: '#d8ccae', seed: 83 })}
+      {/* Iteration 2 QA fix: this group used to pass rot=[PI/2,0,0] on TOP
+          of paperScatter's own per-instance flat-lay rotation (props.jsx
+          already rotates each quad PI/2 about X to lie flat) — the double
+          rotation stood the whole patch up into a vertical sheet, which is
+          exactly what read as "papers floating mid-air as static quads".
+          No group rotation needed; paperScatter lays flat on its own.
+          Moved into the gutter along the curb rather than mid-sidewalk. */}
+      <PaperScatter pos={[-1.2, 0, 1.02]} count={12} area={[2.6, 0.5]} color="#e8e0c8" />
+      {/* street clutter: authored crumpled/curled scraps grounded against
+          the curb and gutter, distinct from the loose paperScatter drift */}
+      {crumpledPaper({ pos: [-3.4, 0.03, 1.06], scale: 0.7, color: '#e8e0c8', seed: 71 })}
+      {crumpledPaper({ pos: [3.9, 0.03, 1.02], scale: 0.55, color: '#d8ccae', seed: 83 })}
+      {crumpledPaper({ pos: [-0.2, 0.03, -1.02], scale: 0.5, color: '#dcd2b0', seed: 91 })}
+      {crumpledPaper({ pos: [2.1, 0.03, 1.05], scale: 0.42, color: '#e4dcc4', seed: 104 })}
 
       <Pedestrian beatRef={beatRef} laneZ={0.9} offset={0} color="#181410" />
       <Pedestrian beatRef={beatRef} laneZ={1.4} offset={0.5} color="#201a14" />
 
       <SyncBursts beatRef={beatRef} />
+      <AirbornePapers beatRef={beatRef} />
 
       <BabyDriverRecord film={film} beatRef={beatRef} infoVisible={infoVisible} />
 

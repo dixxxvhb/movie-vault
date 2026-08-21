@@ -12,62 +12,112 @@ function canvas(w, h) {
   return c
 }
 
-// A blocky, hand-drawn sans face rather than the system font — reads as
-// "cut metal lettering on a bank facade" at the distance this is actually
-// seen from, and keeps every glyph procedural rather than leaning on
-// whatever font happens to be installed.
-function drawBlockGlyph(ctx, ch, x, y, w, h, color) {
-  ctx.fillStyle = color
-  const t = w * 0.18 // stroke thickness
-  const draw = (rx, ry, rw, rh) => ctx.fillRect(x + rx * w, y + ry * h, rw * w, rh * h)
-  switch (ch) {
-    case 'A':
-      draw(0.5 - t / (2 * w) * w, 0, t / w, 1)
-      draw(0, 0.4, 1, t / h)
-      ctx.save()
-      ctx.translate(x + w / 2, y)
-      ctx.rotate(-0.22)
-      ctx.fillRect(-t / 2, 0, t, h)
-      ctx.restore()
-      ctx.save()
-      ctx.translate(x + w / 2, y)
-      ctx.rotate(0.22)
-      ctx.fillRect(-t / 2, 0, t, h)
-      ctx.restore()
-      break
-    default: {
-      // generic vocabulary for every other letter: a bounding box outline
-      // with a couple of internal bars, seeded per-character so each glyph
-      // in the word looks distinct without needing a real typeface.
-      let s = (ch.charCodeAt(0) * 92821 + 7) >>> 0
-      const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-      draw(0, 0, t / w, 1)
-      draw(1 - t / w, 0, t / w, 1)
-      draw(0, 0, 1, t / h)
-      draw(0, 1 - t / h, 1, t / h)
-      if (r() > 0.4) draw(0, 0.5 - t / (2 * h), 1, t / h)
-    }
-  }
+function rng(seed) {
+  let s = (seed >>> 0) || 1
+  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
 }
 
-// A word rendered as a strip of block glyphs, left-aligned — used both for
-// the sign band and for smaller signage.
-export function makeWordTexture(word, { w = 1024, h = 220, color = '#2a2018', bg = null } = {}) {
+// Iteration 2 QA fix: the old hand-drawn "block glyph" alphabet produced
+// garbled, alien-looking letterforms that read as noise, not a name —
+// worse than no sign at all per the architect's polish-pass verdict. A
+// plain bold sans via ctx.fillText is still 100% procedural (a system font,
+// not an imported asset) and renders our own invented bank name cleanly and
+// legibly, properly kerned by the canvas text engine itself.
+export function makeWordTexture(word, { w = 1024, h = 220, color = '#2a2018', bg = null, weight = 700 } = {}) {
   const c = canvas(w, h)
   const ctx = c.getContext('2d')
   if (bg) { ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h) }
-  const letters = word.split('')
-  const gap = w * 0.014
-  const glyphW = (w - gap * (letters.length - 1)) / letters.length
-  const glyphH = h * 0.62
-  const y = (h - glyphH) / 2
+  ctx.fillStyle = color
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  // letter-spaced manually (canvas has no native tracking) — draw glyph by
+  // glyph with a fixed advance rather than one fillText call, so a bank
+  // facade's own wide-tracked signage reads correctly instead of default
+  // font kerning that packs letters too tight to read as architecture.
+  const letters = word.toUpperCase().split('')
+  const size = h * 0.56
+  ctx.font = `${weight} ${size}px Arial, Helvetica, sans-serif`
+  const widths = letters.map((ch) => (ch === ' ' ? size * 0.5 : ctx.measureText(ch).width))
+  const tracking = size * 0.18
+  const totalW = widths.reduce((a, b) => a + b, 0) + tracking * (letters.length - 1)
+  let x = (w - totalW) / 2
+  const y = h / 2 + size * 0.03
   letters.forEach((ch, i) => {
-    if (ch === ' ') return
-    drawBlockGlyph(ctx, ch.toUpperCase(), i * (glyphW + gap), y, glyphW * 0.82, glyphH, color)
+    ctx.fillText(ch, x + widths[i] / 2, y)
+    x += widths[i] + tracking
   })
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.anisotropy = 4
+  return tex
+}
+
+// Iteration 2: a bespoke facade panel texture (limestone, not mustard),
+// drawn once at the exact panel size so a darker base course and a cornice
+// shadow line can be placed at precise heights rather than tiled — the
+// materials.js `concrete` kind's blotches are shared by every room using
+// it, too large/regular for THIS facade at this scale, and out of scope to
+// retune globally for one bespoke room's art direction.
+export function makeFacadeTexture(seed = 5) {
+  const W = 1024, H = 560 // matches the 10 x 5.2m panel's aspect
+  const c = canvas(W, H)
+  const ctx = c.getContext('2d')
+  const r = rng(seed)
+  // limestone base — desaturated warm grey-tan, not the old mustard
+  ctx.fillStyle = '#dcd6c6'
+  ctx.fillRect(0, 0, W, H)
+  // small, sparse, irregular tonal blotches (weathering) — deliberately
+  // smaller radius + lower count + lower alpha than materials.js's generic
+  // concrete blotches, which is what read as "too large/regular"
+  for (let i = 0; i < 34; i++) {
+    const x = r() * W, y = r() * H, rad = 10 + r() * 26
+    const amt = (r() - 0.5) * 22
+    const g = ctx.createRadialGradient(x, y, 0, x, y, rad)
+    g.addColorStop(0, `rgba(${amt < 0 ? '40,36,28' : '236,228,206'},${0.18 + r() * 0.14})`)
+    g.addColorStop(1, 'rgba(0,0,0,0)')
+    ctx.fillStyle = g
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill()
+  }
+  // fine stone speckle
+  ctx.globalAlpha = 0.05
+  for (let i = 0; i < 2200; i++) {
+    ctx.fillStyle = r() > 0.5 ? '#fff' : '#000'
+    ctx.fillRect(r() * W, r() * H, 1.4, 1.4)
+  }
+  ctx.globalAlpha = 1
+  // cornice shadow line — a soft dark band near the top, under where the
+  // sign band + awning-shadow mesh sit in BabyDriver.jsx
+  const cornice = ctx.createLinearGradient(0, H * 0.1, 0, H * 0.24)
+  cornice.addColorStop(0, 'rgba(20,16,10,0.32)')
+  cornice.addColorStop(1, 'rgba(20,16,10,0)')
+  ctx.fillStyle = cornice
+  ctx.fillRect(0, H * 0.1, W, H * 0.14)
+  // darker base course at street level — the bottom ~14% of the panel
+  const base = ctx.createLinearGradient(0, H * 0.86, 0, H)
+  base.addColorStop(0, 'rgba(30,26,18,0)')
+  base.addColorStop(1, 'rgba(30,26,18,0.38)')
+  ctx.fillStyle = base
+  ctx.fillRect(0, H * 0.86, W, H * 0.14)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+// Contact shadow: a soft dark radial-gradient ellipse, laid flat just above
+// the ground under the car so its wheels/body read as touching the asphalt
+// instead of hovering.
+export function makeContactShadowTexture() {
+  const S = 256
+  const c = canvas(S, S)
+  const ctx = c.getContext('2d')
+  const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2)
+  g.addColorStop(0, 'rgba(0,0,0,0.55)')
+  g.addColorStop(0.6, 'rgba(0,0,0,0.32)')
+  g.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, S, S)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
   return tex
 }
 
