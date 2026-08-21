@@ -147,15 +147,19 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------ br2049
+  // Bespoke now (Phase 2, src/rooms/bespoke/BR2049.jsx): camera lowered to
+  // match the bespoke room's own entry station (the brief's "camera height
+  // lowered in this room only"). `place` is dead weight for the same reason
+  // as matrix's own entry above — the bespoke component never reads it.
   br2049: {
     family: 'spectacle',
     // bg/fogColor overridden: the ledger palette's own bg is the film's
     // warm Vegas-orange card gradient, right for a polaroid front but wrong
     // as this room's resting state — the brief's base grade is cold blue-
     // grey night, with the orange only rolling through periodically
-    // (ScheduledCut below owns that beat).
+    // (ScheduledCut, mounted in the bespoke room itself, owns that beat).
     grade: { bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.12 },
-    camera: { pos: [0, 1.2, 3], look: [0, 1.4, -8], fov: 50, far: 200 },
+    camera: { pos: [0, 1.35, 3], look: [0, 1.05, -8], fov: 50, far: 200 },
     place: {
       shell: 'deck',
       shellParams: { length: 12, width: 4.4, railing: true, fogWall: true, floorTint: '#141a1e' },

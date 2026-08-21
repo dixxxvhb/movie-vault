@@ -8,6 +8,7 @@ import BabyDriver from './bespoke/BabyDriver.jsx'
 import Sting from './bespoke/Sting.jsx'
 import Sicario from './bespoke/Sicario.jsx'
 import Matrix from './bespoke/Matrix.jsx'
+import BR2049 from './bespoke/BR2049.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -23,6 +24,7 @@ const BESPOKE = {
   'the-sting': Sting,
   sicario: Sicario,
   matrix: Matrix,
+  br2049: BR2049,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in
