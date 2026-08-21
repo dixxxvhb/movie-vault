@@ -133,7 +133,11 @@ export const CONFIGS = {
   // pre-bespoke Wave B stand-in.
   matrix: {
     family: 'spectacle',
-    grade: { key: '#7fae5a', fill: '#2a3a22', sat: -0.05, hue: 0.03 },
+    // P1 polish pass: green pushed properly (this room's gradeBus override
+    // republishes sat/hue/contrast off these same fields — see Matrix.jsx),
+    // grain low (a clean digital-ish freeze, not film stock), contrast up,
+    // vignette moderate so the periphery glyph rain still reads at the edge.
+    grade: { key: '#7fae5a', fill: '#2a3a22', sat: 0.12, hue: 0.03, contrast: 0.14, grain: 0.03, vignette: 0.46, bloomIntensity: 0.36 },
     camera: { pos: [0, 1.7, 3.4], look: [0, 1.3, 0], fov: 52, far: 300 },
     place: {
       shell: 'open',
