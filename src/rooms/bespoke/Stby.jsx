@@ -8,6 +8,7 @@ import {
   makeOfficeScoreTexture, makeCubicleScreenTexture, makeScreamTexture, makeFleshTexture,
 } from './stbyTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 9.4 — "the call floor, then the swerve." One fixed station, like The
 // Departed's roof: the RegalView cubicle grid, fluorescent and mundane, cut
@@ -33,6 +34,92 @@ const CUBICLES = [
   [-1.3, -1.2], [0, -1.2], [1.3, -1.2],
   [-1.3, 0.2], [0, 0.2], [1.3, 0.2],
 ]
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: HARD LAW — "during the hard-cut party swap the SAME colliders
+// stay (geometry swap is visual only)". Registered ONCE, independent of
+// inPenthouse, so nothing re-registers on the swerve. The cubicle grid
+// (walls + desks) IS the aisle layout the office is staged around, so it
+// stays the base structure through both states; the penthouse's own
+// free-standing obstacles (columns, the long table, the two flesh masses)
+// are added on top rather than swapped in, since walking through those
+// would clip badly the moment the swerve is up even though this is the
+// same effect that registers the office grid.
+function rectXZ(cx, cz, hx, hz, top) {
+  return top === undefined ? { minX: cx - hx, maxX: cx + hx, minZ: cz - hz, maxZ: cz + hz }
+    : { minX: cx - hx, maxX: cx + hx, minZ: cz - hz, maxZ: cz + hz, top }
+}
+
+// Mirrors Cubicle's own three partitions + desk exactly (local frame ->
+// world by cx/cz offset; Cubicle never rotates).
+function cubicleRects(cx, cz) {
+  return [
+    rectXZ(cx - 0.55, cz, 0.02, 0.5, 1.1),   // left partition
+    rectXZ(cx + 0.55, cz, 0.02, 0.5, 1.1),   // right partition
+    rectXZ(cx, cz - 0.48, 0.57, 0.02, 1.1),  // back partition
+    rectXZ(cx, cz + 0.15, 0.45, 0.25, 0.72), // desk (Table w=0.9 d=0.5)
+  ]
+}
+
+// OfficeScoreScreen's pole: group at [-2.2,0,-1.6] rot.y 0.35, local box
+// [0.06,1.8,0.5] (half extents 0.03 x 0.25 before rotation).
+function rotatedHalfExtentsRad(hx, hz, rotY) {
+  const c = Math.abs(Math.cos(rotY)), s = Math.abs(Math.sin(rotY))
+  return { hx: hx * c + hz * s, hz: hx * s + hz * c }
+}
+const SCORE_EXT = rotatedHalfExtentsRad(0.03, 0.25, 0.35)
+const SCORE_RECT = rectXZ(-2.2, -1.6, SCORE_EXT.hx, SCORE_EXT.hz, 1.8)
+
+// Office shell — 7x6 box, walls at ±3.5 X / ±3 Z. (OfficeShell's own
+// ±Z planes sit at 2.9, the ceiling/floor span the full 6; walls treated
+// as thin like every other box shell in this app.)
+const OFFICE_SHELL_RECTS = [
+  { minX: -3.5, maxX: 3.5, minZ: -3 - 0.1, maxZ: -3 },
+  { minX: -3.5, maxX: 3.5, minZ: 3, maxZ: 3 + 0.1 },
+  { minX: -3.5 - 0.1, maxX: -3.5, minZ: -3, maxZ: 3 },
+  { minX: 3.5, maxX: 3.5 + 0.1, minZ: -3, maxZ: 3 },
+]
+
+// QA pass: GoldColumns/LongTable/FleshMass (the penthouse's own free-
+// standing pieces) were first tried as always-on colliders too, on the
+// theory that "same colliders" meant union-of-both-states. Reading the hard
+// law again — "unless the party props obviously intersect the aisles —
+// check visually and keep the walkable space consistent" — that's backwards:
+// LongTable's footprint (z -2.4..1.2) sits directly across the office's own
+// central aisle, and blocking it there converged a straight W walk from the
+// entry station after just 0.5m (verified via window.__vaultWalk), cutting
+// most of the cubicle grid off from the spawn point entirely. That is
+// exactly the "obviously intersects" case, and the fix the law asks for is
+// to keep the walkable space consistent with the office layout — i.e. the
+// penthouse-only pieces stay OUT of the collision world. They render fully
+// (nothing here touches visuals), you just don't bump into them; the office
+// cubicle grid is the one persistent walkable structure through both states.
+
+const ROOM_ID = 'bespoke:stby'
+
+function StbyColliders({ spawn }) {
+  useEffect(() => {
+    const cubicles = CUBICLES.flatMap(([x, z]) => cubicleRects(x, z))
+    registerColliders(ROOM_ID, [...OFFICE_SHELL_RECTS, ...cubicles, SCORE_RECT])
+    setBounds(ROOM_ID, { kind: 'rect', minX: -3.4, maxX: 3.4, minZ: -2.9, maxZ: 2.9 })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+    // Deliberately NOT keyed on inPenthouse — one static registration for
+    // the room's whole lifetime, per the hard law above.
+  }, [spawn])
+  return null
+}
 
 function Cubicle({ x, z, seed }) {
   const tex = useMemo(() => makeCubicleScreenTexture(seed), [seed])
@@ -272,6 +359,7 @@ export default function Stby({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <StbyColliders spawn={config.camera?.pos} />
       {inPenthouse ? (
         <>
           <fogExp2 attach="fog" args={['#160e04', 0.03]} />
