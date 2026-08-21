@@ -12,6 +12,7 @@ import ScheduledCut from '../systems/ScheduledCut.jsx'
 import { makeBillboardTexture, makeWetConcreteTexture } from './br2049Textures.js'
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
+import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 
 // BLADE RUNNER 2049 (2017) · 9.8 · "the sea wall." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): night, driving rain, waves detonating
@@ -296,6 +297,7 @@ function InfoPlinth({ film }) {
 /* ------------------------------------------------------------------ room */
 
 const DOOR_MOUNT = { position: [-4.6, 0, 1.4], rotationY: Math.PI / 2, spacing: 1.0, scale: 0.85 }
+const OWNER_ID = 'bespoke:br2049'
 
 export default function BR2049({ film, config, doors = [], goToStation, onDoor }) {
   const { grade } = config
@@ -305,6 +307,24 @@ export default function BR2049({ film, config, doors = [], goToStation, onDoor }
     setStationKey(key)
     goToStation?.(STATIONS[key], key)
   }
+
+  // The deck runs from the entry (z=5, the plane's far edge) to the
+  // concrete lip at z=-1, where the water starts (DetonatingWater sits at
+  // z=-3.6, depth 5.2 -> its near edge is exactly z=-1). Free walking must
+  // stop AT that lip — the waves are never walkable, and the monumental
+  // figure (z=-5.3, past the wall gap) stays out of reach entirely.
+  // Breakwater side walls + the sea wall itself are registered too, even
+  // though the bound already keeps the walker well short of them.
+  useEffect(() => {
+    registerColliders(OWNER_ID, [
+      { minX: -5.7, maxX: -4.3, minZ: -6, maxZ: 0 }, // -X breakwater wall
+      { minX: 4.3, maxX: 5.7, minZ: -6, maxZ: 0 },    // +X breakwater wall
+      { minX: -7, maxX: 7, minZ: -7, maxZ: -6 },      // the sea wall
+      { minX: 2.3, maxX: 2.5, minZ: 1.6, maxZ: 1.8 }, // info plinth
+    ])
+    setBounds(OWNER_ID, { kind: 'rect', minX: -4.6, maxX: 4.6, minZ: -0.7, maxZ: 4.6 })
+    return () => clearOwner(OWNER_ID)
+  }, [])
 
   // cold blue-grey resting grade, per the brief's own base — the orange
   // wash is entirely ScheduledCut's job (a full-view overlay), so this
