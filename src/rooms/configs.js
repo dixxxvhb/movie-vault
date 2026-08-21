@@ -479,18 +479,96 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------ darkknight
+  // Wave P0 PROOF ROOM (IMMERSION-V2-POLISH-SPEC.md #7): the interrogation
+  // room, upgraded with every P0 toolkit piece — materials.js surfaces on
+  // walls/floor/table, baseboard trim, a full layered lightRig (the white
+  // light panel as key, wall-fixture practicals, a cold bounce, a rim
+  // catching the mirror edge), authored clutter split ordered/entropic per
+  // the brief's own paragraph (§5: "half the room ordered, half entropic"),
+  // one 512 shadow (the key panel, casting the table's shadow onto the
+  // tile), and a tuned grade triplet (crushed contrast, low grain, a
+  // heavy-ish vignette closing the room in). Config-driven only — no
+  // bespoke component; GenericRoom renders all of this from `place`/
+  // `lights`/`grade` alone, same contract every Tier-2 slug uses.
   darkknight: {
     family: 'intimate-tension',
-    grade: { key: '#e8f0ff', fill: '#141414', ambient: 0.15 },
+    grade: {
+      key: '#e8f0ff', fill: '#141414', ambient: 0.13,
+      contrast: 0.16, sat: -0.08,
+      grain: 0.05, vignette: 0.72, bloomIntensity: 0.32,
+    },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.4], fov: 44 },
+    // The layered rig: one motivated key (the panel overhead), a small warm
+    // practical at the door fixture, a cold blue bounce reaching the far
+    // wall, and a rim from the mirror side catching a silhouette edge. Only
+    // the key casts a shadow — the room's one 512 map (spec #3/#6: "one
+    // shadow map max"). QA pass: a spec-literal reading of the doctrine
+    // (small key + a couple of dim fills) left the walls reading as a pure
+    // void outside the beam — practicals/bounce/rim here carry enough reach
+    // to actually paint the concrete, not just gesture at it.
+    lights: {
+      key: {
+        type: 'spot', pos: [0, 2.4, -0.55], target: [0, 0, -0.8],
+        color: '#eef4ff', intensity: 2.0, distance: 8.5, decay: 2,
+        angle: 0.72, penumbra: 0.55,
+        castShadow: true, shadowMapSize: 512, shadowNear: 0.5, shadowFar: 6,
+      },
+      practicals: [
+        { pos: [-1.85, 2.0, 1.6], color: '#e8b070', intensity: 0.55, distance: 4.4, decay: 2 },
+      ],
+      bounce: [
+        { pos: [0, 0.35, -1.85], color: '#3a5468', intensity: 0.9, distance: 5.5, decay: 2 },
+        { pos: [0, 1.4, 1.9], color: '#2a3038', intensity: 0.55, distance: 5, decay: 2 },
+      ],
+      rim: { pos: [1.85, 1.55, -1.3], color: '#a8c8e0', intensity: 1.0, distance: 5, decay: 2 },
+    },
     place: {
       shell: 'box',
-      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'steel' },
+      shellParams: {
+        w: 4.2, d: 4.2, h: 2.6, wallMat: 'steel',
+        // materials.js surfaces — concrete walls/ceiling, tile floor, per
+        // the brief's "steel table, two-way mirror" interrogation room.
+        mat: { walls: 'concrete', ceiling: 'concrete', floor: 'tile', wallWear: 0.4, floorWear: 0.55 },
+        trim: { color: '#15171b', height: 0.08 },
+        shadow: true,
+      },
       props: [
-        { type: 'table', pos: [0, 0, -0.8], w: 1.2, d: 0.7, color: '#3a3f46', touch: { kind: 'nudge', amplitude: 0.18 } },
+        // the steel table — a bevelled body with a real metal surface
+        // (materials.js), not a flat-colored box.
+        {
+          type: 'bevelBox', pos: [0, 0.36, -0.8], w: 1.2, h: 0.06, d: 0.7, radius: 0.02,
+          mat: { kind: 'metal', tint: '#3a3f46', wear: 0.35 },
+          castShadow: true, receiveShadow: true,
+          touch: { kind: 'nudge', amplitude: 0.18 },
+        },
+        { type: 'slab', pos: [0.36, 0.18, -0.6], size: [0.04, 0.36, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [-0.36, 0.18, -0.6], size: [0.04, 0.36, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [0.36, 0.18, -1.0], size: [0.04, 0.36, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [-0.36, 0.18, -1.0], size: [0.04, 0.36, 0.04], color: '#22252a' },
         { type: 'chairRow', pos: [0, 0, -0.3], count: 2, spacing: 0.7 },
-        { type: 'mirrorPlane', pos: [1.98, 1.5, 0], rot: [0, -Math.PI / 2, 0], w: 1.4, h: 1.6 },
-        { type: 'paperScatter', pos: [-1.4, 0, -1], count: 18, area: [1, 1], color: '#e8e0c8' },
+        { type: 'mirrorPlane', pos: [2.08, 1.5, 0], rot: [0, -Math.PI / 2, 0], w: 1.4, h: 1.6 },
+        { type: 'frameOn', pos: [-2.08, 1.4, 0.9], rot: [0, Math.PI / 2, 0], w: 0.9, h: 1.2, color: '#15171b' },
+        // the coin-flip object at the seam between order and entropy —
+        // brief §5's own line for this room.
+        { type: 'slab', pos: [0, 0.375, -0.8], size: [0.05, 0.006, 0.05], color: '#c8c0a0', touch: { kind: 'nudge', amplitude: 0.1, foley: 'tick' } },
+      ],
+      // Wave P0 clutter (detail.jsx): the room's own half-and-half rule.
+      // Ordered side (camera-left, toward the practical): a squared case-
+      // file stack and a single cup. Entropic side (camera-right, toward
+      // the mirror/rim): scattered shards, a crooked box, a rag — debris
+      // physics stands in for by a deliberately un-squared authored spread
+      // rather than a live system (P1's job, not P0's toolkit proof).
+      clutter: [
+        { type: 'bookStack', pos: [-1.55, 0, 1.4], count: 5, w: 0.24, d: 0.32, colors: ['#3a3226', '#2c2c30', '#3a3226'] },
+        { type: 'cup', pos: [-1.3, 0, 1.55], color: '#d8d0bc' },
+        { type: 'shardBits', pos: [1.5, 0, 1.45], count: 11, spread: 0.55, color: '#cfe8ea' },
+        { type: 'boxPile', pos: [1.75, 0, 1.15], count: 3, color: '#5a4a38', spread: 0.4 },
+        { type: 'rag', pos: [1.4, 0.01, 1.7], color: '#3a3630' },
+      ],
+      atmosphere: [
+        // the volumetric throw under the ceiling panel — the one haze
+        // element this stark a room earns.
+        { type: 'HazeCone', pos: [0, 2.35, -0.8], rot: [0, 0, 0], length: 2.0, radius: 0.85, color: '#e8f0ff', opacity: 0.16 },
       ],
       systems: [],
     },
