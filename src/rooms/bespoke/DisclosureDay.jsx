@@ -9,6 +9,7 @@ import {
 } from './disclosureDayTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 5.2 — "the podium." Over-lit civic hall, podium, rows of empty chairs,
 // flags without insignia. Speech text scrolls slowly and infinitely up
@@ -128,10 +129,15 @@ function Hall() {
 // Scrolling filler speech, one instance per wall band, all sharing one
 // texture (offset animated per-instance so they don't all scroll in lock
 // step) — infinite because it tiles, cheap because nothing redraws.
-function ScrollBand({ pos, rot, w, h, tex, speed, repeatY }) {
+function ScrollBand({ pos, rot, w, h, tex, speed, repeatY, pauseUntilRef }) {
   const matRef = useRef()
   useFrame((_, dt) => {
-    if (matRef.current) matRef.current.map.offset.y += dt * speed
+    if (!matRef.current) return
+    // Wave T: press the podium mic -> every band pauses together for 3s.
+    // The curtain cycle (RevealCurtain) reads its own clock.elapsedTime and
+    // never looks at this ref at all — that's the joke, per the brief.
+    if (pauseUntilRef && performance.now() < pauseUntilRef.current) return
+    matRef.current.map.offset.y += dt * speed
   })
   const ownTex = useMemo(() => {
     const t = tex.clone()
@@ -147,15 +153,15 @@ function ScrollBand({ pos, rot, w, h, tex, speed, repeatY }) {
   )
 }
 
-function SpeechWalls() {
+function SpeechWalls({ pauseUntilRef }) {
   const tex = useMemo(() => makeSpeechScrollTexture(), [])
   return (
     <>
-      <ScrollBand pos={[-ROOM_W / 2 + 0.02, ROOM_H / 2, 1.4]} rot={[0, Math.PI / 2, 0]} w={ROOM_D - 1.4} h={ROOM_H - 0.3} tex={tex} speed={0.035} repeatY={3.4} />
-      <ScrollBand pos={[ROOM_W / 2 - 0.02, ROOM_H / 2, 1.4]} rot={[0, -Math.PI / 2, 0]} w={ROOM_D - 1.4} h={ROOM_H - 0.3} tex={tex} speed={0.028} repeatY={3.4} />
-      <ScrollBand pos={[0, ROOM_H / 2, ROOM_D / 2 - 0.02]} rot={[0, Math.PI, 0]} w={ROOM_W - 0.4} h={ROOM_H - 0.3} tex={tex} speed={0.031} repeatY={2.8} />
-      <ScrollBand pos={[-1.9, ROOM_H / 2, -ROOM_D / 2 + 0.02]} rot={[0, 0, 0]} w={1.6} h={ROOM_H - 0.3} tex={tex} speed={0.04} repeatY={2.4} />
-      <ScrollBand pos={[1.9, ROOM_H / 2, -ROOM_D / 2 + 0.02]} rot={[0, 0, 0]} w={1.6} h={ROOM_H - 0.3} tex={tex} speed={0.026} repeatY={2.4} />
+      <ScrollBand pos={[-ROOM_W / 2 + 0.02, ROOM_H / 2, 1.4]} rot={[0, Math.PI / 2, 0]} w={ROOM_D - 1.4} h={ROOM_H - 0.3} tex={tex} speed={0.035} repeatY={3.4} pauseUntilRef={pauseUntilRef} />
+      <ScrollBand pos={[ROOM_W / 2 - 0.02, ROOM_H / 2, 1.4]} rot={[0, -Math.PI / 2, 0]} w={ROOM_D - 1.4} h={ROOM_H - 0.3} tex={tex} speed={0.028} repeatY={3.4} pauseUntilRef={pauseUntilRef} />
+      <ScrollBand pos={[0, ROOM_H / 2, ROOM_D / 2 - 0.02]} rot={[0, Math.PI, 0]} w={ROOM_W - 0.4} h={ROOM_H - 0.3} tex={tex} speed={0.031} repeatY={2.8} pauseUntilRef={pauseUntilRef} />
+      <ScrollBand pos={[-1.9, ROOM_H / 2, -ROOM_D / 2 + 0.02]} rot={[0, 0, 0]} w={1.6} h={ROOM_H - 0.3} tex={tex} speed={0.04} repeatY={2.4} pauseUntilRef={pauseUntilRef} />
+      <ScrollBand pos={[1.9, ROOM_H / 2, -ROOM_D / 2 + 0.02]} rot={[0, 0, 0]} w={1.6} h={ROOM_H - 0.3} tex={tex} speed={0.026} repeatY={2.4} pauseUntilRef={pauseUntilRef} />
     </>
   )
 }
@@ -216,6 +222,28 @@ function RevealCurtain() {
   )
 }
 
+/* ------------------------------------------------------------ podium mic */
+
+// A small stalk mic on the podium — Wave T: pressable, per the brief. The
+// podium prop itself (props.jsx) doesn't model one, so this is a plain
+// standalone prop mounted at the podium's own top.
+function PodiumMic({ onPress }) {
+  return (
+    <Touchable reach={6} foley="tick" anchor={[0, 1.32, -2.52]} onUse={onPress}>
+      <group position={[0, 1.2, -2.52]}>
+        <mesh position={[0, 0.1, 0]} rotation={[0.3, 0, 0]}>
+          <cylinderGeometry args={[0.012, 0.012, 0.2, 8]} />
+          <meshStandardMaterial color="#1c1e22" roughness={0.5} metalness={0.4} />
+        </mesh>
+        <mesh position={[0, 0.21, 0.06]} rotation={[0.3, 0, 0]}>
+          <sphereGeometry args={[0.035, 10, 10]} />
+          <meshStandardMaterial color="#0c0d10" roughness={0.7} />
+        </mesh>
+      </group>
+    </Touchable>
+  )
+}
+
 /* --------------------------------------------------------------- signage */
 
 function PlinthSeal({ score }) {
@@ -259,6 +287,17 @@ const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.4], rotationY: Math.PI, spa
 
 export default function DisclosureDay({ film, config, doors = [], onDoor }) {
   const { grade } = config
+  // Wave T: press the mic -> a tick, the scrolling speech pauses 3s, then
+  // resumes. The curtain cycle deliberately never reads this — see
+  // ScrollBand's own comment.
+  const pauseUntilRef = useRef(0)
+  const handleMicPress = () => {
+    pauseUntilRef.current = performance.now() + 3000
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.info('[disclosure-day] mic pressed — speech paused 3s')
+    }
+  }
 
   useRoomAudio(startDisclosureAudio)
 
@@ -274,9 +313,10 @@ export default function DisclosureDay({ film, config, doors = [], onDoor }) {
       <pointLight position={[2, ROOM_H - 0.2, 1.5]} intensity={9} color="#f4f0e0" distance={10} decay={2} />
 
       <Hall />
-      <SpeechWalls />
+      <SpeechWalls pauseUntilRef={pauseUntilRef} />
       <FlagsAndRows />
       <Podium pos={[0, 0, -2.6]} color="#3a3a42" />
+      <PodiumMic onPress={handleMicPress} />
       <RevealCurtain />
       <PlinthSeal score={film.score} />
       <BronzePlaque film={film} />

@@ -2,12 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { throne as Throne } from '../props.jsx'
-import { useRoomAudio } from '../audio/engine.js'
+import { useRoomAudio, playOneShot } from '../audio/engine.js'
 import { start as startMotuAudio } from '../audio/recipes/motu.js'
 import { notifyPose } from './motuBus.js'
 import { makeProclamationTexture, makePetitionTexture, makeSealTexture } from './motuTextures.js'
 import DoorRow from '../DoorRow.jsx'
-import { registerColliders, setBounds, registerFloor, clearOwner, resolveStep } from '../colliders.js'
+import { registerColliders, setBounds, registerFloor, clearOwner, resolveStep, walkPos } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 8.5 — "the throne, savored." A tall camp-cosmos hall: purple-green
 // atmosphere, a spotlight that SNAPS onto the empty throne on a timer (hard
@@ -159,23 +160,36 @@ function ThroneHall() {
 // A hard-cut spotlight: fully off, then fully on, no ramp — SNAPS, per the
 // brief's own word. Set directly in useFrame (not React state) so the cut
 // is genuinely instantaneous rather than riding a render's worth of lag.
-function ThroneSpotlight() {
+function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
   const spot = useRef()
   const fixture = useRef()
   const pool = useRef()
+  const target = useMemo(() => new THREE.Object3D(), [])
+  useEffect(() => {
+    if (spot.current) spot.current.target = target
+  }, [target])
   useFrame(({ clock }) => {
+    // Wave T: press the petition -> the spotlight SNAPS to the player for
+    // 2s (hard cut, same "no ramp" law the timer-driven version already
+    // follows), then snaps back to the throne — a plain performance.now()
+    // deadline check, so it overrides the normal timer cleanly and never
+    // fights it.
+    const aiming = performance.now() < aimUntilRef.current
     const t = clock.elapsedTime % SPOT_PERIOD
-    const on = t < SPOT_ON
+    const on = aiming || t < SPOT_ON
     if (spot.current) spot.current.intensity = on ? 110 : 0
     if (fixture.current) fixture.current.material.emissiveIntensity = on ? 2.2 : 0.15
     if (pool.current) pool.current.material.opacity = on ? 0.55 : 0
+    const px = aiming ? aimPosRef.current.x : 0
+    const pz = aiming ? aimPosRef.current.z : -2.2
+    target.position.set(px, 0.9, pz)
+    if (pool.current) pool.current.position.set(px, 0.17, pz)
   })
   return (
     <group>
       <spotLight
         ref={spot}
         position={[0, ROOM_H - 0.3, -0.4]}
-        target-position={[0, 0.9, -2.2]}
         angle={0.32}
         penumbra={0.4}
         distance={ROOM_H + 1}
@@ -191,7 +205,8 @@ function ThroneSpotlight() {
         <circleGeometry args={[0.32, 24]} />
         <meshStandardMaterial color="#f0e0ff" emissive="#f0e0ff" emissiveIntensity={0.15} toneMapped={false} />
       </mesh>
-      {/* the light pool it snaps onto, flat on the dais */}
+      {/* the light pool it snaps onto, flat on the dais (or wherever it's
+          currently aimed) */}
       <mesh ref={pool} position={[0, 0.17, -2.2]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[1.1, 32]} />
         <meshBasicMaterial color="#f0e0ff" transparent opacity={0} depthWrite={false} toneMapped={false} />
@@ -248,19 +263,33 @@ function BoltSegments({ pts, color }) {
   )
 }
 
-function LightningPoses() {
+function LightningPoses({ aimUntilRef, aimPosRef }) {
   const [bolts, setBolts] = useState(() => [jaggedPoints(11, -1.6), jaggedPoints(23, 1.7)])
   const bucketRef = useRef(0)
-  useFrame(({ clock }) => {
+  const boltGroupRef = useRef()
+  useFrame(({ clock }, dt) => {
     const bucket = Math.floor(clock.elapsedTime / POSE_PERIOD)
     if (bucket !== bucketRef.current) {
       bucketRef.current = bucket
       setBolts([jaggedPoints(bucket * 7 + 11, -1.6 + Math.sin(bucket) * 0.4), jaggedPoints(bucket * 13 + 23, 1.7 + Math.cos(bucket) * 0.4)])
       notifyPose()
     }
+    // Wave T: while the petition's aim window is open, the whole bolt pair
+    // drifts (fast damp, not a hard teleport — a bolt visibly leaping is
+    // more legible than one silently appearing in a new place) toward the
+    // player's position instead of their usual throne-side spots.
+    const aiming = performance.now() < aimUntilRef.current
+    // bolts are authored around originX ~0 and z ~-3.4 (jaggedPoints) — the
+    // offset that puts them at the player is just the delta from that.
+    const targetX = aiming ? aimPosRef.current.x : 0
+    const targetZ = aiming ? aimPosRef.current.z + 3.4 : 0
+    if (boltGroupRef.current) {
+      boltGroupRef.current.position.x = THREE.MathUtils.damp(boltGroupRef.current.position.x, targetX, 14, dt)
+      boltGroupRef.current.position.z = THREE.MathUtils.damp(boltGroupRef.current.position.z, targetZ, 14, dt)
+    }
   })
   return (
-    <group>
+    <group ref={boltGroupRef}>
       <BoltSegments pts={bolts[0]} color="#c9a0ff" />
       <BoltSegments pts={bolts[1]} color="#a0e8b0" />
     </group>
@@ -288,13 +317,15 @@ function ProclamationScroll({ film }) {
   )
 }
 
-function PetitionOnArmrest() {
+function PetitionOnArmrest({ onPress }) {
   const tex = useMemo(() => makePetitionTexture(), [])
   return (
-    <mesh position={[0.62, 0.72, -1.85]} rotation={[-Math.PI / 2, 0, -0.15]}>
-      <planeGeometry args={[0.42, 0.52]} />
-      <meshBasicMaterial map={tex} toneMapped={false} />
-    </mesh>
+    <Touchable reach={5} anchor={[0.62, 0.72, -1.85]} onUse={onPress}>
+      <mesh position={[0.62, 0.72, -1.85]} rotation={[-Math.PI / 2, 0, -0.15]}>
+        <planeGeometry args={[0.42, 0.52]} />
+        <meshBasicMaterial map={tex} toneMapped={false} />
+      </mesh>
+    </Touchable>
   )
 }
 
@@ -316,6 +347,22 @@ const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, sp
 
 export default function Motu({ film, config, doors = [], onDoor }) {
   const { grade } = config
+  // Wave T: press the petition -> spotlight snaps to the player + lightning
+  // aims at them for 2s, then both snap back. A plain deadline (no React
+  // state) so ThroneSpotlight/LightningPoses can read it every frame
+  // without a re-render on every press.
+  const aimUntilRef = useRef(0)
+  const aimPosRef = useRef({ x: 0, z: 0 })
+  const handlePetitionPress = () => {
+    const p = walkPos()
+    aimPosRef.current = { x: p.x, z: p.z }
+    aimUntilRef.current = performance.now() + 2000
+    playOneShot('chime', { freqs: [392, 587, 784], gain: 0.06, decay: 1.1 })
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.info('[motu] petition pressed — spotlight + lightning aim at (%.2f, %.2f)', p.x, p.z)
+    }
+  }
 
   useRoomAudio(startMotuAudio)
 
@@ -329,10 +376,10 @@ export default function Motu({ film, config, doors = [], onDoor }) {
 
       <ThroneHall />
       <Throne pos={[0, 0.16, -2.2]} color="#3a2a44" accent="#e8dcc0" />
-      <ThroneSpotlight />
-      <LightningPoses />
+      <ThroneSpotlight aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
+      <LightningPoses aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
       <ProclamationScroll film={film} />
-      <PetitionOnArmrest />
+      <PetitionOnArmrest onPress={handlePetitionPress} />
       <RoyalSeal score={film.score} />
 
       <DoorRow

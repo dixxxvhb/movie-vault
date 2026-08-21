@@ -13,6 +13,7 @@ import { makeBillboardTexture, makeWetConcreteTexture } from './br2049Textures.j
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // BLADE RUNNER 2049 (2017) · 9.8 · "the sea wall." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): night, driving rain, waves detonating
@@ -82,7 +83,7 @@ function skyTexture(top, bottom) {
   return tex
 }
 
-function SeaWallShell({ grade }) {
+function SeaWallShell({ grade, onTouchDeck }) {
   // Lightened from the first pass (#141a1e/#1c2226): against this room's
   // low key light and heavy fog, that near-black concrete tint was
   // indistinguishable from the void — the wall and deck effectively
@@ -105,11 +106,18 @@ function SeaWallShell({ grade }) {
         <planeGeometry args={[90, 50]} />
         <meshBasicMaterial map={sky} fog={false} />
       </mesh>
-      {/* the deck you stand on */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 2]}>
-        <planeGeometry args={[10, 6]} />
-        <meshStandardMaterial map={floorTex} roughness={0.5} metalness={0.15} />
-      </mesh>
+      {/* the deck you stand on — also the "rain-wet railing/parapet" touch
+          surface the brief calls for: this room built its wet edge as a
+          walkable concrete deck rather than a separate rail prop, so the
+          touch lives on the deck itself, at wherever the click lands. Reach
+          is generous (whole-deck) rather than the usual ~2.4 — you can be
+          anywhere on this small deck and still be "at the rail". */}
+      <Touchable reach={7} foley="glass" anchor={[0, 0, 2]} onUse={(e) => onTouchDeck && onTouchDeck(e)}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 2]}>
+          <planeGeometry args={[10, 6]} />
+          <meshStandardMaterial map={floorTex} roughness={0.5} metalness={0.15} />
+        </mesh>
+      </Touchable>
       {/* the wall itself */}
       <mesh position={[0, 3, WALL_Z]}>
         <boxGeometry args={[14, 6, 1]} />
@@ -119,6 +127,58 @@ function SeaWallShell({ grade }) {
         <mesh key={side} position={[side * 5, 1.2, -3]} rotation={[0, 0, 0]}>
           <boxGeometry args={[1.4, 2.4, 6]} />
           <meshStandardMaterial map={wallTex} roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+/* --------------------------------------------------------------- ripples */
+
+// Wave T: touching the wet deck expands a ripple ring at the touch point,
+// fading over ~1.5s — a small pool of reusable ring meshes (never unbounded
+// growth) driven entirely off refs in useFrame, same discipline as this
+// room's own DetonatingWater/SplashBurst animators.
+const RIPPLE_SLOTS = 4
+const RIPPLE_LIFE = 1.5
+
+function RippleField({ triggerRef }) {
+  const meshRefs = useRef(Array.from({ length: RIPPLE_SLOTS }, () => React.createRef()))
+  const slots = useRef(Array.from({ length: RIPPLE_SLOTS }, () => ({ active: false, start: 0, x: 0, z: 0 })))
+  const cursor = useRef(0)
+
+  useEffect(() => {
+    triggerRef.current = (x, z) => {
+      const i = cursor.current
+      cursor.current = (cursor.current + 1) % RIPPLE_SLOTS
+      slots.current[i] = { active: true, start: performance.now(), x, z }
+    }
+    return () => { triggerRef.current = null }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useFrame(() => {
+    const now = performance.now()
+    slots.current.forEach((s, i) => {
+      const m = meshRefs.current[i].current
+      if (!m) return
+      if (!s.active) { m.visible = false; return }
+      const t = (now - s.start) / 1000
+      if (t > RIPPLE_LIFE) { s.active = false; m.visible = false; return }
+      m.visible = true
+      m.position.set(s.x, 0.014, s.z)
+      const grow = 0.15 + t * 1.7
+      m.scale.set(grow, grow, grow)
+      m.material.opacity = Math.max(0, 0.55 * (1 - t / RIPPLE_LIFE))
+    })
+  })
+
+  return (
+    <group>
+      {meshRefs.current.map((r, i) => (
+        <mesh key={i} ref={r} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+          <ringGeometry args={[0.72, 0.86, 40]} />
+          <meshBasicMaterial color="#bcd6e0" transparent opacity={0} depthWrite={false} toneMapped={false} />
         </mesh>
       ))}
     </group>
@@ -302,6 +362,10 @@ const OWNER_ID = 'bespoke:br2049'
 export default function BR2049({ film, config, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationKey, setStationKey] = useState('entry')
+  const rippleTriggerRef = useRef(null)
+  const handleTouchDeck = (e) => {
+    if (rippleTriggerRef.current && e?.point) rippleTriggerRef.current(e.point.x, e.point.z)
+  }
 
   const stepTo = (key) => {
     setStationKey(key)
@@ -349,7 +413,8 @@ export default function BR2049({ film, config, doors = [], goToStation, onDoor }
       <pointLight position={[0, 3, -6]} intensity={(grade.keyIntensity ?? 1) * 14} color={grade.key || '#3a6a8a'} distance={20} decay={1.8} />
       <ambientLight intensity={0.5} color={grade.fill || '#0a1620'} />
 
-      <SeaWallShell grade={grade} />
+      <SeaWallShell grade={grade} onTouchDeck={handleTouchDeck} />
+      <RippleField triggerRef={rippleTriggerRef} />
       <DetonatingWater />
       <SplashBursts />
       <Billboard />

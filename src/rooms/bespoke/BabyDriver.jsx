@@ -10,6 +10,8 @@ import { start as startBabyDriverAudio } from '../audio/recipes/baby-driver.js'
 import { useBeat } from '../audio/clock.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
+import { playOneShot } from '../audio/engine.js'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -188,6 +190,23 @@ function Car({ beatRef }) {
 
   const W = 1.7, H = 1.05, D = 3.7
 
+  // Wave T: press the brake -> a flash lands ON the next downbeat, never
+  // immediately. `armed` just marks intent; the actual flash + the
+  // beat-quantized `thunk` only fire once beatRef itself crosses a fresh
+  // bar-zero, read here in the room's own beat-driven useFrame rather than
+  // on any wall-clock timer, so it can never land off-grid.
+  const armedRef = useRef(false)
+  const armedAtBarRef = useRef(-1)
+  const flashUntilRef = useRef(0)
+  const handleBrakePress = () => {
+    armedRef.current = true
+    armedAtBarRef.current = beatRef.current.bar
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.info('[baby-driver] brake armed — flashing on the next downbeat')
+    }
+  }
+
   useFrame(() => {
     const b = beatRef.current
     const fracBar = clamp01((b.beat + b.phase) / 4)
@@ -195,7 +214,17 @@ function Car({ beatRef }) {
     if (wiperL.current) wiperL.current.rotation.z = wipeAmp
     if (wiperR.current) wiperR.current.rotation.z = -wipeAmp
 
-    const brakeGlow = 0.4 + 2.6 * decay(fracBar, 4)
+    // downbeat = beat 0 of a bar strictly after the one the press landed
+    // in — guards the "never immediately" rule even if the press itself
+    // happens to land right on beat 0.
+    if (armedRef.current && b.beat === 0 && b.bar > armedAtBarRef.current) {
+      armedRef.current = false
+      flashUntilRef.current = performance.now() + 260
+      playOneShot('thunk')
+    }
+
+    const flashOn = performance.now() < flashUntilRef.current
+    const brakeGlow = (flashOn ? 5 : 0) + 0.4 + 2.6 * decay(fracBar, 4)
     if (brakeL.current) brakeL.current.material.emissiveIntensity = brakeGlow
     if (brakeR.current) brakeR.current.material.emissiveIntensity = brakeGlow
   })
@@ -231,15 +260,24 @@ function Car({ beatRef }) {
         </mesh>
       </group>
       {/* brake lights, rear = -Z (away from camera; the glow still blooms
-          around the car's silhouette from back there) */}
-      <mesh ref={brakeL} position={[-W * 0.4, H * 0.36, -D * 0.49]}>
-        <boxGeometry args={[0.22, 0.14, 0.04]} />
-        <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
-      </mesh>
-      <mesh ref={brakeR} position={[W * 0.4, H * 0.36, -D * 0.49]}>
-        <boxGeometry args={[0.22, 0.14, 0.04]} />
-        <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
-      </mesh>
+          around the car's silhouette from back there) — Wave T: pressable,
+          the rear of the vehicle mass */}
+      <Touchable reach={9} noDip anchor={[0, H * 0.36, -D * 0.49]} onUse={handleBrakePress}>
+        <mesh ref={brakeL} position={[-W * 0.4, H * 0.36, -D * 0.49]}>
+          <boxGeometry args={[0.22, 0.14, 0.04]} />
+          <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
+        </mesh>
+        <mesh ref={brakeR} position={[W * 0.4, H * 0.36, -D * 0.49]}>
+          <boxGeometry args={[0.22, 0.14, 0.04]} />
+          <meshStandardMaterial color="#3a0808" emissive="#ff2020" emissiveIntensity={0.4} roughness={0.4} />
+        </mesh>
+        {/* invisible sensor spanning the rear bumper — the two small brake
+            boxes alone are a thin click target */}
+        <mesh position={[0, H * 0.36, -D * 0.49]}>
+          <boxGeometry args={[W, H * 0.7, 0.4]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
+      </Touchable>
       {/* wheels */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
         <mesh key={i} position={[sx * W * 0.42, 0.14, sz * D * 0.36]} rotation={[0, 0, Math.PI / 2]}>
