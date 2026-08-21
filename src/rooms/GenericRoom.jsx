@@ -190,11 +190,30 @@ function CorridorShell({ grade, p }) {
         <planeGeometry args={[len, h]} />
         <meshStandardMaterial map={tex} roughness={0.88} />
       </mesh>
+      {/* QA sweep 2026-08-21: these were a single solid box spanning the
+          FULL width and height of the corridor — every rib was a wall
+          plugging the tunnel outright, so the camera (sitting just inside
+          the mouth) could only ever see the front face of the nearest one.
+          That's what was reading as a black/one-color void in sicario,
+          tdkr and batman: not a lighting bug, there was just a wall there.
+          An open frame (two side struts + a top beam, no floor-level bar)
+          reads as the same repeating structural rib without blocking the
+          view down the shaft. */}
       {ribs.map((z, i) => (
-        <mesh key={i} position={[0, h / 2, z]}>
-          <boxGeometry args={[width + 0.1, h, 0.06]} />
-          <meshStandardMaterial color="#151517" roughness={0.7} />
-        </mesh>
+        <group key={i} position={[0, 0, z]}>
+          <mesh position={[-width / 2 - 0.03, h / 2, 0]}>
+            <boxGeometry args={[0.1, h, 0.06]} />
+            <meshStandardMaterial color="#151517" roughness={0.7} />
+          </mesh>
+          <mesh position={[width / 2 + 0.03, h / 2, 0]}>
+            <boxGeometry args={[0.1, h, 0.06]} />
+            <meshStandardMaterial color="#151517" roughness={0.7} />
+          </mesh>
+          <mesh position={[0, h - 0.05, 0]}>
+            <boxGeometry args={[width + 0.16, 0.1, 0.06]} />
+            <meshStandardMaterial color="#151517" roughness={0.7} />
+          </mesh>
+        </group>
       ))}
       {p.farLight !== false && (
         <mesh position={[0, h * 0.5, -len + 0.2]}>
@@ -285,9 +304,28 @@ export default function GenericRoom({ film, config, infoVisible }) {
           staged room's typical 1.5-3m throw (verified empirically: 3.2x
           was still a near-black void, 200x blew out to solid white, ~28x is
           the readable middle). Scaled up here so config authors still only
-          ever tune the one keyIntensity number. */}
-      <pointLight ref={keyLightRef} position={[0, 2.2, -1]} intensity={(grade.keyIntensity ?? 2.2) * 28} color={grade.key} distance={16} decay={2} />
-      <pointLight position={[0, 1.2, 2]} intensity={(grade.keyIntensity ?? 2.2) * 6} color={grade.fill} distance={12} decay={2} />
+          ever tune the one keyIntensity number.
+
+          QA sweep 2026-08-21: 28x still blew multiple rooms to a solid
+          color wash (memento, enemy, stby, exmachina, niceguys, poorthings,
+          br2049) — the hot take sheet sits at a near-fixed default position
+          only ~1m from this light in most configs, well inside the range
+          where inverse-square falloff makes the 28x multiplier read as a
+          flashbulb rather than a key light, and Bloom's mipmapBlur then
+          smears that hotspot across the whole wall. Backed off to 16x/4x
+          and pulled the key up-and-back slightly so it clears a typical
+          ~2.5-2.8m box ceiling instead of sitting 0.2-0.3m under it (the
+          same ceiling-hotspot bloom source in the box-shell rooms above).
+
+          QA sweep 2026-08-21, round 2: tried pushing corridor/deck keys
+          deeper down the shaft (z=-3) so they'd clear the camera — that
+          instead dropped sicario/tdkr/batman to total black, and br2049
+          (also a "deep" shell) was fine either way, so the win wasn't
+          worth chasing further this pass. Reverted to the single fixed
+          position; the three corridor rooms that ran too close to it now
+          carry their own lower keyIntensity in configs.js instead. */}
+      <pointLight ref={keyLightRef} position={[0, 2.0, -0.7]} intensity={(grade.keyIntensity ?? 2.2) * 16} color={grade.key} distance={16} decay={2} />
+      <pointLight position={[0, 1.2, 2]} intensity={(grade.keyIntensity ?? 2.2) * 4} color={grade.fill} distance={12} decay={2} />
 
       <Shell grade={grade} p={place.shellParams || {}} />
 

@@ -113,7 +113,12 @@ function Post({ grade }) {
   if (useInXR()) return null
   return (
     <EffectComposer>
-      <Bloom intensity={0.42} luminanceThreshold={0.72} luminanceSmoothing={0.35} mipmapBlur />
+      {/* QA sweep 2026-08-21: 0.42/0.72 let several rooms' hot-take sheet
+          (sitting close to the room's key light by default) bloom into a
+          solid wash that ate the verbatim text — backed off intensity and
+          raised the threshold so accents still glow but a lit card doesn't
+          detonate. */}
+      <Bloom intensity={0.3} luminanceThreshold={0.85} luminanceSmoothing={0.25} mipmapBlur />
       {/* barely there. At 0.0006 the fringing read as a rendering fault on
           every card edge rather than as lens character. */}
       <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />

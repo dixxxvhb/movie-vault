@@ -51,19 +51,21 @@ export default function InfoSurfaces({ film, config, visible = true }) {
     <group>
       {/* the hot take sheet: the centerpiece, given presence with an
           emissive map so it reads clean in a room this dark */}
+      {/* QA sweep 2026-08-21: this sheet used to be a meshStandardMaterial
+          with BOTH a map and an emissiveMap — in any room where the key
+          light sits close by (most of them; see GenericRoom.jsx), that
+          diffuse reflection stacked on top of the emissive glow and Bloom
+          pushed the whole card to solid white, erasing the verbatim text
+          (memento, enemy, stby, exmachina, niceguys, poorthings, br2049).
+          The card is meant to be self-lit and legible regardless of the
+          room around it, so it's unlit (meshBasicMaterial) now — the
+          texture's own baked contrast is the only thing that reaches the
+          screen, and Bloom can no longer double-count it. */}
       <mesh position={hotTakePos} rotation={hotTakeRot}>
         <planeGeometry args={[1.2, 0.75]} />
         {hotTakeTex
-          ? <meshStandardMaterial
-              key="mapped"
-              map={hotTakeTex}
-              emissiveMap={hotTakeTex}
-              emissive="#ffffff"
-              emissiveIntensity={0.62}
-              roughness={0.92}
-              side={THREE.DoubleSide}
-            />
-          : <meshStandardMaterial key="blank" color={palette.paper} roughness={0.92} side={THREE.DoubleSide} />}
+          ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
+          : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} side={THREE.DoubleSide} />}
       </mesh>
 
       {/* the score object */}

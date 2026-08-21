@@ -72,7 +72,10 @@ export const CONFIGS = {
         { type: 'slab', pos: [-1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
         { type: 'slab', pos: [1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
         { type: 'slab', pos: [0, 0.55, -1.2], size: [6, 0.1, 0.08], color: '#1c1a16' },
-        { type: 'abstractFigure', pos: [0, 0.55, -1.2], scale: 0.9, color: '#8a6a2c', pose: 'walk-cycle-frozen' },
+        // moved off-center — at (0, 0.55) it stood directly in front of the
+        // hot take sheet and covered half the verbatim text (QA sweep
+        // 2026-08-21); walking the railing to one side reads better anyway.
+        { type: 'abstractFigure', pos: [-2.2, 0.55, -1.2], scale: 0.9, color: '#8a6a2c', pose: 'walk-cycle-frozen' },
       ],
       systems: [
         { type: 'ScheduledCut', period: 75, duration: 4000, altGrade: '#ffe8b0' },
@@ -84,17 +87,31 @@ export const CONFIGS = {
   // ----------------------------------------------------------------- sicario
   sicario: {
     family: 'dread',
-    grade: { key: '#4fae6a', fill: '#2a2018', sat: -0.1, ambient: 0.09 },
-    camera: { pos: [0, 1.5, 4], look: [0, 1.3, -6], fov: 46, far: 60 },
+    // keyIntensity dropped hard: the fixed key light sits close to the
+    // tunnel mouth where the camera also lives, and at this room's default
+    // ~35x effective intensity it blew the whole corridor to a solid green
+    // wash (QA sweep 2026-08-21, round 2).
+    // fill brightened from #2a2018: FilmWorld's ambientLight uses grade.fill
+    // AS its color, so a near-black fill caps the ambient term near zero no
+    // matter how high `ambient` (the intensity) goes — that's what was
+    // still reading as a void even after ambient was raised to 0.4 (QA
+    // sweep 2026-08-21, round 3).
+    grade: { key: '#4fae6a', fill: '#3c4a3a', sat: -0.1, ambient: 0.4, keyIntensity: 0.35 },
+    // QA sweep 2026-08-21: the corridor shell's floor only exists from z=0
+    // (the mouth) to z=-length — the old camera (z=4) and entry figures
+    // (z=2.6-3.9) all sat past the mouth in open air with no geometry under
+    // them, which read as a black void with a lit square floating in it.
+    // Pulled everything back inside the built tunnel.
+    camera: { pos: [0, 1.5, -0.3], look: [0, 1.3, -9], fov: 46, far: 60 },
     place: {
       shell: 'corridor',
       shellParams: { length: 16, width: 2.4, height: 2.3, ribs: 9, wallTint: '#141210', farLight: true },
       props: [
-        { type: 'abstractFigure', pos: [-0.6, 0, 2.6], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.5, 0, 2.9], scale: 0.85, color: '#1c1610', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.2, 0, 3.3], scale: 0.8, color: '#1c1610', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.9, 0, 3.5], scale: 0.8, color: '#1c1610', pose: 'stand' },
-        { type: 'abstractFigure', pos: [0, 0, 3.9], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [-0.6, 0, -1.4], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.5, 0, -1.8], scale: 0.85, color: '#1c1610', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.2, 0, -2.3], scale: 0.8, color: '#1c1610', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.9, 0, -2.6], scale: 0.8, color: '#1c1610', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0, 0, -3.1], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
       ],
       systems: [
         { type: 'AdvanceGlow', from: [0, 1.3, -15], color: '#8aff9a', speed: 0.18, resetAt: 13, axis: 'z' },
@@ -112,14 +129,22 @@ export const CONFIGS = {
       shellParams: { ground: 'concrete', groundColor: '#3a3c34', skyTop: '#8aae7a', skyBottom: '#4a5238', horizon: true, distantCity: 18 },
       props: [
         { type: 'abstractFigure', pos: [0, 0, 0], scale: 1, color: '#12140f', pose: 'crouch' },
-        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, 0, 0], w: 2.2, h: 2.2, color: '#bcd8a0' },
-        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, Math.PI / 2, 0], w: 2.2, h: 2.2, color: '#bcd8a0' },
+        // frame recolored from the default near-black outline: at this
+        // scale/FOV the dark edgesGeometry frame read as a stray debug
+        // rectangle rather than a shockwave shell (QA sweep 2026-08-21).
+        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, 0, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
+        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, Math.PI / 2, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
       ],
       systems: [
         { type: 'GlyphRain', pos: [3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
         { type: 'GlyphRain', pos: [-3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
       ],
     },
+    // QA sweep 2026-08-21: default scorePos was landing behind the crossed
+    // glassWall shells (0,1.2,0) with nothing rendering it visibly against
+    // the city/sky backdrop — moved it to open sky off to the side, closer
+    // to camera, where it reads clean.
+    info: { scorePos: [1.7, 1.9, 1.4] },
   },
 
   // ------------------------------------------------------------------ br2049
@@ -169,6 +194,10 @@ export const CONFIGS = {
         { type: 'Assembler', period: 80, wrapsProps: true },
       ],
     },
+    // QA sweep 2026-08-21: the foreground table (z: -0.4) sat directly in
+    // the camera's sightline to the default metaPos (z: -1.66) and hid the
+    // meta line/vibe chips entirely — raised it to clear the tabletop.
+    info: { metaPos: [0, 1.3, -1.66] },
   },
 
   // ------------------------------------------------------------------- enemy
@@ -199,7 +228,11 @@ export const CONFIGS = {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
       props: [
-        { type: 'slab', pos: [0, 0.5, -1], size: [3, 0.9, 0.1], color: '#1c1e20' },
+        // was a 0.9-tall slab standing in for a guardrail — at this camera
+        // distance it read as an unexplained solid block filling the lower
+        // frame and burying the meta line behind it (QA sweep 2026-08-21).
+        // A thin rail bar reads as a guardrail instead.
+        { type: 'slab', pos: [0, 0.65, -1], size: [3, 0.08, 0.06], color: '#1c1e20' },
         { type: 'screenPanel', pos: [0, 1.55, -1.3], w: 0.9, h: 0.5, color: '#101010', draw: (ctx, W, H) => {
           ctx.strokeStyle = '#ff3020'; ctx.lineWidth = 6; ctx.strokeRect(6, 6, W - 12, H - 12)
           ctx.fillStyle = '#ff3020'; ctx.beginPath(); ctx.arc(30, 30, 8, 0, Math.PI * 2); ctx.fill()
@@ -401,8 +434,17 @@ export const CONFIGS = {
   // ------------------------------------------------------------------------ tdkr
   tdkr: {
     family: 'spectacle',
-    grade: { key: '#c8a860', fill: '#1a1614', ambient: 0.08 },
-    camera: { pos: [0, 0.6, 0], look: [0, 5, -0.5], fov: 56, far: 60 },
+    // keyIntensity dropped for the same reason as sicario/batman: the
+    // fixed key sits right where this room's camera also lives.
+    // fill brightened — see sicario's note; a near-black fill caps the
+    // ambientLight (which uses grade.fill as its color) near zero.
+    grade: { key: '#c8a860', fill: '#3a3428', ambient: 0.4, keyIntensity: 0.4 },
+    // QA sweep 2026-08-21: the old look-at [0,5,-0.5] from a camera at
+    // y=0.6 was almost straight up — the frame was ~70% empty sky with the
+    // pit itself, the info surfaces and the score all cropped out the
+    // bottom. Eased the tilt so the well walls and the light disc share
+    // the frame with the record.
+    camera: { pos: [0, 1, 0.5], look: [0, 3, -3], fov: 56, far: 60 },
     place: {
       shell: 'corridor',
       shellParams: { length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#2a2620', farLight: true },
@@ -418,8 +460,14 @@ export const CONFIGS = {
   // -------------------------------------------------------------------- batman
   batman: {
     family: 'dread',
-    grade: { key: '#3a5a8a', fill: '#0a0a10', ambient: 0.06 },
-    camera: { pos: [0, 0.5, 0.6], look: [0, 4, -0.2], fov: 54, far: 40 },
+    // QA sweep 2026-08-21: ambient 0.06 plus a near-vertical look-at read as
+    // a black void with a few dim particles in it — bumped ambient/key just
+    // enough that the well walls are visible without losing the "dry well
+    // at dusk" darkness the brief wants.
+    // fill brightened — see sicario's note; a near-black fill caps the
+    // ambientLight (which uses grade.fill as its color) near zero.
+    grade: { key: '#3a5a8a', fill: '#242a3c', ambient: 0.4, keyIntensity: 0.4 },
+    camera: { pos: [0, 0.6, 0.8], look: [0, 2.6, -1.6], fov: 54, far: 40 },
     place: {
       shell: 'corridor',
       shellParams: { length: 6, width: 2.6, height: 9, ribs: 4, wallTint: '#141210', farLight: true },
@@ -428,6 +476,9 @@ export const CONFIGS = {
         { type: 'SwarmEvent', period: 40, count: 60, color: '#0d0d10', origin: [0, 3, -1] },
       ],
     },
+    // narrow well (width 2.6) at this FOV pushes the default scorePos (x:
+    // 1.2) to the frame edge — pulled in (QA sweep 2026-08-21).
+    info: { scorePos: [0.75, 2.0, -1.4] },
   },
 
   // ---------------------------------------------------------------- poorthings
@@ -470,6 +521,11 @@ export const CONFIGS = {
         { type: 'StreakLights', axis: 'z', speed: 2.5, colors: ['#e8c060'], count: 16, span: 16, y: 0.05, z: 0 },
       ],
     },
+    // QA sweep 2026-08-21: default metaPos (y: 0.78) sat low enough to read
+    // as buried in the floor-level streak quads, and the default scorePos
+    // (x: 1.2) crowded the near pillar (x: 1.6, z: -3) at this FOV — nudged
+    // both clear.
+    info: { scorePos: [0.95, 2.0, -2.2], metaPos: [0, 1.05, -1.66] },
   },
 
   // ---------------------------------------------------------------------- bullettrain
@@ -489,6 +545,11 @@ export const CONFIGS = {
         { type: 'PulseBeat', bpm: 60, depth: 0 },
       ],
     },
+    // QA sweep 2026-08-21: the default scorePos (x: 1.2) sits right at this
+    // car's wall (w: 2.6, half-width 1.3) — the "9.1" was rendering half
+    // inside the wall. Pulled it in from the wall and down from the low
+    // 2.2m ceiling.
+    info: { scorePos: [0.85, 1.85, -1.4] },
   },
 
   // ---------------------------------------------------------------------- stardust
@@ -579,14 +640,21 @@ export const CONFIGS = {
   // --------------------------------------------------------------------- rogue-one
   'rogue-one': {
     family: 'dread',
-    grade: { key: '#c22e2e', fill: '#0a0a0c', ambient: 0.05 },
-    camera: { pos: [0, 1.5, 4.4], look: [0, 1.3, -6], fov: 48, far: 60 },
+    // fill brightened — a near-black fill caps the ambientLight (which
+    // uses grade.fill as its color) near zero (QA sweep 2026-08-21).
+    grade: { key: '#c22e2e', fill: '#241418', ambient: 0.16 },
+    camera: { pos: [0, 1.5, 2.5], look: [0, 1.3, -6], fov: 48, far: 60 },
     place: {
       shell: 'corridor',
       shellParams: { length: 14, width: 2.2, height: 2.4, ribs: 8, wallTint: '#0e0e10', farLight: true },
       props: [],
       systems: [
-        { type: 'AdvanceGlow', from: [0, 1.3, 6], axis: 'z', speed: 0.2, resetAt: 12, color: '#c22e2e' },
+        // "from" moved off the camera's own position — at from:[0,1.3,6]
+        // (behind a camera parked at z=4.4) the glow plane's travel path
+        // swept directly across the lens each cycle and blew the frame to
+        // a solid red wash (QA sweep 2026-08-21). Starting it further back
+        // keeps the advancing light behind the camera without occluding it.
+        { type: 'AdvanceGlow', from: [0, 1.3, 9], axis: 'z', speed: 0.2, resetAt: 12, color: '#c22e2e' },
         { type: 'paperScatter', count: 20, area: [1.8, 8], color: '#c8c0a8', pos: [0, 0.02, -3] },
       ],
     },
@@ -606,12 +674,25 @@ export const CONFIGS = {
         { type: 'PulseBeat', bpm: 90, depth: 0.15 },
       ],
     },
+    // this cockpit box is tiny (w:2.4, d:2) — the default info positions
+    // (hotTake/score/meta all around z:-1.66 to -1.7) land past the back
+    // wall (half-depth 1) and outside the side walls (half-width 1.2),
+    // so none of the record rendered inside the room at all (QA sweep
+    // 2026-08-21).
+    info: {
+      hotTakePos: [0, 1.5, -0.95],
+      scorePos: [0.75, 1.65, -0.9],
+      metaPos: [0, 0.85, -0.92],
+    },
   },
 
   // -------------------------------------------------------------------------- moon
   moon: {
     family: 'intimate-tension',
-    grade: { key: '#e8e8f0', fill: '#8a8a90', ambient: 0.26, sat: -0.15 },
+    // keyIntensity dropped: an already-near-white key/wallTint combo (the
+    // "white minimalist" module interior) plus the default 16x multiplier
+    // blew the whole corridor to solid white (QA sweep 2026-08-21).
+    grade: { key: '#e8e8f0', fill: '#8a8a90', ambient: 0.26, sat: -0.15, keyIntensity: 0.3 },
     camera: { pos: [0, 1.5, 2.2], look: [0, 1.4, -4], fov: 48, far: 40 },
     place: {
       shell: 'corridor',
@@ -630,6 +711,9 @@ export const CONFIGS = {
         { type: 'Duplicates', offset: 0.02, wrongness: 0, wrapsProps: true },
       ],
     },
+    // this corridor's width (2.6) puts the default scorePos (x: 1.2) right
+    // at the wall — pulled in (QA sweep 2026-08-21).
+    info: { scorePos: [0.85, 1.95, -1.6] },
   },
 
   // ---------------------------------------------------------------------- source-code
@@ -654,13 +738,17 @@ export const CONFIGS = {
   obsession: {
     family: 'weird-fable',
     grade: { key: '#3ab89a', fill: '#e8a860', sat: 0.14, ambient: 0.2 },
-    camera: { pos: [0, 1.5, 2], look: [0, 1.5, -1], fov: 50 },
+    camera: { pos: [0, 1.5, 2.2], look: [0, 1.4, -1], fov: 50 },
     place: {
       shell: 'box',
       shellParams: { w: 4.4, d: 4.4, h: 3, wallMat: 'flat' },
       props: [
-        { type: 'tree', pos: [0, 0, -1.2], scale: 1.2, foliage: '#2c5a44' },
-        { type: 'branchTags', pos: [0, 0, -1.2], count: 20, radius: 1.2, color: '#e8dcc0' },
+        // shifted off the centerline: at scale 1.2 this tree's canopy was
+        // ~1.4 wide and sat right where the info surfaces default to,
+        // hiding the hot take/score/meta behind solid foliage geometry
+        // (QA sweep 2026-08-21).
+        { type: 'tree', pos: [-1.5, 0, -1.4], scale: 1.2, foliage: '#2c5a44' },
+        { type: 'branchTags', pos: [-1.5, 0, -1.4], count: 20, radius: 1.2, color: '#e8dcc0' },
       ],
       systems: [],
     },
@@ -726,6 +814,9 @@ export const CONFIGS = {
         { type: 'AdvanceGlow', prop: 'sphere', from: [0, 0.3, -6], axis: 'z', speed: 0.15, resetAt: 5, color: '#e83030' },
       ],
     },
+    // default scorePos (x: 1.2) was clipping the right frame edge at this
+    // fov/camera distance — pulled in (QA sweep 2026-08-21).
+    info: { scorePos: [0.9, 2.05, -1.6] },
   },
 
   // -------------------------------------------------------------------------- sunshine
@@ -772,7 +863,10 @@ export const CONFIGS = {
   // ------------------------------------------------------------------------ oblivion
   oblivion: {
     family: 'spectacle',
-    grade: { key: '#eaf4ff', fill: '#c8d8e0', ambient: 0.3, sat: -0.1 },
+    // keyIntensity dropped: near-white key on an already-pale flat-white
+    // room blew out to a solid white void (QA sweep 2026-08-21, same class
+    // as moon's fix).
+    grade: { key: '#eaf4ff', fill: '#c8d8e0', ambient: 0.3, sat: -0.1, keyIntensity: 0.3 },
     camera: { pos: [0, 1.5, 2], look: [0, 1.4, -1.4], fov: 52, far: 200 },
     place: {
       shell: 'box',
@@ -865,6 +959,9 @@ export const CONFIGS = {
         { type: 'DwellConcede', afterSec: 25 },
       ],
     },
+    // this box is narrow (w:3.4) — default scorePos (x:1.2) was clipping
+    // the right frame edge at this fov (QA sweep 2026-08-21).
+    info: { scorePos: [0.85, 1.9, -1.35] },
   },
 }
 
