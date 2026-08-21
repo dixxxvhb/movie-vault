@@ -12,6 +12,8 @@ import Duplicates from '../systems/Duplicates.jsx'
 import { makeBlindsGoboTexture, makeChalkTexture, makeMarkedScoreTexture } from './enemyTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
+import { registerColliders, setBounds, clearOwner } from '../colliders.js'
+import { footprint } from '../props.jsx'
 
 // ENEMY (2013) · 9.6 · "the apartment, doubled." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the Toronto apartment, venetian-blind
@@ -303,9 +305,56 @@ function InfoPlinth({ film }) {
   )
 }
 
+/* -------------------------------------------------------------- colliders */
+
+// Walls at ±ROOM_W/2, ±ROOM_D/2; the +Z (south) wall carries the door gap
+// DoorRow sits in. Furniture is twinned by Duplicates below — BOTH copies
+// (the authored one and its slightly-wrong twin) must block, per the room
+// law ("twinned furniture colliders (both twins block)").
+const WALL_T = 0.15
+function shellRects() {
+  const hw = ROOM_W / 2, hd = ROOM_D / 2
+  const gapHalf = 0.8
+  return [
+    { minX: -hw, maxX: hw, minZ: -hd - WALL_T, maxZ: -hd }, // -Z wall
+    { minX: hw, maxX: hw + WALL_T, minZ: -hd, maxZ: hd },   // +X window wall
+    { minX: -hw - WALL_T, maxX: -hw, minZ: -hd, maxZ: hd }, // -X wall
+    { minX: -hw, maxX: -gapHalf, minZ: hd, maxZ: hd + WALL_T }, // +Z wall, left of door
+    { minX: gapHalf, maxX: hw, minZ: hd, maxZ: hd + WALL_T },   // +Z wall, right of door
+  ]
+}
+
+const FURNITURE = [
+  { type: 'table', pos: [-0.4, 0, -0.4], w: 1, d: 0.6 },
+  { type: 'chairRow', pos: [-0.4, 0, -0.1], count: 2, spacing: 0.6 },
+  { type: 'bed', pos: [1.3, 0, -1.0], rot: [0, -0.2, 0] },
+]
+
+// Duplicates(offset=0.11, wrongness='high') shifts the twin by exactly this
+// XZ delta (see Duplicates.jsx: [offset, offset*0.4*w, offset*0.6] with
+// w=1 for 'high') — mirrored here so the twin's footprint lands where the
+// twin actually renders, not where the original does.
+const TWIN_DX = 0.11
+const TWIN_DZ = 0.11 * 0.6
+
+function shiftRect(r, dx, dz) {
+  return { minX: r.minX + dx, maxX: r.maxX + dx, minZ: r.minZ + dz, maxZ: r.maxZ + dz, top: r.top }
+}
+
+function furnitureRects() {
+  const base = FURNITURE.flatMap((p) => footprint(p))
+  const twin = base.map((r) => shiftRect(r, TWIN_DX, TWIN_DZ))
+  return [...base, ...twin]
+}
+
 /* ------------------------------------------------------------------ room */
 
 const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, spacing: 0.95, scale: 0.8 }
+const OWNER_ID = 'bespoke:enemy'
+// how close (metres, XZ) the walker has to get to the "lying" score before
+// approaching it corrects it — matches the old click-trigger's radius of
+// intent (you had to be standing at the station to click it).
+const CORRECT_RADIUS = 0.9
 
 export default function Enemy({ film, config, doors = [], goToStation, onDoor }) {
   const { grade } = config
@@ -315,7 +364,6 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
   const stepTo = (key) => {
     setStationKey(key)
     goToStation?.(STATIONS[key], key)
-    if (key === 'lying') setCorrected(true) // approaching it corrects it — one-way
   }
 
   useEffect(() => {
@@ -323,6 +371,32 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
     return clearGradeOverride
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    registerColliders(OWNER_ID, [
+      ...shellRects(),
+      ...furnitureRects(),
+      { minX: 1.2, maxX: 1.4, minZ: 1.2, maxZ: 1.4 }, // info plinth
+    ])
+    setBounds(OWNER_ID, {
+      kind: 'rect',
+      minX: -ROOM_W / 2 + 0.1,
+      maxX: ROOM_W / 2 - 0.1,
+      minZ: -ROOM_D / 2 + 0.1,
+      maxZ: ROOM_D / 2 - 0.1,
+    })
+    return () => clearOwner(OWNER_ID)
+  }, [])
+
+  // "the score appearing twice ... truth on approach" — re-keyed to walker
+  // position (was a click-only trigger): walking up to the lying numeral
+  // corrects it, one-way, same as before.
+  useFrame(({ camera }) => {
+    if (corrected) return
+    const dx = camera.position.x - LYING_STATION.pos[0]
+    const dz = camera.position.z - LYING_STATION.pos[2]
+    if (dx * dx + dz * dz < CORRECT_RADIUS * CORRECT_RADIUS) setCorrected(true)
+  })
 
   useRoomAudio(startEnemyAudio)
 
