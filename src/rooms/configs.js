@@ -423,7 +423,7 @@ export const CONFIGS = {
   // entries above — the bespoke component never reads it.
   ncfom: {
     family: 'dread',
-    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.32, bg: '#8a7a5a', fogColor: '#8a7a5a' },
+    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.32, bg: '#8a7a5a', fogColor: '#8a7a5a', grain: 0.05, vignette: 0.35, bloomIntensity: 0.16 },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.4], fov: 44 },
     place: {
       shell: 'box',

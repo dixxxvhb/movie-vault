@@ -142,40 +142,60 @@ export function makePeanutsLabelTexture() {
 // Coin faces — our own generic, non-branded emblem (a plain radial star
 // device, nothing that reads as legal tender), one per side, so the "he does
 // not show you the result" trick is a real material swap, not a camera trick.
+// PUNCH LIST: the coin was near-illegible at room scale from behind the
+// counter. The mark now reads at much higher contrast (near-black device on
+// a bright worn-gold field, plus a hairline outline so the silhouette holds
+// even at a distance) and carries its own small dedicated glint — a single
+// bright highlight fleck offset toward one edge, the way a coin under a
+// single point light actually catches one spot of specular rather than
+// glowing evenly all over.
 function drawCoinFace(ctx, W, H, mark) {
-  ctx.fillStyle = '#c8a850'
+  ctx.fillStyle = '#dcb868'
   ctx.beginPath(); ctx.arc(W / 2, H / 2, W / 2 - 4, 0, Math.PI * 2); ctx.fill()
-  ctx.strokeStyle = '#8a7020'
-  ctx.lineWidth = 6
+  ctx.strokeStyle = '#4a3510'
+  ctx.lineWidth = 8
   ctx.stroke()
-  ctx.fillStyle = '#8a7020'
+  ctx.fillStyle = '#2c2008'
   ctx.save()
   ctx.translate(W / 2, H / 2)
   if (mark === 'star') {
     ctx.beginPath()
     for (let i = 0; i < 10; i++) {
       const a = (i / 10) * Math.PI * 2
-      const rad = i % 2 === 0 ? W * 0.32 : W * 0.14
+      const rad = i % 2 === 0 ? W * 0.34 : W * 0.15
       const x = Math.cos(a) * rad, y = Math.sin(a) * rad
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
     }
     ctx.closePath()
     ctx.fill()
+    ctx.strokeStyle = '#140e04'
+    ctx.lineWidth = 2
+    ctx.stroke()
   } else {
     ctx.beginPath()
-    ctx.arc(0, 0, W * 0.24, 0, Math.PI * 2)
+    ctx.arc(0, 0, W * 0.26, 0, Math.PI * 2)
     ctx.fill()
-    ctx.strokeStyle = '#c8a850'
-    ctx.lineWidth = 4
+    ctx.strokeStyle = '#dcb868'
+    ctx.lineWidth = 5
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2
       ctx.beginPath()
-      ctx.moveTo(Math.cos(a) * W * 0.24, Math.sin(a) * W * 0.24)
-      ctx.lineTo(Math.cos(a) * W * 0.36, Math.sin(a) * W * 0.36)
+      ctx.moveTo(Math.cos(a) * W * 0.26, Math.sin(a) * W * 0.26)
+      ctx.lineTo(Math.cos(a) * W * 0.38, Math.sin(a) * W * 0.38)
       ctx.stroke()
     }
   }
   ctx.restore()
+
+  // the dedicated glint: one small bright fleck, offset toward the upper
+  // edge of the face — not a full-face sheen, a single specular catch
+  const gx = W * 0.68, gy = H * 0.3
+  const glint = ctx.createRadialGradient(gx, gy, 0, gx, gy, W * 0.1)
+  glint.addColorStop(0, 'rgba(255,250,224,0.95)')
+  glint.addColorStop(0.5, 'rgba(255,240,190,0.4)')
+  glint.addColorStop(1, 'rgba(255,240,190,0)')
+  ctx.fillStyle = glint
+  ctx.beginPath(); ctx.arc(gx, gy, W * 0.1, 0, Math.PI * 2); ctx.fill()
 }
 
 export function makeCoinFaceTexture(mark) {

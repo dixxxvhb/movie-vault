@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import { counter as Counter, screenPanel as ScreenPanel } from '../props.jsx'
+import { screenPanel as ScreenPanel } from '../props.jsx'
 import { startWind } from '../audio/recipes/ncfom.js'
 import {
   makeHighwaySignTexture, makePeanutsLabelTexture, makeCoinFaceTexture, makeCoinBlankTexture,
@@ -11,6 +11,8 @@ import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
 import { playOneShot } from '../audio/engine.js'
+import { standardMat } from '../materials.js'
+import { HazeCone } from '../atmosphere.jsx'
 
 // 8.3 — "the gas station counter." One small shop, two stations: the
 // customer side (where you approach the counter) and behind it (where the
@@ -46,67 +48,69 @@ const BEHIND_STATION = { pos: [0, 1.45, -1.55], look: [0, 1.25, 2.6], fov: 46 }
 
 /* ------------------------------------------------------------------ shell */
 
-function wallTexture(tint, seed) {
-  const S = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  let s = seed >>> 0
-  const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-  ctx.globalAlpha = 0.08
-  for (let i = 0; i < 900; i++) {
-    ctx.fillStyle = r() > 0.5 ? '#000' : '#fff'
-    ctx.fillRect(r() * S, r() * S, 1.4, 1.4)
-  }
-  ctx.globalAlpha = 1
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-  tex.repeat.set(2, 2)
-  return tex
-}
-
+// Bleached Texas daylight has been baking these walls for years — plaster
+// gone dusty and pale, floor a worn dark plank. materials.js kinds instead
+// of the old flat speckle-only canvas, so grazing light off the door now
+// actually models the surface instead of a uniform noise swatch.
 function ShopShell() {
-  const wallTex = useMemo(() => wallTexture('#8a7a5a', 401), [])
-  const floorTex = useMemo(() => wallTexture('#5a4c34', 402), [])
+  const wallMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#a8967a', scale: 1.3, wear: 0.6, repeat: [1.6, 1.4], roughness: 1 }), [])
+  const floorMat = useMemo(() => standardMat({ kind: 'wood', tint: '#4a3c26', scale: 1.1, wear: 0.7, repeat: [2, 2.6], roughness: 0.92 }), [])
   const sideW = (ROOM_W - DOOR_W) / 2
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={floorTex} roughness={0.92} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={wallTex} roughness={0.95} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       {/* -Z wall, behind the counter station */}
       <mesh position={[0, ROOM_H / 2, -ROOM_D / 2]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       {/* +Z wall, split around the door */}
       <mesh position={[-(sideW / 2 + DOOR_W / 2), ROOM_H / 2, DOOR_Z]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[sideW, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[sideW / 2 + DOOR_W / 2, ROOM_H / 2, DOOR_Z]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[sideW, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[0, (DOOR_H + ROOM_H) / 2, DOOR_Z]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[DOOR_W, ROOM_H - DOOR_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[-ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
+      </mesh>
+    </group>
+  )
+}
+
+// The worn counter — real materials.js wood, high wear so the plank grain
+// and roughness variance read under the harsh door light instead of a flat
+// tan slab.
+function WornCounter({ pos }) {
+  const topMat = useMemo(() => standardMat({ kind: 'wood', tint: '#6a5636', scale: 0.9, wear: 0.8, repeat: [1.4, 0.6], roughness: 0.75 }), [])
+  const w = 2.2, d = 0.6, h = 0.95
+  return (
+    <group position={pos}>
+      <mesh position={[0, h / 2, 0]}>
+        <boxGeometry args={[w, h, d]} />
+        <primitive object={topMat} attach="material" />
+      </mesh>
+      <mesh position={[0, h + 0.02, 0]}>
+        <boxGeometry args={[w + 0.06, 0.05, d + 0.06]} />
+        <primitive object={topMat} attach="material" />
       </mesh>
     </group>
   )
@@ -114,24 +118,30 @@ function ShopShell() {
 
 // Sparse dusty goods — a few cans/boxes on two low shelves, never a full
 // stocked wall (the brief's own word is "sparse").
+// Dusty shelf goods: generic cans/boxes, no labels, each a slightly
+// different worn tint (materials.js 'paper' kind) so the shelf reads as
+// years-unmoved stock rather than a set of identical props.
 function Shelves({ x }) {
+  const shelfMat = useMemo(() => standardMat({ kind: 'wood', tint: '#4a3c26', scale: 1, wear: 0.7, roughness: 0.9 }), [])
   const items = useMemo(() => Array.from({ length: 5 }, (_, i) => ({
     z: -1.4 + i * 0.55,
     h: 0.16 + (i % 3) * 0.04,
-    tone: i % 2 === 0 ? '#8a7048' : '#6a5a3a',
+    tint: ['#8a7048', '#6a5a3a', '#9a8058', '#5a4c30', '#7a6440'][i % 5],
+    seed: 700 + i,
   })), [])
+  const goodMats = useMemo(() => items.map((it) => standardMat({ kind: 'paper', tint: it.tint, scale: 1.4, wear: 0.75, seed: it.seed, roughness: 0.95 })), [items])
   return (
     <group position={[x, 0, 0]}>
       {[0.9, 1.6].map((y, si) => (
         <mesh key={si} position={[0, y, -0.6]}>
           <boxGeometry args={[0.35, 0.04, 2.4]} />
-          <meshStandardMaterial color="#4a3c26" roughness={0.85} />
+          <primitive object={shelfMat} attach="material" />
         </mesh>
       ))}
       {items.map((it, i) => (
         <mesh key={i} position={[0, 0.9 + it.h / 2 + 0.02, it.z]}>
           <boxGeometry args={[0.22, it.h, 0.16]} />
-          <meshStandardMaterial color={it.tone} roughness={0.8} />
+          <primitive object={goodMats[i]} attach="material" />
         </mesh>
       ))}
     </group>
@@ -303,9 +313,13 @@ function Coin({ behind }) {
       noDip
     >
       <group ref={groupRef} position={REST_POS.toArray()}>
+        {/* PUNCH LIST: enlarged slightly (0.055 -> 0.068) — the coin was
+            near-illegible at room scale from standing height behind the
+            counter; the face texture itself now also carries much higher
+            contrast + its own glint (ncfomTextures.js) */}
         <mesh ref={meshRef} position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.055, 0.055, 0.008, 24]} />
-          <meshStandardMaterial color="#c8a850" roughness={0.35} metalness={0.6} />
+          <cylinderGeometry args={[0.068, 0.068, 0.009, 24]} />
+          <meshStandardMaterial color="#c8a850" roughness={0.3} metalness={0.65} />
         </mesh>
         {/* a wider invisible catcher — the coin itself reads small and true
             to scale, but a hit target that tiny at counter distance is nearly
@@ -321,8 +335,8 @@ function Coin({ behind }) {
             side of it for that law to hold, so this costs nothing and only
             ever adds a viewing angle rather than removing one. */}
         {phase === 'landed' && (
-          <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <circleGeometry args={[0.052, 24]} />
+          <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[0.064, 24]} />
             <meshBasicMaterial map={faceTex} toneMapped={false} side={THREE.DoubleSide} />
           </mesh>
         )}
@@ -436,9 +450,13 @@ export default function Ncfom({ film, config, goToStation, doors = [], onDoor })
       <ShopShell />
       <DoorGlow />
       <HighwaySign film={film} />
+      {/* the harsh daylight itself: a hard white beam pouring straight in
+          through the door — the room's actual key light, made visible as a
+          shaft rather than only implied by the glow plane */}
+      <HazeCone pos={[0, ROOM_H - 0.15, DOOR_Z - 0.1]} rot={[Math.PI, 0, 0]} length={2.6} radius={0.9} color="#fff8e8" opacity={0.16} />
 
       <Shelves x={-ROOM_W / 2 + 0.2} />
-      <Counter pos={[0, 0, COUNTER_Z]} rot={[0, 0, 0]} w={2.2} d={0.6} h={0.95} color="#8a7a5a" />
+      <WornCounter pos={[0, 0, COUNTER_Z]} />
       <Register />
       <PeanutsBag />
       <Coin behind={behind} />
