@@ -12,6 +12,9 @@ import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
 import { playOneShot } from '../audio/engine.js'
+import { standardMat } from '../materials.js'
+import { Bevel, Scuff, crumpledPaper } from '../detail.jsx'
+import { makeWordTexture, makeCrosswalkBarTexture } from './babyDriverTextures.js'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -80,62 +83,95 @@ function BabyDriverColliders({ spawn }) {
 
 /* -------------------------------------------------------------- facade */
 
+const facadeMat = standardMat({ kind: 'concrete', tint: '#e8dcc0', wear: 0.3, scale: 2.2, repeat: [5, 3] })
+const columnMat = standardMat({ kind: 'concrete', tint: '#f0e6cc', wear: 0.2, scale: 1.4 })
+const signBandMat = standardMat({ kind: 'flat', tint: '#3a3226', wear: 0.15 })
+const sidewalkMat = standardMat({ kind: 'concrete', tint: '#c9c9c0', wear: 0.35, scale: 1.8, repeat: [6, 5] })
+const streetMat = standardMat({ kind: 'asphalt', tint: '#a8a6a0', wear: 0.5, scale: 1.4, repeat: [7, 1] })
+
 function BankFacade({ grade }) {
-  const tex = useMemo(() => {
-    const c = document.createElement('canvas')
-    c.width = c.height = 512
-    const ctx = c.getContext('2d')
-    // QA pass: was '#c8b898' (a muted tan that, under the old dim lighting,
-    // read as dusk stone rather than sun-bleached daytime limestone) —
-    // brightened toward the pale warm stone a bank facade actually throws
-    // back at midday.
-    ctx.fillStyle = '#e8dcc0'
-    ctx.fillRect(0, 0, 512, 512)
-    let s = 331
-    const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-    ctx.globalAlpha = 0.05
-    for (let i = 0; i < 2200; i++) {
-      ctx.fillStyle = r() > 0.5 ? '#fff' : '#000'
-      ctx.fillRect(r() * 512, r() * 512, 1.6, 1.6)
-    }
-    ctx.globalAlpha = 1
-    const tex = new THREE.CanvasTexture(c)
-    tex.colorSpace = THREE.SRGBColorSpace
-    return tex
-  }, [])
+  // OUR OWN generic bank name — invented, never the film's own signage —
+  // per the fidelity contract.
+  const signTex = useMemo(() => makeWordTexture('ATLANTA TRUST', { w: 1400, h: 200, color: '#e8dcc0' }), [])
 
   const windows = useMemo(() => Array.from({ length: 6 }, (_, i) => ({
     x: -3.6 + i * 1.44,
-    y: 2.4,
+    y: 2.15,
   })), [])
 
   return (
     <group>
-      <mesh position={[0, 2.6, -4.3]}>
+      <mesh position={[0, 2.6, -4.3]} receiveShadow>
         <boxGeometry args={[10, 5.2, 0.3]} />
-        <meshStandardMaterial map={tex} roughness={0.85} />
+        <primitive object={facadeMat} attach="material" />
       </mesh>
-      {/* columns — a bank facade's own vocabulary, no signage, no badging */}
+      {/* columns — a bank facade's own vocabulary, no signage, no badging.
+          Beveled bodies + a capital/base ring so they read as architecture
+          rather than extruded stock. */}
       {[-4.2, -1.4, 1.4, 4.2].map((x, i) => (
-        <mesh key={i} position={[x, 1.9, -4.1]}>
-          <boxGeometry args={[0.42, 3.8, 0.42]} />
-          <meshStandardMaterial color="#f0e6cc" roughness={0.65} />
-        </mesh>
+        <group key={i} position={[x, 0, -4.1]}>
+          <Bevel pos={[0, 1.9, 0]} w={0.42} h={3.8} d={0.42} radius={0.025} mat={columnMat} castShadow />
+          <mesh position={[0, 3.78, 0]}>
+            <boxGeometry args={[0.52, 0.14, 0.52]} />
+            <primitive object={columnMat} attach="material" />
+          </mesh>
+          <mesh position={[0, 0.06, 0]}>
+            <boxGeometry args={[0.5, 0.12, 0.5]} />
+            <primitive object={columnMat} attach="material" />
+          </mesh>
+        </group>
       ))}
       {windows.map((w, i) => (
-        <mesh key={i} position={[w.x, w.y, -4.14]}>
-          <planeGeometry args={[0.9, 1.3]} />
-          {/* windows read as glare-blown daylight glass, not dark night
-              panes — a pale sky-tinted surface with a soft emissive kick,
-              never the near-black '#20242a' the dusk stand-in used */}
-          <meshStandardMaterial color="#dce8ee" emissive="#eaf2f6" emissiveIntensity={0.22} roughness={0.15} metalness={0.15} />
-        </mesh>
+        <group key={i} position={[w.x, w.y, -4.14]}>
+          {/* window frame, set back so its near face clears the glass plane
+              in front of it (QA fix: a 0.05-deep box centered at -0.01 was
+              poking its near face out to +0.015 — IN FRONT of the glass at
+              0 — and won the depth test outright, hiding the glass behind
+              a flat dark frame every time) */}
+          <mesh position={[0, 0, -0.04]}>
+            <boxGeometry args={[1.0, 1.42, 0.05]} />
+            <meshStandardMaterial color="#3a3226" roughness={0.7} />
+          </mesh>
+          {/* the glass itself: no environment map in this room (the
+              fidelity contract's zero-imported-assets rule extends to
+              reflection probes), so meshPhysicalMaterial transmission
+              renders pure black with nothing to refract — a bright,
+              glare-blown daylight pane with a hard specular kick reads as
+              glass here instead, the same device the original stand-in
+              used, just brighter and glossier. */}
+          <mesh>
+            <planeGeometry args={[0.88, 1.28]} />
+            <meshBasicMaterial color="#bfe0ee" toneMapped={false} side={THREE.DoubleSide} />
+          </mesh>
+          {/* a muntin cross, generic storefront glazing */}
+          <mesh position={[0, 0, 0.01]}>
+            <boxGeometry args={[0.02, 1.28, 0.01]} />
+            <meshStandardMaterial color="#3a3226" roughness={0.6} />
+          </mesh>
+          <mesh position={[0, 0, 0.01]}>
+            <boxGeometry args={[0.88, 0.02, 0.01]} />
+            <meshStandardMaterial color="#3a3226" roughness={0.6} />
+          </mesh>
+        </group>
       ))}
+      {/* the sign band — our own generic lettering, cut-metal-on-stone feel */}
+      <mesh position={[0, 3.62, -4.13]}>
+        <boxGeometry args={[9.2, 0.62, 0.06]} />
+        <primitive object={signBandMat} attach="material" />
+      </mesh>
+      <mesh position={[0, 3.62, -4.09]}>
+        <planeGeometry args={[6.2, 0.4]} />
+        <meshBasicMaterial map={signTex} transparent toneMapped={false} />
+      </mesh>
       {/* the awning-height shadow line, sunny-grade Atlanta rather than a shop sign */}
       <mesh position={[0, 4.6, -4.14]}>
         <planeGeometry args={[9.6, 0.5]} />
         <meshStandardMaterial color="#c8b088" roughness={0.8} />
       </mesh>
+      {/* weathering: a couple of authored scuffs low on the facade where
+          foot traffic and delivery carts actually scrape stone */}
+      <Scuff pos={[-3.0, 0.35, -4.13]} w={0.7} h={0.4} seed={41} opacity={0.5} />
+      <Scuff pos={[2.6, 0.3, -4.13]} w={0.6} h={0.35} seed={57} opacity={0.4} />
     </group>
   )
 }
@@ -278,13 +314,39 @@ function Car({ beatRef }) {
           <meshBasicMaterial transparent opacity={0} depthWrite={false} />
         </mesh>
       </Touchable>
-      {/* wheels */}
+      {/* wheels, each in its own wheel well — a dark arch trim standing
+          proud of the body just above the tire so the silhouette reads as
+          "fender cut", not a wheel bolted to a flat slab */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
-        <mesh key={i} position={[sx * W * 0.42, 0.14, sz * D * 0.36]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.16, 0.16, 0.15, 16]} />
-          <meshStandardMaterial color="#111" roughness={0.8} />
-        </mesh>
+        <group key={i} position={[sx * W * 0.42, 0.14, sz * D * 0.36]}>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.16, 0.16, 0.15, 16]} />
+            <meshStandardMaterial color="#111" roughness={0.8} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <torusGeometry args={[0.185, 0.02, 6, 16, Math.PI]} />
+            <meshStandardMaterial color="#1c0808" roughness={0.6} metalness={0.1} />
+          </mesh>
+        </group>
       ))}
+      {/* panel gap seams — hood/cabin and cabin/trunk shut lines, thin dark
+          strokes that read as real body panel breaks under a grazing sun */}
+      <mesh position={[0, H * 0.58, D * 0.16]}>
+        <boxGeometry args={[W * 0.86, 0.006, 0.006]} />
+        <meshStandardMaterial color="#3a0808" roughness={0.5} />
+      </mesh>
+      <mesh position={[0, H * 0.58, -D * 0.18]}>
+        <boxGeometry args={[W * 0.86, 0.006, 0.006]} />
+        <meshStandardMaterial color="#3a0808" roughness={0.5} />
+      </mesh>
+      {/* brake-light housings — a beveled black frame the lamps sit inside,
+          instead of the lamp plane floating directly on the bumper */}
+      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[-W * 0.4, H * 0.36, -D * 0.495]}>
+        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
+      </RoundedBox>
+      <RoundedBox args={[0.28, 0.2, 0.03]} radius={0.015} smoothness={2} position={[W * 0.4, H * 0.36, -D * 0.495]}>
+        <meshStandardMaterial color="#0c0c0c" roughness={0.5} />
+      </RoundedBox>
     </group>
   )
 }
@@ -449,6 +511,7 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
 export default function BabyDriver({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const beatRef = useBeat(BPM)
+  const crosswalkTex = useMemo(() => makeCrosswalkBarTexture(19), [])
 
   useRoomAudio(startBabyDriverAudio)
 
@@ -472,20 +535,42 @@ export default function BabyDriver({ film, config, infoVisible = true, doors = [
 
       <DaySky />
 
-      {/* ground: sidewalk + street, sunny concrete — brightened off the
-          '#8c8c86'/'#68656a' dusk-grey stand-in the same way the facade was */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      {/* ground: sidewalk + street. materials.js concrete/asphalt surfaces
+          instead of flat colors — the roughnessMap variance is what sells
+          "sun-baked pavement" under this room's hard daylight key. */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[16, 12]} />
-        <meshStandardMaterial color="#c9c9c0" roughness={0.9} />
+        <primitive object={sidewalkMat} attach="material" />
       </mesh>
-      <mesh position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[16, 2.2]} />
-        <meshStandardMaterial color="#a8a6a0" roughness={0.85} />
+        <primitive object={streetMat} attach="material" />
       </mesh>
+      {/* curb: a raised strip along both edges of the street */}
+      <mesh position={[0, 0.05, -1.1]}>
+        <boxGeometry args={[16, 0.1, 0.08]} />
+        <meshStandardMaterial color="#d4d0c4" roughness={0.75} />
+      </mesh>
+      <mesh position={[0, 0.05, 1.1]}>
+        <boxGeometry args={[16, 0.1, 0.08]} />
+        <meshStandardMaterial color="#d4d0c4" roughness={0.75} />
+      </mesh>
+      {/* crosswalk, worn paint bars — clear of the car/facade action, off
+          to the far side of the block */}
+      {Array.from({ length: 6 }, (_, i) => (
+        <mesh key={i} position={[-5.6 + i * 0.34, 0.008, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[0.22, 2.0]} />
+          <meshBasicMaterial map={crosswalkTex} transparent opacity={0.85} toneMapped={false} depthWrite={false} />
+        </mesh>
+      ))}
 
       <BankFacade grade={grade} />
       <Car beatRef={beatRef} />
       <PaperScatter pos={[-1, 0, 0.4]} rot={[Math.PI / 2, 0, 0]} count={16} area={[2.4, 1.6]} color="#e8e0c8" />
+      {/* street clutter: a couple of authored crumpled scraps near the
+          curb, distinct from the loose paperScatter drift by the car */}
+      {crumpledPaper({ pos: [-3.4, 0.03, 1.35], scale: 0.7, color: '#e8e0c8', seed: 71 })}
+      {crumpledPaper({ pos: [3.9, 0.03, -1.3], scale: 0.55, color: '#d8ccae', seed: 83 })}
 
       <Pedestrian beatRef={beatRef} laneZ={0.9} offset={0} color="#181410" />
       <Pedestrian beatRef={beatRef} laneZ={1.4} offset={0.5} color="#201a14" />
