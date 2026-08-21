@@ -11,6 +11,8 @@ import { getMatrixGlyphTextures, makeGlyphStripTexture, makeMatrixCharGlyphTextu
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import { setBounds, clearOwner } from '../colliders.js'
+import { standardMat } from '../materials.js'
+import { FogLayers } from '../atmosphere.jsx'
 
 // THE MATRIX (1999) · 9.8 · "the rooftop, mid bullet-time." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the helipad rooftop, hazy overcast city,
@@ -50,35 +52,54 @@ const clamp01 = (v) => Math.max(0, Math.min(1, v))
 /* ------------------------------------------------------------------ shell */
 
 const texCache = new Map()
-function buildGroundTexture(tint) {
-  if (texCache.has(tint)) return texCache.get(tint)
-  const S = 512
+
+// P1 polish pass: pad markings pulled out onto their own transparent decal
+// texture (a dashed outer ring, the guide cross, and a set of corner
+// chevrons — our own generic helipad vocabulary, no film glyphs, no
+// lettering) laid on top of the materials.js wetconcrete surface below
+// rather than baked into the ground's own color pass, so the sheen pools
+// materials.js derives from luminance never fight painted-on markings.
+function buildMarkingsTexture() {
+  const key = 'markings'
+  if (texCache.has(key)) return texCache.get(key)
+  const S = 1024
   const c = document.createElement('canvas')
   c.width = c.height = S
   const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  // a faint helipad ring + crossed guide lines, poured concrete otherwise
+  ctx.clearRect(0, 0, S, S)
   ctx.strokeStyle = '#cfe0b8'
-  ctx.globalAlpha = 0.35
-  ctx.lineWidth = 6
+  ctx.globalAlpha = 0.5
+  ctx.lineWidth = 10
+  // dashed outer ring
+  ctx.setLineDash([26, 20])
   ctx.beginPath()
   ctx.arc(S / 2, S / 2, S * 0.34, 0, Math.PI * 2)
   ctx.stroke()
+  ctx.setLineDash([])
+  // guide cross
+  ctx.lineWidth = 8
   ctx.beginPath()
   ctx.moveTo(S * 0.2, S / 2); ctx.lineTo(S * 0.8, S / 2)
   ctx.moveTo(S / 2, S * 0.2); ctx.lineTo(S / 2, S * 0.8)
   ctx.stroke()
-  ctx.globalAlpha = 0.08
-  let s = 71
-  const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-  for (let i = 0; i < 2000; i++) {
-    ctx.fillStyle = r() > 0.5 ? '#000' : '#fff'
-    ctx.fillRect(r() * S, r() * S, 1.6, 1.6)
+  // four corner chevrons pointing at center — a generic pad-approach mark
+  ctx.lineWidth = 9
+  const chevAt = (ang) => {
+    const cx = S / 2 + Math.cos(ang) * S * 0.42
+    const cy = S / 2 + Math.sin(ang) * S * 0.42
+    const inAng = ang + Math.PI
+    const w = 0.28
+    ctx.beginPath()
+    ctx.moveTo(cx + Math.cos(inAng + w) * 40, cy + Math.sin(inAng + w) * 40)
+    ctx.lineTo(cx, cy)
+    ctx.lineTo(cx + Math.cos(inAng - w) * 40, cy + Math.sin(inAng - w) * 40)
+    ctx.stroke()
   }
+  ;[Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4].forEach(chevAt)
+  ctx.globalAlpha = 1
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
-  texCache.set(tint, tex)
+  texCache.set(key, tex)
   return tex
 }
 
@@ -99,8 +120,12 @@ function skyTexture(top, bottom) {
   return tex
 }
 
+// One instance, cached — the pad's own wet-ish overcast concrete, sheen
+// pools coming straight from materials.js's wetconcrete roughnessMap.
+const padMat = standardMat({ kind: 'wetconcrete', tint: '#3c3e34', wear: 0.5, scale: 1.3, repeat: [3, 3] })
+
 function RoofShell({ grade }) {
-  const groundTex = useMemo(() => buildGroundTexture('#3c3e34'), [])
+  const markingsTex = useMemo(() => buildMarkingsTexture(), [])
   const sky = useMemo(() => skyTexture(grade.fill || '#5a6a48', '#2a3222'), [grade.fill])
   // hazy distant city, overcast — same deterministic-box trick GenericRoom's
   // OpenShell uses, kept local so this bespoke room has no dependency on it
@@ -112,9 +137,14 @@ function RoofShell({ grade }) {
   })), [])
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[7, 6]} />
-        <meshStandardMaterial map={groundTex} roughness={0.92} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <circleGeometry args={[7, 32]} />
+        <primitive object={padMat} attach="material" />
+      </mesh>
+      {/* pad markings — a hair proud of the concrete, alpha-only */}
+      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[7, 32]} />
+        <meshBasicMaterial map={markingsTex} transparent opacity={0.9} depthWrite={false} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
       </mesh>
       <mesh position={[0, 0, -30]}>
         <sphereGeometry args={[80, 24, 16, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
@@ -131,6 +161,9 @@ function RoofShell({ grade }) {
           <meshStandardMaterial color="#1a1c16" emissive={grade.key || '#7fae5a'} emissiveIntensity={0.06} roughness={0.85} />
         </mesh>
       ))}
+      {/* overcast city haze — a low drifting band at skyline height, the
+          same layered-fog device Departed uses for its horizon glow */}
+      <FogLayers pos={[0, 2.2, -20]} size={[80, 12]} color="rgba(150,175,135,0.4)" opacity={0.24} speed={0.012} />
     </group>
   )
 }
@@ -164,13 +197,26 @@ function ShockwaveShells({ burstRef }) {
   return (
     <group position={[0, 1.15, 0]}>
       {radii.map((r, i) => (
-        <mesh key={i} ref={refs[i]}>
-          <sphereGeometry args={[r, 24, 16]} />
-          <meshPhysicalMaterial
-            color={SHELL_COLOR} transparent opacity={0.14 - i * 0.02} roughness={0.1}
-            transmission={0.55} side={THREE.DoubleSide} depthWrite={false}
-          />
-        </mesh>
+        <group key={i} ref={refs[i]}>
+          {/* front pass: dim, sells the see-through core */}
+          <mesh>
+            <sphereGeometry args={[r, 24, 16]} />
+            <meshPhysicalMaterial
+              color={SHELL_COLOR} transparent opacity={0.09 - i * 0.012} roughness={0.1}
+              transmission={0.55} side={THREE.FrontSide} depthWrite={false}
+            />
+          </mesh>
+          {/* back pass: brighter, only visible where the front face has
+              rolled past grazing — a cheap fresnel-ish rim without a custom
+              shader, the shell's edge reading brighter than its face */}
+          <mesh>
+            <sphereGeometry args={[r, 24, 16]} />
+            <meshPhysicalMaterial
+              color={SHELL_COLOR} transparent opacity={0.22 - i * 0.03} roughness={0.05}
+              transmission={0.3} side={THREE.BackSide} depthWrite={false}
+            />
+          </mesh>
+        </group>
       ))}
       {radii.map((r, i) => (
         <lineSegments key={'w' + i}>
@@ -258,7 +304,10 @@ function GlyphColumn({ x, z, height, speed, seed }) {
   return (
     <mesh ref={ref} position={[x, height / 2, z]}>
       <planeGeometry args={[0.4, height]} />
-      <meshBasicMaterial map={tex} transparent opacity={0.75} depthWrite={false} side={THREE.DoubleSide} />
+      {/* P1 polish pass: kept subtle at the periphery per the brief — this
+          used to compete with the shockwave for attention; opacity halved
+          so it reads as ambient rain, not a second focal point. */}
+      <meshBasicMaterial map={tex} transparent opacity={0.4} depthWrite={false} side={THREE.DoubleSide} />
     </mesh>
   )
 }
@@ -291,8 +340,15 @@ function ScoreGlyphs({ film }) {
   const chars = useMemo(() => String((film.score ?? 9.8).toFixed(1)).split(''), [film.score])
   const settleAt = useMemo(() => chars.map((_, i) => 2.4 + i * 0.9 + Math.random() * 0.6), [chars])
   const stripTex = useMemo(() => makeGlyphStripTexture(GLYPH_COLOR, 401), [])
+  // Iteration 2 QA fix: this used to hardcode '#e8ffe0' — near-white — for
+  // the settled score glyphs while every other glyph in the room (the rain
+  // columns, the periphery strips) uses GLYPH_COLOR's green. The '8' in
+  // particular (a double-ring stroke) sat top-center of frame and, at
+  // near-white with toneMapped=false, was the single brightest thing in
+  // the shot, pulling focus from the shockwave. Recolored into the same
+  // green family as everything else.
   const finalTexes = useMemo(
-    () => chars.map((ch) => makeMatrixCharGlyphTexture(ch.charCodeAt(0), '#e8ffe0')),
+    () => chars.map((ch) => makeMatrixCharGlyphTexture(ch.charCodeAt(0), GLYPH_COLOR)),
     [chars]
   )
   useEffect(() => () => { stripTex.dispose(); finalTexes.forEach((t) => t.dispose()) }, [stripTex, finalTexes])
@@ -447,6 +503,14 @@ export default function Matrix({ film, config, doors = [], goToStation, onDoor }
 
       <group>
         {abstractFigure({ pos: [0, 0, 0], pose: 'crouch', color: '#12140f' })}
+        {/* the crouched figure's own rim. Walkable 360 around the sculpture
+          (4 orbit stations + entry), so a single side-mounted "behind the
+          subject" rim would only read from one station — this one sits
+          overhead instead, a tight high-decay point that catches the top
+          of the head/shoulders as a highlight edge from every angle, the
+          way a hard overhead source rims a crouched silhouette in any real
+          walk-around. */}
+        <pointLight position={[0.15, 0.78, -0.25]} color="#bcf0c0" intensity={0.9} distance={0.95} decay={2.8} />
         <ShockwaveShells burstRef={burstRef} />
         <ShockwaveTrails burstRef={burstRef} />
         <WaveClickTarget onTouch={touchWave} />

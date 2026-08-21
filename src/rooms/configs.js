@@ -81,7 +81,12 @@ export const CONFIGS = {
   // it, GenericRoom never runs for a slug with a BESPOKE entry).
   'the-departed': {
     family: 'intimate-tension',
-    grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.22 },
+    // P1 polish pass (IMMERSION-V2-POLISH-SPEC.md): golden-hour triplet —
+    // moderate grain (film-stock warmth, not noise), a gentle vignette (this
+    // room is wide open sky, a heavy vignette would fight the haze), bloom
+    // kept modest so the sun disc/skyline glow reads without blowing out
+    // the dossier sheet.
+    grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.27, grain: 0.06, vignette: 0.5, bloomIntensity: 0.34 },
     camera: { pos: [0, 1.6, 3.4], look: [0, 1.45, -3.3], fov: 54, far: 90 },
     place: {
       shell: 'open',
@@ -145,7 +150,11 @@ export const CONFIGS = {
   // pre-bespoke Wave B stand-in.
   matrix: {
     family: 'spectacle',
-    grade: { key: '#7fae5a', fill: '#2a3a22', sat: -0.05, hue: 0.03 },
+    // P1 polish pass: green pushed properly (this room's gradeBus override
+    // republishes sat/hue/contrast off these same fields — see Matrix.jsx),
+    // grain low (a clean digital-ish freeze, not film stock), contrast up,
+    // vignette moderate so the periphery glyph rain still reads at the edge.
+    grade: { key: '#7fae5a', fill: '#2a3a22', sat: 0.12, hue: 0.03, contrast: 0.14, grain: 0.03, vignette: 0.46, bloomIntensity: 0.36 },
     camera: { pos: [0, 1.7, 3.4], look: [0, 1.3, 0], fov: 52, far: 300 },
     place: {
       shell: 'open',
@@ -381,9 +390,14 @@ export const CONFIGS = {
   // sky blue, and ambient/keyIntensity are both raised for daytime exposure.
   'baby-driver': {
     family: 'momentum',
+    // P1 polish pass: this is the toolkit's daylight test — bright, crisp,
+    // saturated, minimal vignette (a heavy vignette reads as night no
+    // matter how hot the key is), grain low (digital daylight, not grungy
+    // film stock).
     grade: {
       key: '#ffe6b0', fill: '#bcdce8', ambient: 0.55, keyIntensity: 1.9,
       bg: '#cfe8f2', fogColor: '#cfe8f2',
+      sat: 0.14, contrast: 0.1, grain: 0.028, vignette: 0.3, bloomIntensity: 0.3,
     },
     camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52, far: 60 },
     place: {
