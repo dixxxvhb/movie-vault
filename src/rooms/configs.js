@@ -90,24 +90,19 @@ export const CONFIGS = {
   },
 
   // ----------------------------------------------------------------- sicario
+  // Bespoke now (Phase 2, src/rooms/bespoke/Sicario.jsx): the room's own
+  // entry is the dusk staging ground, not the tunnel — grade/camera below
+  // now match its GROUND_STATION exactly (warm dusk, not tunnel green;
+  // the green/thermal grade only exists as gradeBus overrides published
+  // once you've actually descended, same seam Memento uses for its own
+  // split). `place`/the old tunnel-only camera are dead weight for the same
+  // reason as the-departed's/baby-driver's own entries above — the bespoke
+  // component never reads this block; left in place as the pre-bespoke
+  // Wave B stand-in.
   sicario: {
     family: 'dread',
-    // keyIntensity dropped hard: the fixed key light sits close to the
-    // tunnel mouth where the camera also lives, and at this room's default
-    // ~35x effective intensity it blew the whole corridor to a solid green
-    // wash (QA sweep 2026-08-21, round 2).
-    // fill brightened from #2a2018: FilmWorld's ambientLight uses grade.fill
-    // AS its color, so a near-black fill caps the ambient term near zero no
-    // matter how high `ambient` (the intensity) goes — that's what was
-    // still reading as a void even after ambient was raised to 0.4 (QA
-    // sweep 2026-08-21, round 3).
-    grade: { key: '#4fae6a', fill: '#3c4a3a', sat: -0.1, ambient: 0.4, keyIntensity: 0.35 },
-    // QA sweep 2026-08-21: the corridor shell's floor only exists from z=0
-    // (the mouth) to z=-length — the old camera (z=4) and entry figures
-    // (z=2.6-3.9) all sat past the mouth in open air with no geometry under
-    // them, which read as a black void with a lit square floating in it.
-    // Pulled everything back inside the built tunnel.
-    camera: { pos: [0, 1.5, -0.3], look: [0, 1.3, -9], fov: 46, far: 60 },
+    grade: { key: '#e8935a', fill: '#2a3a55', sat: 0.05, ambient: 0.3, keyIntensity: 1 },
+    camera: { pos: [0, 1.9, 3.2], look: [0, 0.85, -2.4], fov: 56, far: 90 },
     place: {
       shell: 'corridor',
       shellParams: { length: 16, width: 2.4, height: 2.3, ribs: 9, wallTint: '#141210', farLight: true },
