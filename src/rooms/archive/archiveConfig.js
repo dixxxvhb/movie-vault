@@ -138,3 +138,45 @@ export function hazyConfigFor() {
 }
 
 export { HAZY_ENTRY, HAZY_CLOSER }
+
+// -------------------------------------------------- develop (bloom) target
+// Phase 3, "certify-develops-the-room" (brief §3: "a rewatch is the
+// chemical bath"). The grade a print's faded room blooms TOWARD once
+// triggered (useRoomDevelop.js) — reconstructed by undoing fadedConfigFor's
+// own 0.4x/1.55x/flat-sat transform above on the same family preset it
+// degraded from, plus a small per-family tone standing in for real color. A
+// shoebox print has no per-film palette the way a Ledger film does (there
+// is no staged CONFIGS[slug] scene to promote into, just the family's own
+// preset waking up), so this is a deliberate approximation, not the actual
+// eventual Ledger room — the visual point (wireframe/pencil blooming into
+// graded color) reads the same either way.
+const FAMILY_TONE = {
+  'mind-bender': { key: '#5ab0d0', fill: '#22334a', bg: '#10161c' },
+  dread: { key: '#8a3a3a', fill: '#241418', bg: '#120c0c' },
+  momentum: { key: '#e8c060', fill: '#241f14', bg: '#141008' },
+  spectacle: { key: '#e8b060', fill: '#3a2e22', bg: '#1a140c' },
+  'intimate-tension': { key: '#c98a4a', fill: '#2a3038', bg: '#120e0a' },
+  'weird-fable': { key: '#4fc8d6', fill: '#2a1c4a', bg: '#0e0c1a' },
+}
+
+export function developedGradeFor(print) {
+  const family = familyForGenres(print?.genres)
+  const preset = PRESETS[family] || PRESETS['intimate-tension']
+  const pg = preset.grade || {}
+  const tone = FAMILY_TONE[family] || FAMILY_TONE['intimate-tension']
+  return {
+    bg: tone.bg,
+    fogColor: tone.bg,
+    fogDensity: pg.fogDensity ?? 0.05,
+    key: tone.key,
+    keyIntensity: pg.keyIntensity ?? 2.2,
+    fill: tone.fill,
+    ambient: pg.ambient ?? 0.16,
+    sat: pg.sat ?? 0,
+    contrast: pg.contrast ?? 0,
+    hue: 0,
+    grain: pg.grain ?? 0.05,
+    vignette: pg.vignette ?? 0.55,
+    bloomIntensity: pg.bloomIntensity ?? 0.22,
+  }
+}
