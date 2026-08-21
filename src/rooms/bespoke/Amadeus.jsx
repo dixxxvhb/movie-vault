@@ -9,6 +9,7 @@ import {
 } from './amadeusTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 9.3 — "the deathbed dictation." Candlelit bedchamber: bed, heavy drape
 // planes, a chair pulled close, warm candle grade against one cold blue
@@ -103,18 +104,46 @@ const WALL_MAX = 34
 const GROW_SECONDS = 55        // how long until the page + both walls are full
 const WALL_START_FRAC = 0.35   // walls don't start until the page is this full
 
-function InkSurfaces() {
+// Wave T: touch acceleration. Each surface (page + 2 walls) gets its own
+// "extra" accumulator that only advances while that surface's own boost
+// window is open (4s), added on top of the shared base clock (tRef) that
+// still gates when walls start per the brief's original pacing — so
+// touching one surface visibly races IT ahead without disturbing the
+// others' normal rate.
+const BOOST_MULT = 4
+const BOOST_MS = 4000
+
+function InkSurfaces({ boostApiRef }) {
   const pageBase = useMemo(() => makePageBaseTexture(), [])
   const pageMeshRef = useRef()
   const wallMeshRefs = [useRef(), useRef()]
   const lastCountsRef = useRef([-1, -1, -1])
   const tRef = useRef(0)
+  const boostUntil = useRef([0, 0, 0]) // [page, wall0, wall1]
+  const extra = useRef([0, 0, 0])
+
+  useEffect(() => {
+    boostApiRef.current = (which) => {
+      boostUntil.current[which] = performance.now() + BOOST_MS
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.info('[amadeus] ink boosted on surface %d', which)
+      }
+    }
+    return () => { boostApiRef.current = null }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useFrame((_, dt) => {
     tRef.current += dt
+    const now = performance.now()
+    for (let i = 0; i < 3; i++) {
+      if (now < boostUntil.current[i]) extra.current[i] += dt * (BOOST_MULT - 1)
+    }
     const growth = Math.min(1, tRef.current / GROW_SECONDS)
+    const pageGrowth = Math.min(1, (tRef.current + extra.current[0]) / GROW_SECONDS)
 
-    const pageCount = Math.floor(growth * PAGE_MAX)
+    const pageCount = Math.floor(pageGrowth * PAGE_MAX)
     if (pageCount !== lastCountsRef.current[0] && pageMeshRef.current) {
       lastCountsRef.current[0] = pageCount
       const tex = makeInkTexture(PAGE_SEED, pageCount, 480, 620, '#241a10', 0.35)
@@ -124,9 +153,9 @@ function InkSurfaces() {
       mat.needsUpdate = true
     }
 
-    const wallGrowth = Math.max(0, (growth - WALL_START_FRAC) / (1 - WALL_START_FRAC))
     wallMeshRefs.forEach((ref, i) => {
-      const count = Math.floor(wallGrowth * WALL_MAX)
+      const wallGrowth = Math.max(0, (growth - WALL_START_FRAC) / (1 - WALL_START_FRAC) + extra.current[i + 1] / GROW_SECONDS)
+      const count = Math.floor(Math.min(1, wallGrowth) * WALL_MAX)
       if (count !== lastCountsRef.current[i + 1] && ref.current) {
         lastCountsRef.current[i + 1] = count
         const tex = makeInkTexture(WALL_SEEDS[i], count, 512, 640, '#e8dcc0', 0.22)
@@ -140,20 +169,29 @@ function InkSurfaces() {
 
   return (
     <group>
-      {/* the page, propped on the desk-side table */}
-      <mesh ref={pageMeshRef} position={[0.75, 0.615, -1.3]} rotation={[-Math.PI / 2, 0, -0.08]}>
-        <planeGeometry args={[0.42, 0.55]} />
-        <meshBasicMaterial map={pageBase} toneMapped={false} />
-      </mesh>
-      {/* two walls the ink spreads onto once the page is filling in */}
-      <mesh ref={wallMeshRefs[0]} position={[-ROOM_W / 2 + 0.01, 1.5, -0.4]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[ROOM_D * 0.7, 2]} />
-        <meshBasicMaterial transparent opacity={0} toneMapped={false} />
-      </mesh>
-      <mesh ref={wallMeshRefs[1]} position={[0.4, 1.5, -ROOM_D / 2 + 0.01]}>
-        <planeGeometry args={[ROOM_W * 0.7, 2]} />
-        <meshBasicMaterial transparent opacity={0} toneMapped={false} />
-      </mesh>
+      {/* the page, propped on the desk-side table — pressable: ink races
+          ahead on this surface alone for ~4s */}
+      <Touchable reach={5} foley="paper" anchor={[0.75, 0.615, -1.3]} onUse={() => boostApiRef.current && boostApiRef.current(0)}>
+        <mesh ref={pageMeshRef} position={[0.75, 0.615, -1.3]} rotation={[-Math.PI / 2, 0, -0.08]}>
+          <planeGeometry args={[0.42, 0.55]} />
+          <meshBasicMaterial map={pageBase} toneMapped={false} />
+        </mesh>
+      </Touchable>
+      {/* two walls the ink spreads onto once the page is filling in — each
+          independently pressable once it's grown enough to be worth
+          touching */}
+      <Touchable reach={5} foley="paper" anchor={[-ROOM_W / 2 + 0.01, 1.5, -0.4]} onUse={() => boostApiRef.current && boostApiRef.current(1)}>
+        <mesh ref={wallMeshRefs[0]} position={[-ROOM_W / 2 + 0.01, 1.5, -0.4]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[ROOM_D * 0.7, 2]} />
+          <meshBasicMaterial transparent opacity={0} toneMapped={false} />
+        </mesh>
+      </Touchable>
+      <Touchable reach={5} foley="paper" anchor={[0.4, 1.5, -ROOM_D / 2 + 0.01]} onUse={() => boostApiRef.current && boostApiRef.current(2)}>
+        <mesh ref={wallMeshRefs[1]} position={[0.4, 1.5, -ROOM_D / 2 + 0.01]}>
+          <planeGeometry args={[ROOM_W * 0.7, 2]} />
+          <meshBasicMaterial transparent opacity={0} toneMapped={false} />
+        </mesh>
+      </Touchable>
     </group>
   )
 }
@@ -343,6 +381,7 @@ const DOOR_MOUNT = { position: [ROOM_W / 2 - 0.05, 0.8, 0.6], rotationY: -Math.P
 
 export default function Amadeus({ film, config, doors = [], onDoor }) {
   const { grade } = config
+  const boostApiRef = useRef(null)
 
   useRoomAudio(startAmadeusAudio)
 
@@ -362,7 +401,7 @@ export default function Amadeus({ film, config, doors = [], onDoor }) {
       <CandleFlame pos={[0.75, 0.62, -1.05]} />
       <CandleFlame pos={[-0.75, 0.72, 0.15]} />
 
-      <InkSurfaces />
+      <InkSurfaces boostApiRef={boostApiRef} />
       <InkScorePlaque score={film.score} />
       <MarginTake film={film} />
 
