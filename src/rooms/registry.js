@@ -10,6 +10,10 @@ import Sicario from './bespoke/Sicario.jsx'
 import Matrix from './bespoke/Matrix.jsx'
 import BR2049 from './bespoke/BR2049.jsx'
 import Enemy from './bespoke/Enemy.jsx'
+import Nightcrawler from './bespoke/Nightcrawler.jsx'
+import Stby from './bespoke/Stby.jsx'
+import Amadeus from './bespoke/Amadeus.jsx'
+import Predestination from './bespoke/Predestination.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -27,6 +31,10 @@ const BESPOKE = {
   matrix: Matrix,
   br2049: BR2049,
   enemy: Enemy,
+  nightcrawler: Nightcrawler,
+  stby: Stby,
+  amadeus: Amadeus,
+  predestination: Predestination,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

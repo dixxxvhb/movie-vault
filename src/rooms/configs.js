@@ -234,10 +234,15 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------ nightcrawler
+  // Bespoke now (Phase 2, src/rooms/bespoke/Nightcrawler.jsx): grade/camera
+  // below match the bespoke room's own entry composition (guardrail,
+  // sodium-grid horizon). `place` is dead weight for the same reason as
+  // the-departed's/baby-driver's own entries above — the bespoke component
+  // never reads it; left in place as the pre-bespoke Wave B stand-in.
   nightcrawler: {
     family: 'momentum',
-    grade: { key: '#e88a30', fill: '#0e1218', ambient: 0.15 },
-    camera: { pos: [0, 1.6, 2.4], look: [0, 1.3, -4], fov: 50, far: 200 },
+    grade: { bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1 },
+    camera: { pos: [0, 1.6, 2.2], look: [0, 1.15, -6], fov: 52, far: 200 },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
@@ -257,9 +262,14 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------- stby
+  // Bespoke now (Phase 2, src/rooms/bespoke/Stby.jsx): grade/camera below
+  // match the bespoke room's own fixed office station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries
+  // above — the bespoke component never reads it; left in place as the
+  // pre-bespoke Wave B stand-in.
   stby: {
     family: 'intimate-tension',
-    grade: { key: '#c9d8e0', fill: '#20242a', sat: -0.05 },
+    grade: { bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfe8ff', fill: '#20242a', sat: -0.05, ambient: 0.35 },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
     place: {
       shell: 'box',
@@ -278,10 +288,15 @@ export const CONFIGS = {
   },
 
   // ----------------------------------------------------------------- amadeus
+  // Bespoke now (Phase 2, src/rooms/bespoke/Amadeus.jsx): grade/camera below
+  // match the bespoke room's own bedchamber. `place` is dead weight for the
+  // same reason as the-departed's/baby-driver's own entries above — the
+  // bespoke component never reads it; left in place as the pre-bespoke
+  // Wave B stand-in.
   amadeus: {
     family: 'intimate-tension',
-    grade: { key: '#e8a860', fill: '#1a2a3a', ambient: 0.1 },
-    camera: { pos: [0, 1.45, 1.6], look: [0, 1.2, -1], fov: 44 },
+    grade: { bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08 },
+    camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
     place: {
       shell: 'box',
       shellParams: { w: 3.8, d: 4, h: 2.4, wallMat: 'flat', window: true },
@@ -301,10 +316,15 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------------------------- predestination
+  // Bespoke now (Phase 2, src/rooms/bespoke/Predestination.jsx): grade/camera
+  // below match the bespoke room's own bar station. `place` is dead weight
+  // for the same reason as the-departed's/baby-driver's own entries above —
+  // the bespoke component never reads it; left in place as the pre-bespoke
+  // Wave B stand-in.
   predestination: {
     family: 'mind-bender',
-    grade: { key: '#c88a4a', fill: '#2a1c14', ambient: 0.16 },
-    camera: { pos: [0, 1.5, 1.4], look: [0, 1.3, -1.4], fov: 46 },
+    grade: { bg: '#241a10', fogColor: '#241a10', key: '#e8b860', fill: '#3a2414', ambient: 0.14 },
+    camera: { pos: [0.3, 1.5, 1.3], look: [-0.7, 1.35, -1.3], fov: 48 },
     place: {
       shell: 'box',
       shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'wood', doorGap: true },
