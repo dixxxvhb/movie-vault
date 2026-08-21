@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Html } from '@react-three/drei'
 import { sheetOf, rgba } from './palette.js'
+import { useInXR } from './xr.jsx'
 
 // The reading layer.
 //
@@ -47,11 +48,15 @@ function useTypeset(html) {
   }, [html])
 }
 
-export default function CaseFile({ film, links, anchor, onClose, onJump }) {
+export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter }) {
   const body = useTypeset(film.panel)
   const [show, setShow] = useState(false)
   const scroller = useRef(null)
   const P = useMemo(() => sheetOf(film.palette), [film.palette])
+  // Entering a film's room is Phase 1's headset boundary: the rig stands
+  // down in XR and there is nowhere for "step inside" to fly the camera to,
+  // so the affordance simply does not exist there (Phase 3+ item).
+  const inXR = useInXR()
 
   // let the camera get most of the way there before the paper appears —
   // arriving and the sheet arriving at once reads as a pop-up again
@@ -210,17 +215,36 @@ export default function CaseFile({ film, links, anchor, onClose, onJump }) {
             </div>
           )}
 
-          <button
-            onClick={onClose}
-            style={{
-              marginTop: 24, cursor: 'pointer', background: 'none',
-              border: `1px solid ${rgba(P.ink, 0.32)}`, color: P.sub,
-              fontFamily: 'system-ui, sans-serif', fontSize: 10.5, letterSpacing: '.2em',
-              textTransform: 'uppercase', padding: '9px 15px',
-            }}
-          >
-            put it back
-          </button>
+          <div style={{ marginTop: 24, display: 'flex', gap: 10 }}>
+            <button
+              onClick={onClose}
+              style={{
+                cursor: 'pointer', background: 'none',
+                border: `1px solid ${rgba(P.ink, 0.32)}`, color: P.sub,
+                fontFamily: 'system-ui, sans-serif', fontSize: 10.5, letterSpacing: '.2em',
+                textTransform: 'uppercase', padding: '9px 15px',
+              }}
+            >
+              put it back
+            </button>
+
+            {/* the portal. Masking-tape tab, same paper language as the
+                sheet it hangs off of — this is how you walk INTO the
+                photo rather than just reading its back. */}
+            {!inXR && (
+              <button
+                onClick={() => onEnter?.(film.slug)}
+                style={{
+                  cursor: 'pointer', background: rgba(P.acc, 0.14),
+                  border: `1px solid ${rgba(P.acc, 0.5)}`, color: P.acc,
+                  fontFamily: 'system-ui, sans-serif', fontSize: 10.5, letterSpacing: '.2em',
+                  textTransform: 'uppercase', padding: '9px 15px', fontWeight: 700,
+                }}
+              >
+                step inside
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </Html>

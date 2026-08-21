@@ -1,12 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import * as THREE from 'three'
 import { Canvas } from '@react-three/fiber'
-import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration } from '@react-three/postprocessing'
+import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { ROOM } from './Room.jsx'
 import { STATIONS } from './CameraRig.jsx'
 import { CARD_W, CARD_H } from './Polaroid.jsx'
+import { setDragDistance } from './pointer.js'
 import MotelWorld from './MotelWorld.jsx'
+import FilmWorld from './rooms/FilmWorld.jsx'
+import Develop from './rooms/Develop.jsx'
+import { getRoomConfig } from './rooms/registry.js'
 import ColdOpen from './ColdOpen.jsx'
 import Guide from './Guide.jsx'
 import Lens, { useVibes } from './Lens.jsx'
@@ -101,7 +105,11 @@ function layout(films, scoreToY) {
 // reads as eye strain within about a minute), and the stack alone costs more
 // than the entire 72fps budget allows. The room loses its bloom and grain in VR
 // and gains being a place you can stand in.
-function Post() {
+// `grade` is null in the motel and a film's { hue, sat, contrast } once one
+// of its rooms is open. The composer itself never unmounts across that swap
+// (an EffectComposer remount is a frame of flash) — only which effects it
+// carries changes.
+function Post({ grade }) {
   if (useInXR()) return null
   return (
     <EffectComposer>
@@ -111,6 +119,8 @@ function Post() {
       <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
       <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
       <Vignette eskil={false} offset={0.24} darkness={0.92} />
+      {grade && <HueSaturation hue={grade.hue || 0} saturation={grade.sat || 0} />}
+      {grade && <BrightnessContrast brightness={0} contrast={grade.contrast || 0} />}
     </EffectComposer>
   )
 }
@@ -129,20 +139,91 @@ export default function App() {
   const [lensOpen, setLensOpen] = useState(false)
   const [finding, setFinding] = useState(false)
 
+  // Where you are. 'motel' is the room you already know; 'entering:<slug>'
+  // and 'exiting:<slug>' are the ~1.4s portal wash in either direction;
+  // 'film:<slug>' is standing inside a film's own room. Deliberately its own
+  // piece of state rather than folded into `station` — station feeds
+  // CameraRig/XRPlayer/originFor/the dock's active test for the MOTEL, and
+  // overloading it here would mean every one of those has to learn to ignore
+  // values that mean nothing to it.
+  const [world, setWorld] = useState('motel')
+  // the develop wash currently on screen, or null. Its own state (not derived
+  // from `world`) because it has to keep fading out for ~600ms AFTER `world`
+  // has already flipped to the other side — if it were only mounted while
+  // world matched 'entering:'/'exiting:', it would vanish mid-fade the instant
+  // the peak swap happened.
+  const [transition, setTransition] = useState(null)
+  // the station you were standing at before you stepped inside a photo, so
+  // exiting can put you back rather than just dumping you at 'ledger'.
+  const preEntryStation = useRef('ledger')
+
+  const filmSlug = world.startsWith('film:') ? world.slice(5)
+    : world.startsWith('entering:') ? world.slice(9)
+    : world.startsWith('exiting:') ? world.slice(8)
+    : null
+  const motelMounted = world === 'motel' || world.startsWith('entering:')
+  const filmMounted = world.startsWith('film:') || world.startsWith('exiting:')
+
+  // Stepping into a photo. Only ever from the motel, only ever a Ledger film
+  // that is currently inspected (CaseFile is the only place this is called
+  // from), and never in a headset — there is no rig to hand the camera off
+  // to mid-flight in XR, and the affordance that calls this is hidden there
+  // (see CaseFile.jsx).
+  const enterFilm = (slug) => {
+    if (world !== 'motel' || !slug || xrStore.getState().session != null) return
+    preEntryStation.current = station
+    setWorld('entering:' + slug)
+    setTransition({ id: 'enter:' + slug + ':' + Date.now() })
+    const url = new URL(location.href)
+    url.searchParams.set('room', slug)
+    url.searchParams.delete('film')
+    url.searchParams.delete('print')
+    history.pushState(null, '', url)
+  }
+
+  // Stepping back out. Esc, the persistent "back to the wall" affordance, and
+  // browser back all funnel here.
+  const exitFilm = () => {
+    if (!world.startsWith('film:')) return
+    setWorld('exiting:' + world.slice(5))
+    setTransition({ id: 'exit:' + world.slice(5) + ':' + Date.now() })
+  }
+
+  // The wash's peak is where the world actually swaps underneath the white-
+  // out — MotelWorld/FilmWorld trade places while the screen is fully covered.
+  const handleDevelopPeak = () => {
+    setDragDistance(0)
+    document.body.style.cursor = 'auto'
+    if (world.startsWith('entering:')) {
+      setWorld('film:' + world.slice(9))
+      setSelected(null)
+    } else if (world.startsWith('exiting:')) {
+      const slug = world.slice(8)
+      setWorld('motel')
+      setSelected(slug)
+      setStation(preEntryStation.current || 'ledger')
+    }
+  }
+
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
       .then((r) => r.json())
       .then((d) => {
         setData(d)
         const b = document.getElementById('boot'); if (b) b.style.display = 'none'
-        // Addresses. ?film= is a card on the Ledger wall, ?print= is a print in
-        // one of the two archives. Reload lands you back in front of the thing
-        // you were looking at instead of in the middle of the room, and either
-        // one is a link you can send someone.
+        // Addresses. ?room=<slug> is standing inside a film's own world;
+        // ?film= is a card on the Ledger wall; ?print= is a print in one of
+        // the two archives. Reload lands you back in front of the thing you
+        // were looking at instead of in the middle of the room, and any one
+        // of the three is a link you can send someone. room and film are
+        // mutually exclusive — room wins, straight in, no transition.
         const q = new URLSearchParams(location.search)
+        const room = q.get('room')
         const want = q.get('film')
         const print = q.get('print')
-        if (want && d.films.some((f) => f.slug === want)) {
+        if (room && d.films.some((f) => f.slug === room)) {
+          setWorld('film:' + room)
+        } else if (want && d.films.some((f) => f.slug === want)) {
           setStation('ledger')
           setSelected(want)
         } else if (print) {
@@ -158,6 +239,16 @@ export default function App() {
       .catch((e) => console.error('vault-data load failed', e))
   }, [])
 
+  // Browser back exits a film room. On entering we push a history entry
+  // (?room=<slug>); the mechanism for film/print stays replaceState, as
+  // before this feature existed.
+  useEffect(() => {
+    const onPop = () => { if (world.startsWith('film:')) exitFilm() }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [world])
+
   useEffect(() => {
     const k = (e) => {
       // "/" is the universal open-the-search key; ignore it while typing
@@ -165,7 +256,13 @@ export default function App() {
         e.preventDefault()
         return setFinding(true)
       }
+      if (e.key === 'Enter' && world === 'motel' && selected && xrStore.getState().session == null) {
+        return enterFilm(selected)
+      }
       if (e.key !== 'Escape') return
+      // a film room is the outermost layer there is — Esc closes it before it
+      // starts closing anything back in the motel
+      if (world.startsWith('film:')) return exitFilm()
       // panels first: Esc should shut what is in front of you before it starts
       // walking you back across the room
       if (finding) return setFinding(false)
@@ -180,21 +277,32 @@ export default function App() {
     }
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
-  }, [picked, openBox, finding, lensOpen, lens])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picked, openBox, finding, lensOpen, lens, world, selected, station])
 
   // A film is a place, so it gets an address. `?film=<slug>` started life as a
   // screenshot-harness hack; keeping the address bar in step with what is open
   // makes a case file something you can send someone, and makes reload land you
-  // back where you were instead of in the middle of the room.
+  // back where you were instead of in the middle of the room. Standing inside
+  // a film's own room writes `?room=<slug>` instead, and the two never coexist.
+  // Mid-transition (entering/exiting) the address bar is left alone —
+  // transient, and enterFilm() already pushed the room address once.
   useEffect(() => {
     if (!data) return
     const url = new URL(location.href)
-    if (selected) url.searchParams.set('film', selected)
-    else url.searchParams.delete('film')
-    if (picked) url.searchParams.set('print', picked)
-    else url.searchParams.delete('print')
+    if (world.startsWith('film:')) {
+      url.searchParams.set('room', world.slice(5))
+      url.searchParams.delete('film')
+      url.searchParams.delete('print')
+    } else if (world === 'motel') {
+      url.searchParams.delete('room')
+      if (selected) url.searchParams.set('film', selected)
+      else url.searchParams.delete('film')
+      if (picked) url.searchParams.set('print', picked)
+      else url.searchParams.delete('print')
+    }
     history.replaceState(null, '', url)
-  }, [selected, picked, data])
+  }, [selected, picked, data, world])
 
   const scoreToY = useMemo(() => makeScoreToY(data?.films), [data])
   const vibes = useVibes(data?.films)
@@ -257,6 +365,13 @@ export default function App() {
     [placed]
   )
   const openFilm = selected ? byPlace[selected]?.film : null
+  // the film whose room is (becoming) open — always a Ledger film in Wave A,
+  // since CaseFile (Ledger-only) is the sole entry point
+  const roomFilm = filmSlug ? byPlace[filmSlug]?.film : null
+  const roomConfig = useMemo(
+    () => (roomFilm ? getRoomConfig(filmSlug, roomFilm) : null),
+    [filmSlug, roomFilm]
+  )
 
   // string is strung between pins, which sit at the top of each card
   const pinPoints = useMemo(
@@ -271,7 +386,21 @@ export default function App() {
   // past them. The old framing put the camera far enough back that the sheet
   // had to be a screen-edge panel to be readable; standing in reading distance
   // is what lets the file be a physical thing.
+  //
+  // Entering a photo overrides all of that with one more viewpoint: converged
+  // tight on the card face itself, the camera closing in as the develop wash
+  // rises to cover the swap.
   const view = useMemo(() => {
+    if (world.startsWith('entering:')) {
+      const p = byPlace[world.slice(9)]
+      if (p) {
+        const [x, y, z] = p.position
+        return {
+          key: 'enter:' + world.slice(9),
+          station: { pos: [x, y, z + 0.12], look: [x, y, z], fov: 28 },
+        }
+      }
+    }
     if (!selected) return { station, key: station }
     const p = byPlace[selected]
     if (!p) return { station, key: station }
@@ -284,7 +413,7 @@ export default function App() {
         fov: 46,
       },
     }
-  }, [selected, station, byPlace])
+  }, [world, selected, station, byPlace])
 
   return (
     <>
@@ -296,40 +425,60 @@ export default function App() {
         onPointerMissed={() => setSelected(null)}
       >
        <XR store={xrStore}>
-        <color attach="background" args={['#05040a']} />
+        <color attach="background" args={[filmMounted && roomConfig ? roomConfig.grade.bg : '#05040a']} />
 
         <XRPlayer station={view.station} />
-        <XRFloorZone onBack={() => { setSelected(null); setPicked(null); setOpenBox(null); setStation('center') }} />
+        {motelMounted && (
+          <XRFloorZone onBack={() => { setSelected(null); setPicked(null); setOpenBox(null); setStation('center') }} />
+        )}
 
-        <MotelWorld
-          data={data}
-          thread={thread}
-          view={view}
-          openBox={openBox}
-          picked={picked}
-          selected={selected}
-          hover={hover}
-          lens={lens}
-          scoreToY={scoreToY}
-          placed={placed}
-          byPlace={byPlace}
-          pinPoints={pinPoints}
-          quotesBySlug={quotesBySlug}
-          ledgerQuotes={ledgerQuotes}
-          looseQuotes={looseQuotes}
-          openFilm={openFilm}
-          setSelected={setSelected}
-          setStation={setStation}
-          setOpenBox={setOpenBox}
-          setPicked={setPicked}
-          setHover={setHover}
-          goBox={goBox}
-          openBoxAt={openBoxAt}
-        />
+        {motelMounted && (
+          <MotelWorld
+            data={data}
+            thread={thread}
+            view={view}
+            openBox={openBox}
+            picked={picked}
+            selected={selected}
+            hover={hover}
+            lens={lens}
+            scoreToY={scoreToY}
+            placed={placed}
+            byPlace={byPlace}
+            pinPoints={pinPoints}
+            quotesBySlug={quotesBySlug}
+            ledgerQuotes={ledgerQuotes}
+            looseQuotes={looseQuotes}
+            // hidden mid-flight into a photo: the sheet floating in front of a
+            // camera that has already moved past it reads as a glitch, not a
+            // transition
+            openFilm={world === 'motel' ? openFilm : null}
+            setSelected={setSelected}
+            setStation={setStation}
+            setOpenBox={setOpenBox}
+            setPicked={setPicked}
+            setHover={setHover}
+            goBox={goBox}
+            openBoxAt={openBoxAt}
+            onEnter={enterFilm}
+          />
+        )}
 
-        <Post />
+        {filmMounted && roomFilm && roomConfig && (
+          <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} />
+        )}
+
+        <Post grade={filmMounted && roomConfig ? roomConfig.grade : null} />
        </XR>
       </Canvas>
+
+      {transition && (
+        <Develop
+          key={transition.id}
+          onPeak={handleDevelopPeak}
+          onDone={() => setTransition(null)}
+        />
+      )}
 
       {/* HUD.
           The dock and the hint carry real CSS rather than inline styles,
@@ -358,82 +507,110 @@ export default function App() {
         }
       `}</style>
 
-      <div style={hud.brand}>
-        <div style={hud.title}>The Vault</div>
-        {data && <div style={hud.sub}>{data.count} films · avg {data.avg} · scored live</div>}
-      </div>
+      {world === 'motel' && (
+        <div style={hud.brand}>
+          <div style={hud.title}>The Vault</div>
+          {data && <div style={hud.sub}>{data.count} films · avg {data.avg} · scored live</div>}
+        </div>
+      )}
 
       {/* The dock. One row that scrolls sideways rather than wrapping: at
           390px the wrapped version stacked into three rows and the hint line
           rendered on top of the bottom one. Places on the left, modes after
           the rule — "the door" is somewhere you stand, "investigation" is
           something you switch on, and the old flat row said they were the same
-          kind of thing. */}
-      <div className="vault-dock">
-        {[
-          ['center', 'stand'],
-          ['ledger', 'the ledger'],
-          ['door', 'the door'],
-          ['mirror', 'the mirror'],
-          ['shoebox', 'the shoebox'],
-          ['drawer', 'the drawer'],
-        ].map(([k, label]) => (
+          kind of thing. Hidden entirely once a film's own room is open — that
+          room has its own, much smaller, HUD below. */}
+      {world === 'motel' && (
+        <div className="vault-dock">
+          {[
+            ['center', 'stand'],
+            ['ledger', 'the ledger'],
+            ['door', 'the door'],
+            ['mirror', 'the mirror'],
+            ['shoebox', 'the shoebox'],
+            ['drawer', 'the drawer'],
+          ].map(([k, label]) => (
+            <button
+              key={k}
+              aria-label={label}
+              onClick={() => {
+                if (k === 'shoebox' || k === 'drawer') return goBox(k)
+                setOpenBox(null)
+                setPicked(null)
+                setStation(k)
+              }}
+              style={{ ...hud.navBtn, ...(station === k ? hud.navOn : null) }}
+            >
+              {label}
+            </button>
+          ))}
+
+          <span style={hud.rule} />
+
           <button
-            key={k}
-            aria-label={label}
-            onClick={() => {
-              if (k === 'shoebox' || k === 'drawer') return goBox(k)
-              setOpenBox(null)
-              setPicked(null)
-              setStation(k)
-            }}
-            style={{ ...hud.navBtn, ...(station === k ? hud.navOn : null) }}
+            aria-label="investigation"
+            onClick={() => { setOpenBox(null); setPicked(null); setStation('investigation') }}
+            style={{ ...hud.navBtn, ...(station === 'investigation' ? hud.navOn : null) }}
+            title="the red string between films that rhyme"
           >
-            {label}
+            investigation
           </button>
-        ))}
+          <button
+            aria-label="lens"
+            onClick={() => { setLensOpen((v) => !v); setFinding(false) }}
+            style={{ ...hud.navBtn, ...(lens || lensOpen ? hud.navOn : null) }}
+            title="dim everything that is not a given vibe"
+          >
+            {lens ? 'lens · ' + lens : 'lens'}
+          </button>
+          <button
+            aria-label="find"
+            onClick={() => { setFinding((v) => !v); setLensOpen(false) }}
+            style={{ ...hud.navBtn, ...(finding ? hud.navOn : null) }}
+            title="find a film anywhere in the room  ( / )"
+          >
+            find
+          </button>
+          <button
+            onClick={() => { tone ? stopRoomTone() : startRoomTone(); setTone(!tone) }}
+            style={{ ...hud.navBtn, ...(tone ? hud.navOn : null) }}
+            title="air handler, two floors down"
+          >
+            {tone ? 'room tone ·on' : 'room tone'}
+          </button>
+          <EnterVR style={{ ...hud.navBtn, ...hud.navVr }} />
+        </div>
+      )}
 
-        <span style={hud.rule} />
+      {world === 'motel' && (
+        <div className="vault-hint">
+          {openBox
+            ? 'click a print to hold it up · esc to put the box away'
+            : 'drag to look · scroll to zoom · click a wall to approach · / to find · esc to stand back'}
+        </div>
+      )}
 
-        <button
-          aria-label="investigation"
-          onClick={() => { setOpenBox(null); setPicked(null); setStation('investigation') }}
-          style={{ ...hud.navBtn, ...(station === 'investigation' ? hud.navOn : null) }}
-          title="the red string between films that rhyme"
-        >
-          investigation
-        </button>
-        <button
-          aria-label="lens"
-          onClick={() => { setLensOpen((v) => !v); setFinding(false) }}
-          style={{ ...hud.navBtn, ...(lens || lensOpen ? hud.navOn : null) }}
-          title="dim everything that is not a given vibe"
-        >
-          {lens ? 'lens · ' + lens : 'lens'}
-        </button>
-        <button
-          aria-label="find"
-          onClick={() => { setFinding((v) => !v); setLensOpen(false) }}
-          style={{ ...hud.navBtn, ...(finding ? hud.navOn : null) }}
-          title="find a film anywhere in the room  ( / )"
-        >
-          find
-        </button>
-        <button
-          onClick={() => { tone ? stopRoomTone() : startRoomTone(); setTone(!tone) }}
-          style={{ ...hud.navBtn, ...(tone ? hud.navOn : null) }}
-          title="air handler, two floors down"
-        >
-          {tone ? 'room tone ·on' : 'room tone'}
-        </button>
-        <EnterVR style={{ ...hud.navBtn, ...hud.navVr }} />
-      </div>
-
-      <div className="vault-hint">
-        {openBox
-          ? 'click a print to hold it up · esc to put the box away'
-          : 'drag to look · scroll to zoom · click a wall to approach · / to find · esc to stand back'}
-      </div>
+      {/* The film room's own HUD: a title strip and the one affordance that
+          is always there to get you back out, however you got in. */}
+      {world.startsWith('film:') && roomFilm && (
+        <>
+          <div style={hud.filmStrip}>
+            <div style={hud.filmTitle}>
+              {roomFilm.title}{roomFilm.year ? ` (${roomFilm.year})` : ''}
+            </div>
+            <div style={hud.filmScore}>{roomFilm.score.toFixed(1)}</div>
+            <div style={hud.filmHint}>i to hide the record</div>
+          </div>
+          <button
+            onClick={exitFilm}
+            style={hud.backToWall}
+            title="esc, or browser back, does the same thing"
+          >
+            back to the wall
+          </button>
+        </>
+      )}
 
       {lensOpen && (
         <Lens vibes={vibes} value={lens} onPick={setLens} onClose={() => setLensOpen(false)} />
@@ -468,7 +645,7 @@ export default function App() {
         </div>
       )}
 
-      {data && (
+      {data && world === 'motel' && (
         <Guide
           counts={{
             films: data.count,
@@ -502,6 +679,29 @@ const hud = {
   },
   navOn: { color: '#f2e4c8', border: '1px solid rgba(255,190,120,.55)', background: 'rgba(50,32,16,.72)' },
   navVr: { color: '#cbb9d8', border: '1px solid rgba(190,150,220,.4)' },
+
+  // The film room's own, much smaller, HUD — title/score/hint up top, one way
+  // back out fixed to the corner. No dock, no lens, no find: those are
+  // questions about the wall, and you are not standing at the wall.
+  filmStrip: {
+    position: 'fixed', top: 16, left: 20, right: 20, display: 'flex',
+    alignItems: 'baseline', gap: 14, color: '#efe7d6', pointerEvents: 'none',
+    fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.85)',
+  },
+  filmTitle: { fontSize: 22, fontStyle: 'italic' },
+  filmScore: { fontSize: 15, fontFamily: 'system-ui, sans-serif', opacity: 0.85 },
+  filmHint: {
+    marginLeft: 'auto', fontSize: 11.5, letterSpacing: '.08em', color: '#a99c85',
+    fontFamily: 'system-ui, sans-serif', textTransform: 'uppercase',
+  },
+  backToWall: {
+    position: 'fixed', left: 20, bottom: 22, cursor: 'pointer',
+    background: 'rgba(20,15,10,.68)', color: '#cdbfa4',
+    border: '1px solid rgba(180,160,120,.3)', borderRadius: 2,
+    padding: '9px 16px', fontSize: 11, letterSpacing: '.16em',
+    textTransform: 'uppercase', fontFamily: 'system-ui, sans-serif',
+    backdropFilter: 'blur(3px)',
+  },
 
   print: {
     position: 'fixed', top: 96, right: 22, width: 276, padding: '16px 18px 18px',

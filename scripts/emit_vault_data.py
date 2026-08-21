@@ -39,6 +39,12 @@ PANELS = load("ledger_panels.json")      # [{slug, palette_css, panel_html}]
 PHOTOS = load("photos.json")             # slug -> svg (vars unresolved)
 TITLES = load("titles.json")             # slug -> {year, runtime, poster, genres, director}
 LOG_EXTRA = load("log_extra.json")["films"]   # slug -> {vibes, rewatch}
+# The Vault Immersion record (Phase 1, 2026-08-21): each film's own room shows
+# the hot take verbatim + how it was watched. Pulled from Supabase alongside
+# the rest of data/ -- see hot_takes.json's own _source note. Null-safe: a
+# film with no take yet (a fresh addition to the wall) still emits, just with
+# both fields null, and Default.jsx / InfoSurfaces.jsx already handle that.
+HOT_TAKES = load("hot_takes.json")["takes"]  # slug -> {hot_take, context}
 
 PAL_BY_SLUG = {p["slug"]: p["palette_css"] for p in PANELS}
 PANEL_BY_SLUG = {p["slug"]: p.get("panel_html") for p in PANELS}
@@ -165,6 +171,10 @@ for slug, (date, score, title) in META.items():
         "vibes": (LOG_EXTRA.get(slug) or {}).get("vibes") or [],
         # a rewatch is a film he came back to; the wall gives it a second pin.
         "rewatch": bool((LOG_EXTRA.get(slug) or {}).get("rewatch")),
+        # the film's own room (Vault Immersion, Wave A): the hot take is
+        # rendered VERBATIM there, never cleaned up -- see hot_takes.json.
+        "hot_take": (HOT_TAKES.get(slug) or {}).get("hot_take"),
+        "context": (HOT_TAKES.get(slug) or {}).get("context"),
     })
 
 # score desc, then title -- the salon hang order (rank = height, computed app-side)
@@ -408,6 +418,7 @@ print("  vibes:", sum(1 for f in films if f["vibes"]),
       "| rewatches:", sum(1 for f in films if f["rewatch"]),
       "| snap lines:", sum(1 for a in archive if a.get("snap")),
       "| favourites:", sum(1 for a in archive if a.get("affinity") == "favorite"))
+print("  hot takes:", sum(1 for f in films if f["hot_take"]), "/", len(films))
 print("  shoebox:", len(shoebox), "| dark drawer:", len(drawer),
       "| archive posters:", sum(1 for a in archive if a["poster"]))
 print("  quotes:", len(quotes),

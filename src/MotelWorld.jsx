@@ -68,6 +68,7 @@ export default function MotelWorld({
   setHover,
   goBox,
   openBoxAt,
+  onEnter,
 }) {
   return (
     <>
@@ -158,6 +159,7 @@ export default function MotelWorld({
           anchor={byPlace[selected].position}
           onClose={() => setSelected(null)}
           onJump={(slug) => setSelected(slug)}
+          onEnter={onEnter}
         />
       )}
 
