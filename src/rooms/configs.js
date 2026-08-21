@@ -255,9 +255,14 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------------- stby
+  // Bespoke now (Phase 2, src/rooms/bespoke/Stby.jsx): grade/camera below
+  // match the bespoke room's own fixed office station. `place` is dead
+  // weight for the same reason as the-departed's/baby-driver's own entries
+  // above — the bespoke component never reads it; left in place as the
+  // pre-bespoke Wave B stand-in.
   stby: {
     family: 'intimate-tension',
-    grade: { key: '#c9d8e0', fill: '#20242a', sat: -0.05 },
+    grade: { bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfe8ff', fill: '#20242a', sat: -0.05, ambient: 0.35 },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
     place: {
       shell: 'box',
