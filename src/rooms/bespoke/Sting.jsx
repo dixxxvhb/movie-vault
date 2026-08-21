@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { counter as Counter, barShelf as BarShelf } from '../props.jsx'
+import { counter as Counter, barShelf as BarShelf, footprint } from '../props.jsx'
+import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { makeMetaTexture, makeScoreTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
 import { useRoomAudio } from '../audio/engine.js'
@@ -21,9 +22,15 @@ import { wasDrag } from '../../pointer.js'
 // primer-grey wireframe); one wall — the left one — periodically strikes
 // itself and rebuilds on a long cycle; and the hot take is painted, in big
 // brush strokes, on the back of the largest flat (the back wall), found
-// only by walking behind it. Three stations (click-to-advance, no free
-// walk, same doctrine as every other room): FRONT (the parlor as staged),
-// BEHIND (the back wall's raw side), FBI (the doorway threshold).
+// only by walking behind it. Wave M3: free walk. The old click-to-advance
+// hotspots (front/behind/fbi, Memento-style) are gone; the whole point of
+// this room is walking behind the flats yourself. The three named
+// stations (FRONT the parlor as staged, BEHIND the back wall's raw side,
+// FBI the doorway threshold) survive as clickable landmark rings, same
+// convention as BR2049/Enemy, for anyone who wants the composed shot
+// instead of the walk. Each flat is a freestanding panel, not a sealed
+// box: its collider is open at both ends so you can walk around it, the
+// way a real stage flat works.
 const ROOM_W = 4.6
 const ROOM_D = 4.6
 const ROOM_H = 2.7
@@ -316,21 +323,38 @@ function BrassRail({ pos, length = 2.2 }) {
   )
 }
 
-/* -------------------------------------------------------------- click hotspots */
+/* -------------------------------------------------------------- colliders */
 
-function Hotspot({ pos, size, rot, onSelect }) {
-  return (
-    <mesh
-      position={pos}
-      rotation={rot || [0, 0, 0]}
-      onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onSelect() }}
-      onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
-      onPointerOut={() => { document.body.style.cursor = 'auto' }}
-    >
-      <planeGeometry args={size} />
-      <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
-    </mesh>
-  )
+// Each flat is a thin blocking slab, inset from its own full span so BOTH
+// ends stay clear of the neighboring flat's own inset end — a small
+// corner gap at all four corners of the nominal box, just wide enough
+// (radius ~0.28m walker) to walk through into the backstage space beyond.
+// Both faces block (a plain rect blocks from either side already).
+const FLAT_T = 0.14
+const END_MARGIN = 0.7   // walkable corner gap: ROOM_W/2 - this
+
+function stingRects() {
+  const half = ROOM_W / 2         // ROOM_W === ROOM_D
+  const inner = half - END_MARGIN // +-1.6
+  const doorInner = DOOR_W / 2    // 0.5, the door's own clear half-width
+  return [
+    // back wall (BACK_Z), open at both ends
+    { minX: -inner, maxX: inner, minZ: BACK_Z - FLAT_T / 2, maxZ: BACK_Z + FLAT_T / 2 },
+    // left wall (LEFT_X), open at both ends
+    { minX: LEFT_X - FLAT_T / 2, maxX: LEFT_X + FLAT_T / 2, minZ: -inner, maxZ: inner },
+    // front wall (FRONT_Z), open at both ends
+    { minX: -inner, maxX: inner, minZ: FRONT_Z - FLAT_T / 2, maxZ: FRONT_Z + FLAT_T / 2 },
+    // right wall, split around the door gap; each panel open at its OUTER
+    // (far-corner) end, and already open at the door end
+    { minX: RIGHT_X - FLAT_T / 2, maxX: RIGHT_X + FLAT_T / 2, minZ: -inner, maxZ: -doorInner },
+    { minX: RIGHT_X - FLAT_T / 2, maxX: RIGHT_X + FLAT_T / 2, minZ: doorInner, maxZ: inner },
+    // FBI office desk — the one thing in there worth blocking; the
+    // wireframe shell itself is walk-through (it never finished, remember)
+    { minX: RIGHT_X + FBI_W / 2 - 0.6, maxX: RIGHT_X + FBI_W / 2 + 0.6, minZ: -0.3, maxZ: 0.3 },
+    // parlor furniture, riding against the back wall
+    ...footprint({ type: 'counter', pos: [-1.4, 0, BACK_Z + 0.55], w: 2, d: 0.6, h: 0.95 }),
+    ...footprint({ type: 'barShelf', pos: [-1.4, 0, BACK_Z + 0.1], w: 1.8 }),
+  ]
 }
 
 /* -------------------------------------------------------------------- record */
@@ -396,6 +420,11 @@ const DOOR_MOUNT = {
 
 /* ------------------------------------------------------------------ room */
 
+const OWNER_ID = 'bespoke:sting'
+// covers the parlor box plus enough backstage/office space to reach every
+// flat's raw side and the FBI threshold on foot
+const BOUNDS = { kind: 'rect', minX: LEFT_X - 1.8, maxX: RIGHT_X + FBI_W + 0.3, minZ: BACK_Z - 2.0, maxZ: FRONT_Z + 1.8 }
+
 export default function Sting({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [station, setStation] = useState('front')
@@ -407,6 +436,12 @@ export default function Sting({ film, config, infoVisible = true, doors = [], go
   }
 
   const chalkTex = useMemo(() => makeChalkboardTexture(), [])
+
+  useEffect(() => {
+    registerColliders(OWNER_ID, stingRects())
+    setBounds(OWNER_ID, BOUNDS)
+    return () => clearOwner(OWNER_ID)
+  }, [])
 
   useRoomAudio(startStingAudio)
 
@@ -446,18 +481,21 @@ export default function Sting({ film, config, infoVisible = true, doors = [], go
         </mesh>
       </BuildRide>
 
-      {station === 'front' && (
-        <>
-          <Hotspot pos={[0, 1.3, BACK_Z + 0.35]} size={[ROOM_W * 0.7, ROOM_H * 0.6]} onSelect={() => goto('behind')} />
-          <Hotspot pos={[RIGHT_X - 0.02, 1.2, DOOR_Z]} rot={[0, -Math.PI / 2, 0]} size={[DOOR_W, DOOR_H]} onSelect={() => goto('fbi')} />
-        </>
-      )}
-      {station === 'behind' && (
-        <Hotspot pos={[0, 1.3, BACK_Z - 1.2]} size={[3, 2.4]} onSelect={() => goto('front')} />
-      )}
-      {station === 'fbi' && (
-        <Hotspot pos={[RIGHT_X + 0.6, 1.2, DOOR_Z]} rot={[0, -Math.PI / 2, 0]} size={[2.6, 2.4]} onSelect={() => goto('front')} />
-      )}
+      {/* named landmarks: free walk gets you anywhere in the room, these
+          rings are the shortcut to the three composed shots */}
+      {Object.entries(STATIONS).map(([key, st]) => (
+        <mesh
+          key={key}
+          position={[st.pos[0], 0.012, st.pos[2]]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; goto(key) }}
+          onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
+          onPointerOut={() => { document.body.style.cursor = 'auto' }}
+        >
+          <ringGeometry args={[0.2, 0.26, 20]} />
+          <meshBasicMaterial color="#c8964a" transparent opacity={station === key ? 0.55 : 0.2} depthWrite={false} />
+        </mesh>
+      ))}
 
       <ParlorRecord film={film} infoVisible={infoVisible} />
 
