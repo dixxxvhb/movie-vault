@@ -495,14 +495,18 @@ export const CONFIGS = {
   stardust: {
     family: 'weird-fable',
     grade: { key: '#e8b868', fill: '#1c1c30', ambient: 0.1 },
-    camera: { pos: [0, 1.5, 1.6], look: [0, 1.4, -2], fov: 52, far: 150 },
+    // pulled back from the wall (was nose-to-stone at 1.6 with a "gap" slab
+    // that just read as a second solid wall — no CSG here, so the gap is
+    // two pillars with real empty space between them, and the camera sits
+    // far back enough to actually see through it to the meadow)
+    camera: { pos: [0, 1.5, 2.6], look: [0, 1.4, -3], fov: 50, far: 150 },
     place: {
       shell: 'open',
       shellParams: { ground: 'grass', groundColor: '#2a2818', skyTop: '#0a0a20', skyBottom: '#181430', horizon: false },
       props: [
-        { type: 'slab', pos: [0, 1, -1], size: [3, 2, 0.4], color: '#4a4438' },
-        { type: 'slab', pos: [0, 0.6, -1], size: [0.8, 1.2, 0.42], color: '#0a0a0c' },
-        { type: 'lampPractical', pos: [1.2, 0.8, 0.4], color: '#ffb868', intensity: 0.9 },
+        { type: 'slab', pos: [-1.25, 1, -2], size: [1.3, 2, 0.5], color: '#4a4438' },
+        { type: 'slab', pos: [1.25, 1, -2], size: [1.3, 2, 0.5], color: '#4a4438' },
+        { type: 'lampPractical', pos: [1.5, 0.8, 0.4], color: '#ffb868', intensity: 0.9 },
       ],
       systems: [
         { type: 'AdvanceGlow', from: [-6, 6, -10], axis: 'x', speed: 0.02, resetAt: 12, color: '#fff6d0', prop: 'sphere' },
