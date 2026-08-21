@@ -61,10 +61,15 @@ export const CONFIGS = {
   },
 
   // ----------------------------------------------------------- the-departed
+  // Bespoke now (Phase 2, src/rooms/bespoke/Departed.jsx): camera retuned to
+  // the hand-built roof/elevator geometry — the `place` block below is the
+  // pre-bespoke Wave B stand-in, left in place unused (Memento's config keeps
+  // the same kind of dead `place` block; the bespoke component never reads
+  // it, GenericRoom never runs for a slug with a BESPOKE entry).
   'the-departed': {
     family: 'intimate-tension',
     grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.22 },
-    camera: { pos: [0, 1.6, 3], look: [0, 1.5, -4], fov: 52, far: 200 },
+    camera: { pos: [0, 1.6, 3.4], look: [0, 1.45, -3.3], fov: 54, far: 90 },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#3a342c', skyTop: '#e8b060', skyBottom: '#2a2018', horizon: true, distantCity: 22 },
