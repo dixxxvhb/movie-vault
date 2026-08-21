@@ -33,6 +33,31 @@ export function clearOwner(ownerId) {
   floorByOwner.delete(ownerId)
 }
 
+// Wave M3 (Predestination's real loop is the one caller): a single-slot
+// pending teleport, consumed by CameraRig's walk branch once per frame,
+// BEFORE that frame's normal movement is integrated — so the canonical
+// walker position (CameraRig's `walkPos`) and camera.position both land on
+// the teleported spot atomically, with no frame where they disagree and no
+// leftover velocity direction fighting the new spot. This is the one engine
+// touch the M3 spec authorizes; kept as a tiny primitive here (not
+// Predestination-specific) so any future room with a real wraparound can
+// reuse it the same way. `y` is left alone — every caller so far only wraps
+// on the horizontal plane.
+let pendingTeleport = null
+
+export function teleportWalker(x, z) {
+  pendingTeleport = { x, z }
+}
+
+// Called by CameraRig once per frame; returns the pending teleport (if any)
+// and clears the slot so it fires exactly once.
+export function consumeTeleport() {
+  if (!pendingTeleport) return null
+  const t = pendingTeleport
+  pendingTeleport = null
+  return t
+}
+
 function clampNum(v, lo, hi) {
   return v < lo ? lo : v > hi ? hi : v
 }
