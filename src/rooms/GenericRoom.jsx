@@ -1,9 +1,10 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { Prop } from './props.jsx'
+import { Prop, footprint } from './props.jsx'
 import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
 import DoorRow from './DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
 
 // The one room. Every Tier-2 (and Tier-1-stand-in) slug renders through
 // here: shell + props + systems + lighting, all driven by config (Wave B
@@ -262,6 +263,79 @@ function DeckShell({ grade, p }) {
 
 const SHELLS = { box: BoxShell, open: OpenShell, corridor: CorridorShell, deck: DeckShell }
 
+/* ------------------------------------------------------- shell colliders */
+// Wave M1: one collider builder per shell, mirroring each Shell component's
+// own geometry above closely enough that "where the walls are drawn" and
+// "where the walker stops" never drift apart. Kept in this file (not
+// colliders.js, which stays a generic leaf) because it reads SHELLS-shaped
+// params directly.
+
+const WALL_T = 0.15
+
+function boxShellColliders(p) {
+  const w = p.w ?? 5, d = p.d ?? 5
+  const rects = [
+    // north / south (the ±Z walls)
+    { minX: -w / 2, maxX: w / 2, minZ: -d / 2 - WALL_T, maxZ: -d / 2 },
+    // west / east (the ±X walls)
+    { minX: -w / 2 - WALL_T, maxX: -w / 2, minZ: -d / 2, maxZ: d / 2 },
+    { minX: w / 2, maxX: w / 2 + WALL_T, minZ: -d / 2, maxZ: d / 2 },
+  ]
+  if (p.doorGap) {
+    // the south wall (z = +d/2) carries the gap — BoxShell only ever draws
+    // it there (see BoxShell's own doorGap mesh above). Split into the two
+    // segments flanking the ~1m opening rather than one solid rect.
+    rects.push(
+      { minX: -w / 2, maxX: -0.5, minZ: d / 2, maxZ: d / 2 + WALL_T },
+      { minX: 0.5, maxX: w / 2, minZ: d / 2, maxZ: d / 2 + WALL_T },
+    )
+  } else {
+    rects.push({ minX: -w / 2, maxX: w / 2, minZ: d / 2, maxZ: d / 2 + WALL_T })
+  }
+  const bounds = { kind: 'rect', minX: -w / 2 + 0.05, maxX: w / 2 - 0.05, minZ: -d / 2 + 0.05, maxZ: d / 2 - 0.05 }
+  return { rects, bounds }
+}
+
+function corridorShellColliders(p) {
+  const len = p.length ?? 14, width = p.width ?? 2.6
+  const rects = [
+    { minX: -width / 2 - WALL_T, maxX: -width / 2, minZ: -len, maxZ: 0 },
+    { minX: width / 2, maxX: width / 2 + WALL_T, minZ: -len, maxZ: 0 },
+    // far end; entry end (z=0) stays open
+    { minX: -width / 2, maxX: width / 2, minZ: -len - WALL_T, maxZ: -len },
+  ]
+  const bounds = { kind: 'rect', minX: -width / 2 + 0.05, maxX: width / 2 - 0.05, minZ: -len + 0.05, maxZ: 1 }
+  return { rects, bounds }
+}
+
+function deckShellColliders(p) {
+  const len = p.length ?? 10, width = p.width ?? 5
+  const rects = []
+  if (p.railing !== false) {
+    rects.push(
+      { minX: -width / 2 - 0.06, maxX: -width / 2, minZ: -len / 2, maxZ: len / 2 },
+      { minX: width / 2, maxX: width / 2 + 0.06, minZ: -len / 2, maxZ: len / 2 },
+    )
+  }
+  if (p.fogWall !== false) {
+    rects.push({ minX: -width / 2 - 3, maxX: width / 2 + 3, minZ: -len / 2 - 1.1, maxZ: -len / 2 - 0.9 })
+  }
+  const bounds = { kind: 'rect', minX: -width / 2 + 0.05, maxX: width / 2 - 0.05, minZ: -len / 2 + 0.05, maxZ: len / 2 - 0.05 }
+  return { rects, bounds }
+}
+
+// open shell has no walls to walk into — just the horizon kept out of reach.
+function openShellColliders() {
+  return { rects: [], bounds: { kind: 'circle', cx: 0, cz: 0, r: 34 } }
+}
+
+function shellColliders(shell, p) {
+  if (shell === 'box') return boxShellColliders(p)
+  if (shell === 'corridor') return corridorShellColliders(p)
+  if (shell === 'deck') return deckShellColliders(p)
+  return openShellColliders()
+}
+
 /* -------------------------------------------------------------- door row */
 
 // Bloodline doors (brief §6) get a sane default mount per shell type — not a
@@ -313,6 +387,44 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
   const props = place.props || []
   const systems = place.systems || []
   const doorMount = useMemo(() => defaultDoorMount(place), [place])
+
+  // Wave M1: auto-colliders. One owner per room instance (film.slug is
+  // stable for the room's lifetime; falls back to a constant so a caller
+  // without a slug — none today — still registers under a fixed id rather
+  // than silently registering nothing). Effect is keyed on `config` per the
+  // spec: a config swap (a new slug) is exactly when the shell/props change.
+  useEffect(() => {
+    const ownerId = 'room:' + (film?.slug ?? 'generic')
+    const shell = place.shell || 'box'
+    const { rects: shellRects, bounds } = shellColliders(shell, place.shellParams || {})
+    const propRects = props.flatMap((pp) => {
+      const local = footprint(pp)
+      // footprint() already reads pp.pos/pp.rot itself (world-space rects,
+      // no extra transform needed — props sit in the same local group as
+      // the shell, which is the walker's own coordinate frame).
+      return local
+    })
+    registerColliders(ownerId, [...shellRects, ...propRects])
+    setBounds(ownerId, bounds)
+
+    if (import.meta.env.DEV) {
+      const spawn = config.camera?.pos
+      if (spawn) {
+        const [sx, , sz] = spawn
+        const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+        const stuck = probes.every(([dx, dz]) => {
+          const r = resolveStep(sx, sz, dx, dz, 0.28)
+          return Math.hypot(r.x - sx, r.z - sz) < 0.02
+        })
+        if (stuck) {
+          // eslint-disable-next-line no-console
+          console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ownerId)
+        }
+      }
+    }
+
+    return () => clearOwner(ownerId)
+  }, [config, film?.slug, place, props])
 
   // Duplicates and Assembler are the two systems that WRAP content (the
   // spec's own wording — "renders children twice", "props fly in ... becoming

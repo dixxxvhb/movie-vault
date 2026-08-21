@@ -467,3 +467,139 @@ export function Prop({ type, ...rest }) {
   if (!Comp) return null
   return <Comp {...rest} />
 }
+
+/* ------------------------------------------------------------ footprints */
+// Wave M1: approximate axis-aligned collision footprints for GenericRoom's
+// auto-collider pass. Deliberately conservative (a rotated prop's footprint
+// widens to its rotated AABB rather than trying real oriented boxes — see
+// `rotatedAabbXZ` below) and deliberately generic (a table is one rect, a
+// chair row is one rect per seat) — good enough to keep the walker from
+// clipping through furniture without hand-tuning 40 configs' worth of props.
+//
+// Every entry returns an array of rects in the PROP's own local frame
+// (before pos/rot are applied) — GenericRoom's registration effect applies
+// pos/rot itself so this file stays a leaf (no THREE.Object3D math tied to
+// a live scene graph, just numbers).
+
+function rectXZ(cx, cz, hx, hz) {
+  return { minX: cx - hx, maxX: cx + hx, minZ: cz - hz, maxZ: cz + hz }
+}
+
+// Rotate a local-frame rect's half-extents by rot.y and re-derive a
+// conservative (possibly larger) axis-aligned box around the result — cheap
+// and correct in the two cases that actually occur in configs.js (rot.y ~ 0
+// or ~PI use the box as authored; anything else gets the safe wider box).
+function rotatedHalfExtents(hx, hz, rotY = 0) {
+  const c = Math.abs(Math.cos(rotY))
+  const s = Math.abs(Math.sin(rotY))
+  return { hx: hx * c + hz * s, hz: hx * s + hz * c }
+}
+
+const FOOTPRINTS = {
+  slab: (p) => {
+    const [w, h, d] = p.size || [1, 1, 1]
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, d / 2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [{ ...rectXZ(px, pz, hx, hz), top: h }]
+  },
+  table: (p) => {
+    const w = p.w ?? 1.4, d = p.d ?? 0.8
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, d / 2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [{ ...rectXZ(px, pz, hx, hz), top: p.h ?? 0.75 }]
+  },
+  chairRow: (p) => {
+    const count = p.count ?? 6, spacing = p.spacing ?? 0.62
+    const rotY = (p.rot && p.rot[1]) || 0
+    const [px, , pz] = p.pos || [0, 0, 0]
+    const half = 0.24 // seat/back footprint, roughly 0.44 wide
+    const items = Array.from({ length: count }, (_, i) => i - (count - 1) / 2)
+    return items.map((i) => {
+      const lx = i * spacing
+      const wx = px + lx * Math.cos(rotY)
+      const wz = pz + lx * Math.sin(rotY)
+      return rectXZ(wx, wz, half, half)
+    })
+  },
+  counter: (p) => {
+    const w = p.w ?? 2.4, d = p.d ?? 0.7
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, d / 2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [{ ...rectXZ(px, pz, hx, hz), top: p.h ?? 0.95 }]
+  },
+  barShelf: (p) => {
+    const w = p.w ?? 2
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, 0.2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, hx, hz)]
+  },
+  bed: (p) => {
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(0.65, 1, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [{ ...rectXZ(px, pz, hx, hz), top: 0.7 }]
+  },
+  podium: (p) => {
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, 0.3, 0.25)]
+  },
+  throne: (p) => {
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, 0.5, 0.5)]
+  },
+  tree: (p) => {
+    const [px, , pz] = p.pos || [0, 0, 0]
+    const scale = p.scale ?? 1
+    return [rectXZ(px, pz, 0.18 * scale, 0.18 * scale)]
+  },
+  vehicleMass: (p) => {
+    const w = p.w ?? 1.8, d = p.d ?? 4
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, d / 2, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, hx, hz)]
+  },
+  abstractFigure: (p) => {
+    const [px, , pz] = p.pos || [0, 0, 0]
+    const r = 0.25 * (p.scale ?? 1)
+    return [rectXZ(px, pz, r, r)]
+  },
+  // glassWall blocks — it reads as a solid pane, not scenery you walk past.
+  glassWall: (p) => {
+    const w = p.w ?? 2
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, 0.06, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, hx, hz)]
+  },
+  mirrorPlane: (p) => {
+    const w = p.w ?? 1
+    const rotY = (p.rot && p.rot[1]) || 0
+    const { hx, hz } = rotatedHalfExtents(w / 2, 0.06, rotY)
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, hx, hz)]
+  },
+  lampPractical: (p) => {
+    const [px, , pz] = p.pos || [0, 0, 0]
+    return [rectXZ(px, pz, 0.1, 0.1)]
+  },
+  // Scenery you're meant to walk through/past: no collider.
+  paperScatter: () => [],
+  pool: () => [],
+  waterPlane: () => [],
+  branchTags: () => [],
+  screenPanel: () => [],
+}
+
+// footprint(propConfig) -> rects[] in world XZ (propConfig.pos already
+// applied by the FOOTPRINTS entries above). Unknown prop types get no
+// collider (same "no-op is safe" rule PROPS.Prop follows for unknown types).
+export function footprint(p) {
+  const fn = FOOTPRINTS[p.type]
+  if (!fn) return []
+  return fn(p)
+}

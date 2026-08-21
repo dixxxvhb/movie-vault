@@ -47,7 +47,11 @@ export default function ArchiveWorld({ kind, slug, item, config }) {
   return (
     <>
       <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
-      <CameraRig station={cam.station} stationKey={cam.key} />
+      {/* Wave M1: same free-walk grant as FilmWorld — the archive rooms are
+          places too. FadedRoom (print) wraps GenericRoom's engine and picks
+          up auto-colliders for free; Undeveloped (hazy) has none yet
+          (M3 scope), so walking there has bounds but no wall collision. */}
+      <CameraRig station={cam.station} stationKey={cam.key} walkable={{ eye: config.camera.pos[1] ?? 1.55 }} />
       <Room film={item} config={config} goToStation={goToStation} infoVisible />
     </>
   )

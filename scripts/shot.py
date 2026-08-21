@@ -110,6 +110,71 @@ def check_xr(page, failures):
                  os.path.relpath(path, BASE)))
 
 
+def check_walk(page, failures, args):
+    """Wave M1 gate: WASD/arrow walking actually moves the camera, and
+    stops (converges) against a wall instead of clipping through it.
+
+    Reads window.__vaultWalk (colliders.js's tiny always-on export) rather
+    than anything in the DOM or the WebGL canvas — the walker's position has
+    no visual proxy worth sampling pixels for for this check.
+    """
+    base = args.url.split("?")[0]
+    url = base + "?room=darkknight&nocold&noguide"
+
+    def load():
+        page.goto(url, wait_until="networkidle")
+        page.wait_for_selector("canvas", timeout=20000)
+        page.wait_for_timeout(1400)  # let the entry flight land before walking
+
+    def dist(a, b):
+        return ((a["x"] - b["x"]) ** 2 + (a["z"] - b["z"]) ** 2) ** 0.5
+
+    # W held 700ms should move the walker at least 0.8m.
+    load()
+    start = page.evaluate("window.__vaultWalk")
+    if not start:
+        failures.append("walk: window.__vaultWalk missing")
+        return
+    page.keyboard.down("w")
+    page.wait_for_timeout(700)
+    page.keyboard.up("w")
+    page.wait_for_timeout(150)
+    after = page.evaluate("window.__vaultWalk")
+    d = dist(start, after)
+    if d < 0.8:
+        failures.append("walk: W for 700ms moved only %.2fm (want >=0.8m): %s -> %s" % (d, start, after))
+    else:
+        print("  %-14s %.2fm in 700ms  %s -> %s" % ("walk w", d, start, after))
+
+    # W held 3s toward the wall should converge (stop), not clip through it.
+    load()
+    page.keyboard.down("w")
+    page.wait_for_timeout(3000)
+    a = page.evaluate("window.__vaultWalk")
+    page.wait_for_timeout(500)
+    b = page.evaluate("window.__vaultWalk")
+    page.keyboard.up("w")
+    settle = dist(a, b)
+    if settle > 0.05:
+        failures.append("walk: no wall convergence after 3s hold (moved %.3fm in the next 500ms): %s -> %s" % (settle, a, b))
+    else:
+        print("  %-14s stopped at x=%.2f z=%.2f" % ("walk wall-stop", b["x"], b["z"]))
+
+    # Arrow-key variant of the same 700ms move check.
+    load()
+    start2 = page.evaluate("window.__vaultWalk")
+    page.keyboard.down("ArrowUp")
+    page.wait_for_timeout(700)
+    page.keyboard.up("ArrowUp")
+    page.wait_for_timeout(150)
+    after2 = page.evaluate("window.__vaultWalk")
+    d2 = dist(start2, after2)
+    if d2 < 0.8:
+        failures.append("walk: ArrowUp for 700ms moved only %.2fm (want >=0.8m): %s -> %s" % (d2, start2, after2))
+    else:
+        print("  %-14s %.2fm in 700ms  %s -> %s" % ("walk arrowup", d2, start2, after2))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:5173")
@@ -189,6 +254,12 @@ def main():
                          os.path.relpath(path, BASE)))
         except Exception as e:
             failures.append("inspect step: %s" % e)
+
+        # Wave M1: the walker.
+        try:
+            check_walk(page, failures, args)
+        except Exception as e:
+            failures.append("walk step: %s" % e)
 
         # The cold open. Checked by timing, not by looking: the lids must
         # actually cover the room early on and must be gone by the end. A blink

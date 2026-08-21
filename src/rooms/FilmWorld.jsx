@@ -62,7 +62,12 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
   return (
     <>
       <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
-      <CameraRig station={cam.station} stationKey={cam.key} />
+      {/* Wave M1: free walk inside a film room (Dixon's ruling — you never
+          free-walk the motel, but a room you've stepped inside is a place,
+          not a photograph). Eye height is the authored station's own y —
+          rooms with a sloped floor override it via a bespoke registerFloor
+          call in a later wave; GenericRoom's auto-colliders are flat. */}
+      <CameraRig station={cam.station} stationKey={cam.key} walkable={{ eye: config.camera.pos[1] ?? 1.55 }} />
       <Family
         film={film}
         config={config}

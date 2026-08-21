@@ -4,6 +4,9 @@ import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
 import { setDragDistance } from './pointer.js'
 import { useXR } from '@react-three/xr'
+import { keyVec } from './walkKeys.js'
+import { resolveStep, floorYAt, publishWalkPos } from './rooms/colliders.js'
+import { publishWalkEvent } from './rooms/walkBus.js'
 
 const HD = ROOM.D / 2
 const HW = ROOM.W / 2
@@ -50,6 +53,23 @@ const FOV_MAX = 84
 // every frame and nothing should re-render for it.
 export const gaze = { yaw: 0, pitch: 0, zoom: 1 }
 
+// Wave M1: walk bob. Module-level rather than React state (same reasoning as
+// `gaze` — read every frame inside useFrame, and toggled from the film HUD,
+// which lives outside the Canvas entirely). Default on; persisted so the
+// choice survives a reload.
+const BOB_KEY = 'vault-bob'
+function readBobPersisted() {
+  try { return localStorage.getItem(BOB_KEY) } catch { return null }
+}
+let bobEnabled = readBobPersisted() !== 'off'
+export function setWalkBob(on) {
+  bobEnabled = on
+  try { localStorage.setItem(BOB_KEY, on ? 'on' : 'off') } catch { /* private mode */ }
+}
+export function isWalkBobOn() {
+  return bobEnabled
+}
+
 // The drag tracker lives in pointer.js (room objects need it too, and importing
 // it from here made a cycle). Re-exported so existing importers keep working.
 export { wasDrag } from './pointer.js'
@@ -67,13 +87,15 @@ function aim(pos, look) {
 // per-card inspect, where the viewpoint is derived from where the card hangs).
 // `stationKey` is what drives the flight, so an object identity change on
 // re-render doesn't restart the camera mid-move.
-export default function CameraRig({ station = 'center', stationKey }) {
+export default function CameraRig({ station = 'center', stationKey, walkable = null }) {
   const { camera, gl } = useThree()
   const inXR = useXR((s) => s.session != null)
   const key = stationKey ?? (typeof station === 'string' ? station : 'custom')
   const resolved = typeof station === 'string' ? (STATIONS[station] || STATIONS.center) : station
   const latest = useRef(resolved)
   latest.current = resolved
+  const walkableRef = useRef(walkable)
+  walkableRef.current = walkable
 
   const base = useRef(aim(STATIONS.center.pos, STATIONS.center.look))
   const off = useRef({ yaw: 0, pitch: 0 })      // user's drag, relative to base
@@ -83,6 +105,16 @@ export default function CameraRig({ station = 'center', stationKey }) {
   const zoom = useRef(1)          // target lens factor
   const zoomShown = useRef(1)     // damped, what the camera is actually using
   const pinch = useRef(null)
+
+  // Wave M1: walk state. `walkPos`/`walkY` are the CANONICAL (un-bobbed)
+  // position — bob is a purely visual offset added to camera.position after
+  // these are resolved, so it never feeds back into next frame's collision
+  // solve. null until the first idle frame after landing, which seeds it
+  // from wherever the flight actually put the camera.
+  const walkPos = useRef(null)
+  const walkVel = useRef({ x: 0, z: 0 })
+  const walkY = useRef(null)
+  const bobPhase = useRef(0)
 
   // begin a flight whenever the station changes
   useEffect(() => {
@@ -105,6 +137,12 @@ export default function CameraRig({ station = 'center', stationKey }) {
     // arriving somewhere new resets the lens — otherwise you fly to the drawer
     // still zoomed 3x into a Polaroid and land inside a plank of wood
     zoom.current = 1
+    // A flight means the walker's position is stale (a new station, a door
+    // hop, a landmark click) — drop the canonical walk position and velocity
+    // so the next idle frame re-seeds from wherever this flight actually
+    // lands, and old momentum never carries into the new place.
+    walkPos.current = null
+    walkVel.current = { x: 0, z: 0 }
   }, [key, camera])
 
   // drag to look around
@@ -212,6 +250,76 @@ export default function CameraRig({ station = 'center', stationKey }) {
       applyFov(camera, fov / zoomShown.current)
       if (f.t >= 1) flight.current = null
     } else {
+      // WALK — inserted ahead of the yaw/pitch settle so a same-frame lens
+      // reset (walking resets the zoom) and the position write both land
+      // before applyFov reads zoomShown this frame. Idle otherwise never
+      // touches camera.position (only rotation/fov) — this is additive, so
+      // a non-walkable room (the motel) is byte-identical to before.
+      const w = walkableRef.current
+      if (w) {
+        if (!walkPos.current) {
+          walkPos.current = { x: camera.position.x, z: camera.position.z }
+        }
+        const speed = w.speed ?? 2.2
+        const radius = w.radius ?? 0.28
+        const eye = w.eye ?? 1.55
+        const yaw = shown.current.yaw
+        const kv = keyVec()
+        // forward = -Z rotated by yaw (aim()'s convention); right is forward
+        // turned -90 degrees so D (kv.x=+1) strafes to the camera's right.
+        const fx = -Math.sin(yaw), fz = -Math.cos(yaw)
+        const rx = Math.cos(yaw), rz = -Math.sin(yaw)
+        const targetX = speed * (kv.x * rx + kv.z * fx)
+        const targetZ = speed * (kv.x * rz + kv.z * fz)
+        const targetSpeed = Math.hypot(targetX, targetZ)
+        const curSpeed = Math.hypot(walkVel.current.x, walkVel.current.z)
+        // frame-rate independent exponential damping toward the target
+        // velocity — accel is snappier than decel (0.09s vs 0.14s) so
+        // starting to walk feels immediate and stopping still has a touch
+        // of weight to it.
+        const tau = targetSpeed >= curSpeed ? 0.09 : 0.14
+        const kAccel = 1 - Math.exp(-dt / tau)
+        walkVel.current.x += (targetX - walkVel.current.x) * kAccel
+        walkVel.current.z += (targetZ - walkVel.current.z) * kAccel
+
+        const speedMag = Math.hypot(walkVel.current.x, walkVel.current.z)
+        const moving = speedMag > 0.05
+
+        const dx = walkVel.current.x * dt
+        const dz = walkVel.current.z * dt
+        const next = (dx !== 0 || dz !== 0)
+          ? resolveStep(walkPos.current.x, walkPos.current.z, dx, dz, radius)
+          : walkPos.current
+        walkPos.current = next
+        publishWalkPos(next.x, next.z)
+
+        const targetEyeY = floorYAt(next.x, next.z) + eye
+        walkY.current = walkY.current == null
+          ? targetEyeY
+          : THREE.MathUtils.damp(walkY.current, targetEyeY, 10, dt)
+
+        let bobX = 0, bobY = 0
+        if (bobEnabled && moving) {
+          const speed01 = Math.min(1, speedMag / speed)
+          const prevPhase = bobPhase.current
+          bobPhase.current += dt * 7.4 * speed01
+          bobY = Math.sin(bobPhase.current) * 0.012 * speed01
+          bobX = Math.sin(bobPhase.current * 0.5) * 0.004 * speed01
+          // one footfall per half-cycle (each PI crossing) — publish, the
+          // audio engine subscribes to this bus in a later wave.
+          if (Math.floor(prevPhase / Math.PI) !== Math.floor(bobPhase.current / Math.PI)) {
+            publishWalkEvent({ type: 'step' })
+          }
+        }
+
+        camera.position.set(next.x + bobX, walkY.current + bobY, next.z)
+
+        // you cannot sprint around zoomed to 3.4x — walking resets the lens
+        if (moving) {
+          zoom.current = THREE.MathUtils.damp(zoom.current, 1, 6, dt)
+        }
+      }
+
       applyFov(camera, latest.current.fov / zoomShown.current)
       // settle toward base + the user's drag offset
       const wantYaw = base.current.yaw + off.current.yaw

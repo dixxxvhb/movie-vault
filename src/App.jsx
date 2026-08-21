@@ -4,7 +4,8 @@ import { Canvas } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { ROOM } from './Room.jsx'
-import { STATIONS } from './CameraRig.jsx'
+import { STATIONS, setWalkBob, isWalkBobOn } from './CameraRig.jsx'
+import WalkStick from './WalkStick.jsx'
 import { CARD_W, CARD_H } from './Polaroid.jsx'
 import { setDragDistance } from './pointer.js'
 import MotelWorld from './MotelWorld.jsx'
@@ -154,6 +155,11 @@ export default function App() {
   // (roomTone.js's air handler). Lazy-init from whatever's persisted so a
   // returning visitor who already unmuted once doesn't have to again.
   const [sound, setSound] = useState(() => isSoundOn())
+  // Wave M1: walk bob, next to sound in the film HUD — same "on by default,
+  // persisted" shape. CameraRig.jsx owns the actual module state (it's read
+  // every frame inside useFrame, outside React); this is just the HUD's
+  // mirror of it so the button can re-render when clicked.
+  const [bob, setBob] = useState(() => isWalkBobOn())
   // A bespoke room (Memento's gaze-driven split) can publish a grade override
   // via rooms/gradeBus.js without rooms/* ever importing this file — this is
   // the one subscription that closes the loop, merged onto the room's own
@@ -879,6 +885,13 @@ export default function App() {
             >
               {sound ? 'sound ·on' : 'sound'}
             </button>
+            <button
+              onClick={() => { const next = !bob; setWalkBob(next); setBob(next) }}
+              style={{ ...hud.filmSoundBtn, ...(bob ? hud.navOn : null) }}
+              title="the camera's walk bob — off for a steadier eye"
+            >
+              {bob ? 'bob ·on' : 'bob'}
+            </button>
           </div>
           <button
             onClick={exitFilm}
@@ -932,6 +945,14 @@ export default function App() {
             back to the wall
           </button>
         </>
+      )}
+
+      {/* Wave M1: the mobile walk stick. Only while an actual room world is
+          mounted (the motel keeps click-to-station navigation, per Dixon's
+          ruling — never here) and only on a touch device; a mouse-and-
+          keyboard visitor never sees a ring they'd have no way to use. */}
+      {(filmMounted || printMounted || hazyMounted) && typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0 && (
+        <WalkStick />
       )}
 
       {lensOpen && (
