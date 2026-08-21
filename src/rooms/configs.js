@@ -309,10 +309,15 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------------------------- predestination
+  // Bespoke now (Phase 2, src/rooms/bespoke/Predestination.jsx): grade/camera
+  // below match the bespoke room's own bar station. `place` is dead weight
+  // for the same reason as the-departed's/baby-driver's own entries above —
+  // the bespoke component never reads it; left in place as the pre-bespoke
+  // Wave B stand-in.
   predestination: {
     family: 'mind-bender',
-    grade: { key: '#c88a4a', fill: '#2a1c14', ambient: 0.16 },
-    camera: { pos: [0, 1.5, 1.4], look: [0, 1.3, -1.4], fov: 46 },
+    grade: { bg: '#241a10', fogColor: '#241a10', key: '#e8b860', fill: '#3a2414', ambient: 0.14 },
+    camera: { pos: [0.3, 1.5, 1.3], look: [-0.7, 1.35, -1.3], fov: 48 },
     place: {
       shell: 'box',
       shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'wood', doorGap: true },
