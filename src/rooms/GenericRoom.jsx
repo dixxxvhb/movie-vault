@@ -263,7 +263,12 @@ const SHELLS = { box: BoxShell, open: OpenShell, corridor: CorridorShell, deck: 
 
 /* ------------------------------------------------------------------- room */
 
-export default function GenericRoom({ film, config, infoVisible }) {
+// InfoComponent: Wave C's shoebox print rooms reuse this whole engine but
+// need their own diegetic record (pencil score + snap/note, no hot take, no
+// vibe chips — a print never carries either) instead of the Ledger's
+// InfoSurfaces. Defaults to InfoSurfaces so every existing Ledger config is
+// untouched; archive/FadedRoom.jsx is the only caller that overrides it.
+export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces }) {
   const { grade } = config
   const place = config.place || {}
   const Shell = SHELLS[place.shell] || SHELLS.box
@@ -335,7 +340,7 @@ export default function GenericRoom({ film, config, infoVisible }) {
         <System key={i} {...sys} lightRef={sys.type === 'PulseBeat' ? keyLightRef : undefined} />
       ))}
 
-      <InfoSurfaces film={film} config={config} visible={infoVisible} />
+      <InfoComponent film={film} config={config} visible={infoVisible} />
     </group>
   )
 }
