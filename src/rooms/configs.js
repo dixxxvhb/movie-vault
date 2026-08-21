@@ -472,7 +472,14 @@ export const CONFIGS = {
   // weight for the same reason as the-departed's/baby-driver's own entries.
   'masters-of-the-universe-2026': {
     family: 'spectacle',
-    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424' },
+    // P1 polish pass: camp-grand and saturated, low grain (this is a clean
+    // digital spectacle, not grungy film stock), bloom allowed to bloom the
+    // bolts/spotlight per the brief.
+    grade: {
+      key: '#a84fd6', fill: '#2a5a3a', ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424',
+      contrast: 0.08, sat: 0.32,
+      grain: 0.02, vignette: 0.42, bloomIntensity: 0.55,
+    },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
     place: {
       shell: 'box',
