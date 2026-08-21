@@ -807,7 +807,7 @@
     "acc": "#D4A44C",
     "glyph": "∞"
    },
-   "front": null,
+   "front": "<svg viewBox=\"0 0 200 150\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"200\" height=\"150\" fill=\"#171226\"/><path d=\"M60 75c0-14 11-25 25-25 20 0 30 50 50 50 14 0 25-11 25-25s-11-25-25-25c-20 0-30 50-50 50-14 0-25-11-25-25z\" fill=\"none\" stroke=\"#D4A44C\" stroke-width=\"4\"/><circle cx=\"85\" cy=\"75\" r=\"3\" fill=\"#EFE9DC\"/><rect x=\"20\" y=\"120\" width=\"160\" height=\"6\" rx=\"3\" fill=\"#8A7BA8\" opacity=\"0.5\"/></svg>",
    "poster": "posters/predestination.jpg",
    "year": 2014,
    "runtime": 98,
@@ -1001,11 +1001,11 @@
    "watched": "2026-08-15",
    "state": "ledger",
    "palette": {
-    "bg": "#2A2620",
-    "fg": "#EDE7DA",
-    "sub": "#8B92A0",
-    "acc": "#8B92A0",
-    "glyph": ""
+    "bg": "#160D0D",
+    "fg": "#F5EBDD",
+    "sub": "#8A6A5A",
+    "acc": "#D92B2B",
+    "glyph": "♪"
    },
    "front": null,
    "poster": "posters/baby-driver.jpg",
@@ -1018,7 +1018,7 @@
    "director": [
     "Edgar Wright"
    ],
-   "panel": null,
+   "panel": "<section class=\"panel baby-driver\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Baby Driver<span>2017</span></div><div class=\"score\">8.4<small> /10</small></div></div>\n  <div class=\"meta\">Aug 15 &middot; nightcap &middot; the hottest unplayed card, finally closed by 30 seconds of trailer</div>\n  <p class=\"plot\">A getaway driver with tinnitus scores his entire life to the playlist that drowns it out, and the movie agrees to his terms: gunfire on the snare, wipers on the downbeat, a foot chase that is secretly a dance number. Doc runs the crews, Bats runs on menace, Buddy and Darling run on romance and cocaine, and Baby just wants one last job, a diner waitress, and a road. The last job goes the way last jobs go. The music never stops agreeing with him, even when everything else stops.</p>\n  <p class=\"verdict\">Weeks of deals, declined pitches, and one cooled card, then thirty seconds of trailer did what all of Leonard's salesmanship could not. Highest score of the triple-feature weekend. His verdict arrived pre-engraved: the genius is in the verbs, not the nouns. A car is not interesting, a car moving on the downbeat is cinema; a man is not interesting, a man reloading on the syncopation is choreography. The choreographer watched a whole film built on counts and felt professionally seen. Sync stayed thrilling the entire runtime, no sag. Big fan. 8.4, one slot above where MotU would later land, which caused drama he could not have predicted.</p>\n</section>",
    "vibes": [
     "music-sync",
     "choreographed",
@@ -1072,11 +1072,11 @@
    "watched": "2026-08-17",
    "state": "ledger",
    "palette": {
-    "bg": "#2A2620",
-    "fg": "#EDE7DA",
-    "sub": "#8B92A0",
-    "acc": "#8B92A0",
-    "glyph": ""
+    "bg": "#0B0D12",
+    "fg": "#E6E9F0",
+    "sub": "#5E6675",
+    "acc": "#C22E2E",
+    "glyph": "✦"
    },
    "front": null,
    "poster": "posters/rogue-one.jpg",
@@ -1090,7 +1090,7 @@
    "director": [
     "Gareth Edwards"
    ],
-   "panel": null,
+   "panel": "<section class=\"panel rogue-one\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Rogue One: A Star Wars Story<span>2016</span></div><div class=\"score\">8.2<small> /10</small></div></div>\n  <div class=\"meta\">Aug 17 &middot; his first Star Wars EVER &middot; the accidental perfect prologue</div>\n  <p class=\"plot\">A war movie wearing a space opera's clothes. The daughter of the man who built the planet-killer gets recruited to find him, and the mission curdles into the only kind of heroism this galaxy actually runs on: unglamorous, uncredited, terminal. A blind believer, a tired assassin, a rude droid, a defected pilot, a beach, a transmission tower. Everyone dies delivering a file. Then the file enters a dark corridor, and the thing pursuing it is the reason the next movie gets to exist.</p>\n  <p class=\"verdict\">A historic panel: the first Star Wars entry in the entire Vault, watched by a man encountering this universe for the first time through its bleakest side door. Opening position: a star wars movie without jedis, what are we even doing here. Closing position: full concession, because the hallway certified absolutely badass precisely BECAUSE nobody has magic to answer it. Watching ordinary soldiers meet an unstoppable red blade taught him what a Jedi means before he has ever properly met one, the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holding his purge question, Andor waiting. Really good and fun. 8.2.</p>\n</section>",
    "vibes": [],
    "rewatch": false
   },
@@ -1210,7 +1210,7 @@
     "acc": "#C9A15A",
     "glyph": "◔"
    },
-   "front": null,
+   "front": "<svg viewBox=\"0 0 200 150\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"200\" height=\"150\" fill=\"#101820\"/><g stroke=\"#3E5C76\" stroke-width=\"3\" fill=\"none\"><rect x=\"25\" y=\"45\" width=\"40\" height=\"55\" rx=\"6\"/><rect x=\"80\" y=\"45\" width=\"40\" height=\"55\" rx=\"6\"/><rect x=\"135\" y=\"45\" width=\"40\" height=\"55\" rx=\"6\"/></g><circle cx=\"100\" cy=\"72\" r=\"9\" fill=\"#E8A33D\"/><circle cx=\"45\" cy=\"72\" r=\"9\" fill=\"#E8A33D\" opacity=\"0.55\"/><circle cx=\"155\" cy=\"72\" r=\"9\" fill=\"#E8A33D\" opacity=\"0.25\"/><line x1=\"10\" y1=\"112\" x2=\"190\" y2=\"112\" stroke=\"#5B7C99\" stroke-width=\"4\" stroke-dasharray=\"14 8\"/></svg>",
    "poster": "posters/source-code.jpg",
    "year": 2011,
    "runtime": 93,
@@ -1414,11 +1414,11 @@
    "watched": "2026-08-15",
    "state": "ledger",
    "palette": {
-    "bg": "#2A2620",
-    "fg": "#EDE7DA",
-    "sub": "#8B92A0",
-    "acc": "#8B92A0",
-    "glyph": ""
+    "bg": "#0D1418",
+    "fg": "#E9F1F4",
+    "sub": "#5F7681",
+    "acc": "#4FB6D9",
+    "glyph": "◉"
    },
    "front": null,
    "poster": "posters/oblivion.jpg",
@@ -1433,7 +1433,7 @@
    "director": [
     "Joseph Kosinski"
    ],
-   "panel": null,
+   "panel": "<section class=\"panel oblivion\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Oblivion<span>2013</span></div><div class=\"score\">7.4<small> /10</small></div></div>\n  <div class=\"meta\">Aug 15 &middot; triple feature weekend &middot; space/high-tech slate lead &middot; Kosinski 2-for-2</div>\n  <p class=\"plot\">Earth after the war: a shattered moon, a drained planet, and one maintenance tech in a glass tower above the clouds, servicing the drones that guard the pumps. Jack has memories he is not supposed to have and a wife who follows protocol a little too well. Then a ship falls out of the sky carrying the woman from his dreams, and every clean white surface in his life turns out to be the lid on something. The reveals arrive in fair-play order: the clones, the Tet, the truth about the mission, each one clicking into place a beat after you feel it coming.</p>\n  <p class=\"verdict\">OOOO and then immediately oh yeah that makes sense: the exact cadence of a fair-play reveal, surprise followed by retroactive inevitability, which is his favorite flavor of twist mechanics working as designed. Maverick with drones, affectionately: same director, same slick material finish, same competence-forward hero, and the Kosinski bloodline confirmed 2-for-2 on the wall. Docked for emotional ceiling, not craft floor. Landed on the crowded 7.4 shelf next to Sunshine and Annihilation, the respected-but-didn't-detonate row, which by now has its own zip code.</p>\n</section>",
    "vibes": [
     "space",
     "high-tech",
@@ -1518,11 +1518,11 @@
    "watched": "2026-08-14",
    "state": "ledger",
    "palette": {
-    "bg": "#2A2620",
-    "fg": "#EDE7DA",
-    "sub": "#8B92A0",
-    "acc": "#8B92A0",
-    "glyph": ""
+    "bg": "#141009",
+    "fg": "#E8DFC9",
+    "sub": "#75664E",
+    "acc": "#D98E2B",
+    "glyph": "⌂"
    },
    "front": null,
    "poster": "posters/hereditary.jpg",
@@ -1536,7 +1536,7 @@
    "director": [
     "Ari Aster"
    ],
-   "panel": null,
+   "panel": "<section class=\"panel hereditary\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Hereditary<span>2018</span></div><div class=\"score\">6.7<small> /10</small></div></div>\n  <div class=\"meta\">Aug 14 &middot; solo &middot; spectacle/shock slate backup &middot; the homework was declined</div>\n  <p class=\"plot\">The Grahams live inside a grief that was arranged for them before any of them were born. A miniaturist mother builds tiny replicas of her own catastrophes while the real ones keep arriving on schedule: a funeral, a car, a telephone pole, a seance that works. The movie moves like a will being executed. Every horror lands and then STAYS, held in frame past the point of mercy, until the family is whittled down to one boy and a treehouse full of kneeling strangers, and the inheritance finally gets delivered to its rightful head.</p>\n  <p class=\"verdict\">WHAT THE FUCK MAN. Craft acknowledged, coronation understood, dread expertly assembled, and none of it converted, because anxiety is not excitement and he is not doing the homework. The number grades what the film did to him, and what it did was two hours of clenched jaw with no payout window. Spawned the dread-marination lesson the same night: sustained dread is a cost, not a feature, unless the film pays it back on screen. It paid it to the demon instead. The demon seemed pleased. 6.7.</p>\n</section>",
    "vibes": [
     "dread",
     "slow-burn",
