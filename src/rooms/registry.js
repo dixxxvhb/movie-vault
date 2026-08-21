@@ -9,6 +9,7 @@ import Sting from './bespoke/Sting.jsx'
 import Sicario from './bespoke/Sicario.jsx'
 import Nightcrawler from './bespoke/Nightcrawler.jsx'
 import Stby from './bespoke/Stby.jsx'
+import Amadeus from './bespoke/Amadeus.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -25,6 +26,7 @@ const BESPOKE = {
   sicario: Sicario,
   nightcrawler: Nightcrawler,
   stby: Stby,
+  amadeus: Amadeus,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

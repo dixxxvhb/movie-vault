@@ -281,10 +281,15 @@ export const CONFIGS = {
   },
 
   // ----------------------------------------------------------------- amadeus
+  // Bespoke now (Phase 2, src/rooms/bespoke/Amadeus.jsx): grade/camera below
+  // match the bespoke room's own bedchamber. `place` is dead weight for the
+  // same reason as the-departed's/baby-driver's own entries above — the
+  // bespoke component never reads it; left in place as the pre-bespoke
+  // Wave B stand-in.
   amadeus: {
     family: 'intimate-tension',
-    grade: { key: '#e8a860', fill: '#1a2a3a', ambient: 0.1 },
-    camera: { pos: [0, 1.45, 1.6], look: [0, 1.2, -1], fov: 44 },
+    grade: { bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08 },
+    camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
     place: {
       shell: 'box',
       shellParams: { w: 3.8, d: 4, h: 2.4, wallMat: 'flat', window: true },
