@@ -493,19 +493,28 @@ export const CONFIGS = {
   darkknight: {
     family: 'intimate-tension',
     grade: {
-      key: '#e8f0ff', fill: '#141414', ambient: 0.13,
+      // Architect review (2nd pass): grade.fill doubles as the ambient
+      // light's own color, and '#141414' is so close to black that
+      // ambient's intensity barely moved a pixel regardless of its value —
+      // the walls had no uniform base level under them at all, only
+      // whatever a point light's falloff happened to reach. Lifted to a
+      // dark cool gray (still reads as "steel/concrete", not lit) so the
+      // envelope has a genuine floor under it everywhere, corners included.
+      key: '#e8f0ff', fill: '#1d2226', ambient: 0.17,
       contrast: 0.16, sat: -0.08,
       grain: 0.05, vignette: 0.72, bloomIntensity: 0.32,
     },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.4], fov: 44 },
-    // The layered rig: one motivated key (the panel overhead), a small warm
-    // practical at the door fixture, a cold blue bounce reaching the far
-    // wall, and a rim from the mirror side catching a silhouette edge. Only
-    // the key casts a shadow — the room's one 512 map (spec #3/#6: "one
-    // shadow map max"). QA pass: a spec-literal reading of the doctrine
-    // (small key + a couple of dim fills) left the walls reading as a pure
-    // void outside the beam — practicals/bounce/rim here carry enough reach
-    // to actually paint the concrete, not just gesture at it.
+    // The layered rig: one motivated key (the panel overhead), practicals at
+    // both side walls, two bounces (front/back), and a rim from the mirror
+    // side. Only the key casts a shadow — the room's one 512 map (spec
+    // #3/#6: "one shadow map max"). Architect review (2nd pass): the first
+    // pass's fills only reached the corners nearest each fixture — a whole
+    // wall PLANE still read as pure #000 between them. Every fill below now
+    // carries enough distance/intensity to graze the full length of its
+    // nearest wall (barely — corners still fall off toward black), and a
+    // second practical was added on the mirror-side wall specifically so
+    // that wall has two sources instead of leaning on the rim alone.
     lights: {
       key: {
         type: 'spot', pos: [0, 2.4, -0.55], target: [0, 0, -0.8],
@@ -514,13 +523,14 @@ export const CONFIGS = {
         castShadow: true, shadowMapSize: 512, shadowNear: 0.5, shadowFar: 6,
       },
       practicals: [
-        { pos: [-1.85, 2.0, 1.6], color: '#e8b070', intensity: 0.55, distance: 4.4, decay: 2 },
+        { pos: [-1.9, 2.0, 1.5], color: '#e8b070', intensity: 0.85, distance: 6, decay: 2 },
+        { pos: [1.9, 0.95, 0.3], color: '#7a8a94', intensity: 0.45, distance: 4.4, decay: 2 },
       ],
       bounce: [
-        { pos: [0, 0.35, -1.85], color: '#3a5468', intensity: 0.9, distance: 5.5, decay: 2 },
-        { pos: [0, 1.4, 1.9], color: '#2a3038', intensity: 0.55, distance: 5, decay: 2 },
+        { pos: [0, 0.4, -1.9], color: '#3a5468', intensity: 1.3, distance: 6.8, decay: 2 },
+        { pos: [0, 1.5, 1.9], color: '#343c42', intensity: 0.85, distance: 6.2, decay: 2 },
       ],
-      rim: { pos: [1.85, 1.55, -1.3], color: '#a8c8e0', intensity: 1.0, distance: 5, decay: 2 },
+      rim: { pos: [1.9, 1.6, -1.3], color: '#a8c8e0', intensity: 1.3, distance: 6, decay: 2 },
     },
     place: {
       shell: 'box',
@@ -566,11 +576,26 @@ export const CONFIGS = {
         { type: 'rag', pos: [1.4, 0.01, 1.7], color: '#3a3630' },
       ],
       atmosphere: [
-        // the volumetric throw under the ceiling panel — the one haze
-        // element this stark a room earns.
-        { type: 'HazeCone', pos: [0, 2.35, -0.8], rot: [0, 0, 0], length: 2.0, radius: 0.85, color: '#e8f0ff', opacity: 0.16 },
+        // Architect review (2nd pass): the first pass's cone dominated the
+        // frame and washed the hot-take sheet out from inside it. Halved
+        // (length/radius) and opacity cut by more than half — the light
+        // panel now reads as the source of a modest throw over the table,
+        // not a wall-to-wall wedge competing with the record for attention.
+        { type: 'HazeCone', pos: [0, 2.35, -0.8], rot: [0, 0, 0], length: 1.15, radius: 0.42, color: '#e8f0ff', opacity: 0.07 },
       ],
       systems: [],
+    },
+    // Architect review (2nd pass) #4: the default info positions (tuned for
+    // a ~5x5x2.8 generic box) float mid-room in this 4.2x4.2x2.6 shell —
+    // close enough to the table/ceiling that the meta sheet clipped the
+    // wall/table-top edge from a low angle. Pinned all three flush to the
+    // back wall instead (z matches the wall's own inner face) and off-
+    // center from the key's beam column so the record sits BESIDE the
+    // light, never inside it.
+    info: {
+      hotTakePos: [-0.85, 1.55, -2.06], hotTakeRot: [0, 0, 0],
+      scorePos: [1.15, 2.0, -2.06],
+      metaPos: [-0.2, 0.85, -2.06],
     },
   },
 
