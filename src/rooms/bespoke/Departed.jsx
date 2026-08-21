@@ -11,6 +11,7 @@ import {
   makeSkyTexture, makeGravelTexture, makeTagTexture,
   makeFloorIndicatorTexture, makeDossierTexture,
 } from './departedTextures.js'
+import DoorRow from '../DoorRow.jsx'
 
 // 9.9 — "the elevator and the roof." Boston golden-hour haze, a gravel roof
 // behind a parapet, an elevator lobby standing on it, and the reveal-as-event
@@ -324,9 +325,29 @@ function RoofVentDossier({ film }) {
   )
 }
 
+/* -------------------------------------------------------------- doorway */
+
+// Bloodline doors (brief §6): "the rooftop's elevator wall." QA pass: a side
+// face of the housing (world x = ±ELEV_W/2) is dead-on with the room's one
+// fixed camera station (config.camera sits at x=0, same as the housing) —
+// a symmetric box viewed from exactly its own centerline never shows a side
+// face at any yaw, only its silhouette edge, so a door mounted there is
+// never actually visible from the station this room is composed around
+// (this room has no click-to-advance stations like Memento's corridor, just
+// the one fixed place you stand). The housing's FRONT face — the same
+// plane the elevator doors and floor indicator already live on — IS square
+// to the camera, so bloodline doors flank the elevator itself there instead:
+// one either side, clear of the DOOR_W-wide elevator doors in the middle.
+const DOOR_MOUNT = {
+  position: [0, 0, ELEV_Z + ELEV_D / 2 + 0.04],
+  rotationY: 0,
+  spacing: 1.7,
+  scale: 0.75,
+}
+
 /* ------------------------------------------------------------------ room */
 
-export default function Departed({ film, config }) {
+export default function Departed({ film, config, doors = [], onDoor }) {
   const { grade } = config
   const [doorState, setDoorState] = useState('closed')
 
@@ -387,6 +408,16 @@ export default function Departed({ film, config }) {
       ))}
 
       <RoofVentDossier film={film} />
+
+      <DoorRow
+        doors={doors}
+        position={DOOR_MOUNT.position}
+        rotationY={DOOR_MOUNT.rotationY}
+        spacing={DOOR_MOUNT.spacing}
+        scale={DOOR_MOUNT.scale}
+        grade={grade}
+        onDoor={onDoor}
+      />
     </group>
   )
 }

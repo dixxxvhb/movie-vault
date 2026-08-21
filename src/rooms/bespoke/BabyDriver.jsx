@@ -8,6 +8,7 @@ import { sheetOf } from '../../palette.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startBabyDriverAudio } from '../audio/recipes/baby-driver.js'
 import { useBeat } from '../audio/clock.js'
+import DoorRow from '../DoorRow.jsx'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -20,6 +21,14 @@ const CAR_ROT = 0.08
 
 const clamp01 = (v) => Math.max(0, Math.min(1, v))
 const decay = (frac, k = 3) => Math.pow(clamp01(1 - frac), k)
+
+// Bloodline doors (brief §6): "the far end of the bank facade." The facade
+// runs columns at x = -4.2/-1.4/1.4/4.2 (BankFacade below) — past the last
+// one, toward the car's own far side, is clear wall with nothing on it.
+// Baby Driver has no film_links today (its hot take is about verbs, not
+// bloodlines), so this mount renders zero doors for now; it's here so a
+// later link touching this slug has somewhere to go without another pass.
+const DOOR_MOUNT = { position: [4.6, 0, -4.0], rotationY: 0, spacing: 0.9 }
 
 /* -------------------------------------------------------------- facade */
 
@@ -353,7 +362,7 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
 
 /* ------------------------------------------------------------------ room */
 
-export default function BabyDriver({ film, config, infoVisible = true }) {
+export default function BabyDriver({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const beatRef = useBeat(BPM)
 
@@ -399,6 +408,15 @@ export default function BabyDriver({ film, config, infoVisible = true }) {
       <SyncBursts beatRef={beatRef} />
 
       <BabyDriverRecord film={film} beatRef={beatRef} infoVisible={infoVisible} />
+
+      <DoorRow
+        doors={doors}
+        position={DOOR_MOUNT.position}
+        rotationY={DOOR_MOUNT.rotationY}
+        spacing={DOOR_MOUNT.spacing}
+        grade={grade}
+        onDoor={onDoor}
+      />
     </group>
   )
 }

@@ -12,7 +12,11 @@ import { getRoomComponent } from './registry.js'
 //
 // rooms/* must not import from App.jsx — the config is resolved by App (via
 // registry.js) and handed down as a prop, so there is no cycle back up.
-export default function FilmWorld({ slug, film, config }) {
+// Bloodline doors (brief §6) follow the same rule: `doors` (rooms/doors.js's
+// resolved specs for this slug) and `onDoor` (a callback that runs the
+// actual room-to-room hop) are both computed in App and handed down here,
+// same as `config` itself — nothing below ever reaches back up for either.
+export default function FilmWorld({ slug, film, config, doors, onDoor }) {
   const { camera } = useThree()
   // `i` toggles the record away for pure ambience. Local state, because
   // nothing outside this room needs to know about it.
@@ -59,7 +63,14 @@ export default function FilmWorld({ slug, film, config }) {
     <>
       <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
       <CameraRig station={cam.station} stationKey={cam.key} />
-      <Family film={film} config={config} infoVisible={infoOn} goToStation={goToStation} />
+      <Family
+        film={film}
+        config={config}
+        infoVisible={infoOn}
+        goToStation={goToStation}
+        doors={doors}
+        onDoor={onDoor}
+      />
     </>
   )
 }
