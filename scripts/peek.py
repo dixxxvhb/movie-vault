@@ -15,6 +15,9 @@ OUT = os.path.join(BASE, "_shots")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:5173")
+    ap.add_argument("--room", default=None, help="?room=<slug> instead of the wall")
+    ap.add_argument("--info-off", action="store_true", help="press i after settling")
+    ap.add_argument("--fps", action="store_true", help="print window.__vaultFps after settling")
     ap.add_argument("--station", default=None)
     ap.add_argument("--click", default=None, help="fractional x,y in the canvas")
     ap.add_argument("--drag", type=float, default=0, help="px of horizontal look-drag")
@@ -36,9 +39,15 @@ def main():
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 
         url = args.url + ("&" if "?" in args.url else "?") + "nocold&noguide"
+        if args.room:
+            url += "&room=" + args.room
         page.goto(url, wait_until="networkidle")
         page.wait_for_selector("canvas", timeout=20000)
         page.wait_for_timeout(args.settle)
+
+        if args.info_off:
+            page.keyboard.press("i")
+            page.wait_for_timeout(400)
 
         if args.station:
             page.get_by_role("button", name=args.station, exact=True).click()
@@ -70,6 +79,13 @@ def main():
         if args.guide:
             page.get_by_role("button", name="what is this", exact=True).click()
             page.wait_for_timeout(700)
+
+        if args.fps:
+            page.wait_for_timeout(1500)
+            try:
+                print("fps", page.evaluate("window.__vaultFps"))
+            except Exception:
+                pass
 
         path = os.path.join(OUT, args.out + ".png")
         page.screenshot(path=path)

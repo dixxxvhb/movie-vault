@@ -321,7 +321,13 @@ export const CONFIGS = {
   // Wave B stand-in.
   amadeus: {
     family: 'intimate-tension',
-    grade: { bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08 },
+    // P1 polish pass: rich warm/cold split, moderate grain (candlelit film
+    // stock, not digital-clean), heavy vignette closing the chamber in.
+    grade: {
+      bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.11,
+      contrast: 0.14, sat: 0.06,
+      grain: 0.055, vignette: 0.62, bloomIntensity: 0.4,
+    },
     camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
     place: {
       shell: 'box',
@@ -466,7 +472,14 @@ export const CONFIGS = {
   // weight for the same reason as the-departed's/baby-driver's own entries.
   'masters-of-the-universe-2026': {
     family: 'spectacle',
-    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424' },
+    // P1 polish pass: camp-grand and saturated, low grain (this is a clean
+    // digital spectacle, not grungy film stock), bloom allowed to bloom the
+    // bolts/spotlight per the brief.
+    grade: {
+      key: '#a84fd6', fill: '#2a5a3a', ambient: 0.16, bg: '#1a1424', fogColor: '#1a1424',
+      contrast: 0.08, sat: 0.32,
+      grain: 0.02, vignette: 0.42, bloomIntensity: 0.55,
+    },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
     place: {
       shell: 'box',
@@ -487,7 +500,16 @@ export const CONFIGS = {
   // weight for the same reason as the-departed's/baby-driver's own entries.
   'disclosure-day': {
     family: 'intimate-tension',
-    grade: { key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8' },
+    // P1 polish pass: the boring is authored, not defaulted — slightly
+    // over-exposed (a hair of extra contrast/brightness reads as "TV-studio
+    // flat" rather than "underlit"), minimal vignette (a vignette implies
+    // mood; this room specifically has none), grain near zero (digital-clean
+    // civic broadcast, not film stock).
+    grade: {
+      key: '#f4f0e0', fill: '#8a8470', ambient: 0.55, sat: -0.05, bg: '#d8d2b8', fogColor: '#d8d2b8',
+      contrast: 0.05,
+      grain: 0.015, vignette: 0.12, bloomIntensity: 0.18,
+    },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
     place: {
       shell: 'box',

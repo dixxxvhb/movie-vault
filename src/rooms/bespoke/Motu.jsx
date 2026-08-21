@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { throne as Throne } from '../props.jsx'
 import { useRoomAudio, playOneShot } from '../audio/engine.js'
 import { start as startMotuAudio } from '../audio/recipes/motu.js'
 import { notifyPose } from './motuBus.js'
@@ -9,6 +8,19 @@ import { makeProclamationTexture, makePetitionTexture, makeSealTexture } from '.
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, registerFloor, clearOwner, resolveStep, walkPos } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel } from '../detail.jsx'
+import { FogLayers, HazeCone } from '../atmosphere.jsx'
+
+// P1 finishing pass (IMMERSION-V2-POLISH-SPEC.md): materials.js stone on the
+// dais/walls, carved-band trim rings on the columns, bone-white accent ribs
+// on the throne back, purple-green ground fog, and a soft glow duplicate
+// behind each lightning bolt segment. Camp-grand, having a wonderful time —
+// saturated grade, low grain, bloom allowed on the bolts/spot per the brief.
+const floorMat = standardMat({ kind: 'concrete', tint: '#1a1424', wear: 0.4, roughness: 0.55, metalness: 0.12, repeat: [3, 3.4] })
+const wallStoneMat = standardMat({ kind: 'concrete', tint: '#241a34', wear: 0.35, roughness: 0.85, repeat: [2.6, 1.8] })
+const daisMat = standardMat({ kind: 'tile', tint: '#2a1e40', wear: 0.3, roughness: 0.4, metalness: 0.2, repeat: [1.6, 1.2] })
+const boneMat = new THREE.MeshStandardMaterial({ color: '#e8dcc0', roughness: 0.4, metalness: 0.05 })
 
 // 8.5 — "the throne, savored." A tall camp-cosmos hall: purple-green
 // atmosphere, a spotlight that SNAPS onto the empty throne on a timer (hard
@@ -50,7 +62,9 @@ function motuFloor(x, z) {
   return 0
 }
 
-const THRONE_RECT = { minX: -0.5, maxX: 0.5, minZ: -2.7, maxZ: -1.7, top: 1.6 }
+// widened to match MotuThrone's chunkier seat/arm footprint (was sized to
+// the old thin-fin throne and left the new arms sticking out past the rect)
+const THRONE_RECT = { minX: -0.7, maxX: 0.7, minZ: -2.78, maxZ: -1.65, top: 2.2 }
 const COLUMN_RECTS = [[-2.3, -2.4], [2.3, -2.4]].map(([x, z]) => ({
   minX: x - 0.26, maxX: x + 0.26, minZ: z - 0.26, maxZ: z + 0.26, top: ROOM_H - 0.4,
 }))
@@ -90,67 +104,118 @@ function MotuColliders({ spawn }) {
 
 /* ------------------------------------------------------------------ shell */
 
-function wallTex(tint, seed) {
-  const S = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  let s = seed >>> 0
-  const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-  ctx.globalAlpha = 0.07
-  for (let i = 0; i < 700; i++) {
-    ctx.fillStyle = r() > 0.5 ? '#000' : '#fff'
-    ctx.fillRect(r() * S, r() * S, 1.5, 1.5)
-  }
-  ctx.globalAlpha = 1
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  return tex
+// A carved-band trim ring: two stacked tori (a wider base + a thinner bone
+// lip) suggesting a capital/base carving without a bespoke lathe geometry.
+function ColumnBand({ y, radius }) {
+  return (
+    <group position={[0, y, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[radius, 0.035, 8, 20]} />
+        <meshStandardMaterial color="#3a2a4a" roughness={0.4} metalness={0.35} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+        <torusGeometry args={[radius * 0.96, 0.016, 8, 20]} />
+        <primitive object={boneMat} attach="material" />
+      </mesh>
+    </group>
+  )
 }
 
 function ThroneHall() {
-  const wallT = useMemo(() => wallTex('#241a34', 701), [])
-  const floorT = useMemo(() => wallTex('#1a1424', 702), [])
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={floorT} roughness={0.6} metalness={0.15} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={wallT} roughness={0.9} />
+        <primitive object={wallStoneMat} attach="material" />
       </mesh>
       <mesh position={[0, ROOM_H / 2, -ROOM_D / 2]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.85} />
+        <primitive object={wallStoneMat} attach="material" />
       </mesh>
       <mesh position={[0, ROOM_H / 2, ROOM_D / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.85} />
+        <primitive object={wallStoneMat} attach="material" />
       </mesh>
       <mesh position={[-ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.85} />
+        <primitive object={wallStoneMat} attach="material" />
       </mesh>
       <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.85} />
+        <primitive object={wallStoneMat} attach="material" />
       </mesh>
-      {/* a raised dais under the throne */}
-      <mesh position={[0, 0.08, -2.2]}>
-        <boxGeometry args={[2.2, 0.16, 1.6]} />
-        <meshStandardMaterial color="#2a1e38" roughness={0.5} metalness={0.2} />
-      </mesh>
-      {/* tall fluted columns, theatrical staging either side */}
+      {/* a raised dais under the throne — beveled stone, not a naked box */}
+      {/* architect review: a RoundedBox's chamfered top edge z-fights a
+          coplanar flat disc — that was the light pool's U-shaped cutout
+          artifact. Small radius here, and the pool itself sits well clear
+          of it (see ThroneSpotlight's pool mesh). */}
+      <Bevel pos={[0, 0.08, -2.2]} w={2.2} h={0.16} d={1.6} radius={0.012} mat={daisMat} />
+      {/* tall fluted columns, theatrical staging either side, each with a
+          carved-band base + capital ring in bone-white against the stone */}
       {[-2.3, 2.3].map((x, i) => (
-        <mesh key={i} position={[x, ROOM_H / 2 - 0.2, -2.4]}>
-          <cylinderGeometry args={[0.22, 0.26, ROOM_H - 0.4, 12]} />
-          <meshStandardMaterial color="#3a2a4a" emissive="#4a2a6a" emissiveIntensity={0.25} roughness={0.5} metalness={0.3} />
+        <group key={i}>
+          <mesh position={[x, ROOM_H / 2 - 0.2, -2.4]}>
+            <cylinderGeometry args={[0.22, 0.26, ROOM_H - 0.4, 12]} />
+            <meshStandardMaterial color="#3a2a4a" emissive="#4a2a6a" emissiveIntensity={0.25} roughness={0.5} metalness={0.3} />
+          </mesh>
+          <group position={[x, 0, -2.4]}>
+            <ColumnBand y={0.5} radius={0.27} />
+            <ColumnBand y={ROOM_H - 0.55} radius={0.24} />
+          </group>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+// Architect review: props.jsx's shared throne() reads as three flat bars
+// under the spotlight — its back panel is only 0.14 deep and the arms 0.12
+// wide, so under a near-frontal camera it silhouettes as a glyph instead of
+// a seated mass. Nobody else uses throne() (grep confirms), so this is a
+// full bespoke replacement rather than an overlay: a real seat slab, a
+// genuinely thick back, and chunky arms, all bevelled, with the bone-white
+// ribs mounted flush on the back's own front face — mass first, motif
+// second.
+// Architect review (2nd pass): even with real mass geometry, the throne
+// still washed flat — its own base color ('#3a2a44') was almost the same
+// value as the wall-stone material behind it AND the spotlight's additive
+// HazeCone sits in front of the whole thing, further flattening contrast on
+// the ~1/3 of the cycle the spotlight is on. Lightened the material so it
+// carries its own highlight/shadow read against ambient + the two room
+// lights alone, independent of the spotlight snap.
+const throneColor = '#6a4c86'
+const throneMat = new THREE.MeshStandardMaterial({ color: throneColor, roughness: 0.4, metalness: 0.2 })
+function MotuThrone({ pos }) {
+  return (
+    <group position={pos}>
+      {/* seat: the base mass, deep enough to read as furniture from the
+          arrival angle, not a slab standing on edge */}
+      <Bevel pos={[0, 0.35, 0]} w={1.1} h={0.7} d={1.05} radius={0.04} mat={throneMat} />
+      {/* the back: real depth (was 0.14, now 0.34) so it catches the
+          spotlight across a visible front face AND a visible side face */}
+      <Bevel pos={[0, 1.2, -0.4]} w={1.05} h={1.7} d={0.34} radius={0.03} mat={throneMat} />
+      {/* arms: chunky boxes with a real top surface for the petition to sit
+          on, not a thin fin */}
+      {[-0.58, 0.58].map((x, i) => (
+        <Bevel key={i} pos={[x, 0.66, 0.05]} w={0.2} h={0.55} d={0.85} radius={0.025} mat={throneMat} />
+      ))}
+      {/* finials, on the back's new (taller) top edge */}
+      {[-0.5, 0.5].map((x, i) => (
+        <mesh key={i} position={[x, 2.05, -0.4]}>
+          <coneGeometry args={[0.1, 0.35, 4]} />
+          <meshStandardMaterial color="#e8dcc0" roughness={0.3} metalness={0.2} />
         </mesh>
       ))}
+      {/* bone-white ribs, mounted flush on the back's own front face
+          (back center z=-0.4, half-depth 0.17 -> front face at -0.23) */}
+      {[-0.32, 0, 0.32].map((x, i) => (
+        <Bevel key={i} pos={[x, 1.2, -0.22]} w={0.09} h={1.4} d={0.03} radius={0.012} mat={boneMat} />
+      ))}
+      <Bevel pos={[0, 1.92, -0.22]} w={0.86} h={0.09} d={0.04} radius={0.012} mat={boneMat} />
     </group>
   )
 }
@@ -164,6 +229,7 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
   const spot = useRef()
   const fixture = useRef()
   const pool = useRef()
+  const hazeGroup = useRef()
   const target = useMemo(() => new THREE.Object3D(), [])
   useEffect(() => {
     if (spot.current) spot.current.target = target
@@ -180,10 +246,13 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
     if (spot.current) spot.current.intensity = on ? 110 : 0
     if (fixture.current) fixture.current.material.emissiveIntensity = on ? 2.2 : 0.15
     if (pool.current) pool.current.material.opacity = on ? 0.55 : 0
+    // the hard-edged HazeCone snaps with the spotlight — no fade, matching
+    // the brief's own "snaps" verb for this fixture.
+    if (hazeGroup.current) hazeGroup.current.visible = on
     const px = aiming ? aimPosRef.current.x : 0
     const pz = aiming ? aimPosRef.current.z : -2.2
     target.position.set(px, 0.9, pz)
-    if (pool.current) pool.current.position.set(px, 0.17, pz)
+    if (pool.current) pool.current.position.set(px, 0.21, pz)
   })
   return (
     <group>
@@ -197,6 +266,9 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
         intensity={0}
         decay={2}
       />
+      <group ref={hazeGroup} visible={false}>
+        <HazeCone pos={[0, ROOM_H - 0.5, -0.4]} length={3.4} radius={0.85} color="#e0c8ff" opacity={0.3} />
+      </group>
       {/* the fixture itself, a small ceiling disc that flares when the
           spotlight snaps on — reads clearly even in a still frame, unlike
           a rendered light cone (which looked like a solid wedge of geometry
@@ -207,8 +279,8 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
       </mesh>
       {/* the light pool it snaps onto, flat on the dais (or wherever it's
           currently aimed) */}
-      <mesh ref={pool} position={[0, 0.17, -2.2]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.1, 32]} />
+      <mesh ref={pool} position={[0, 0.21, -2.2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.95, 32]} />
         <meshBasicMaterial color="#f0e0ff" transparent opacity={0} depthWrite={false} toneMapped={false} />
       </mesh>
     </group>
@@ -254,10 +326,20 @@ function BoltSegments({ pts, color }) {
   return (
     <group>
       {segs.map((s, i) => (
-        <mesh key={i} position={s.mid} rotation={[0, 0, s.angleZ]}>
-          <boxGeometry args={[0.05, s.len, 0.05]} />
-          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2.6} toneMapped={false} />
-        </mesh>
+        <group key={i} position={s.mid} rotation={[0, 0, s.angleZ]}>
+          {/* crisp emissive core */}
+          <mesh>
+            <boxGeometry args={[0.05, s.len, 0.05]} />
+            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2.6} toneMapped={false} />
+          </mesh>
+          {/* soft glow: a wider, dimmer, additive duplicate behind the core —
+              cheap halo that reads even before the shared bloom pass kicks
+              in on a still frame */}
+          <mesh>
+            <boxGeometry args={[0.16, s.len, 0.16]} />
+            <meshBasicMaterial color={color} transparent opacity={0.16} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+          </mesh>
+        </group>
       ))}
     </group>
   )
@@ -298,30 +380,60 @@ function LightningPoses({ aimUntilRef, aimPosRef }) {
 
 /* -------------------------------------------------------------- signage */
 
+// Architect review: the "rolled ends" were rotated onto the WRONG axis — a
+// Z-rotation on a cylinder whose axis already runs along Y turns a vertical
+// scroll-roller into a horizontal rod that skewers straight across the
+// plane. Fixed by leaving the cylinders at their natural vertical axis
+// (matching the plane's own height) at the left/right edges, where a
+// scroll's rollers actually belong. The scroll was also floating with
+// nothing supporting it — it now sits on its own two-post stand planted in
+// the floor, per the architect's "armrest, or a proper stand" call (the
+// throne's armrest is already spoken for by the petition, per the brief).
+const SCROLL_W = 1.5, SCROLL_H = 1.0, SCROLL_SCALE = 0.86
+const SCROLL_GROUP_Y = 1.05
 function ProclamationScroll({ film }) {
   const tex = useMemo(() => makeProclamationTexture(film), [film.slug, film.hot_take])
+  const bottomLocalY = -SCROLL_H / 2
+  const floorLocalY = -SCROLL_GROUP_Y / SCROLL_SCALE
+  const postLen = bottomLocalY - floorLocalY
+  const postMidY = (bottomLocalY + floorLocalY) / 2
   return (
-    <group position={[2.15, 2.1, -1.6]} rotation={[0, -0.35, 0]}>
+    <group position={[1.85, SCROLL_GROUP_Y, -1.75]} rotation={[0, -0.42, 0]} scale={SCROLL_SCALE}>
       <mesh>
-        <planeGeometry args={[1.5, 1.0]} />
+        <planeGeometry args={[SCROLL_W, SCROLL_H]} />
         <meshBasicMaterial map={tex} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
-      {/* rolled ends */}
-      {[-0.76, 0.76].map((x, i) => (
-        <mesh key={i} position={[x, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.06, 0.06, 1.02, 12]} />
+      {/* rolled ends — vertical, matching the plane's own height */}
+      {[-SCROLL_W / 2 + 0.02, SCROLL_W / 2 - 0.02].map((x, i) => (
+        <mesh key={i} position={[x, 0, 0]}>
+          <cylinderGeometry args={[0.055, 0.055, SCROLL_H + 0.04, 12]} />
           <meshStandardMaterial color="#5a3a10" roughness={0.6} />
         </mesh>
       ))}
+      {/* the stand: two posts from the scroll's bottom edge down to the
+          floor, plus a crossbar so it reads as a planted display frame
+          rather than two sticks */}
+      {[-0.58, 0.58].map((x, i) => (
+        <mesh key={i} position={[x, postMidY, 0]}>
+          <cylinderGeometry args={[0.035, 0.04, postLen, 8]} />
+          <meshStandardMaterial color="#4a2c10" roughness={0.65} />
+        </mesh>
+      ))}
+      <mesh position={[0, floorLocalY + 0.06, 0]}>
+        <boxGeometry args={[1.3, 0.05, 0.3]} />
+        <meshStandardMaterial color="#4a2c10" roughness={0.65} />
+      </mesh>
     </group>
   )
 }
 
+// Re-tuned to MotuThrone's new chunkier armrest (world top surface ~1.095,
+// x~0.58) — was resting mid-embedded in the old thin arm fin.
 function PetitionOnArmrest({ onPress }) {
   const tex = useMemo(() => makePetitionTexture(), [])
   return (
-    <Touchable reach={5} anchor={[0.62, 0.72, -1.85]} onUse={onPress}>
-      <mesh position={[0.62, 0.72, -1.85]} rotation={[-Math.PI / 2, 0, -0.15]}>
+    <Touchable reach={5} anchor={[0.56, 1.1, -1.9]} onUse={onPress}>
+      <mesh position={[0.56, 1.1, -1.9]} rotation={[-Math.PI / 2, 0, -0.15]}>
         <planeGeometry args={[0.42, 0.52]} />
         <meshBasicMaterial map={tex} toneMapped={false} />
       </mesh>
@@ -373,9 +485,22 @@ export default function Motu({ film, config, doors = [], onDoor }) {
       <ambientLight intensity={grade.ambient ?? 0.24} color={grade.fill || '#2a5a3a'} />
       <pointLight position={[-2.2, 2.6, -1]} intensity={(grade.keyIntensity ?? 1) * 12} color={grade.key || '#a84fd6'} distance={9} decay={2} />
       <pointLight position={[2.2, 2.0, 1.4]} intensity={8} color={grade.fill || '#2a5a3a'} distance={8} decay={2} />
+      {/* a low green rim toward the entry, so the far wall behind the
+          player's back also carries a cast rather than falling to void */}
+      <pointLight position={[0, 1.2, 2.6]} intensity={2.4} color="#3aa860" distance={5} decay={2} />
+      {/* architect review: a dedicated throne modeling light, ALWAYS on
+          (independent of the spotlight's 5s-of-14s snap-cycle) — the throne
+          needs to read as a mass the other 9 seconds too, not just during
+          the snap */}
+      <pointLight position={[0.6, 2.0, -1.0]} intensity={3.2} color="#d8b8ff" distance={5} decay={2} />
+
+      {/* camp-cosmos ground fog: two scrolling purple/green layers, the only
+          atmosphere this room earns per the toolkit's "one or two per room" */}
+      <FogLayers pos={[0, 0.04, -0.5]} size={[ROOM_W, ROOM_D]} color="rgba(150,80,200,0.5)" opacity={0.22} speed={0.015} />
+      <FogLayers pos={[0, 0.07, -0.5]} size={[ROOM_W, ROOM_D]} color="rgba(60,160,110,0.4)" opacity={0.16} speed={0.011} />
 
       <ThroneHall />
-      <Throne pos={[0, 0.16, -2.2]} color="#3a2a44" accent="#e8dcc0" />
+      <MotuThrone pos={[0, 0.16, -2.2]} />
       <ThroneSpotlight aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
       <LightningPoses aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
       <ProclamationScroll film={film} />
