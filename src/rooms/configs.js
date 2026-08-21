@@ -298,8 +298,26 @@ export const CONFIGS = {
   // never reads it; left in place as the pre-bespoke Wave B stand-in.
   nightcrawler: {
     family: 'momentum',
-    grade: { bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1 },
+    // P1 finishing pass: grade triplet tuned for "clean digital night" —
+    // low grain (this is Lou's camcorder footage, not film stock), deep
+    // blacks (vignette kept moderate rather than the 0.92 spec default so
+    // it stays controlled/digital instead of moody-crushed), bloom pushed
+    // enough that the sodium grid nodes and the REC dot actually glow.
+    grade: {
+      bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1,
+      grain: 0.02, vignette: 0.5, bloomIntensity: 0.5,
+    },
     camera: { pos: [0, 1.6, 2.2], look: [0, 1.15, -6], fov: 52, far: 200 },
+    // The room's own near-field rig (toolkit doctrine, spec #3): a cool
+    // moonlight bounce for the digital-night undertone under the sodium
+    // key, plus a rim off the guardrail's brushed metal so it doesn't sit
+    // as a flat silhouette against the grid.
+    lights: {
+      bounce: [
+        { pos: [0, 3.2, 2.6], color: '#7a8fb0', intensity: 0.4, distance: 9, decay: 2 },
+      ],
+      rim: { pos: [2.3, 1.2, -1.9], color: '#ffb060', intensity: 0.55, distance: 5.5, decay: 2 },
+    },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },

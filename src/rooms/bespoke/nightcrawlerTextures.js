@@ -19,14 +19,20 @@ function rngFor(seed) {
 
 // The night sky behind the overlook: clean digital-night gradient, no stars
 // (the sodium grid below is the only light source that matters here).
+// A thin warm sodium skyglow band sits just above the horizon (city light
+// pollution bouncing off smog/haze) so the grid reads as "a city reaching to
+// the horizon" instead of dropping straight into a black void — the "must
+// READ" bar from IMMERSION-V2-POLISH-SPEC.md's per-room checklist.
 export function makeNightSkyTexture(top, mid, bottom) {
   const W = 2, H = 512
   const c = canvas(W, H)
   const ctx = c.getContext('2d')
   const g = ctx.createLinearGradient(0, 0, 0, H)
   g.addColorStop(0, top)
-  g.addColorStop(0.62, mid)
-  g.addColorStop(1, bottom)
+  g.addColorStop(0.55, mid)
+  g.addColorStop(0.82, bottom)
+  g.addColorStop(0.93, '#3a2412')
+  g.addColorStop(1, '#1c1006')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, W, H)
   const tex = new THREE.CanvasTexture(c)
@@ -34,38 +40,62 @@ export function makeNightSkyTexture(top, mid, bottom) {
   return tex
 }
 
-// LA as a sodium-orange emissive grid running to the horizon: a dark ground
-// with a fine grid of bright lines, denser/dimmer with distance (faked here
-// by two overlaid grid frequencies rather than true depth falloff — this
-// texture tiles across a single large ground plane, so the "to the horizon"
-// read comes from the plane's own size and the camera's shallow angle on it).
+// LA as a sodium-orange emissive grid running to the horizon: city blocks
+// picked out by avenue lines plus a dense scatter of individual window/
+// streetlight points, with a handful of brighter cluster-glows standing in
+// for skyscraper knots. The previous version tiled a fine 16px hairline
+// grid at repeat(14,14) — at that frequency the lines alias into a flat
+// brownish wash instead of reading as distinct city lights (QA sweep
+// 2026-08-21, "must READ" check failed). Coarser avenue spacing + a lower
+// repeat count keeps individual lights resolvable at any viewing distance
+// on the ground plane, and perspective (the plane's own size + the shallow
+// camera angle) does the "denser toward the horizon" work for free.
 export function makeCityGridTexture() {
   const S = 512
   const c = canvas(S, S)
   const ctx = c.getContext('2d')
-  ctx.fillStyle = '#050607'
+  ctx.fillStyle = '#030405'
   ctx.fillRect(0, 0, S, S)
-  ctx.strokeStyle = '#ff8a2a'
-  ctx.globalAlpha = 0.85
-  ctx.lineWidth = 1.4
-  for (let x = 0; x <= S; x += 16) {
+
+  // avenues — coarse, a few bright long lines standing in for major roads
+  ctx.strokeStyle = '#7a3d18'
+  ctx.globalAlpha = 0.55
+  ctx.lineWidth = 2.2
+  const AVENUE = 64
+  for (let x = 0; x <= S; x += AVENUE) {
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, S); ctx.stroke()
   }
-  for (let y = 0; y <= S; y += 16) {
+  for (let y = 0; y <= S; y += AVENUE) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(S, y); ctx.stroke()
   }
-  // scattered brighter nodes — a window/streetlight grid, not a uniform mesh
+
+  // dense scatter of individual window/streetlight points — the actual
+  // "city as a grid of lights" read
   const r = rngFor(1401)
   ctx.globalAlpha = 1
-  for (let i = 0; i < 260; i++) {
-    ctx.fillStyle = r() > 0.5 ? '#ffd08a' : '#ff8a2a'
-    const x = Math.floor(r() * (S / 16)) * 16
-    const y = Math.floor(r() * (S / 16)) * 16
-    ctx.fillRect(x - 1.5, y - 1.5, 3, 3)
+  for (let i = 0; i < 900; i++) {
+    const bright = r()
+    ctx.fillStyle = bright > 0.82 ? '#ffe0a8' : bright > 0.4 ? '#ff9a3a' : '#c8621e'
+    const x = r() * S
+    const y = r() * S
+    const sz = bright > 0.82 ? 2.4 : 1.4
+    ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz)
   }
+
+  // a handful of brighter cluster-glows — distant tower/complex knots
+  const clusters = 10
+  for (let i = 0; i < clusters; i++) {
+    const x = r() * S, y = r() * S, rad = 10 + r() * 22
+    const g = ctx.createRadialGradient(x, y, 0, x, y, rad)
+    g.addColorStop(0, 'rgba(255,210,150,0.55)')
+    g.addColorStop(1, 'rgba(255,140,50,0)')
+    ctx.fillStyle = g
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill()
+  }
+
   const tex = new THREE.CanvasTexture(c)
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-  tex.repeat.set(14, 14)
+  tex.repeat.set(7, 7)
   tex.colorSpace = THREE.SRGBColorSpace
   return tex
 }

@@ -4,12 +4,16 @@ import { useFrame } from '@react-three/fiber'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startNightcrawlerAudio } from '../audio/recipes/nightcrawler.js'
 import {
-  makeNightSkyTexture, makeCityGridTexture, makeBrushTexture,
+  makeNightSkyTexture, makeCityGridTexture,
   makeCaptionTexture, makeOverlookPolaroidFront, makeOverlookPolaroidBack,
 } from './nightcrawlerTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel } from '../detail.jsx'
+import { FogLayers } from '../atmosphere.jsx'
+import LightRig from '../lightRig.js'
 
 // 9.4 — "the overlook." A Mulholland-style turnout: guardrail, dry brush,
 // LA laid out as a sodium-orange grid to the horizon, clean digital night
@@ -84,49 +88,99 @@ function Overlook({ grade }) {
         <sphereGeometry args={[70, 24, 16, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
         <meshBasicMaterial map={skyTex} side={THREE.BackSide} fog={false} />
       </mesh>
+      {/* a slight haze sitting low over the grid, per the brief's "slight
+          haze" — two slow-scrolling amber-tinted planes from the shared
+          atmosphere kit, not a full fog system */}
+      <FogLayers
+        pos={[0, -2.55, -14]}
+        size={[GROUND_W, 22]}
+        color="rgba(220,140,70,0.16)"
+        speed={0.015}
+        opacity={0.22}
+      />
     </group>
   )
 }
+
+// The overlook guardrail — brushed metal per the brief, built from Bevel
+// (chamfered RoundedBox) rather than naked box slabs so it reads as a
+// manufactured rail, not extruded stock. Top rail, mid rail, and posts each
+// pull their own standardMat instance (kind:'metal') with a distinct tint/
+// wear/seed so no two adjacent surfaces share identical params (materials.js
+// rule) — the posts read slightly darker and more worn than the rails, the
+// way a repainted rail with older bolted posts actually looks.
+const railTopMat = standardMat({ kind: 'metal', tint: '#3a3d42', wear: 0.3, roughness: 0.7, seed: 7701 })
+const railMidMat = standardMat({ kind: 'metal', tint: '#33363b', wear: 0.4, roughness: 0.75, seed: 7702 })
+const railPostMat = standardMat({ kind: 'metal', tint: '#232527', wear: 0.55, roughness: 0.8, seed: 7703 })
 
 function GuardRail() {
   return (
     <group position={[0, 0, RAIL_Z]}>
-      <mesh position={[0, RAIL_H, 0]}>
-        <boxGeometry args={[5.2, 0.06, 0.06]} />
-        <meshStandardMaterial color="#2a2c30" roughness={0.6} metalness={0.4} />
-      </mesh>
-      <mesh position={[0, RAIL_H * 0.5, 0]}>
-        <boxGeometry args={[5.2, 0.05, 0.05]} />
-        <meshStandardMaterial color="#26282c" roughness={0.6} metalness={0.4} />
-      </mesh>
+      <Bevel pos={[0, RAIL_H, 0]} w={5.2} h={0.07} d={0.07} radius={0.02} segments={2} mat={railTopMat} />
+      <Bevel pos={[0, RAIL_H * 0.5, 0]} w={5.2} h={0.055} d={0.055} radius={0.016} segments={2} mat={railMidMat} />
       {Array.from({ length: 6 }, (_, i) => (
-        <mesh key={i} position={[(i - 2.5) * 1.0, RAIL_H / 2, 0]}>
-          <boxGeometry args={[0.05, RAIL_H, 0.05]} />
-          <meshStandardMaterial color="#1c1e20" roughness={0.65} metalness={0.3} />
-        </mesh>
+        <Bevel
+          key={i}
+          pos={[(i - 2.5) * 1.0, RAIL_H / 2, 0]}
+          w={0.06} h={RAIL_H} d={0.06} radius={0.016} segments={2}
+          mat={railPostMat}
+        />
       ))}
     </group>
   )
 }
 
-// Dry brush clumps flanking the turnout — thin emissive-free spiky quads,
-// dark against the sky.
+// Dry brush clumps flanking the turnout — authored placement (never random
+// confetti), each clump a small cluster of thin dark cones standing in for
+// dead scrub brush, instanced since the clump count * twigs-per-clump comfortably
+// clears the >8 instance threshold. The billboard-card version (flat
+// textured quads) read too flat/2D from an angle a player actually walks
+// through; real geometry gives them a silhouette that holds up from any
+// side (QA pass, IMMERSION-V2-POLISH-SPEC.md P1 #3).
+const TWIGS_PER_CLUMP = 7
+const brushMat = standardMat({ kind: 'wood', tint: '#241f16', wear: 0.7, roughness: 0.95, seed: 5502 })
+
 function DryBrush() {
-  const tex = useMemo(() => makeBrushTexture(), [])
+  // authored just forward of the rail line (RAIL_Z=-1.4) so each clump's
+  // silhouette reads dark against the lit grid/sky behind it, rather than
+  // sitting back on the dark turnout ground where it was nearly invisible
+  // against equally-dark dirt (QA pass, IMMERSION-V2-POLISH-SPEC.md P1 #3).
   const clumps = useMemo(() => ([
-    { x: -2.3, z: -0.6, s: 0.9 }, { x: 2.4, z: -0.3, s: 1.1 },
-    { x: -1.7, z: 0.9, s: 0.7 }, { x: 2.0, z: 1.1, s: 0.8 },
-    { x: -2.7, z: 1.6, s: 0.6 },
+    { x: -2.4, z: -1.0, s: 0.5 }, { x: 2.5, z: -0.95, s: 0.58 },
+    { x: -1.9, z: -1.15, s: 0.4 }, { x: 2.1, z: -1.1, s: 0.46 },
+    { x: -2.85, z: -0.75, s: 0.34 },
   ]), [])
+  const geo = useMemo(() => new THREE.ConeGeometry(0.07, 1, 5), [])
+  useEffect(() => () => geo.dispose(), [geo])
+  const ref = useRef()
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const count = clumps.length * TWIGS_PER_CLUMP
+
+  useEffect(() => {
+    if (!ref.current) return
+    let s = 5511
+    const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+    let idx = 0
+    clumps.forEach((c) => {
+      for (let i = 0; i < TWIGS_PER_CLUMP; i++) {
+        const twigLen = c.s * (0.7 + r() * 0.6)
+        const lean = (r() - 0.5) * 0.9
+        dummy.position.set(
+          c.x + (r() - 0.5) * c.s * 0.7,
+          twigLen / 2,
+          c.z + (r() - 0.5) * c.s * 0.7
+        )
+        dummy.rotation.set(lean, r() * Math.PI * 2, lean * 0.6)
+        dummy.scale.set(1, twigLen, 1)
+        dummy.updateMatrix()
+        ref.current.setMatrixAt(idx++, dummy.matrix)
+      }
+    })
+    ref.current.instanceMatrix.needsUpdate = true
+  }, [clumps, dummy])
+
   return (
-    <group>
-      {clumps.map((c, i) => (
-        <mesh key={i} position={[c.x, c.s * 0.5, c.z]} scale={c.s}>
-          <planeGeometry args={[1, 1]} />
-          <meshBasicMaterial map={tex} transparent color="#1c1a14" side={THREE.DoubleSide} />
-        </mesh>
-      ))}
-    </group>
+    <instancedMesh ref={ref} args={[geo, brushMat, count]} key={count} />
   )
 }
 
@@ -340,6 +394,13 @@ export default function Nightcrawler({ film, config, doors = [], onDoor }) {
       <fogExp2 attach="fog" args={[grade.bg || '#050608', 0.02]} />
       <ambientLight intensity={grade.ambient ?? 0.1} />
       <pointLight position={[0, 2.4, 1.6]} intensity={(grade.keyIntensity ?? 1) * 8} color={grade.key || '#ff8a2a'} distance={10} decay={2} />
+      {/* the room's own near-field rig — a cool moonlight bounce so the
+          "clean digital night" grade has a non-sodium undertone, and a rim
+          off the guardrail's brushed metal so it doesn't read as a flat
+          silhouette against the grid. The sodium grid itself stays emissive
+          geometry per the spec, never a real light — keeps the room well
+          under the 7-light budget. */}
+      <LightRig lights={config.lights} />
 
       <Overlook grade={grade} />
       <GuardRail />
