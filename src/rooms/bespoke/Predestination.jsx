@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { barShelf as BarShelf, counter as Counter } from '../props.jsx'
+import { counter as Counter } from '../props.jsx'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startPredestinationAudio } from '../audio/recipes/predestination.js'
 import {
@@ -9,6 +9,7 @@ import {
 } from './predestinationTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, teleportWalker } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 9.1 — "the bar." Low amber light, bottle shelf, two stools mid-
 // conversation, 70s-brown grade. Behind the bar a doorway opens onto a
@@ -127,6 +128,119 @@ function Stools() {
     <group>
       {stool(-0.55, -0.35, 0.5)}
       {stool(0.15, -0.75, -0.8)}
+    </group>
+  )
+}
+
+/* ------------------------------------------------------------- bottles */
+// Wave T: the bar shelf used to be one shared <barShelf> prop (props.jsx) —
+// a board plus a dozen cheap cylinder meshes rendered as siblings under one
+// Wrap, none of them individually touchable. The knock-a-bottle spec wants
+// exactly one of those bottles to have a REAL topple (falls, stays down)
+// while the rest stay cheap wobble-only nudges, so the toppling bottle gets
+// split out into its own component here; the other eleven keep the exact
+// same geometry/positions <barShelf> authored, just each wrapped in its own
+// tiny Touchable now instead of being one inert prop.
+const SHELF_W = 1.6
+const SHELF_COUNT = 12
+const SHELF_ROWS = 2
+const SHELF_COLOR = '#2a1c10'
+const SHELF_GLINT = '#e8a850'
+const TOPPLE_INDEX = 3 // one designated bottle, mid-shelf, front row
+
+function shelfBottles() {
+  return Array.from({ length: SHELF_COUNT }, (_, i) => ({
+    x: (i / SHELF_COUNT - 0.5) * SHELF_W + (Math.sin(i * 12.9) * 0.02),
+    row: i % SHELF_ROWS,
+    h: 0.28 + (i % 5) * 0.02,
+  }))
+}
+
+// wobble-only: a rotational spring nudge, same feel as touchKinds' NudgeKind
+// but hand-rolled here (no `token` plumbing needed — this bottle owns its
+// own one-shot fired-at timestamp directly).
+function WobbleBottle({ x, y, h }) {
+  const group = useRef(null)
+  const firedAt = useRef(0)
+  const handleUse = useCallback(() => { firedAt.current = performance.now() }, [])
+  useFrame(() => {
+    const g = group.current
+    if (!g) return
+    const dt = firedAt.current ? (performance.now() - firedAt.current) / 1000 : Infinity
+    if (dt < 1.2) {
+      const decay = Math.exp(-dt * 4.2)
+      g.rotation.z = Math.sin(dt * 14) * 0.22 * decay
+    } else if (g.rotation.z !== 0) {
+      g.rotation.z = 0
+    }
+  })
+  return (
+    <Touchable onUse={handleUse} reach={2.0} foley="tick" anchor={[x, y, 0]}>
+      <group position={[x, y, 0]}>
+        <group ref={group} position={[0, h / 2, 0]}>
+          <mesh position={[0, -h / 2, 0]}>
+            <cylinderGeometry args={[0.035, 0.045, h, 8]} />
+            <meshStandardMaterial color={SHELF_GLINT} emissive={SHELF_GLINT} emissiveIntensity={0.35} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+          </mesh>
+        </group>
+      </group>
+    </Touchable>
+  )
+}
+
+// the designated bottle: past the wobble, a real topple — pivoted at its
+// own base (not center) so the eased rotation swings it down to rest ON the
+// shelf surface rather than sinking through it, then holds there for the
+// rest of the visit (no revert — a knocked-over bottle stays knocked over).
+function ToppleBottle({ x, y, h }) {
+  const pivot = useRef(null)
+  const [fallen, setFallen] = useState(false)
+  const firedAt = useRef(0)
+  const handleUse = useCallback(() => {
+    if (fallen) return
+    firedAt.current = performance.now()
+    setFallen(true)
+  }, [fallen])
+
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
+  useFrame(() => {
+    const g = pivot.current
+    if (!g) return
+    if (!fallen) { g.rotation.z = 0; return }
+    const t = Math.min(1, (performance.now() - firedAt.current) / 550)
+    g.rotation.z = -easeOutCubic(t) * (Math.PI / 2)
+  })
+
+  return (
+    <Touchable onUse={handleUse} reach={2.0} foley="glass" disabled={fallen} anchor={[x, y, 0]}>
+      <group position={[x, y, 0]}>
+        <group ref={pivot}>
+          <mesh position={[0, h / 2, 0]}>
+            <cylinderGeometry args={[0.035, 0.045, h, 8]} />
+            <meshStandardMaterial color={SHELF_GLINT} emissive={SHELF_GLINT} emissiveIntensity={0.35} roughness={0.2} metalness={0.1} transparent opacity={0.85} />
+          </mesh>
+        </group>
+      </group>
+    </Touchable>
+  )
+}
+
+function BarBottleShelf({ pos, rot }) {
+  const bottles = useMemo(() => shelfBottles(), [])
+  return (
+    <group position={pos} rotation={rot}>
+      {[0, 1].slice(0, SHELF_ROWS).map((r) => (
+        <mesh key={r} position={[0, 0.3 + r * 0.34, 0]}>
+          <boxGeometry args={[SHELF_W + 0.1, 0.03, 0.22]} />
+          <meshStandardMaterial color={SHELF_COLOR} roughness={0.6} />
+        </mesh>
+      ))}
+      {bottles.map((b, i) => {
+        const y = 0.32 + b.row * 0.34
+        return i === TOPPLE_INDEX
+          ? <ToppleBottle key={i} x={b.x} y={y} h={b.h} />
+          : <WobbleBottle key={i} x={b.x} y={y} h={b.h} />
+      })}
     </group>
   )
 }
@@ -362,7 +476,7 @@ export default function Predestination({ film, config, doors = [], onDoor }) {
         <>
           <BarRoom />
           <Counter pos={[-1.0, 0, -1.15]} rot={[0, 0, 0]} w={1.8} d={0.55} h={0.95} color="#4a3020" />
-          <BarShelf pos={[-1.0, 0.95, -1.42]} rot={[0, 0, 0]} count={12} w={1.6} color="#2a1c10" glint="#e8a850" />
+          <BarBottleShelf pos={[-1.0, 0.95, -1.42]} rot={[0, 0, 0]} />
           <Stools />
           <CertifiedCoaster />
           <TextRing film={film} />
