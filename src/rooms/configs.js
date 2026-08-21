@@ -29,6 +29,25 @@
 // intent; the table is structure). Tier 1 slugs (per the brief) get engine
 // stand-ins here — bespoke rooms are Phase 2, not this wave. Any slug not
 // listed still resolves through defaultConfigFor() below.
+//
+// Phase 3 cleanup: the first 16 entries below (memento through
+// disclosure-day, registry.js's BESPOKE map) are now hand-built rooms —
+// their component reads `film`/`config`/`infoVisible` directly and stages
+// its own geometry, never GenericRoom. registry.js's getRoomComponent()
+// picks BESPOKE[slug] over the family/place-driven path unconditionally
+// once a slug is in that map, so a bespoke entry here is thin ON PURPOSE:
+// only `family` (still feeds preset defaults into any grade/camera/lights
+// field the entry doesn't set itself — see getRoomConfig's merge order),
+// `grade`/`camera` (FilmWorld's ambient fill + the pre-enter camera, and
+// each bespoke component's own `config.camera.pos`/`config.grade.bg`
+// reads), and `lights` where a bespoke room actually asks for the layered
+// rig (nightcrawler, currently the only one). `place` (shell/props/systems)
+// and `info` (hotTake/score/meta positions) are BOTH dead for these 16 —
+// grep confirms no bespoke component ever reads `config.place` or
+// `config.info`; each one builds its own geometry and its own diegetic
+// record placement by hand. They used to carry a full `place` block anyway
+// (each was a Wave B GenericRoom stand-in before Phase 2 replaced it with a
+// bespoke component) — stripped here rather than left as inert weight.
 
 export const CONFIGS = {
   // ---------------------------------------------------------------- memento
@@ -55,35 +74,12 @@ export const CONFIGS = {
     // catch the left edge, and the door still sits in frame but well off
     // to the right rather than dead center — "in frame, not the frame."
     camera: { pos: [1.35, 1.55, 1.95], look: [-1.1, 1.25, -0.75], fov: 52 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 3.6, d: 4.2, h: 2.5, wallMat: 'wood', window: false },
-      props: [
-        { type: 'bed', pos: [-0.9, 0, -0.8], rot: [0, 0.15, 0] },
-        { type: 'table', pos: [1.1, 0, -1.3], rot: [0, -0.2, 0], w: 0.9, d: 0.5, h: 0.7, color: '#3a2c1c' },
-        // NOTE: paperScatter's own per-instance rotation already flattens
-        // the sheet (props.jsx) — a group-level rot=[PI/2,0,0] on top of
-        // that stacks a second X rotation and stands every sheet on edge
-        // (the same double-rotation bug fixed in Memento/BabyDriver's
-        // bespoke rooms). No outer rot needed here.
-        { type: 'paperScatter', pos: [1.1, 1.3, -1.75], count: 16, area: [1.4, 1], color: '#e6dcc0' },
-        { type: 'mirrorPlane', pos: [-1.6, 1.5, 0.2], rot: [0, Math.PI / 2, 0], w: 0.7, h: 1.1 },
-        { type: 'lampPractical', pos: [1.1, 1.7, -1.3], color: '#e8b070', intensity: 0.8 },
-      ],
-      systems: [
-        { type: 'Duplicates', offset: 0.05, wrongness: 'subtle', wrapsProps: true },
-        { type: 'ResetFlash', period: 70, jitter: 0.2 },
-      ],
-    },
-    info: { scorePos: [-1.55, 1.55, 0.2] },
   },
 
   // ----------------------------------------------------------- the-departed
   // Bespoke now (Phase 2, src/rooms/bespoke/Departed.jsx): camera retuned to
-  // the hand-built roof/elevator geometry — the `place` block below is the
-  // pre-bespoke Wave B stand-in, left in place unused (Memento's config keeps
-  // the same kind of dead `place` block; the bespoke component never reads
-  // it, GenericRoom never runs for a slug with a BESPOKE entry).
+  // the hand-built roof/elevator geometry. `place`/`info` (Wave B's
+  // GenericRoom stand-in) stripped Phase 3 — see the file header.
   'the-departed': {
     family: 'intimate-tension',
     // P1 polish pass (IMMERSION-V2-POLISH-SPEC.md): golden-hour triplet —
@@ -93,35 +89,16 @@ export const CONFIGS = {
     // the dossier sheet.
     grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.27, grain: 0.06, vignette: 0.5, bloomIntensity: 0.34 },
     camera: { pos: [0, 1.6, 3.4], look: [0, 1.45, -3.3], fov: 54, far: 90 },
-    place: {
-      shell: 'open',
-      shellParams: { ground: 'concrete', groundColor: '#3a342c', skyTop: '#e8b060', skyBottom: '#2a2018', horizon: true, distantCity: 22 },
-      props: [
-        { type: 'slab', pos: [-1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
-        { type: 'slab', pos: [1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
-        { type: 'slab', pos: [0, 0.55, -1.2], size: [6, 0.1, 0.08], color: '#1c1a16' },
-        // moved off-center — at (0, 0.55) it stood directly in front of the
-        // hot take sheet and covered half the verbatim text (QA sweep
-        // 2026-08-21); walking the railing to one side reads better anyway.
-        { type: 'abstractFigure', pos: [-2.2, 0.55, -1.2], scale: 0.9, color: '#8a6a2c', pose: 'walk-cycle-frozen' },
-      ],
-      systems: [
-        { type: 'ScheduledCut', period: 75, duration: 4000, altGrade: '#ffe8b0' },
-      ],
-    },
-    info: { scorePos: [1.4, 1.4, -2.5] },
   },
 
   // ----------------------------------------------------------------- sicario
   // Bespoke now (Phase 2, src/rooms/bespoke/Sicario.jsx): the room's own
   // entry is the dusk staging ground, not the tunnel — grade/camera below
-  // now match its GROUND_STATION exactly (warm dusk, not tunnel green;
-  // the green/thermal grade only exists as gradeBus overrides published
-  // once you've actually descended, same seam Memento uses for its own
-  // split). `place`/the old tunnel-only camera are dead weight for the same
-  // reason as the-departed's/baby-driver's own entries above — the bespoke
-  // component never reads this block; left in place as the pre-bespoke
-  // Wave B stand-in.
+  // match its GROUND_STATION exactly (warm dusk, not tunnel green; the
+  // green/thermal grade only exists as gradeBus overrides published once
+  // you've actually descended, same seam Memento uses for its own split).
+  // `place`/the old tunnel-only camera (Wave B's GenericRoom stand-in)
+  // stripped Phase 3 — see the file header.
   sicario: {
     family: 'dread',
     // grain/vignette/bloomIntensity: the dusk-ground baseline — Deakins-dusk
@@ -130,29 +107,14 @@ export const CONFIGS = {
     // instant you're underground.
     grade: { key: '#e8935a', fill: '#2a3a55', sat: 0.05, ambient: 0.3, keyIntensity: 1, grain: 0.045, vignette: 0.6, bloomIntensity: 0.26 },
     camera: { pos: [0, 1.9, 3.2], look: [0, 0.85, -2.4], fov: 56, far: 90 },
-    place: {
-      shell: 'corridor',
-      shellParams: { length: 16, width: 2.4, height: 2.3, ribs: 9, wallTint: '#141210', farLight: true },
-      props: [
-        { type: 'abstractFigure', pos: [-0.6, 0, -1.4], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.5, 0, -1.8], scale: 0.85, color: '#1c1610', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.2, 0, -2.3], scale: 0.8, color: '#1c1610', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.9, 0, -2.6], scale: 0.8, color: '#1c1610', pose: 'stand' },
-        { type: 'abstractFigure', pos: [0, 0, -3.1], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
-      ],
-      systems: [
-        { type: 'AdvanceGlow', from: [0, 1.3, -15], color: '#8aff9a', speed: 0.18, resetAt: 13, axis: 'z' },
-      ],
-    },
   },
 
   // ------------------------------------------------------------------ matrix
   // Bespoke now (Phase 2, src/rooms/bespoke/Matrix.jsx): camera/grade below
   // match the bespoke room's own entry station exactly, same convention
   // 'the-sting' uses, so FilmWorld's ambientLight and the pre-enter camera
-  // agree with what the hand-built rooftop actually shows. `place` is dead
-  // weight the bespoke component never reads — left in place as the
-  // pre-bespoke Wave B stand-in.
+  // agree with what the hand-built rooftop actually shows. `place`/`info`
+  // (Wave B's GenericRoom stand-in) stripped Phase 3 — see the file header.
   matrix: {
     family: 'spectacle',
     // P1 polish pass: green pushed properly (this room's gradeBus override
@@ -161,27 +123,13 @@ export const CONFIGS = {
     // vignette moderate so the periphery glyph rain still reads at the edge.
     grade: { key: '#7fae5a', fill: '#2a3a22', sat: 0.12, hue: 0.03, contrast: 0.14, grain: 0.03, vignette: 0.46, bloomIntensity: 0.36 },
     camera: { pos: [0, 1.7, 3.4], look: [0, 1.3, 0], fov: 52, far: 300 },
-    place: {
-      shell: 'open',
-      shellParams: { ground: 'concrete', groundColor: '#3a3c34', skyTop: '#8aae7a', skyBottom: '#4a5238', horizon: true, distantCity: 18 },
-      props: [
-        { type: 'abstractFigure', pos: [0, 0, 0], scale: 1, color: '#12140f', pose: 'crouch' },
-        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, 0, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
-        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, Math.PI / 2, 0], w: 2.2, h: 2.2, color: '#bcd8a0', frame: '#4fd67a' },
-      ],
-      systems: [
-        { type: 'GlyphRain', pos: [3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
-        { type: 'GlyphRain', pos: [-3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
-      ],
-    },
-    info: { scorePos: [1.7, 1.9, 1.4] },
   },
 
   // ------------------------------------------------------------------ br2049
   // Bespoke now (Phase 2, src/rooms/bespoke/BR2049.jsx): camera lowered to
   // match the bespoke room's own entry station (the brief's "camera height
-  // lowered in this room only"). `place` is dead weight for the same reason
-  // as matrix's own entry above — the bespoke component never reads it.
+  // lowered in this room only"). `place` (Wave B's GenericRoom stand-in)
+  // stripped Phase 3 — see the file header.
   br2049: {
     family: 'spectacle',
     // bg/fogColor overridden: the ledger palette's own bg is the film's
@@ -207,61 +155,25 @@ export const CONFIGS = {
       grain: 0.07, vignette: 0.84, bloomIntensity: 0.4,
     },
     camera: { pos: [0, 1.35, 3], look: [0, 1.05, -8], fov: 50, far: 200 },
-    place: {
-      shell: 'deck',
-      shellParams: { length: 12, width: 4.4, railing: true, fogWall: true, floorTint: '#141a1e' },
-      props: [
-        { type: 'slab', pos: [0, 0.4, -4], size: [4.4, 0.8, 1.2], color: '#20242a' },
-        { type: 'waterPlane', pos: [0, -0.02, -9], size: [16, 8], color: '#08181e', bright: '#3aa0c0' },
-        { type: 'abstractFigure', pos: [0, 0, -9.5], scale: 3.2, color: '#0a0c10', pose: 'stand', emissive: '#3a6a8a' },
-      ],
-      systems: [
-        { type: 'RainField', density: 500, wind: 0.25, area: [8, 6, 12] },
-        { type: 'ScheduledCut', period: 90, duration: 6000, altGrade: '#e8874a' },
-      ],
-    },
   },
 
   // ---------------------------------------------------------------- the-sting
   // Bespoke now (Phase 2, src/rooms/bespoke/Sting.jsx): grade/camera below
   // match the bespoke room's own FRONT station exactly (its default entry
   // view) so FilmWorld's ambientLight and the pre-enter camera line up with
-  // what the hand-built parlor actually shows. `place` is dead weight for
-  // the same reason as the-departed's/baby-driver's own entries above — the
-  // bespoke component never reads it; left in place as the pre-bespoke
-  // Wave B stand-in.
+  // what the hand-built parlor actually shows. `place`/`info` (Wave B's
+  // GenericRoom stand-in) stripped Phase 3 — see the file header.
   'the-sting': {
     family: 'weird-fable',
     grade: { key: '#c8964a', fill: '#3a2c1a', sat: 0.1, ambient: 0.24, grain: 0.07, vignette: 0.55, bloomIntensity: 0.26 },
     camera: { pos: [0, 1.5, 2.2], look: [0, 1.3, -1.6], fov: 50 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 4.6, d: 4.6, h: 2.7, wallMat: 'wood', doorGap: true },
-      props: [
-        { type: 'counter', pos: [-1.4, 0, -1.6], rot: [0, 0.25, 0], color: '#5a3f22' },
-        { type: 'barShelf', pos: [-1.4, 0, -2.0], rot: [0, 0.25, 0], count: 12, color: '#3a2814', glint: '#e8b060' },
-        { type: 'screenPanel', pos: [1.3, 1.5, -1.9], w: 1.2, h: 0.8, color: '#1c2418', draw: (ctx, W, H) => {
-          ctx.fillStyle = '#1c2418'; ctx.fillRect(0, 0, W, H)
-          ctx.strokeStyle = '#d8cca0'; ctx.lineWidth = 2
-          for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(20, 30 + i * 30); ctx.lineTo(W - 20, 30 + i * 30); ctx.stroke() }
-        } },
-        { type: 'table', pos: [0.6, 0, -0.4], w: 1, d: 0.6, color: '#4a3624' },
-      ],
-      systems: [
-        { type: 'Assembler', period: 80, wrapsProps: true },
-      ],
-    },
-    // QA sweep 2026-08-21: the foreground table (z: -0.4) sat directly in
-    // the camera's sightline to the default metaPos (z: -1.66) and hid the
-    // meta line/vibe chips entirely — raised it to clear the tabletop.
-    info: { metaPos: [0, 1.3, -1.66] },
   },
 
   // ------------------------------------------------------------------- enemy
   // Bespoke now (Phase 2, src/rooms/bespoke/Enemy.jsx): camera/grade below
   // already matched the bespoke room's own entry station, so no change was
-  // needed here. `place` is dead weight the bespoke component never reads —
-  // left in place as the pre-bespoke Wave B stand-in.
+  // needed here. `place` (Wave B's GenericRoom stand-in) stripped Phase 3 —
+  // see the file header.
   enemy: {
     family: 'mind-bender',
     // P1 finishing pass: sat/contrast pushed past the pre-polish pass
@@ -281,26 +193,15 @@ export const CONFIGS = {
       grain: 0.07, vignette: 0.66, bloomIntensity: 0.24,
     },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.8], fov: 46 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 4.2, d: 4.2, h: 2.5, wallMat: 'flat', window: true },
-      props: [
-        { type: 'table', pos: [-0.4, 0, -0.4], w: 1, d: 0.6 },
-        { type: 'chairRow', pos: [-0.4, 0, -0.1], count: 2, spacing: 0.6 },
-      ],
-      systems: [
-        { type: 'Duplicates', offset: 0.09, wrongness: 'high', wrapsProps: true },
-        { type: 'PeripheralFigure', corner: 'high', pos: [1.6, 2.1, -1.9], color: '#0c0d10' },
-      ],
-    },
   },
 
   // ------------------------------------------------------------ nightcrawler
   // Bespoke now (Phase 2, src/rooms/bespoke/Nightcrawler.jsx): grade/camera
   // below match the bespoke room's own entry composition (guardrail,
-  // sodium-grid horizon). `place` is dead weight for the same reason as
-  // the-departed's/baby-driver's own entries above — the bespoke component
-  // never reads it; left in place as the pre-bespoke Wave B stand-in.
+  // sodium-grid horizon). `lights` below is LIVE — Nightcrawler.jsx reads
+  // `config.lights` straight into its own <LightRig>, the one bespoke slug
+  // that does (see the file header's note on why these entries are thin).
+  // `place` (Wave B's GenericRoom stand-in) stripped Phase 3.
   nightcrawler: {
     family: 'momentum',
     // P1 finishing pass: grade triplet tuned for "clean digital night" —
@@ -323,30 +224,12 @@ export const CONFIGS = {
       ],
       rim: { pos: [2.3, 1.2, -1.9], color: '#ffb060', intensity: 0.55, distance: 5.5, decay: 2 },
     },
-    place: {
-      shell: 'open',
-      shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
-      props: [
-        // was a 0.9-tall slab standing in for a guardrail — at this camera
-        // distance it read as an unexplained solid block filling the lower
-        // frame and burying the meta line behind it (QA sweep 2026-08-21).
-        // A thin rail bar reads as a guardrail instead.
-        { type: 'slab', pos: [0, 0.65, -1], size: [3, 0.08, 0.06], color: '#1c1e20' },
-        { type: 'screenPanel', pos: [0, 1.55, -1.3], w: 0.9, h: 0.5, color: '#101010', draw: (ctx, W, H) => {
-          ctx.strokeStyle = '#ff3020'; ctx.lineWidth = 6; ctx.strokeRect(6, 6, W - 12, H - 12)
-          ctx.fillStyle = '#ff3020'; ctx.beginPath(); ctx.arc(30, 30, 8, 0, Math.PI * 2); ctx.fill()
-        } },
-      ],
-      systems: [],
-    },
   },
 
   // ------------------------------------------------------------------- stby
   // Bespoke now (Phase 2, src/rooms/bespoke/Stby.jsx): grade/camera below
-  // match the bespoke room's own fixed office station. `place` is dead
-  // weight for the same reason as the-departed's/baby-driver's own entries
-  // above — the bespoke component never reads it; left in place as the
-  // pre-bespoke Wave B stand-in.
+  // match the bespoke room's own fixed office station. `place` (Wave B's
+  // GenericRoom stand-in) stripped Phase 3 — see the file header.
   stby: {
     family: 'intimate-tension',
     // P1 polish pass: key nudged green (fluorescent-tube cast, per the
@@ -360,28 +243,12 @@ export const CONFIGS = {
       grain: 0.045, vignette: 0.88, bloomIntensity: 0.24,
     },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 5, d: 5, h: 2.5, wallMat: 'steel' },
-      props: [
-        { type: 'table', pos: [-1.2, 0, -1.2], w: 0.8, d: 0.6, color: '#3a3f46' },
-        { type: 'table', pos: [1.2, 0, -1.2], w: 0.8, d: 0.6, color: '#3a3f46' },
-        { type: 'table', pos: [-1.2, 0, 0.2], w: 0.8, d: 0.6, color: '#3a3f46' },
-        { type: 'table', pos: [1.2, 0, 0.2], w: 0.8, d: 0.6, color: '#3a3f46' },
-        { type: 'chairRow', pos: [0, 0, -0.6], count: 3, spacing: 0.7 },
-      ],
-      systems: [
-        { type: 'ScheduledCut', period: 60, duration: 5000, altGrade: '#e8c060' },
-      ],
-    },
   },
 
   // ----------------------------------------------------------------- amadeus
   // Bespoke now (Phase 2, src/rooms/bespoke/Amadeus.jsx): grade/camera below
-  // match the bespoke room's own bedchamber. `place` is dead weight for the
-  // same reason as the-departed's/baby-driver's own entries above — the
-  // bespoke component never reads it; left in place as the pre-bespoke
-  // Wave B stand-in.
+  // match the bespoke room's own bedchamber. `place` (Wave B's GenericRoom
+  // stand-in) stripped Phase 3 — see the file header.
   amadeus: {
     family: 'intimate-tension',
     // P1 polish pass: rich warm/cold split, moderate grain (candlelit film
@@ -392,63 +259,23 @@ export const CONFIGS = {
       grain: 0.055, vignette: 0.62, bloomIntensity: 0.4,
     },
     camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 3.8, d: 4, h: 2.4, wallMat: 'flat', window: true },
-      props: [
-        { type: 'bed', pos: [-0.7, 0, -0.9], rot: [0, 0.2, 0] },
-        { type: 'chairRow', pos: [0.4, 0, -0.4], count: 1 },
-        { type: 'lampPractical', pos: [-0.1, 0.9, -0.2], color: '#ffb060', intensity: 1.1 },
-        { type: 'lampPractical', pos: [1.3, 0.9, -1.6], color: '#ffb060', intensity: 0.6 },
-      ],
-      systems: [
-        { type: 'InkSpread', surfaces: [
-          { pos: [0, 1.5, -1.98], rot: [0, 0, 0] },
-          { pos: [-1.88, 1.5, 0], rot: [0, Math.PI / 2, 0] },
-        ], rate: 0.1 },
-      ],
-    },
   },
 
   // ---------------------------------------------------------- predestination
   // Bespoke now (Phase 2, src/rooms/bespoke/Predestination.jsx): grade/camera
-  // below match the bespoke room's own bar station. `place` is dead weight
-  // for the same reason as the-departed's/baby-driver's own entries above —
-  // the bespoke component never reads it; left in place as the pre-bespoke
-  // Wave B stand-in.
+  // below match the bespoke room's own bar station. `place` (Wave B's
+  // GenericRoom stand-in) stripped Phase 3 — see the file header.
   predestination: {
     family: 'mind-bender',
     grade: { bg: '#241a10', fogColor: '#241a10', key: '#e8b860', fill: '#3a2414', ambient: 0.14, grain: 0.06, vignette: 0.6, bloomIntensity: 0.22 },
     camera: { pos: [0.3, 1.5, 1.3], look: [-0.7, 1.35, -1.3], fov: 48 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'wood', doorGap: true },
-      props: [
-        { type: 'counter', pos: [0, 0, -1.4], color: '#4a3020' },
-        { type: 'barShelf', pos: [0, 0, -1.7], count: 10, color: '#2a1c10', glint: '#e8a850' },
-        { type: 'chairRow', pos: [-0.3, 0, -0.7], count: 2, spacing: 0.55 },
-        // the timeline ribbon: a ring of slabs closing above the bottles —
-        // it has no start, which is the whole point (corridor loop NOT
-        // attempted at this tier, per the table)
-        ...Array.from({ length: 16 }, (_, i) => ({
-          type: 'slab',
-          pos: [Math.cos((i / 16) * Math.PI * 2) * 0.9, 2.15, -1.7 + Math.sin((i / 16) * Math.PI * 2) * 0.9],
-          rot: [0, (i / 16) * Math.PI * 2, 0],
-          size: [0.36, 0.05, 0.05],
-          color: '#e8b860',
-          emissive: '#e8b860',
-          emissiveIntensity: 0.4,
-        })),
-      ],
-      systems: [],
-    },
   },
 
   // ------------------------------------------------------------ baby-driver
   // Bespoke now (Phase 2, src/rooms/bespoke/BabyDriver.jsx): the camera below
   // already framed the car/facade well for the hand-built room, so it's
-  // unchanged from the Wave B stand-in. `place` is dead weight for the same
-  // reason as the-departed's above — the bespoke component never reads it.
+  // unchanged from the Wave B stand-in. `place` (Wave B's GenericRoom
+  // stand-in) stripped Phase 3 — see the file header.
   //
   // QA pass (architect review): grade had no bg/fogColor override, so both
   // fell back to defaultConfigFor()'s film-palette bg — this film's card
@@ -469,18 +296,6 @@ export const CONFIGS = {
       sat: 0.14, contrast: 0.1, grain: 0.028, vignette: 0.3, bloomIntensity: 0.3,
     },
     camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52, far: 60 },
-    place: {
-      shell: 'open',
-      shellParams: { ground: 'concrete', groundColor: '#88888a', skyTop: '#a8d8e8', skyBottom: '#e8d8b0', horizon: true },
-      props: [
-        { type: 'slab', pos: [0, 1, -4], size: [8, 2.4, 0.3], color: '#c8b898' },
-        { type: 'vehicleMass', pos: [1.4, 0, -1], rot: [0, 0.1, 0], color: '#a01818', w: 1.7, h: 1.1, d: 3.6 },
-        { type: 'paperScatter', pos: [-1, 0, 0], count: 14, area: [2, 2], color: '#e8e0c8' },
-      ],
-      systems: [
-        { type: 'PulseBeat', bpm: 110, depth: 0.5 },
-      ],
-    },
   },
 
   // -------------------------------------------------------------------- ncfom
@@ -488,51 +303,28 @@ export const CONFIGS = {
   // match the bespoke room's own front-of-counter station (the entry
   // viewpoint FilmWorld lands on; the room itself flies to a second,
   // behind-the-counter station via goToStation when you walk around). `place`
-  // is dead weight for the same reason as the-departed's/baby-driver's own
-  // entries above — the bespoke component never reads it.
+  // (Wave B's GenericRoom stand-in) stripped Phase 3 — see the file header.
   ncfom: {
     family: 'dread',
     grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.32, bg: '#8a7a5a', fogColor: '#8a7a5a', grain: 0.05, vignette: 0.35, bloomIntensity: 0.16 },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.4], fov: 44 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'flat', doorGap: true },
-      props: [
-        { type: 'counter', pos: [0, 0, -1.4], color: '#8a7a5a' },
-        { type: 'slab', pos: [-1.4, 1, -1], size: [0.5, 1.6, 0.3], color: '#6a5a3a' },
-        { type: 'slab', pos: [-1.4, 1, -1.6], size: [0.5, 1.6, 0.3], color: '#6a5a3a' },
-        { type: 'lampPractical', pos: [0.1, 0.98, -1.35], color: '#fff0c0', intensity: 0.15, distance: 1 },
-      ],
-      systems: [],
-    },
   },
 
   // ---------------------------------------------------------------- barbarian
   // Bespoke now (Phase 2, src/rooms/bespoke/Barbarian.jsx): grade/camera
   // below match the bespoke room's own living-room entry station (index -1;
-  // the descent below it moves via goToStation). `place` is dead weight for
-  // the same reason as the-departed's/baby-driver's own entries above.
+  // the descent below it moves via goToStation). `place` (Wave B's
+  // GenericRoom stand-in) stripped Phase 3 — see the file header.
   barbarian: {
     family: 'dread',
     grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416', grain: 0.08, vignette: 0.62, bloomIntensity: 0.2 },
     camera: { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 3.8, d: 3.8, h: 2.5, wallMat: 'flat', doorGap: true },
-      props: [
-        { type: 'slab', pos: [-1, 0.24, -0.6], size: [1.2, 0.5, 0.7], color: '#6a5040' },
-        { type: 'lampPractical', pos: [-0.6, 0.7, -0.2], color: '#ffb868', intensity: 1 },
-      ],
-      systems: [
-        { type: 'ScheduledCut', period: 70, duration: 1000, altGrade: '#fff6d8' },
-      ],
-    },
   },
 
   // ---------------------------------------- masters-of-the-universe-2026
   // Bespoke now (Phase 2, src/rooms/bespoke/Motu.jsx): grade/camera below
-  // match the bespoke room's own fixed throne-hall station. `place` is dead
-  // weight for the same reason as the-departed's/baby-driver's own entries.
+  // match the bespoke room's own fixed throne-hall station. `place` (Wave
+  // B's GenericRoom stand-in) stripped Phase 3 — see the file header.
   'masters-of-the-universe-2026': {
     family: 'spectacle',
     // P1 polish pass: camp-grand and saturated, low grain (this is a clean
@@ -544,23 +336,12 @@ export const CONFIGS = {
       grain: 0.02, vignette: 0.42, bloomIntensity: 0.55,
     },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 5.4, d: 6, h: 4.2, wallMat: 'flat' },
-      props: [
-        { type: 'throne', pos: [0, 0.2, -2.2], color: '#3a2a44', accent: '#e8dcc0' },
-        { type: 'slab', pos: [0, 0.1, -2.2], size: [2, 0.2, 1.4], color: '#242030' },
-      ],
-      systems: [
-        { type: 'PulseBeat', bpm: 30, depth: 0.6 },
-      ],
-    },
   },
 
   // ------------------------------------------------------------ disclosure-day
   // Bespoke now (Phase 2, src/rooms/bespoke/DisclosureDay.jsx): grade/camera
-  // below match the bespoke room's own fixed podium station. `place` is dead
-  // weight for the same reason as the-departed's/baby-driver's own entries.
+  // below match the bespoke room's own fixed podium station. `place` (Wave
+  // B's GenericRoom stand-in) stripped Phase 3 — see the file header.
   'disclosure-day': {
     family: 'intimate-tension',
     // P1 polish pass: the boring is authored, not defaulted — slightly
@@ -574,24 +355,6 @@ export const CONFIGS = {
       grain: 0.015, vignette: 0.12, bloomIntensity: 0.18,
     },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
-    place: {
-      shell: 'box',
-      shellParams: { w: 6, d: 7, h: 3.4, wallMat: 'flat' },
-      props: [
-        { type: 'podium', pos: [0, 0, -2.6] },
-        { type: 'chairRow', pos: [0, 0, 0.6], count: 6, spacing: 0.66 },
-        { type: 'slab', pos: [-2.4, 1.1, -2.8], size: [0.5, 2.2, 0.06], color: '#c8c0a8' },
-        { type: 'slab', pos: [2.4, 1.1, -2.8], size: [0.5, 2.2, 0.06], color: '#c8c0a8' },
-        { type: 'screenPanel', pos: [0, 2, -3.4], w: 4, h: 1.6, color: '#e8e2d0', draw: (ctx, W, H) => {
-          ctx.fillStyle = '#e8e2d0'; ctx.fillRect(0, 0, W, H)
-          ctx.fillStyle = '#9a9480'; ctx.font = '20px Georgia'
-          for (let i = 0; i < 10; i++) ctx.fillText('the matter remains under continued advisement', 10, 30 + i * 40)
-        } },
-      ],
-      systems: [
-        { type: 'CurtainReveal', period: 45, pos: [0, 1.7, -3.35], w: 2, h: 2.8, color: '#7a2a2a' },
-      ],
-    },
   },
 
   // ------------------------------------------------------------------ darkknight
