@@ -718,48 +718,83 @@ export const CONFIGS = {
   // ------------------------------------------------------------------------ tdkr
   tdkr: {
     family: 'spectacle',
-    // keyIntensity dropped for the same reason as sicario/batman: the
-    // fixed key sits right where this room's camera also lives.
-    // fill brightened — see sicario's note; a near-black fill caps the
-    // ambientLight (which uses grade.fill as its color) near zero.
-    // P2 sweep fix: the P0 lightRig scale change (grade.keyIntensity now
-    // scales the WHOLE preset rig, not just an old fixed pair) still left
-    // this room reading as a near-total void — the preset's directional key
-    // (aimed down from y=10 toward the origin) barely grazes a corridor
-    // shell built as a horizontal shaft, so the "pit" had nothing lighting
-    // its walls. Raised ambient/keyIntensity and gave the walls a lighter
-    // stone tint + real materials.js surface so the little light there is
-    // has something to catch.
-    grade: { key: '#e0c080', fill: '#4a4030', ambient: 0.6, keyIntensity: 1.3, grain: 0.03, vignette: 0.4, bloomIntensity: 0.32 },
-    // QA sweep 2026-08-21: the old look-at [0,5,-0.5] from a camera at
-    // y=0.6 was almost straight up — the frame was ~70% empty sky with the
-    // pit itself, the info surfaces and the score all cropped out the
-    // bottom. Eased the tilt so the well walls and the light disc share
-    // the frame with the record.
-    camera: { pos: [0, 1, 0.5], look: [0, 3, -3], fov: 56, far: 60 },
-    // P2 hand-tune: a practical or two inside the shaft, since the
-    // preset's own directional key + bounce (spectacle family, tuned for
-    // an open outdoor shell) doesn't reach down a vertical corridor well.
+    // P2 round 2 (architect review): the corridor-shell version above
+    // still failed — a corridor is a horizontal shaft with straight walls;
+    // "the pit" is a CIRCULAR well you look UP out of, and no amount of
+    // light-tuning fixes a shell that's the wrong shape for the shot.
+    // Rebuilt on the 'open' shell (just floor + sky backdrop, no walls of
+    // its own) with a real shaftRing prop (props.jsx, P2 round 2 addition)
+    // standing in for the well's curved stone — a hollow cylinder rendered
+    // BackSide so the camera, standing at its base, sees the inner face.
+    grade: { key: '#e8caa0', fill: '#5a5038', ambient: 0.58, keyIntensity: 1.7, grain: 0.03, vignette: 0.34, bloomIntensity: 0.36 },
+    // Architect review round 2 (attempt 2 — the real bug was shaftRing
+    // using standardMat()'s default FrontSide, so the stone wall was
+    // invisible from inside the cylinder no matter how the camera was
+    // aimed: fixed in props.jsx, BackSide clone). With the wall actually
+    // rendering, a near-45-degree up-and-across look (rather than
+    // straight up the axis) puts the curved stone across most of the
+    // frame at a raking angle — where the roughness map shows — while
+    // still catching the disc high and off-center as the focal.
+    camera: { pos: [0.95, 1.3, -0.2], look: [-0.9, 4.4, -1.7], fov: 66, far: 40 },
     lights: {
-      key: { pos: [0, 5, -2], intensity: 1.1, distance: 14, decay: 2, color: '#e8c890' },
+      // the light disc itself is unlit (lightDisc prop) so it always
+      // reads bright regardless of scale — this key just grazes the
+      // stone near the top so the upper shaft isn't a black ring around
+      // a bright dot.
+      key: { pos: [0, 12.5, 0], intensity: 1.5, distance: 16, decay: 2, color: '#f0d8a8' },
+      // a practical near the camera's OWN height, offset to the same side
+      // as the near wall — this is the raking light the stone material
+      // needs to actually read as stone rather than a flat gradient.
       practicals: [
-        { pos: [1.2, 2.4, -3], intensity: 0.7, distance: 8, color: '#c8a860', decay: 2 },
-        { pos: [-1.2, 1.4, -1.6], intensity: 0.6, distance: 7, color: '#8a7050', decay: 2 },
+        { pos: [1.8, 1.7, -0.8], intensity: 1.7, distance: 6.5, color: '#e0b878', decay: 2 },
+        { pos: [-1.4, 4.6, -1.6], intensity: 1.0, distance: 8, color: '#c8a068', decay: 2 },
       ],
-      bounce: [{ pos: [0, 0.6, 0], intensity: 0.5, distance: 6, color: '#5a4a34', decay: 2 }],
+      bounce: [{ pos: [0, 0.5, 0], intensity: 0.5, distance: 6, color: '#4a4030', decay: 2 }],
     },
     place: {
-      shell: 'corridor',
-      shellParams: {
-        length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#4a4030', farLight: true,
-        mat: { walls: 'concrete', floor: 'concrete', ceiling: 'concrete', wallWear: 0.5, floorWear: 0.4 },
-      },
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#3a3428', skyTop: '#0a0806', skyBottom: '#0a0806', horizon: false, boundsRadius: 2.35 },
       props: [
-        { type: 'slab', pos: [1.4, 3, -6], size: [0.8, 0.15, 0.15], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
+        // the well: a wide stone cylinder, camera standing at its base
+        // looking up its full 13m — radius 2.6 keeps the curve tight
+        // enough to read as a WELL, not an open plaza.
+        { type: 'shaftRing', pos: [0, 6.6, 0], radius: 2.6, height: 13.2, segments: 26, mat: { kind: 'concrete', tint: '#8a8064', wear: 0.55 } },
+        // ledge courses at three heights — the jump ledge (brief: "the
+        // jump ledge is reachable") sits at the lower one, within the
+        // walker's reach.
+        { type: 'ledgeRing', pos: [0, 1.7, 0], radius: 2.52, tube: 0.05, color: '#221e14' },
+        { type: 'ledgeRing', pos: [0, 4.8, 0], radius: 2.5, tube: 0.04, color: '#221e14' },
+        { type: 'ledgeRing', pos: [0, 8.6, 0], radius: 2.48, tube: 0.04, color: '#221e14' },
+        // the light disc far above — the single bright focal the brief
+        // asks for, small in frame at this distance.
+        { type: 'lightDisc', pos: [0, 13, 0], radius: 1.4, color: '#fff0cc' },
+        // the rope: hangs from partway up (NOT reaching the disc/opening —
+        // brief: "the rope is not attached"), drifting slightly off-plumb
+        // like real slack rather than a rigid rod.
+        {
+          type: 'wireRun',
+          points: [[1.4, 9.2, -0.9], [1.55, 6.4, -0.75], [1.3, 3.2, -0.95]],
+          sag: 0.18, radius: 0.02, color: '#3a3226',
+        },
+        // debris worked loose from the well's dry wall — Wave T touch,
+        // sitting on the lower ledge within reach.
+        { type: 'slab', pos: [1.9, 1.78, -0.6], size: [0.3, 0.12, 0.3], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
       ],
       systems: [
         { type: 'PulseBeat', bpm: 40, depth: 0.3 },
       ],
+    },
+    // hot take + rating placed on the near stone, roughly along the
+    // camera's own upward sightline but offset off-axis from the disc —
+    // secondary to the well (small in frame, not blocking the focal),
+    // per the architect's framing note. Positions recomputed for the
+    // round-2 oblique camera (previous positions sat to the camera's
+    // SIDE, outside its cone entirely — that's why the record never
+    // rendered in the earlier attempts).
+    info: {
+      hotTakePos: [0.35, 3.05, -1.65], hotTakeRot: [0, 0.4, 0],
+      scorePos: [1.55, 3.75, -1.35],
+      metaPos: [0.25, 2.25, -1.75],
     },
   },
 
@@ -1158,20 +1193,28 @@ export const CONFIGS = {
   // -------------------------------------------------------------------------- sunshine
   sunshine: {
     family: 'spectacle',
-    // P2 sweep fix: "the wall IS the sun" read as a near-total void — the
-    // room's actual sun was a 1.2x0.5 screenPanel floating high on an
-    // otherwise flat, dark, unlit wall, well outside the camera's own
-    // look-at height. Raised ambient/keyIntensity enough that the room
-    // itself is visible (chairs, walls), added real materials so grazing
-    // light has grain to catch, and grew the sun panel into a wall-filling
-    // dimming-filter disc — the thing this room is actually about.
-    grade: { key: '#ffdf9a', fill: '#4a3820', ambient: 0.42, keyIntensity: 1.4, grain: 0.03, vignette: 0.32, bloomIntensity: 0.4 },
-    camera: { pos: [0, 1.5, 2.4], look: [0, 1.6, -1.95], fov: 50 },
+    // P2 round 2 (architect review), two real bugs found in order:
+    // (1) grade.fill doubles as ambientLight's color, and keyIntensity was
+    //     still well under the neutral 2.4 baseline — fixed by lightening
+    //     fill and raising keyIntensity.
+    // (2) camera.pos sat at z=2.4 while d=4 caps the room at z=+2 — the
+    //     lens was embedded behind its own back wall the entire time.
+    // (3) a THIRD bug, found via an A/B diagnostic (mat on vs off at the
+    //     same light levels): materials.js's standardMat() surfaces render
+    //     dramatically darker than BoxShell's plain wallCanvas fallback at
+    //     equal ambient/key values — cranking ambient to 3.5 with `mat` on
+    //     barely moved this room's exposure, while dropping `mat` entirely
+    //     at ambient 0.5 alone nearly tripled it. That's a materials.js/
+    //     BoxShell interaction worth its own investigation (flagged
+    //     separately); for this room, staying on the plain wallCanvas path
+    //     (still real per-kind noise, just no roughness/bump maps) is the
+    //     one that actually reads as a lit room within this round's budget.
+    grade: { key: '#ffdf9a', fill: '#8a6c3c', bg: '#5a4424', ambient: 0.55, keyIntensity: 3.2, grain: 0.03, vignette: 0.3, bloomIntensity: 0.36 },
+    camera: { pos: [0, 1.5, 1.7], look: [0, 1.6, -1.95], fov: 50 },
     place: {
       shell: 'box',
       shellParams: {
         w: 4.6, d: 4, h: 2.8, wallMat: 'flat',
-        mat: { walls: 'concrete', floor: 'metal', ceiling: 'concrete', wallWear: 0.3, floorWear: 0.2 },
       },
       props: [
         { type: 'chairRow', pos: [0, 0, 0.4], count: 5, spacing: 0.66, color: '#2a2a30' },
@@ -1225,7 +1268,10 @@ export const CONFIGS = {
     // pure white to a pale sky-blue (still reads as "glass pool edge, sky
     // tower" bright) and gave the shell a real material so there's texture
     // to see once the window stops being the whole frame.
-    grade: { key: '#bfe0f0', fill: '#8aa8b8', ambient: 0.16, sat: -0.1, keyIntensity: 1.1, grain: 0.03, vignette: 0.36, bloomIntensity: 0.3 },
+    // P2 round 2: same fill-double-duty issue as hereditary/sunshine —
+    // lightened the tint the walls actually render with and pushed
+    // keyIntensity near neutral (it was still at 46% of the 2.4 baseline).
+    grade: { key: '#bfe0f0', fill: '#a8c4d4', bg: '#8098a8', ambient: 0.26, sat: -0.1, keyIntensity: 2.6, grain: 0.03, vignette: 0.32, bloomIntensity: 0.3 },
     camera: { pos: [0, 1.5, 2], look: [0, 1.4, -1.4], fov: 52, far: 200 },
     place: {
       shell: 'box',
@@ -1240,7 +1286,9 @@ export const CONFIGS = {
         { type: 'glassWall', pos: [0, 1, -2.2], w: 3, h: 1, color: '#eaf4ff', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
       ],
       systems: [
-        { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#bfe0f0' },
+        // P2 round 2: this drone orb was the last hot patch in the room —
+        // AdvanceGlow.jsx now exposes `intensity` for exactly this case.
+        { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#bfe0f0', intensity: 0.4 },
       ],
     },
   },
@@ -1291,13 +1339,19 @@ export const CONFIGS = {
   // -------------------------------------------------------------------------- hereditary
   hereditary: {
     family: 'dread',
-    // P2 sweep fix: dread's low ambient is the right instinct for this
-    // room (miniature-dollhouse dread, brief: "the room does not
-    // apologize") but at 0.14 with no wall material it read as a near-
-    // total void — nothing to actually see the dread IN. Lifted just
-    // enough to make out the low ceiling/dollhouse walls, added real wood
-    // grain so the one window's light has something to graze.
-    grade: { key: '#c8b060', fill: '#241e14', ambient: 0.22, keyIntensity: 1.4, grain: 0.08, vignette: 0.62, bloomIntensity: 0.14 },
+    // P2 round 2 (architect review): round 1's fix was too timid on TWO
+    // fronts that both punish a dark room doubly — grade.fill is not just
+    // the ambientLight's color (BoxShell/GenericRoom), it's ALSO the
+    // literal tint fed into the wall's own materials.js surface, so a
+    // dark fill makes the walls themselves dark AND starves the ambient
+    // term at the same time. And keyIntensity 1.4 is still WELL below
+    // defaultConfigFor's neutral 2.4 baseline (see lightRig.js's scale) —
+    // "raised" from 0 read as raised, but it was still scaling the
+    // preset's whole rig down to 58%. Lightened the actual wall/floor
+    // tint (still a believable dim wood, just not black-on-black) and
+    // pushed keyIntensity to the room's neutral point instead of a
+    // fraction of it.
+    grade: { key: '#c8b060', fill: '#6a5638', bg: '#443826', ambient: 0.32, keyIntensity: 3.0, grain: 0.07, vignette: 0.5, bloomIntensity: 0.16 },
     camera: { pos: [0, 1.3, 1.8], look: [0, 1.1, -1.4], fov: 44 },
     place: {
       shell: 'box',

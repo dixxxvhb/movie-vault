@@ -382,15 +382,18 @@ function deckShellColliders(p) {
 }
 
 // open shell has no walls to walk into — just the horizon kept out of reach.
-function openShellColliders() {
-  return { rects: [], bounds: { kind: 'circle', cx: 0, cz: 0, r: 34 } }
+// P2 round 2: `p.boundsRadius` narrows that circle (tdkr's shaftRing prop
+// stands in for real walls now, so the walker needs to stay inside it
+// instead of wandering out to the open shell's usual 34m horizon).
+function openShellColliders(p) {
+  return { rects: [], bounds: { kind: 'circle', cx: 0, cz: 0, r: p?.boundsRadius ?? 34 } }
 }
 
 function shellColliders(shell, p) {
   if (shell === 'box') return boxShellColliders(p)
   if (shell === 'corridor') return corridorShellColliders(p)
   if (shell === 'deck') return deckShellColliders(p)
-  return openShellColliders()
+  return openShellColliders(p)
 }
 
 /* -------------------------------------------------------------- door row */

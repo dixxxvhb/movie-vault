@@ -498,10 +498,71 @@ export function bevelBox({ pos, rot, scale = 1, w = 1, h = 1, d = 1, radius = 0.
 // like any other config prop.
 export function frameOn(rest) { return <FrameOnDetail {...rest} /> }
 
+// shaftRing: a hollow vertical cylinder standing in for a circular pit/well
+// wall (TDKR/Batman's own well-shaft geometry, brief §5 — "circular stone
+// well"). BackSide so the camera, standing INSIDE the cylinder, sees its
+// inner face rather than nothing (a cylinder's front faces point outward by
+// default). `mat` takes a materials.js kind ({kind, tint, wear}) so the
+// stone actually reads under grazing light, same convention as bevelBox.
+export function shaftRing({ pos, rot, scale = 1, radius = 2.2, height = 6, segments = 28, mat, color = '#4a4438', roughness = 0.9 }) {
+  // standardMat()'s cache doesn't carry a `side` param (every other caller
+  // wants the default FrontSide), so mutating the shared cached instance
+  // would flip every OTHER room using this same {kind,tint,wear} combo —
+  // clone it once per mount instead. This was the actual round-2 bug: the
+  // cylinder rendered with FrontSide culled from inside, so the camera
+  // standing INSIDE it saw straight through to the sky backdrop — not a
+  // lighting problem, there was just no visible surface there at all.
+  const material = useMemo(() => {
+    if (!mat) return null
+    const base = standardMat({ ...mat, roughness: mat.roughness ?? 1 })
+    const clone = base.clone()
+    clone.side = THREE.BackSide
+    return clone
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mat?.kind, mat?.tint, mat?.wear, mat?.roughness])
+  return (
+    <group position={V3(pos)} rotation={V3(rot)} scale={scale}>
+      <mesh>
+        <cylinderGeometry args={[radius, radius, height, segments, 1, true]} />
+        {material
+          ? <primitive object={material} attach="material" />
+          : <meshStandardMaterial color={color} roughness={roughness} side={THREE.BackSide} />}
+      </mesh>
+    </group>
+  )
+}
+
+// ledgeRing: a thin horizontal torus marking a ledge/course line on a
+// circular shaft wall — cheap, reads as structure without a real stepped
+// ledge mesh.
+export function ledgeRing({ pos, rot = [Math.PI / 2, 0, 0], scale = 1, radius = 2.1, tube = 0.035, color = '#2a241a', roughness = 0.7 }) {
+  return (
+    <mesh position={V3(pos)} rotation={V3(rot)} scale={scale}>
+      <torusGeometry args={[radius, tube, 8, Math.max(16, Math.round(radius * 14))]} />
+      <meshStandardMaterial color={color} roughness={roughness} />
+    </mesh>
+  )
+}
+
+// lightDisc: an unlit bright circle — the single distant focal a shaft/pit
+// room aims up at (brief: "light disc far above"). Unlit on purpose: at
+// distance, a real light source this small would barely register against
+// ambient falloff, but the disc itself should read as blown-out bright
+// regardless of how dim the room around it is.
+export function lightDisc({ pos, rot = [-Math.PI / 2, 0, 0], scale = 1, radius = 1.1, color = '#fff2d0', opacity = 0.92 }) {
+  return (
+    <mesh position={V3(pos)} rotation={V3(rot)} scale={scale}>
+      <circleGeometry args={[radius, 32]} />
+      <meshBasicMaterial color={color} transparent opacity={opacity} side={THREE.DoubleSide} />
+    </mesh>
+  )
+}
+
 export const PROPS = {
   slab, table, chairRow, counter, barShelf, bed, screenPanel, podium, throne,
   tree, branchTags, waterPlane, glassWall, mirrorPlane, vehicleMass,
   abstractFigure, paperScatter, pool, lampPractical, bevelBox, frameOn,
+  shaftRing, ledgeRing, lightDisc,
 }
 
 export function Prop({ type, ...rest }) {
