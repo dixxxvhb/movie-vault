@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { chairRow as ChairRow, table as Table } from '../props.jsx'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
 import { useRoomAudio } from '../audio/engine.js'
@@ -9,6 +9,8 @@ import {
 } from './stbyTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
+import { playOneShot } from '../audio/engine.js'
 
 // 9.4 — "the call floor, then the swerve." One fixed station, like The
 // Departed's roof: the RegalView cubicle grid, fluorescent and mundane, cut
@@ -121,7 +123,7 @@ function StbyColliders({ spawn }) {
   return null
 }
 
-function Cubicle({ x, z, seed }) {
+function Cubicle({ x, z, seed, onHeadsetPress }) {
   const tex = useMemo(() => makeCubicleScreenTexture(seed), [seed])
   return (
     <group position={[x, 0, z]}>
@@ -144,17 +146,30 @@ function Cubicle({ x, z, seed }) {
         <planeGeometry args={[0.5, 0.34]} />
         <meshBasicMaterial map={tex} toneMapped={false} />
       </mesh>
-      {/* headset prop: a thin arc + two small pads, propped on the desk */}
-      <group position={[0.28, 0.75, 0.1]} rotation={[0, 0.4, 0]}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <torusGeometry args={[0.09, 0.008, 6, 16, Math.PI]} />
-          <meshStandardMaterial color="#1c1e22" roughness={0.5} metalness={0.3} />
-        </mesh>
-        <mesh position={[0.09, -0.05, 0]}>
-          <sphereGeometry args={[0.018, 8, 8]} />
-          <meshStandardMaterial color="#0c0d10" roughness={0.6} />
-        </mesh>
-      </group>
+      {/* headset prop: a thin arc + two small pads, propped on the desk —
+          Wave T: pressable. Foley is handled by hand (a 3-ring phone
+          pattern) rather than Touchable's own single-shot `foley`, so no
+          foley prop here. */}
+      <Touchable reach={4.5} onUse={onHeadsetPress} anchor={[0.28, 0.75, 0.1]}>
+        <group position={[0.28, 0.75, 0.1]} rotation={[0, 0.4, 0]}>
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <torusGeometry args={[0.09, 0.008, 6, 16, Math.PI]} />
+            <meshStandardMaterial color="#1c1e22" roughness={0.5} metalness={0.3} />
+          </mesh>
+          <mesh position={[0.09, -0.05, 0]}>
+            <sphereGeometry args={[0.018, 8, 8]} />
+            <meshStandardMaterial color="#0c0d10" roughness={0.6} />
+          </mesh>
+          {/* invisible sensor, larger than the modeled headset — the arc +
+              earpiece geometry alone is a tiny click target from a normal
+              standing distance; this widens the hitbox without changing
+              what's visible */}
+          <mesh>
+            <sphereGeometry args={[0.13, 8, 8]} />
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          </mesh>
+        </group>
+      </Touchable>
       <ChairRow pos={[0, 0, 0.55]} count={1} />
     </group>
   )
@@ -323,26 +338,58 @@ const DOOR_MOUNT = { position: [2.4, 0, -1.9], rotationY: -0.3, spacing: 0.95, s
 export default function Stby({ film, config, doors = [], onDoor }) {
   const { grade } = config
   const [inPenthouse, setInPenthouse] = useState(false)
+  const inPenthouseRef = useRef(false)
+  // Wave T: press a headset -> the hard-cut swerve fires within ~3s instead
+  // of waiting out the full ~60s office timer. Reuses this exact same
+  // scheduling path (scheduleOffice) rather than duplicating the cut logic —
+  // the touch just cancels the current wait and reschedules a short one.
+  const forceSwerveRef = useRef(null)
+
+  useEffect(() => { inPenthouseRef.current = inPenthouse }, [inPenthouse])
 
   useEffect(() => {
     let live = true
-    const timers = []
-    function scheduleSwerve(wait) {
-      timers.push(setTimeout(() => {
+    let officeTimer = null
+    let penthouseTimer = null
+    function scheduleOffice(wait) {
+      officeTimer = setTimeout(() => {
         if (!live) return
         setInPenthouse(true)
         notifySwerve(true)
-        timers.push(setTimeout(() => {
+        penthouseTimer = setTimeout(() => {
           if (!live) return
           setInPenthouse(false)
           notifySwerve(false)
-          scheduleSwerve(OFFICE_MS)
-        }, PENTHOUSE_MS))
-      }, wait))
+          scheduleOffice(OFFICE_MS)
+        }, PENTHOUSE_MS)
+      }, wait)
     }
-    scheduleSwerve(OFFICE_MS)
-    return () => { live = false; timers.forEach(clearTimeout); notifySwerve(false) }
+    scheduleOffice(OFFICE_MS)
+    forceSwerveRef.current = () => {
+      if (!live || inPenthouseRef.current) return // already swerved — no-op
+      clearTimeout(officeTimer)
+      scheduleOffice(3000)
+    }
+    return () => {
+      live = false
+      forceSwerveRef.current = null
+      clearTimeout(officeTimer)
+      clearTimeout(penthouseTimer)
+      notifySwerve(false)
+    }
   }, [])
+
+  // A quiet 3-ring phone pattern — answered by the swerve arriving early.
+  const handleHeadsetPress = () => {
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.info('[stby] headset pressed — forcing swerve within ~3s')
+    }
+    playOneShot('tick', { freq: 1100, gain: 0.05 })
+    setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 420)
+    setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 840)
+    forceSwerveRef.current && forceSwerveRef.current()
+  }
 
   // hard cut on the GRADE too: no lerp, an instant swap the moment the state
   // flips, matching "zero easing, no wash" for the visuals as much as the mix.
@@ -385,7 +432,7 @@ export default function Stby({ film, config, doors = [], onDoor }) {
           <OfficeShell />
           {[-1.3, 0, 1.3].map((x) => <FluorescentStrip key={x} x={x} />)}
           {CUBICLES.map(([x, z], i) => (
-            <Cubicle key={i} x={x} z={z} seed={i + 40} />
+            <Cubicle key={i} x={x} z={z} seed={i + 40} onHeadsetPress={handleHeadsetPress} />
           ))}
           <OfficeScoreScreen film={film} />
         </>
