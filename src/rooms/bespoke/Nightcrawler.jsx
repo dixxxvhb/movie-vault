@@ -8,6 +8,7 @@ import {
   makeCaptionTexture, makeOverlookPolaroidFront, makeOverlookPolaroidBack,
 } from './nightcrawlerTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 9.4 — "the overlook." A Mulholland-style turnout: guardrail, dry brush,
 // LA laid out as a sodium-orange grid to the horizon, clean digital night
@@ -24,6 +25,37 @@ const GROUND_W = 40
 const GROUND_D = 40
 const RAIL_Z = -1.4
 const RAIL_H = 0.9
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: HARD LAW — the guardrail blocks, and bounds keep you on the
+// overlook shelf, never into the void over the city (the ground plane the
+// turnout mesh actually draws is only [6,4] centered at z=1; the sodium
+// grid beyond the rail is scenery, not floor).
+const RAIL_RECT = { minX: -2.6, maxX: 2.6, minZ: RAIL_Z - 0.05, maxZ: RAIL_Z + 0.05, top: RAIL_H }
+const ROOM_ID = 'bespoke:nightcrawler'
+
+function NightcrawlerColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [RAIL_RECT])
+    // minZ sits BEHIND the rail collider on purpose (rail itself is the
+    // primary stop) — bounds is only the defense-in-depth backstop past it.
+    setBounds(ROOM_ID, { kind: 'rect', minX: -2.85, maxX: 2.85, minZ: RAIL_Z - 0.5, maxZ: 3.2 })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* --------------------------------------------------------------- overlook */
 
@@ -283,6 +315,7 @@ export default function Nightcrawler({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <NightcrawlerColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.bg || '#050608', 0.02]} />
       <ambientLight intensity={grade.ambient ?? 0.1} />
       <pointLight position={[0, 2.4, 1.6]} intensity={(grade.keyIntensity ?? 1) * 8} color={grade.key || '#ff8a2a'} distance={10} decay={2} />

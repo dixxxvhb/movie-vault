@@ -12,6 +12,7 @@ import {
   makeFloorIndicatorTexture, makeDossierTexture,
 } from './departedTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 9.9 — "the elevator and the roof." Boston golden-hour haze, a gravel roof
 // behind a parapet, an elevator lobby standing on it, and the reveal-as-event
@@ -52,6 +53,79 @@ const FIRST_WAIT_MS = PEEK ? 1200 : 8000 + Math.random() * 12000
 const HOLD_MS = PEEK ? 3200 : 6000
 const SLIDE_MS = 900
 const nextWaitMs = () => (PEEK ? 4500 : 60000 + Math.random() * 40000)
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: mirrors RoofShell/ElevatorLobby/RoofVentDossier's own geometry
+// closely enough that "where the parapet is drawn" and "where the walker
+// stops" never drift apart. HARD LAW: the parapet must block — nobody walks
+// off the roof — so it gets both a collider (primary stop) AND a matching
+// inset bounds rect (backup, same doctrine GenericRoom's boxShellColliders
+// uses for its own walls).
+const PARAPET_RECTS = [
+  // ±Z runs (front/back)
+  { minX: -ROOF_W / 2, maxX: ROOF_W / 2, minZ: -ROOF_D / 2 - PARAPET_T / 2, maxZ: -ROOF_D / 2 + PARAPET_T / 2 },
+  { minX: -ROOF_W / 2, maxX: ROOF_W / 2, minZ: ROOF_D / 2 - PARAPET_T / 2, maxZ: ROOF_D / 2 + PARAPET_T / 2 },
+  // ±X runs (sides) — this is the rail the rat walks; the parapet collider
+  // alone already keeps it out of reach without anything rat-specific.
+  { minX: -ROOF_W / 2 - PARAPET_T / 2, maxX: -ROOF_W / 2 + PARAPET_T / 2, minZ: -ROOF_D / 2, maxZ: ROOF_D / 2 },
+  { minX: ROOF_W / 2 - PARAPET_T / 2, maxX: ROOF_W / 2 + PARAPET_T / 2, minZ: -ROOF_D / 2, maxZ: ROOF_D / 2 },
+]
+
+// The elevator housing: a solid penthouse box (walls + doors, whether open
+// or closed) — there is no real floor behind the doors to walk into, so the
+// whole housing blocks rather than trying to gate on doorState.
+const ELEV_HOUSING_RECT = {
+  minX: -ELEV_W / 2, maxX: ELEV_W / 2, minZ: ELEV_Z - ELEV_D / 2, maxZ: ELEV_Z + ELEV_D / 2, top: ELEV_H,
+}
+
+// RoofVentDossier's vent box (pos [-3.2,0,1.6], rot.y 0.3, local half
+// extents 0.45 x 0.3).
+function rotatedHalfExtentsRad(hx, hz, rotY) {
+  const c = Math.abs(Math.cos(rotY)), s = Math.abs(Math.sin(rotY))
+  return { hx: hx * c + hz * s, hz: hx * s + hz * c }
+}
+const VENT_EXT = rotatedHalfExtentsRad(0.45, 0.3, 0.3)
+const VENT_RECT = {
+  minX: -3.2 - VENT_EXT.hx, maxX: -3.2 + VENT_EXT.hx,
+  minZ: 1.6 - VENT_EXT.hz, maxZ: 1.6 + VENT_EXT.hz, top: 0.66,
+}
+
+// The three tagged figures (TAG_FIGURES below) — small standing bodies,
+// blocked like any other prop/furniture rather than walkable-through.
+const TAG_FIGURE_RECTS = [
+  { pos: [-3.0, -2.0] }, { pos: [3.0, -2.0] }, { pos: [-0.9, -0.9] },
+].map(({ pos: [px, pz] }) => ({ minX: px - 0.22, maxX: px + 0.22, minZ: pz - 0.22, maxZ: pz + 0.22, top: 2.05 }))
+
+const ROOM_ID = 'bespoke:the-departed'
+
+function DepartedColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [...PARAPET_RECTS, ELEV_HOUSING_RECT, VENT_RECT, ...TAG_FIGURE_RECTS])
+    // Backup bounds, inset to the parapet's own inner face minus a hair —
+    // belt-and-suspenders for the one hard law this room has (roof edge).
+    setBounds(ROOM_ID, {
+      kind: 'rect',
+      minX: -ROOF_W / 2 + PARAPET_T + 0.15,
+      maxX: ROOF_W / 2 - PARAPET_T - 0.15,
+      minZ: -ROOF_D / 2 + PARAPET_T + 0.15,
+      maxZ: ROOF_D / 2 - PARAPET_T - 0.15,
+    })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* --------------------------------------------------------------- roof/sky */
 
@@ -387,6 +461,7 @@ export default function Departed({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <DepartedColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.fogColor || '#e8b060', 0.016]} />
       <pointLight position={[0, 3.2, 1]} intensity={(grade.keyIntensity ?? 1) * 22} color={grade.key || '#e8b060'} distance={22} decay={2} />
       <pointLight position={[0, 1.6, 3]} intensity={8} color={grade.fill || '#3a2e22'} distance={12} decay={2} />
