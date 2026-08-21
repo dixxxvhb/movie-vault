@@ -1,36 +1,867 @@
 // Per-film room configs for the template engine (src/rooms/registry.js).
 //
-// Config shape (documented here; Wave B transcribes the 41 bespoke/staged
-// entries from docs/VAULT-IMMERSION-BRIEF-v2.md section 5 into CONFIGS):
-//
+// Config shape:
 //   {
 //     family: 'mind-bender' | 'dread' | 'momentum' | 'spectacle' |
 //             'intimate-tension' | 'weird-fable',
 //     grade: {
 //       bg, fogColor,          // hex — the room's base color
-//       fogDensity,            // 0-1ish; family components may ignore it
+//       fogDensity,            // 0-1ish; GenericRoom derives fog far from it
 //       key, keyIntensity,     // the room's one accent light
 //       fill,                  // cool/neutral counter-light
 //       ambient,               // ambient light intensity
 //       sat, contrast, hue,    // world-aware Post grade pass (App.jsx),
 //                              // fed to HueSaturation + BrightnessContrast
 //     },
-//     camera: { pos: [x,y,z], look: [x,y,z], fov, far },  // far is optional;
-//                                                          // undefined keeps 60
-//     place: {},               // family-specific staging params (Wave B)
-//     info: {                  // optional overrides, InfoSurfaces.jsx
-//       hotTakePos, hotTakeRot, scorePos, metaPos,
+//     camera: { pos: [x,y,z], look: [x,y,z], fov, far },  // far optional
+//     place: {
+//       shell: 'box' | 'open' | 'corridor' | 'deck',
+//       shellParams: {...},        // GenericRoom.jsx per-shell params
+//       props: [ { type, pos, rot, scale, ...propParams } ],  // props.jsx
+//       systems: [ { type, ...systemParams, wrapsProps? } ],  // systems/
 //     },
+//     info: { hotTakePos, hotTakeRot, scorePos, metaPos },  // optional
 //   }
 //
-// Wave A ships with zero bespoke entries. Every slug resolves through
-// defaultConfigFor() below instead, derived straight from the film's own
-// ledger palette (data/ledger_panels.json -> palette_css) — so every logged
-// film already has somewhere to stand on day one, in its own colors, rather
-// than a placeholder grey box.
+// Wave B fills all 41 ledger slugs below, transcribed from
+// docs/IMMERSION-WAVEB-SPEC.md's table with docs/VAULT-IMMERSION-BRIEF-v2.md
+// §5 winning wherever the two differ in spirit (the brief is the design
+// intent; the table is structure). Tier 1 slugs (per the brief) get engine
+// stand-ins here — bespoke rooms are Phase 2, not this wave. Any slug not
+// listed still resolves through defaultConfigFor() below.
 
 export const CONFIGS = {
-  // Wave B: 41 entries land here, one per slug.
+  // ---------------------------------------------------------------- memento
+  // "the motel room, backwards" — Discount Inn room: bed, dresser, wall of
+  // notes, mirror. Duplicates as the room's own split-personality doubling;
+  // ResetFlash as the reverse-timeline un-development. Score belongs mirrored
+  // over the sink — InfoSurfaces has no mirror-flip param yet, so the score
+  // plane is simply placed inside the mirror's reflection zone (adapted;
+  // flagged for the architect).
+  memento: {
+    family: 'mind-bender',
+    grade: { key: '#c98a4a', fill: '#3a5560', sat: 0.05 },
+    camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1.6], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.6, d: 4.2, h: 2.5, wallMat: 'wood', window: false },
+      props: [
+        { type: 'bed', pos: [-0.9, 0, -0.8], rot: [0, 0.15, 0] },
+        { type: 'table', pos: [1.1, 0, -1.3], rot: [0, -0.2, 0], w: 0.9, d: 0.5, h: 0.7, color: '#3a2c1c' },
+        { type: 'paperScatter', pos: [1.1, 1.3, -1.75], rot: [Math.PI / 2, 0, 0], count: 16, area: [1.4, 1], color: '#e6dcc0' },
+        { type: 'mirrorPlane', pos: [-1.6, 1.5, 0.2], rot: [0, Math.PI / 2, 0], w: 0.7, h: 1.1 },
+        { type: 'lampPractical', pos: [1.1, 1.7, -1.3], color: '#e8b070', intensity: 0.8 },
+      ],
+      systems: [
+        { type: 'Duplicates', offset: 0.05, wrongness: 'subtle', wrapsProps: true },
+        { type: 'ResetFlash', period: 70, jitter: 0.2 },
+      ],
+    },
+    info: { scorePos: [-1.55, 1.55, 0.2] },
+  },
+
+  // ----------------------------------------------------------- the-departed
+  'the-departed': {
+    family: 'intimate-tension',
+    grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.22 },
+    camera: { pos: [0, 1.6, 3], look: [0, 1.5, -4], fov: 52, far: 200 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#3a342c', skyTop: '#e8b060', skyBottom: '#2a2018', horizon: true, distantCity: 22 },
+      props: [
+        { type: 'slab', pos: [-1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
+        { type: 'slab', pos: [1.4, 1, -2.6], size: [1, 2, 0.12], color: '#2a2620' },
+        { type: 'slab', pos: [0, 0.55, -1.2], size: [6, 0.1, 0.08], color: '#1c1a16' },
+        { type: 'abstractFigure', pos: [0, 0.55, -1.2], scale: 0.9, color: '#8a6a2c', pose: 'walk-cycle-frozen' },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 75, duration: 4000, altGrade: '#ffe8b0' },
+      ],
+    },
+    info: { scorePos: [1.4, 1.4, -2.5] },
+  },
+
+  // ----------------------------------------------------------------- sicario
+  sicario: {
+    family: 'dread',
+    grade: { key: '#4fae6a', fill: '#2a2018', sat: -0.1, ambient: 0.09 },
+    camera: { pos: [0, 1.5, 4], look: [0, 1.3, -6], fov: 46, far: 60 },
+    place: {
+      shell: 'corridor',
+      shellParams: { length: 16, width: 2.4, height: 2.3, ribs: 9, wallTint: '#141210', farLight: true },
+      props: [
+        { type: 'abstractFigure', pos: [-0.6, 0, 2.6], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.5, 0, 2.9], scale: 0.85, color: '#1c1610', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.2, 0, 3.3], scale: 0.8, color: '#1c1610', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.9, 0, 3.5], scale: 0.8, color: '#1c1610', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0, 0, 3.9], scale: 0.85, color: '#1c1610', pose: 'walk-cycle-frozen' },
+      ],
+      systems: [
+        { type: 'AdvanceGlow', from: [0, 1.3, -15], color: '#8aff9a', speed: 0.18, resetAt: 13, axis: 'z' },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ matrix
+  matrix: {
+    family: 'spectacle',
+    grade: { key: '#7fae5a', fill: '#2a3a22', sat: -0.05, hue: 0.03 },
+    camera: { pos: [0, 1.7, 3.4], look: [0, 1.5, 0], fov: 52, far: 300 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#3a3c34', skyTop: '#8aae7a', skyBottom: '#4a5238', horizon: true, distantCity: 18 },
+      props: [
+        { type: 'abstractFigure', pos: [0, 0, 0], scale: 1, color: '#12140f', pose: 'crouch' },
+        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, 0, 0], w: 2.2, h: 2.2, color: '#bcd8a0' },
+        { type: 'glassWall', pos: [0, 1.2, 0], rot: [0, Math.PI / 2, 0], w: 2.2, h: 2.2, color: '#bcd8a0' },
+      ],
+      systems: [
+        { type: 'GlyphRain', pos: [3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
+        { type: 'GlyphRain', pos: [-3.4, 0, -2], area: [2.2, 6], color: '#4fd67a', columns: 6 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ br2049
+  br2049: {
+    family: 'spectacle',
+    // bg/fogColor overridden: the ledger palette's own bg is the film's
+    // warm Vegas-orange card gradient, right for a polaroid front but wrong
+    // as this room's resting state — the brief's base grade is cold blue-
+    // grey night, with the orange only rolling through periodically
+    // (ScheduledCut below owns that beat).
+    grade: { bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.12 },
+    camera: { pos: [0, 1.2, 3], look: [0, 1.4, -8], fov: 50, far: 200 },
+    place: {
+      shell: 'deck',
+      shellParams: { length: 12, width: 4.4, railing: true, fogWall: true, floorTint: '#141a1e' },
+      props: [
+        { type: 'slab', pos: [0, 0.4, -4], size: [4.4, 0.8, 1.2], color: '#20242a' },
+        { type: 'waterPlane', pos: [0, -0.02, -9], size: [16, 8], color: '#08181e', bright: '#3aa0c0' },
+        { type: 'abstractFigure', pos: [0, 0, -9.5], scale: 3.2, color: '#0a0c10', pose: 'stand', emissive: '#3a6a8a' },
+      ],
+      systems: [
+        { type: 'RainField', density: 500, wind: 0.25, area: [8, 6, 12] },
+        { type: 'ScheduledCut', period: 90, duration: 6000, altGrade: '#e8874a' },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- the-sting
+  'the-sting': {
+    family: 'weird-fable',
+    grade: { key: '#c8964a', fill: '#3a2c1a', sat: 0.1, ambient: 0.24 },
+    camera: { pos: [0, 1.5, 2.2], look: [0, 1.3, -1.6], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.6, d: 4.6, h: 2.7, wallMat: 'wood', doorGap: true },
+      props: [
+        { type: 'counter', pos: [-1.4, 0, -1.6], rot: [0, 0.25, 0], color: '#5a3f22' },
+        { type: 'barShelf', pos: [-1.4, 0, -2.0], rot: [0, 0.25, 0], count: 12, color: '#3a2814', glint: '#e8b060' },
+        { type: 'screenPanel', pos: [1.3, 1.5, -1.9], w: 1.2, h: 0.8, color: '#1c2418', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#1c2418'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#d8cca0'; ctx.lineWidth = 2
+          for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(20, 30 + i * 30); ctx.lineTo(W - 20, 30 + i * 30); ctx.stroke() }
+        } },
+        { type: 'table', pos: [0.6, 0, -0.4], w: 1, d: 0.6, color: '#4a3624' },
+      ],
+      systems: [
+        { type: 'Assembler', period: 80, wrapsProps: true },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------- enemy
+  enemy: {
+    family: 'mind-bender',
+    grade: { key: '#c9a24a', fill: '#3a3020', sat: 0.12, contrast: 0.06 },
+    camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.8], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.2, d: 4.2, h: 2.5, wallMat: 'flat', window: true },
+      props: [
+        { type: 'table', pos: [-0.4, 0, -0.4], w: 1, d: 0.6 },
+        { type: 'chairRow', pos: [-0.4, 0, -0.1], count: 2, spacing: 0.6 },
+      ],
+      systems: [
+        { type: 'Duplicates', offset: 0.09, wrongness: 'high', wrapsProps: true },
+        { type: 'PeripheralFigure', corner: 'high', pos: [1.6, 2.1, -1.9], color: '#0c0d10' },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------ nightcrawler
+  nightcrawler: {
+    family: 'momentum',
+    grade: { key: '#e88a30', fill: '#0e1218', ambient: 0.15 },
+    camera: { pos: [0, 1.6, 2.4], look: [0, 1.3, -4], fov: 50, far: 200 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
+      props: [
+        { type: 'slab', pos: [0, 0.5, -1], size: [3, 0.9, 0.1], color: '#1c1e20' },
+        { type: 'screenPanel', pos: [0, 1.55, -1.3], w: 0.9, h: 0.5, color: '#101010', draw: (ctx, W, H) => {
+          ctx.strokeStyle = '#ff3020'; ctx.lineWidth = 6; ctx.strokeRect(6, 6, W - 12, H - 12)
+          ctx.fillStyle = '#ff3020'; ctx.beginPath(); ctx.arc(30, 30, 8, 0, Math.PI * 2); ctx.fill()
+        } },
+      ],
+      systems: [],
+    },
+  },
+
+  // ------------------------------------------------------------------- stby
+  stby: {
+    family: 'intimate-tension',
+    grade: { key: '#c9d8e0', fill: '#20242a', sat: -0.05 },
+    camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 5, d: 5, h: 2.5, wallMat: 'steel' },
+      props: [
+        { type: 'table', pos: [-1.2, 0, -1.2], w: 0.8, d: 0.6, color: '#3a3f46' },
+        { type: 'table', pos: [1.2, 0, -1.2], w: 0.8, d: 0.6, color: '#3a3f46' },
+        { type: 'table', pos: [-1.2, 0, 0.2], w: 0.8, d: 0.6, color: '#3a3f46' },
+        { type: 'table', pos: [1.2, 0, 0.2], w: 0.8, d: 0.6, color: '#3a3f46' },
+        { type: 'chairRow', pos: [0, 0, -0.6], count: 3, spacing: 0.7 },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 60, duration: 5000, altGrade: '#e8c060' },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------------- amadeus
+  amadeus: {
+    family: 'intimate-tension',
+    grade: { key: '#e8a860', fill: '#1a2a3a', ambient: 0.1 },
+    camera: { pos: [0, 1.45, 1.6], look: [0, 1.2, -1], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.8, d: 4, h: 2.4, wallMat: 'flat', window: true },
+      props: [
+        { type: 'bed', pos: [-0.7, 0, -0.9], rot: [0, 0.2, 0] },
+        { type: 'chairRow', pos: [0.4, 0, -0.4], count: 1 },
+        { type: 'lampPractical', pos: [-0.1, 0.9, -0.2], color: '#ffb060', intensity: 1.1 },
+        { type: 'lampPractical', pos: [1.3, 0.9, -1.6], color: '#ffb060', intensity: 0.6 },
+      ],
+      systems: [
+        { type: 'InkSpread', surfaces: [
+          { pos: [0, 1.5, -1.98], rot: [0, 0, 0] },
+          { pos: [-1.88, 1.5, 0], rot: [0, Math.PI / 2, 0] },
+        ], rate: 0.1 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------- predestination
+  predestination: {
+    family: 'mind-bender',
+    grade: { key: '#c88a4a', fill: '#2a1c14', ambient: 0.16 },
+    camera: { pos: [0, 1.5, 1.4], look: [0, 1.3, -1.4], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'wood', doorGap: true },
+      props: [
+        { type: 'counter', pos: [0, 0, -1.4], color: '#4a3020' },
+        { type: 'barShelf', pos: [0, 0, -1.7], count: 10, color: '#2a1c10', glint: '#e8a850' },
+        { type: 'chairRow', pos: [-0.3, 0, -0.7], count: 2, spacing: 0.55 },
+        // the timeline ribbon: a ring of slabs closing above the bottles —
+        // it has no start, which is the whole point (corridor loop NOT
+        // attempted at this tier, per the table)
+        ...Array.from({ length: 16 }, (_, i) => ({
+          type: 'slab',
+          pos: [Math.cos((i / 16) * Math.PI * 2) * 0.9, 2.15, -1.7 + Math.sin((i / 16) * Math.PI * 2) * 0.9],
+          rot: [0, (i / 16) * Math.PI * 2, 0],
+          size: [0.36, 0.05, 0.05],
+          color: '#e8b860',
+          emissive: '#e8b860',
+          emissiveIntensity: 0.4,
+        })),
+      ],
+      systems: [],
+    },
+  },
+
+  // ------------------------------------------------------------ baby-driver
+  'baby-driver': {
+    family: 'momentum',
+    grade: { key: '#f0c860', fill: '#5a7a8a', ambient: 0.28 },
+    camera: { pos: [0, 1.5, 3.2], look: [0, 1.3, -2], fov: 52 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#88888a', skyTop: '#a8d8e8', skyBottom: '#e8d8b0', horizon: true },
+      props: [
+        { type: 'slab', pos: [0, 1, -4], size: [8, 2.4, 0.3], color: '#c8b898' },
+        { type: 'vehicleMass', pos: [1.4, 0, -1], rot: [0, 0.1, 0], color: '#a01818', w: 1.7, h: 1.1, d: 3.6 },
+        { type: 'paperScatter', pos: [-1, 0, 0], count: 14, area: [2, 2], color: '#e8e0c8' },
+      ],
+      systems: [
+        { type: 'PulseBeat', bpm: 110, depth: 0.5 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------- ncfom
+  ncfom: {
+    family: 'dread',
+    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.3 },
+    camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.4], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.6, d: 3.6, h: 2.4, wallMat: 'flat', doorGap: true },
+      props: [
+        { type: 'counter', pos: [0, 0, -1.4], color: '#8a7a5a' },
+        { type: 'slab', pos: [-1.4, 1, -1], size: [0.5, 1.6, 0.3], color: '#6a5a3a' },
+        { type: 'slab', pos: [-1.4, 1, -1.6], size: [0.5, 1.6, 0.3], color: '#6a5a3a' },
+        { type: 'lampPractical', pos: [0.1, 0.98, -1.35], color: '#fff0c0', intensity: 0.15, distance: 1 },
+      ],
+      systems: [],
+    },
+  },
+
+  // ---------------------------------------------------------------- barbarian
+  barbarian: {
+    family: 'dread',
+    grade: { key: '#e8a860', fill: '#141416', ambient: 0.12 },
+    camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.8, d: 3.8, h: 2.5, wallMat: 'flat', doorGap: true },
+      props: [
+        { type: 'slab', pos: [-1, 0.24, -0.6], size: [1.2, 0.5, 0.7], color: '#6a5040' },
+        { type: 'lampPractical', pos: [-0.6, 0.7, -0.2], color: '#ffb868', intensity: 1 },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 70, duration: 1000, altGrade: '#fff6d8' },
+      ],
+    },
+  },
+
+  // ---------------------------------------- masters-of-the-universe-2026
+  'masters-of-the-universe-2026': {
+    family: 'spectacle',
+    grade: { key: '#a84fd6', fill: '#2a5a3a', sat: 0.15, ambient: 0.14 },
+    camera: { pos: [0, 1.5, 3], look: [0, 1.4, -1.5], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 5.4, d: 6, h: 4.2, wallMat: 'flat' },
+      props: [
+        { type: 'throne', pos: [0, 0.2, -2.2], color: '#3a2a44', accent: '#e8dcc0' },
+        { type: 'slab', pos: [0, 0.1, -2.2], size: [2, 0.2, 1.4], color: '#242030' },
+      ],
+      systems: [
+        { type: 'PulseBeat', bpm: 30, depth: 0.6 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------ disclosure-day
+  'disclosure-day': {
+    family: 'intimate-tension',
+    grade: { key: '#d8d0b8', fill: '#8a8470', ambient: 0.34, sat: -0.1 },
+    camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 6, d: 7, h: 3.4, wallMat: 'flat' },
+      props: [
+        { type: 'podium', pos: [0, 0, -2.6] },
+        { type: 'chairRow', pos: [0, 0, 0.6], count: 6, spacing: 0.66 },
+        { type: 'slab', pos: [-2.4, 1.1, -2.8], size: [0.5, 2.2, 0.06], color: '#c8c0a8' },
+        { type: 'slab', pos: [2.4, 1.1, -2.8], size: [0.5, 2.2, 0.06], color: '#c8c0a8' },
+        { type: 'screenPanel', pos: [0, 2, -3.4], w: 4, h: 1.6, color: '#e8e2d0', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#e8e2d0'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#9a9480'; ctx.font = '20px Georgia'
+          for (let i = 0; i < 10; i++) ctx.fillText('the matter remains under continued advisement', 10, 30 + i * 40)
+        } },
+      ],
+      systems: [
+        { type: 'CurtainReveal', period: 45, pos: [0, 1.7, -3.35], w: 2, h: 2.8, color: '#7a2a2a' },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ darkknight
+  darkknight: {
+    family: 'intimate-tension',
+    grade: { key: '#e8f0ff', fill: '#141414', ambient: 0.15 },
+    camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.4], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'steel' },
+      props: [
+        { type: 'table', pos: [0, 0, -0.8], w: 1.2, d: 0.7, color: '#3a3f46' },
+        { type: 'chairRow', pos: [0, 0, -0.3], count: 2, spacing: 0.7 },
+        { type: 'mirrorPlane', pos: [1.98, 1.5, 0], rot: [0, -Math.PI / 2, 0], w: 1.4, h: 1.6 },
+        { type: 'paperScatter', pos: [-1.4, 0, -1], count: 18, area: [1, 1], color: '#e8e0c8' },
+      ],
+      systems: [],
+    },
+  },
+
+  // ------------------------------------------------------------------------ tdkr
+  tdkr: {
+    family: 'spectacle',
+    grade: { key: '#c8a860', fill: '#1a1614', ambient: 0.08 },
+    camera: { pos: [0, 0.6, 0], look: [0, 5, -0.5], fov: 56, far: 60 },
+    place: {
+      shell: 'corridor',
+      shellParams: { length: 12, width: 3.6, height: 8, ribs: 6, wallTint: '#2a2620', farLight: true },
+      props: [
+        { type: 'slab', pos: [1.4, 3, -6], size: [0.8, 0.15, 0.15], color: '#5a4a3a' },
+      ],
+      systems: [
+        { type: 'PulseBeat', bpm: 40, depth: 0.3 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------- batman
+  batman: {
+    family: 'dread',
+    grade: { key: '#3a5a8a', fill: '#0a0a10', ambient: 0.06 },
+    camera: { pos: [0, 0.5, 0.6], look: [0, 4, -0.2], fov: 54, far: 40 },
+    place: {
+      shell: 'corridor',
+      shellParams: { length: 6, width: 2.6, height: 9, ribs: 4, wallTint: '#141210', farLight: true },
+      props: [],
+      systems: [
+        { type: 'SwarmEvent', period: 40, count: 60, color: '#0d0d10', origin: [0, 3, -1] },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- poorthings
+  poorthings: {
+    family: 'weird-fable',
+    grade: { key: '#e888c8', fill: '#88c8e8', sat: 0.2, ambient: 0.3 },
+    // Fisheye lens feel via FOV, per the brief's composition-homage clause —
+    // no fisheye shader, just pushed the lens wide the way the real one reads.
+    camera: { pos: [0, 1.5, 2.6], look: [0, 1.5, -2], fov: 95 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#e8c8a0', skyTop: '#f0b0d0', skyBottom: '#f8e8b0', horizon: true },
+      props: [
+        { type: 'slab', pos: [-1.6, 1, -2], size: [0.8, 2, 0.6], color: '#e8a0c0' },
+        { type: 'slab', pos: [1.6, 1.2, -2.4], size: [0.9, 2.4, 0.6], color: '#a0c8e8' },
+        { type: 'slab', pos: [0, 2, -3], size: [3, 0.3, 0.3], color: '#e8d8a0' },
+      ],
+      systems: [],
+    },
+  },
+
+  // -------------------------------------------------------------------------- cmiyc
+  cmiyc: {
+    family: 'momentum',
+    grade: { key: '#e8c060', fill: '#20242a', ambient: 0.2 },
+    camera: { pos: [0, 1.6, 4], look: [0, 1.4, -8], fov: 50, far: 60 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 5, d: 16, h: 4, wallMat: 'flat', window: true },
+      props: [
+        { type: 'slab', pos: [-1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040' },
+        { type: 'slab', pos: [1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040' },
+        { type: 'slab', pos: [-1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
+        { type: 'slab', pos: [1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
+        { type: 'abstractFigure', pos: [-0.4, 0, -5], color: '#181410', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.2, 0, -5.6], color: '#181410', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [0.8, 0, -5.2], color: '#181410', pose: 'walk-cycle-frozen' },
+      ],
+      systems: [
+        { type: 'StreakLights', axis: 'z', speed: 2.5, colors: ['#e8c060'], count: 16, span: 16, y: 0.05, z: 0 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------- bullettrain
+  bullettrain: {
+    family: 'momentum',
+    grade: { key: '#e8d44d', fill: '#2a2a3a', ambient: 0.2 },
+    camera: { pos: [0, 1.45, 1.6], look: [0, 1.3, -3], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 2.6, d: 9, h: 2.2, wallMat: 'flat', window: true },
+      props: [
+        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#c8607a' },
+        { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#e8a86a' },
+      ],
+      systems: [
+        { type: 'StreakLights', axis: 'z', speed: 5, colors: ['#c8d0ff'], count: 20, span: 12, y: 1, z: -1.28 },
+        { type: 'PulseBeat', bpm: 60, depth: 0 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------- stardust
+  stardust: {
+    family: 'weird-fable',
+    grade: { key: '#e8b868', fill: '#1c1c30', ambient: 0.1 },
+    camera: { pos: [0, 1.5, 1.6], look: [0, 1.4, -2], fov: 52, far: 150 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#2a2818', skyTop: '#0a0a20', skyBottom: '#181430', horizon: false },
+      props: [
+        { type: 'slab', pos: [0, 1, -1], size: [3, 2, 0.4], color: '#4a4438' },
+        { type: 'slab', pos: [0, 0.6, -1], size: [0.8, 1.2, 0.42], color: '#0a0a0c' },
+        { type: 'lampPractical', pos: [1.2, 0.8, 0.4], color: '#ffb868', intensity: 0.9 },
+      ],
+      systems: [
+        { type: 'AdvanceGlow', from: [-6, 6, -10], axis: 'x', speed: 0.02, resetAt: 12, color: '#fff6d0', prop: 'sphere' },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------- coherence
+  coherence: {
+    family: 'mind-bender',
+    grade: { key: '#e8b060', fill: '#0a0a14', ambient: 0.08 },
+    camera: { pos: [0, 1.6, 2.4], look: [0, 1.4, -6], fov: 52, far: 200 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#141416', skyTop: '#0a0a1a', skyBottom: '#101018', horizon: false },
+      props: [
+        { type: 'slab', pos: [0, 1, -6], size: [2.2, 2, 1.6], color: '#2a2418' },
+        { type: 'slab', pos: [-6, 1, -14], size: [2.2, 2, 1.6], color: '#2a2418' },
+        { type: 'slab', pos: [6, 1, -14], size: [2.2, 2, 1.6], color: '#2a2418' },
+        { type: 'slab', pos: [0, 1, -22], size: [2.2, 2, 1.6], color: '#2a2418' },
+        { type: 'lampPractical', pos: [0, 1.9, -6], color: '#ffcf7a', intensity: 0.7 },
+        { type: 'lampPractical', pos: [-6, 1.9, -14], color: '#ffcf7a', intensity: 0.7 },
+        { type: 'lampPractical', pos: [6, 1.9, -14], color: '#ffcf7a', intensity: 0.7 },
+      ],
+      systems: [
+        { type: 'ResetFlash', period: 55, jitter: 0.1 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------- exmachina
+  exmachina: {
+    family: 'intimate-tension',
+    grade: { key: '#5ab8d0', fill: '#141a1c', ambient: 0.16 },
+    camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.4], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'flat' },
+      props: [
+        { type: 'glassWall', pos: [0, 1.3, -1.98], w: 3.8, h: 2.4, color: '#a8e0e8' },
+        { type: 'glassWall', pos: [-1.98, 1.3, 0], rot: [0, Math.PI / 2, 0], w: 3.8, h: 2.4, color: '#a8e0e8' },
+        { type: 'tree', pos: [0, 0, -6], scale: 1.4, foliage: '#1c3a24' },
+        { type: 'tree', pos: [-2, 0, -7], scale: 1.1, foliage: '#1c3a24' },
+        { type: 'tree', pos: [2.4, 0, -6.6], scale: 1.2, foliage: '#1c3a24' },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 50, duration: 3000, altGrade: '#c81010' },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------------- niceguys
+  niceguys: {
+    family: 'momentum',
+    grade: { key: '#e8c060', fill: '#4a4a30', ambient: 0.3, sat: 0.06 },
+    camera: { pos: [0, 1.5, 2.6], look: [0, 1.2, -1.4], fov: 52 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#7a8a5a', skyTop: '#e8c880', skyBottom: '#f0d8a0', horizon: true },
+      props: [
+        { type: 'pool', pos: [0.6, 0, -1.6], radius: 1.2, glow: '#3ac8d8' },
+        { type: 'abstractFigure', pos: [0.9, 0.6, -1.1], rot: [0.9, 0, 0.3], color: '#0e1218', pose: 'crouch' },
+        { type: 'paperScatter', pos: [-1, 0, 0.4], count: 16, area: [2, 1.4], color: '#e8dcc0' },
+        { type: 'slab', pos: [-2.2, 0.6, -0.4], rot: [0.4, 0.2, 0.6], size: [0.4, 1.2, 0.4], color: '#a05030' },
+      ],
+      systems: [],
+    },
+  },
+
+  // --------------------------------------------------------------------- rogue-one
+  'rogue-one': {
+    family: 'dread',
+    grade: { key: '#c22e2e', fill: '#0a0a0c', ambient: 0.05 },
+    camera: { pos: [0, 1.5, 4.4], look: [0, 1.3, -6], fov: 48, far: 60 },
+    place: {
+      shell: 'corridor',
+      shellParams: { length: 14, width: 2.2, height: 2.4, ribs: 8, wallTint: '#0e0e10', farLight: true },
+      props: [],
+      systems: [
+        { type: 'AdvanceGlow', from: [0, 1.3, 6], axis: 'z', speed: 0.2, resetAt: 12, color: '#c22e2e' },
+        { type: 'paperScatter', count: 20, area: [1.8, 8], color: '#c8c0a8', pos: [0, 0.02, -3] },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------- maverick
+  maverick: {
+    family: 'spectacle',
+    grade: { key: '#e8b060', fill: '#3a4a5a', ambient: 0.2 },
+    camera: { pos: [0, 1.4, 1.2], look: [0, 1.3, -1], fov: 42, far: 300 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 2.4, d: 2, h: 1.8, wallMat: 'steel', window: true },
+      props: [],
+      systems: [
+        { type: 'StreakLights', axis: 'x', speed: 6, colors: ['#a86a3a', '#e8b060'], count: 20, span: 8, y: 1.1, z: -1.5 },
+        { type: 'PulseBeat', bpm: 90, depth: 0.15 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------------- moon
+  moon: {
+    family: 'intimate-tension',
+    grade: { key: '#e8e8f0', fill: '#8a8a90', ambient: 0.26, sat: -0.15 },
+    camera: { pos: [0, 1.5, 2.2], look: [0, 1.4, -4], fov: 48, far: 40 },
+    place: {
+      shell: 'corridor',
+      shellParams: { length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#d8d8dc', farLight: false },
+      props: [
+        { type: 'lampPractical', pos: [-0.8, 2, -1], color: '#f0f0ff', intensity: 0.6 },
+        { type: 'lampPractical', pos: [0.8, 2, -1], color: '#f0f0ff', intensity: 0.6 },
+        { type: 'chairRow', pos: [0, 0, -2.4], count: 2, spacing: 0.6, color: '#c0c0c8' },
+        { type: 'screenPanel', pos: [0, 1.3, -3.9], w: 1.4, h: 0.9, color: '#c8b8a0', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#a89880'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#605040'
+          for (let i = 0; i < 40; i++) ctx.fillRect(Math.random() * W, Math.random() * H, 6, 6)
+        } },
+      ],
+      systems: [
+        { type: 'Duplicates', offset: 0.02, wrongness: 0, wrapsProps: true },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------- source-code
+  'source-code': {
+    family: 'mind-bender',
+    grade: { key: '#e8c060', fill: '#3a4a5a', ambient: 0.24 },
+    camera: { pos: [0, 1.45, 1.6], look: [0, 1.3, -3], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 2.6, d: 8, h: 2.2, wallMat: 'wood', window: true },
+      props: [
+        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a' },
+        { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a' },
+      ],
+      systems: [
+        { type: 'ResetFlash', period: 45, jitter: 0.05 },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------------------- obsession
+  obsession: {
+    family: 'weird-fable',
+    grade: { key: '#3ab89a', fill: '#e8a860', sat: 0.14, ambient: 0.2 },
+    camera: { pos: [0, 1.5, 2], look: [0, 1.5, -1], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.4, d: 4.4, h: 3, wallMat: 'flat' },
+      props: [
+        { type: 'tree', pos: [0, 0, -1.2], scale: 1.2, foliage: '#2c5a44' },
+        { type: 'branchTags', pos: [0, 0, -1.2], count: 20, radius: 1.2, color: '#e8dcc0' },
+      ],
+      systems: [],
+    },
+  },
+
+  // -------------------------------------------------------------------------- triangle
+  triangle: {
+    family: 'mind-bender',
+    grade: { key: '#c8d0d8', fill: '#3a4048', ambient: 0.12, sat: -0.1 },
+    camera: { pos: [0, 1.5, 2], look: [0, 1.4, -3], fov: 48 },
+    place: {
+      shell: 'deck',
+      shellParams: { length: 8, width: 4, railing: true, fogWall: true, floorTint: '#2a2c30' },
+      props: [],
+      systems: [
+        { type: 'LookAwayGrow', pos: [1.2, 0, -1.6], max: 34, color: '#c8a860' },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------------- pressure
+  pressure: {
+    family: 'intimate-tension',
+    grade: { key: '#e8c060', fill: '#0a0a10', ambient: 0.1 },
+    camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.2], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.4, d: 4.4, h: 2.6, wallMat: 'flat', window: false },
+      props: [
+        { type: 'table', pos: [0, 0, -1], w: 1.8, d: 1.1, color: '#3a3f46' },
+        { type: 'screenPanel', pos: [0, 0.79, -1], rot: [-Math.PI / 2, 0, 0], w: 1.7, h: 1, color: '#e8e0c8', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#e8e0c8'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#3a4a8a'; ctx.lineWidth = 2
+          for (let i = 0; i < 5; i++) {
+            ctx.beginPath()
+            ctx.moveTo(0, 40 + i * 60)
+            ctx.bezierCurveTo(W * 0.3, 20 + i * 60, W * 0.6, 70 + i * 60, W, 40 + i * 60)
+            ctx.stroke()
+          }
+        } },
+        { type: 'lampPractical', pos: [1.5, 1.2, -1.6], color: '#ffb868', intensity: 0.9 },
+      ],
+      systems: [
+        { type: 'RainField', density: 140, insideOnly: true, area: [4.2, 2.6, 4.2] },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------- minority-report
+  'minority-report': {
+    family: 'mind-bender',
+    grade: { key: '#dce8f0', fill: '#5a7a9a', sat: -0.2, contrast: 0.08, ambient: 0.22 },
+    camera: { pos: [0, 1.5, 2.2], look: [0, 1.2, -1.4], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.6, d: 4.6, h: 3, wallMat: 'flat' },
+      props: [
+        { type: 'pool', pos: [0, 0.02, -1.2], radius: 1.4, color: '#c8dce8', glow: '#e0eef8' },
+        { type: 'glassWall', pos: [-1.4, 1.5, -0.6], rot: [0, 0.5, 0], w: 1, h: 1.2, color: '#dce8f0' },
+        { type: 'glassWall', pos: [1.4, 1.5, -0.6], rot: [0, -0.5, 0], w: 1, h: 1.2, color: '#dce8f0' },
+      ],
+      systems: [
+        { type: 'AdvanceGlow', prop: 'sphere', from: [0, 0.3, -6], axis: 'z', speed: 0.15, resetAt: 5, color: '#e83030' },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------------- sunshine
+  sunshine: {
+    family: 'spectacle',
+    // keyIntensity kept low deliberately — this room's "wall" IS the sun
+    // (a bright screenPanel, not a light), so the key only needs to warm
+    // the room, not compete with it and wash the hot take out entirely.
+    grade: { key: '#ffdf9a', fill: '#3a2c18', ambient: 0.2, keyIntensity: 0.7 },
+    camera: { pos: [0, 1.5, 2.4], look: [0, 1.5, -2], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.6, d: 4, h: 2.8, wallMat: 'flat' },
+      props: [
+        { type: 'chairRow', pos: [0, 0, 0.4], count: 5, spacing: 0.66, color: '#2a2a30' },
+        { type: 'screenPanel', pos: [0, 2.6, -1.95], w: 1.2, h: 0.5, color: '#1c1c1c', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#1c1c1c'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#ffdf9a'; ctx.font = 'bold 60px Georgia'; ctx.fillText('67%', 40, 90)
+        } },
+      ],
+      systems: [
+        { type: 'PulseBeat', bpm: 6, depth: 0.2 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------- annihilation
+  annihilation: {
+    family: 'weird-fable',
+    grade: { key: '#4fd6c8', fill: '#2a1c4a', sat: 0.25, ambient: 0.16 },
+    camera: { pos: [0, 1.5, 2.2], look: [0, 1.4, -1.6], fov: 54 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#2a4a3a', skyTop: '#3a2c60', skyBottom: '#4a3a70', horizon: false },
+      props: [
+        { type: 'glassWall', pos: [0, 1.4, -1.8], w: 3.6, h: 2.6, color: '#8ae8d8' },
+        { type: 'tree', pos: [-1.4, 0, -4], scale: 1.1, foliage: '#4fd6c8', trunk: '#2a5a4a' },
+        { type: 'tree', pos: [1.6, 0, -4.4], scale: 1.3, foliage: '#c84fd6', trunk: '#2a5a4a' },
+      ],
+      systems: [],
+    },
+  },
+
+  // ------------------------------------------------------------------------ oblivion
+  oblivion: {
+    family: 'spectacle',
+    grade: { key: '#eaf4ff', fill: '#c8d8e0', ambient: 0.3, sat: -0.1 },
+    camera: { pos: [0, 1.5, 2], look: [0, 1.4, -1.4], fov: 52, far: 200 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4.6, d: 4.6, h: 2.8, wallMat: 'flat', window: true },
+      props: [
+        { type: 'slab', pos: [0, 0.02, -1.6], size: [3, 0.05, 1.6], color: '#dfeaf2' },
+        { type: 'glassWall', pos: [0, 1, -2.2], w: 3, h: 1, color: '#eaf4ff' },
+      ],
+      systems: [
+        { type: 'AdvanceGlow', prop: 'sphere', from: [-1.6, 1.6, -1], axis: 'x', speed: 0.06, resetAt: 3.2, color: '#eaf4ff' },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------------------------- game
+  game: {
+    family: 'mind-bender',
+    grade: { key: '#c9a24a', fill: '#3a3020', ambient: 0.24 },
+    camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.2], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'flat' },
+      props: [
+        { type: 'table', pos: [-0.8, 0, -1], w: 1, d: 0.6 },
+        { type: 'chairRow', pos: [-0.8, 0, -0.5], count: 2, spacing: 0.6 },
+        { type: 'counter', pos: [1, 0, -1.4], w: 1, d: 0.5 },
+      ],
+      systems: [],
+    },
+  },
+
+  // -------------------------------------------------------------------------- silverlake
+  silverlake: {
+    family: 'weird-fable',
+    grade: { key: '#4fc8d6', fill: '#1c1c30', ambient: 0.14 },
+    camera: { pos: [0, 1.4, 2], look: [0, 1.2, -1.6], fov: 52 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#1a1a24', skyTop: '#20203a', skyBottom: '#302a48', horizon: true, distantCity: 22 },
+      props: [
+        { type: 'pool', pos: [0, 0.02, -1.6], radius: 1.5, glow: '#4fc8d6' },
+        { type: 'screenPanel', pos: [1.6, 1.5, -2], w: 0.9, h: 0.6, color: '#0e0e18', draw: (ctx, W, H) => {
+          ctx.fillStyle = '#0e0e18'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#4fc8d6'; ctx.lineWidth = 2
+          ctx.strokeRect(20, 20, W - 40, H - 40)
+          ctx.beginPath(); ctx.moveTo(40, 60); ctx.lineTo(W - 60, 90); ctx.lineTo(W - 40, H - 40); ctx.stroke()
+        } },
+      ],
+      systems: [
+        { type: 'GlyphRain', pos: [0, 0.02, -1.6], area: [3, 3], color: '#4fc8d6', columns: 8, speed: 0.15 },
+        { type: 'LookAwayGrow', pos: [1.6, 1.5, -2], max: 1, grow: false, color: '#4fc8d6' },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------------- hereditary
+  hereditary: {
+    family: 'dread',
+    grade: { key: '#c8b060', fill: '#141210', ambient: 0.14 },
+    camera: { pos: [0, 1.3, 1.8], look: [0, 1.1, -1.4], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.8, d: 3.8, h: 2.1, wallMat: 'wood', window: true },
+      props: [
+        { type: 'table', pos: [0, 0, -0.8], w: 0.6, d: 0.4, h: 0.5, color: '#3a2c1c' },
+        { type: 'chairRow', pos: [0, 0, -0.4], count: 2, spacing: 0.35, seatH: 0.28 },
+        { type: 'slab', pos: [0, 1.05, -1.89], size: [3.8, 0.02, 0.02], color: '#0a0806' },
+        { type: 'slab', pos: [-1.89, 1.05, 0], size: [0.02, 0.02, 3.8], color: '#0a0806' },
+      ],
+      systems: [
+        { type: 'PeripheralFigure', corner: 'high', pos: [1.7, 1.95, -1.7], color: '#0a0806' },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------------------- malignant
+  malignant: {
+    family: 'dread',
+    grade: { key: '#8a3a3a', fill: '#0e0a0e', ambient: 0.1 },
+    camera: { pos: [0, 1.4, 1.4], look: [0, 1.3, -1], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: { w: 3.4, d: 3.4, h: 2.4, wallMat: 'flat' },
+      props: [
+        { type: 'bed', pos: [-0.4, 0, -0.6], rot: [0, 0.1, 0] },
+        { type: 'mirrorPlane', pos: [1.4, 1.5, -0.8], rot: [0, -0.4, 0], w: 0.8, h: 1.4, tint: '#3a2828' },
+        { type: 'abstractFigure', pos: [1.4, 0, -0.4], rot: [0, Math.PI, 0], color: '#0a0808', pose: 'stand' },
+      ],
+      systems: [
+        { type: 'DwellConcede', afterSec: 25 },
+      ],
+    },
+  },
 }
 
 const CAMERA = { pos: [0, 1.55, 3.2], look: [0, 1.3, 0], fov: 50, far: undefined }
