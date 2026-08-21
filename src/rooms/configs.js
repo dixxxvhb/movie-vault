@@ -377,9 +377,15 @@ export const CONFIGS = {
   },
 
   // -------------------------------------------------------------------- ncfom
+  // Bespoke now (Phase 2, src/rooms/bespoke/Ncfom.jsx): grade/camera below
+  // match the bespoke room's own front-of-counter station (the entry
+  // viewpoint FilmWorld lands on; the room itself flies to a second,
+  // behind-the-counter station via goToStation when you walk around). `place`
+  // is dead weight for the same reason as the-departed's/baby-driver's own
+  // entries above — the bespoke component never reads it.
   ncfom: {
     family: 'dread',
-    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.3 },
+    grade: { key: '#e8d8a0', fill: '#8a7a5a', sat: -0.2, ambient: 0.32, bg: '#8a7a5a', fogColor: '#8a7a5a' },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.3, -1.4], fov: 44 },
     place: {
       shell: 'box',
