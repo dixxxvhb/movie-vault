@@ -116,12 +116,18 @@ function pushAxis(orig, other, delta, radius, rects, isX) {
         if (a < limit) a = limit
       }
     } else {
-      // orig already sits inside the rect's span on this axis — a rare
-      // already-penetrating state (an authored position too close to a
-      // prop). Push toward whichever edge is nearer so it doesn't stay
-      // stuck mid-object.
-      const mid = (aMin + aMax) / 2
-      a = orig < mid ? Math.min(a, aMin - radius) : Math.max(a, aMax + radius)
+      // orig sits inside the rect's span on THIS axis. That is only a real
+      // penetration if the point is inside the rect's span on the OTHER
+      // axis too — being merely within `radius` of a face (which is all the
+      // proximity gate above checks) is the normal state of walking up to a
+      // full-width wall head-on, and pushing out sideways here is exactly
+      // the "shoved through the side wall" bug batches B hit at dead ends.
+      // When the point is only NEAR the face, this axis stays free; the
+      // other axis's own pass is what stops motion into the wall.
+      if (other > bMin && other < bMax) {
+        const mid = (aMin + aMax) / 2
+        a = orig < mid ? Math.min(a, aMin - radius) : Math.max(a, aMax + radius)
+      }
     }
   }
   return a
