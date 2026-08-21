@@ -11,6 +11,7 @@ import { notifyDepth } from './sicarioBus.js'
 import {
   makeDuskSkyTexture, makeTunnelTexture, makeMissionBriefTexture, makeThermalNumeralTexture,
 } from './sicarioTextures.js'
+import DoorRow from '../DoorRow.jsx'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -357,9 +358,21 @@ function MissionBrief({ film }) {
   )
 }
 
+/* ------------------------------------------------------- bloodline doors */
+
+// Bloodline doors (brief §6): "the staging ground's perimeter." Mounted off
+// to the left side of the tunnel mouth at ground level, standing clear of the
+// silhouette line and mission-brief panel, visible from the entry station.
+const DOOR_MOUNT = {
+  position: [-2.4, 0.8, 1.2],
+  rotationY: 0,
+  spacing: 1.0,
+  scale: 0.85,
+}
+
 /* ------------------------------------------------------------------ room */
 
-export default function Sicario({ film, config, goToStation }) {
+export default function Sicario({ film, config, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationIndex, setStationIndex] = useState(-1)
   const stationRef = useRef(-1)
@@ -435,6 +448,16 @@ export default function Sicario({ film, config, goToStation }) {
       <TunnelClickPlanes onAdvance={moveOneStep} />
       <DescentGlow decayRef={decayRef} tint={tint} />
       <ThermalScore film={film} />
+
+      <DoorRow
+        doors={doors}
+        position={DOOR_MOUNT.position}
+        rotationY={DOOR_MOUNT.rotationY}
+        spacing={DOOR_MOUNT.spacing}
+        scale={DOOR_MOUNT.scale}
+        grade={grade}
+        onDoor={onDoor}
+      />
     </group>
   )
 }

@@ -10,6 +10,7 @@ import {
   makeWoodTexture, makeLumberTexture, makeChalkboardTexture,
   makeHotTakeBrushTexture, makeFbiSignTexture,
 } from './stingTextures.js'
+import DoorRow from '../DoorRow.jsx'
 
 // 9.6 — "the wire room builds itself." The betting parlor assembles on
 // entry (flats/scaffold/backdrop flying in over ~6s, staggered per wall,
@@ -379,9 +380,22 @@ function ParlorRecord({ film, infoVisible }) {
   )
 }
 
+/* ------------------------------------------------------- bloodline doors */
+
+// Bloodline doors (brief §6): "the parlor's back wall." Mounted on the right
+// side of the back wall, clear of the counter/chalkboard props and away from
+// the left wall (which animates on its own rebuild cycle), visible from the
+// FRONT station.
+const DOOR_MOUNT = {
+  position: [1.6, 1.1, BACK_Z - 0.1],
+  rotationY: 0,
+  spacing: 1.0,
+  scale: 0.85,
+}
+
 /* ------------------------------------------------------------------ room */
 
-export default function Sting({ film, config, infoVisible = true, goToStation }) {
+export default function Sting({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [station, setStation] = useState('front')
   const elapsedRef = useMountElapsed()
@@ -445,6 +459,16 @@ export default function Sting({ film, config, infoVisible = true, goToStation })
       )}
 
       <ParlorRecord film={film} infoVisible={infoVisible} />
+
+      <DoorRow
+        doors={doors}
+        position={DOOR_MOUNT.position}
+        rotationY={DOOR_MOUNT.rotationY}
+        spacing={DOOR_MOUNT.spacing}
+        scale={DOOR_MOUNT.scale}
+        grade={grade}
+        onDoor={onDoor}
+      />
     </group>
   )
 }
