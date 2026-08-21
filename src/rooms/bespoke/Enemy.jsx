@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { gaze } from '../../CameraRig.jsx'
-import { table as Table, chairRow as ChairRow, bed as Bed } from '../props.jsx'
 import { makeHotTakeTexture, makeMetaTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
@@ -15,6 +14,10 @@ import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import { footprint } from '../props.jsx'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim, FrameOn } from '../detail.jsx'
+import { FogLayers } from '../atmosphere.jsx'
+import LightRig from '../lightRig.js'
 
 // ENEMY (2013) · 9.6 · "the apartment, doubled." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the Toronto apartment, venetian-blind
@@ -50,6 +53,7 @@ const CHALK_TEXT =
 // the twin sits exactly where <Duplicates offset={0.11} wrongness="high">
 // used to put it — this is a drop-in replacement, not a new look.
 const ZERO_V = new THREE.Vector3(0, 0, 0)
+const V3 = (v) => (Array.isArray(v) ? v : [0, 0, 0])
 
 function TwinFurniture({ offset = 0.11, wrongness = 'high', reach = 2.0, foley = 'tick', children }) {
   const w = wrongness === 'high' ? 1 : wrongness === 'subtle' ? 0.35 : Number(wrongness) || 0.35
@@ -102,69 +106,146 @@ function TwinFurniture({ offset = 0.11, wrongness = 'high', reach = 2.0, foley =
   )
 }
 
+/* -------------------------------------------------------------- furniture */
+
+// Finishing pass (P1): the room used to render its furniture through the
+// shared props.jsx table/chairRow/bed helpers (flat meshStandardMaterial
+// colors, naked boxGeometry). Hand-authored replacements below use Bevel
+// (chamfered bodies, spec #2) + standardMat (spec #1) instead — and since
+// this room's whole thesis is "twinned, one copy slightly wrong," the
+// `wrong` flag doesn't just reposition the twin (TwinFurniture already does
+// that), it also gives the wrong twin its OWN slightly-off material: a
+// grubbier tint, higher wear, its own seed. The twin doesn't just sit in
+// the wrong place, it's a slightly wrong OBJECT — the film's own idea,
+// carried into the material layer.
+function EnemyTable({ pos, rot, w = 1, d = 0.6, wrong = false }) {
+  const h = 0.75
+  const topMat = useMemo(() => standardMat({
+    kind: 'wood', tint: wrong ? '#332510' : '#4a3626', scale: wrong ? 1.6 : 1.4,
+    wear: wrong ? 0.58 : 0.32, seed: wrong ? 611 : 610, roughness: 1,
+  }), [wrong])
+  const legMat = useMemo(() => standardMat({
+    kind: 'wood', tint: wrong ? '#231a0b' : '#2e2214', scale: wrong ? 1.3 : 1.1,
+    wear: wrong ? 0.62 : 0.38, seed: wrong ? 621 : 620, roughness: 1,
+  }), [wrong])
+  return (
+    <group position={V3(pos)} rotation={V3(rot)}>
+      <Bevel pos={[0, h - 0.04, 0]} w={w} h={0.08} d={d} radius={0.008} mat={topMat} />
+      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+        <Bevel key={i} pos={[sx * (w / 2 - 0.08), (h - 0.08) / 2, sz * (d / 2 - 0.08)]} w={0.07} h={h - 0.08} d={0.07} radius={0.008} mat={legMat} />
+      ))}
+    </group>
+  )
+}
+
+function EnemyChairRow({ pos, rot, count = 2, spacing = 0.6, wrong = false }) {
+  const items = useMemo(() => Array.from({ length: count }, (_, i) => i - (count - 1) / 2), [count])
+  const seatMat = useMemo(() => standardMat({
+    kind: 'wood', tint: wrong ? '#1f170c' : '#2c2216', scale: wrong ? 1.4 : 1.2,
+    wear: wrong ? 0.6 : 0.36, seed: wrong ? 631 : 630, roughness: 1,
+  }), [wrong])
+  const legMat = useMemo(() => standardMat({
+    kind: 'metal', tint: wrong ? '#131519' : '#1c1e22', scale: 1,
+    wear: wrong ? 0.6 : 0.32, seed: wrong ? 641 : 640, roughness: 0.7, metalness: 0.45,
+  }), [wrong])
+  const seatH = 0.46
+  return (
+    <group position={V3(pos)} rotation={V3(rot)}>
+      {items.map((i) => (
+        <group key={i} position={[i * spacing, 0, 0]}>
+          <Bevel pos={[0, seatH, 0]} w={0.44} h={0.06} d={0.44} radius={0.006} mat={seatMat} />
+          <Bevel pos={[0, seatH + 0.3, -0.2]} w={0.44} h={0.6} d={0.06} radius={0.006} mat={seatMat} />
+          <Bevel pos={[0, seatH / 2, 0]} w={0.04} h={seatH} d={0.04} radius={0.003} mat={legMat} />
+        </group>
+      ))}
+    </group>
+  )
+}
+
+function EnemyBed({ pos, rot, wrong = false }) {
+  const frameMat = useMemo(() => standardMat({
+    kind: 'wood', tint: wrong ? '#231c13' : '#3a3226', scale: wrong ? 1.5 : 1.3,
+    wear: wrong ? 0.56 : 0.3, seed: wrong ? 651 : 650, roughness: 1,
+  }), [wrong])
+  const mattressMat = useMemo(() => standardMat({
+    kind: 'fabric', tint: wrong ? '#615a4c' : '#8a8072', scale: wrong ? 1.8 : 1.6,
+    wear: wrong ? 0.52 : 0.26, seed: wrong ? 661 : 660, roughness: 1,
+  }), [wrong])
+  const pillowMat = useMemo(() => standardMat({
+    kind: 'fabric', tint: wrong ? '#c0b79f' : '#e8e0d0', scale: wrong ? 2.0 : 1.8,
+    wear: wrong ? 0.46 : 0.2, seed: wrong ? 671 : 670, roughness: 1,
+  }), [wrong])
+  return (
+    <group position={V3(pos)} rotation={V3(rot)}>
+      <Bevel pos={[0, 0.24, 0]} w={1.3} h={0.28} d={2} radius={0.02} mat={frameMat} />
+      <Bevel pos={[0, 0.42, 0]} w={1.24} h={0.16} d={1.94} radius={0.012} mat={mattressMat} />
+      <Bevel pos={[0, 0.56, -0.85]} w={1.24} h={0.22} d={0.3} radius={0.02} mat={pillowMat} />
+      <Bevel pos={[0, 0.66, 0.95]} w={1.3} h={0.7} d={0.06} radius={0.006} mat={frameMat} />
+    </group>
+  )
+}
+
 /* ------------------------------------------------------------------ shell */
 
-const texCache = new Map()
-function flatTexture(key, draw) {
-  if (texCache.has(key)) return texCache.get(key)
-  const S = 512
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  draw(c.getContext('2d'), S)
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  texCache.set(key, tex)
-  return tex
-}
-function plasterTexture(tint) {
-  return flatTexture('plaster|' + tint, (ctx, S) => {
-    ctx.fillStyle = tint
-    ctx.fillRect(0, 0, S, S)
-    let s = 47
-    const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-    ctx.globalAlpha = 0.05
-    for (let i = 0; i < 2200; i++) {
-      ctx.fillStyle = r() > 0.5 ? '#000' : '#fff'
-      ctx.fillRect(r() * S, r() * S, 1.6, 1.6)
-    }
-    ctx.globalAlpha = 1
-  })
-}
-
+// Finishing pass (P1): flat canvas-swatch walls replaced with
+// materials.js standardMat plaster/wood — and per the toolkit rule ("no two
+// adjacent surfaces share identical params"), every wall plane below gets
+// its OWN seed/scale/wear rather than one shared texture instance, so a
+// grazing light shows genuinely different plaster blotching wall to wall
+// instead of one map tiled four times.
 function RoomShell({ grade }) {
-  const wallTex = useMemo(() => plasterTexture(grade.fill || '#3a3020'), [grade.fill])
-  const floorTex = useMemo(() => plasterTexture('#241e12'), [])
+  const wallTint = grade.fill || '#3a3020'
+  const backWallMat = useMemo(() => standardMat({ kind: 'plaster', tint: wallTint, scale: 1.25, wear: 0.34, seed: 501, roughness: 1 }), [wallTint])
+  const doorWallMat = useMemo(() => standardMat({ kind: 'plaster', tint: wallTint, scale: 1.05, wear: 0.4, seed: 502, roughness: 1 }), [wallTint])
+  const sideWallMat = useMemo(() => standardMat({ kind: 'plaster', tint: wallTint, scale: 1.4, wear: 0.3, seed: 503, roughness: 1 }), [wallTint])
+  const windowWallMat = useMemo(() => standardMat({ kind: 'plaster', tint: wallTint, scale: 1.15, wear: 0.46, seed: 504, roughness: 1 }), [wallTint])
+  const ceilMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#241d10', scale: 1.7, wear: 0.24, seed: 505, roughness: 1 }), [])
+  const floorMat = useMemo(() => standardMat({ kind: 'wood', tint: '#2e2313', scale: 1.7, wear: 0.48, repeat: [3, 3], seed: 510, roughness: 1 }), [])
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow={false}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={floorTex} roughness={0.92} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={wallTex} roughness={0.95} />
+        <primitive object={ceilMat} attach="material" />
       </mesh>
       <mesh position={[0, ROOM_H / 2, -ROOM_D / 2]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={backWallMat} attach="material" />
       </mesh>
       <mesh position={[0, ROOM_H / 2, ROOM_D / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={doorWallMat} attach="material" />
       </mesh>
       <mesh position={[-ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={sideWallMat} attach="material" />
       </mesh>
       {/* +X window wall, mostly glazing */}
       <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={windowWallMat} attach="material" />
       </mesh>
       <mesh position={[ROOM_W / 2 - 0.01, ROOM_H * 0.55, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D * 0.72, ROOM_H * 0.5]} />
         <meshBasicMaterial color={grade.key || '#c9a24a'} transparent opacity={0.32} />
       </mesh>
+
+      {/* Trim: baseboard run around all four walls (the +Z/door wall splits
+          around the doorway gap, same geometry as its own collider rects). */}
+      <Trim pos={[ROOM_W / 2 - 0.014, 0.045, 0]} along="z" wallLength={ROOM_D} color="#1c150a" />
+      <Trim pos={[-ROOM_W / 2 + 0.014, 0.045, 0]} along="z" wallLength={ROOM_D} color="#1c150a" />
+      <Trim pos={[0, 0.045, -ROOM_D / 2 + 0.014]} along="x" wallLength={ROOM_W} color="#1c150a" />
+      <Trim pos={[-1.45, 0.045, ROOM_D / 2 - 0.014]} along="x" wallLength={1.3} color="#1c150a" />
+      <Trim pos={[1.45, 0.045, ROOM_D / 2 - 0.014]} along="x" wallLength={1.3} color="#1c150a" />
+
+      {/* FrameOn: the -X wall is otherwise bare plaster (the far wall from
+          entry, past the twin furniture) — one panel-moulding rectangle to
+          break the flat plane, per the P1 checklist. */}
+      <FrameOn pos={[-ROOM_W / 2 + 0.012, 1.35, -1.2]} rot={[0, Math.PI / 2, 0]} w={0.7} h={1.0} color="#1c150a" />
+      <FrameOn pos={[-ROOM_W / 2 + 0.012, 1.35, 1.1]} rot={[0, Math.PI / 2, 0]} w={0.7} h={1.0} color="#1c150a" />
     </group>
   )
 }
@@ -191,7 +272,61 @@ function BlindLight() {
   )
 }
 
+// BlindSlats: the P1 checklist's venetian-blind stripes as ACTUAL geometry
+// rather than another flat gobo plane — three.js 0.161 (this project's pin)
+// has no SpotLight.map/gobo support (that landed later in three), so the
+// cheapest option that still reads as real blinds in a peek is the literal
+// one the spec calls out: thin tilted bars physically between the room and
+// the window glow, instanced since count > 8 (spec #6).
+function BlindSlats() {
+  const count = 11
+  const winY = ROOM_H * 0.55
+  const winH = ROOM_H * 0.5
+  const winW = ROOM_D * 0.72
+  const bandH = winH / count
+  const slatH = bandH * 0.44
+  const thickness = 0.016
+  const mat = useMemo(() => standardMat({
+    kind: 'metal', tint: '#110d07', scale: 1, wear: 0.55, seed: 700, roughness: 0.75, metalness: 0.3,
+  }), [])
+  const ref = useRef()
+  const dummy = useMemo(() => new THREE.Object3D(), [])
+  useEffect(() => {
+    if (!ref.current) return
+    for (let i = 0; i < count; i++) {
+      const y = winY - winH / 2 + bandH * (i + 0.5)
+      dummy.position.set(ROOM_W / 2 - 0.13, y, 0)
+      dummy.rotation.set(0, 0, 0.3)
+      dummy.updateMatrix()
+      ref.current.setMatrixAt(i, dummy.matrix)
+    }
+    ref.current.instanceMatrix.needsUpdate = true
+  }, [dummy, bandH, winY, winH])
+  return (
+    <instancedMesh ref={ref} args={[null, null, count]} key={count}>
+      <boxGeometry args={[thickness, slatH, winW]} />
+      <primitive object={mat} attach="material" />
+    </instancedMesh>
+  )
+}
+
 /* ------------------------------------------------------ spider shadows */
+
+// Small local canvas-texture cache — RoomShell's walls moved to
+// materials.js's own cache, but the spider-leg decal below is a bespoke
+// shape (not a surface kind), so it keeps its own tiny cache.
+const texCache = new Map()
+function flatTexture(key, draw) {
+  if (texCache.has(key)) return texCache.get(key)
+  const S = 512
+  const c = document.createElement('canvas')
+  c.width = c.height = S
+  draw(c.getContext('2d'), S)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  texCache.set(key, tex)
+  return tex
+}
 
 // Spider-leg shadow: a canvas-drawn radiating shape in the ceiling corner,
 // visible only in your peripheral vision and gone the instant you look
@@ -433,7 +568,14 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
   }
 
   useEffect(() => {
-    setGradeOverride({ sat: grade.sat ?? 0.12, contrast: grade.contrast ?? 0.06, hue: 0.02 })
+    // "the city yellow-sepia haze grade pushed hard" (brief §5) — pushed a
+    // notch past darkknight's baseline (0.12/0.06), but NOT further: an
+    // earlier pass at 0.22/0.12 clipped every close-lit surface to solid
+    // white once Bloom's mipmap blur piled on top (QA peek caught it, see
+    // enemy-debug1..14.png) — contrast this high only reads correctly on
+    // large, already-dim wall planes, not on furniture sitting close to a
+    // practical/bounce light.
+    setGradeOverride({ sat: grade.sat ?? 0.16, contrast: grade.contrast ?? 0.08, hue: 0.02 })
     return clearGradeOverride
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -468,36 +610,70 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
 
   const furniture = (
     <>
-      <Table pos={[-0.4, 0, -0.4]} w={1} d={0.6} color="#3a2c1a" />
-      <ChairRow pos={[-0.4, 0, -0.1]} count={2} spacing={0.6} color="#241c10" />
-      <Bed pos={[1.3, 0, -1.0]} rot={[0, -0.2, 0]} color="#5a5040" frame="#241c10" />
+      <EnemyTable pos={[-0.4, 0, -0.4]} w={1} d={0.6} />
+      <EnemyChairRow pos={[-0.4, 0, -0.1]} count={2} spacing={0.6} />
+      <EnemyBed pos={[1.3, 0, -1.0]} rot={[0, -0.2, 0]} />
     </>
   )
 
+  // Layered lighting per the P0 doctrine (spec #3): the window is the
+  // room's one motivated source, so the KEY sits just inside it, warm and
+  // reaching across the floor toward the door. A small lamp practical
+  // stands in for the apartment's own reading light near the chalk corner,
+  // and two low bounce fills (a warm floor kick near entry, a cooler dim
+  // one off the far -X wall) keep the corners from reading as pure void
+  // without flattening the room. Ambient stays low (spec #3's "darks stay
+  // dark" — moody rooms cap at 0.12).
+  // NOTE: LightRig's own SCALE table (spec #3's "author a small number, the
+  // rig multiplies it up") applies a bigger key multiplier (22x) than the
+  // old bare pointLight this replaced was hand-tuned against (14x) — first
+  // pass here left grade.keyIntensity's default at the OLD scale (1.5) and
+  // the result blew every surface's specular to pure white (QA peek caught
+  // it, see enemy-debug1.png). Rebalanced against the same target
+  // irradiance the old single light produced at the furniture.
+  const roomLights = useMemo(() => ({
+    key: {
+      pos: [1.55, 1.85, 0], color: grade.key || '#c9a24a',
+      intensity: grade.keyIntensity ?? 0.55, distance: 9, decay: 2,
+    },
+    practicals: [
+      { pos: [-1.7, 1.05, -1.75], color: '#caa062', intensity: 0.22, distance: 3.2, decay: 2 },
+    ],
+    bounce: [
+      { pos: [-1.5, 0.5, 1.35], color: '#5a4a34', intensity: 0.3, distance: 5.5, decay: 2 },
+      { pos: [-1.9, 1.9, -0.3], color: '#2a2820', intensity: 0.2, distance: 4.5, decay: 2 },
+    ],
+  }), [grade.key, grade.keyIntensity])
+
   return (
     <group>
-      <fogExp2 attach="fog" args={[grade.fill || '#3a3020', 0.05]} />
-      <pointLight position={[0.6, 2.2, 0]} intensity={(grade.keyIntensity ?? 1) * 14} color={grade.key || '#c9a24a'} distance={12} decay={2} />
-      <ambientLight intensity={grade.ambient ?? 0.22} color={grade.fill || '#3a3020'} />
+      <fogExp2 attach="fog" args={[grade.fill || '#3a3020', 0.062]} />
+      <LightRig lights={roomLights} />
+      <ambientLight intensity={grade.ambient ?? 0.12} color={grade.fill || '#3a3020'} />
 
       <RoomShell grade={grade} />
       <BlindLight />
+      <BlindSlats />
+      <FogLayers pos={[0, 0.03, 0]} size={[ROOM_W * 0.95, ROOM_D * 0.95]} color="rgba(180,150,90,0.5)" opacity={0.16} speed={0.015} />
       <Skyline />
 
       {/* every object twinned, the second copy slightly wrong. Wave T: the
           wrong twin of each pair is individually touchable now — touch it
           and it snaps to match its true partner for 3s, then drifts wrong
           again — so each of the three furniture groups gets its own
-          TwinFurniture instead of sharing one static <Duplicates> offset. */}
+          TwinFurniture instead of sharing one static <Duplicates> offset.
+          The wrong twin also carries its own slightly-off material (see
+          EnemyTable/EnemyChairRow/EnemyBed's `wrong` flag) — the doubling
+          reads in the surfaces themselves, not just the offset. */}
       {furniture}
       <TwinFurniture offset={0.11} wrongness="high" foley="tick">
-        <Table pos={[-0.4, 0, -0.4]} w={1} d={0.6} color="#3a2c1a" />
+        <EnemyTable pos={[-0.4, 0, -0.4]} w={1} d={0.6} wrong />
       </TwinFurniture>
       <TwinFurniture offset={0.11} wrongness="high" foley="tick">
-        <ChairRow pos={[-0.4, 0, -0.1]} count={2} spacing={0.6} color="#241c10" />
+        <EnemyChairRow pos={[-0.4, 0, -0.1]} count={2} spacing={0.6} wrong />
       </TwinFurniture>
       <TwinFurniture offset={0.11} wrongness="high" foley="tick">
-        <Bed pos={[1.3, 0, -1.0]} rot={[0, -0.2, 0]} color="#5a5040" frame="#241c10" />
+        <EnemyBed pos={[1.3, 0, -1.0]} rot={[0, -0.2, 0]} wrong />
       </TwinFurniture>
 
       {/* "your camera casts two shadows": a soft dark floor blob at the

@@ -184,7 +184,23 @@ export const CONFIGS = {
     // as this room's resting state — the brief's base grade is cold blue-
     // grey night, with the orange only rolling through periodically
     // (ScheduledCut, mounted in the bespoke room itself, owns that beat).
-    grade: { bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.12 },
+    // Wave P1 finishing pass: grain/vignette/bloomIntensity tuned like a
+    // colorist for this film specifically — moody cold night, heavier
+    // vignette than a lit interior room since the sea wall is meant to feel
+    // like it's closing in at the edges of frame, and enough bloom to catch
+    // the billboard glow + the wet-concrete sheen pools without blowing out
+    // (the InfoPlinth's hot-take paper stays non-emissive, so it never
+    // competes with those two intended bloom sources).
+    // ambient lifted from 0.12: this room is a wide-open exterior (a 14m
+    // sea wall, not a tight box), so the point-light falloff alone leaves a
+    // bigger unlit gap between fixtures than a small interior does — a
+    // slightly higher floor keeps far reaches of the wall/deck from reading
+    // as pure void without flattening the grazing sheen the wetconcrete
+    // material depends on (see BR2049.jsx's own LightRig comment).
+    grade: {
+      bg: '#0a1620', fogColor: '#0a1620', key: '#3a6a8a', fill: '#0a1620', sat: -0.15, ambient: 0.17,
+      grain: 0.07, vignette: 0.84, bloomIntensity: 0.4,
+    },
     camera: { pos: [0, 1.35, 3], look: [0, 1.05, -8], fov: 50, far: 200 },
     place: {
       shell: 'deck',
@@ -243,7 +259,22 @@ export const CONFIGS = {
   // left in place as the pre-bespoke Wave B stand-in.
   enemy: {
     family: 'mind-bender',
-    grade: { key: '#c9a24a', fill: '#3a3020', sat: 0.12, contrast: 0.06 },
+    // P1 finishing pass: sat/contrast pushed past the pre-polish pass
+    // (0.12/0.06) per the brief's "yellow-sepia haze grade pushed hard" —
+    // Enemy.jsx's own setGradeOverride reads sat/contrast from here with
+    // these as its fallback. A first pass pushed to 0.22/0.12 and clipped
+    // every close-lit surface (furniture near the practical/bounce lights)
+    // to solid white once Bloom's mipmap blur piled on top — contrast that
+    // high only reads correctly on large, already-dim wall planes. Backed
+    // off to a smaller-but-still-visible push. grain/vignette/bloomIntensity
+    // are the Wave P0 grade triplet (spec #5), tuned for a grimy Toronto
+    // apartment: more grain than darkknight's proof-room baseline, vignette
+    // pulled in a touch, bloom kept modest so only the window/score stay
+    // bloom-hot.
+    grade: {
+      key: '#c9a24a', fill: '#3a3020', sat: 0.16, contrast: 0.08,
+      grain: 0.07, vignette: 0.66, bloomIntensity: 0.24,
+    },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.8], fov: 46 },
     place: {
       shell: 'box',
@@ -267,8 +298,26 @@ export const CONFIGS = {
   // never reads it; left in place as the pre-bespoke Wave B stand-in.
   nightcrawler: {
     family: 'momentum',
-    grade: { bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1 },
+    // P1 finishing pass: grade triplet tuned for "clean digital night" —
+    // low grain (this is Lou's camcorder footage, not film stock), deep
+    // blacks (vignette kept moderate rather than the 0.92 spec default so
+    // it stays controlled/digital instead of moody-crushed), bloom pushed
+    // enough that the sodium grid nodes and the REC dot actually glow.
+    grade: {
+      bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1,
+      grain: 0.02, vignette: 0.5, bloomIntensity: 0.5,
+    },
     camera: { pos: [0, 1.6, 2.2], look: [0, 1.15, -6], fov: 52, far: 200 },
+    // The room's own near-field rig (toolkit doctrine, spec #3): a cool
+    // moonlight bounce for the digital-night undertone under the sodium
+    // key, plus a rim off the guardrail's brushed metal so it doesn't sit
+    // as a flat silhouette against the grid.
+    lights: {
+      bounce: [
+        { pos: [0, 3.2, 2.6], color: '#7a8fb0', intensity: 0.4, distance: 9, decay: 2 },
+      ],
+      rim: { pos: [2.3, 1.2, -1.9], color: '#ffb060', intensity: 0.55, distance: 5.5, decay: 2 },
+    },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
@@ -295,7 +344,16 @@ export const CONFIGS = {
   // pre-bespoke Wave B stand-in.
   stby: {
     family: 'intimate-tension',
-    grade: { bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfe8ff', fill: '#20242a', sat: -0.05, ambient: 0.35 },
+    // P1 polish pass: key nudged green (fluorescent-tube cast, per the
+    // brief) and the grade triplet set deliberately for the mundane
+    // call-floor half of the cut — flat, slightly grainy, bloom kept low so
+    // only the actual strip fixtures (never the paper/monitor clutter) ever
+    // bloom. The penthouse half gets its own distinct triplet via
+    // setGradeOverride in Stby.jsx (richer bloom, tighter vignette).
+    grade: {
+      bg: '#3a3c36', fogColor: '#3a3c36', key: '#dfffe0', fill: '#20242a', sat: -0.05, ambient: 0.35,
+      grain: 0.045, vignette: 0.88, bloomIntensity: 0.24,
+    },
     camera: { pos: [0, 1.5, 2], look: [0, 1.3, -1.8], fov: 48 },
     place: {
       shell: 'box',
