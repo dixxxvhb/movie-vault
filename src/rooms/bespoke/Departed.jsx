@@ -13,6 +13,8 @@ import {
 } from './departedTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
+import { PressKind } from '../touchKinds.jsx'
 
 // 9.9 — "the elevator and the roof." Boston golden-hour haze, a gravel roof
 // behind a parapet, an elevator lobby standing on it, and the reveal-as-event
@@ -200,6 +202,40 @@ function Skyline({ grade }) {
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color="#120e08" emissive={grade.key || '#e8b060'} emissiveIntensity={0.22} roughness={0.85} />
     </instancedMesh>
+  )
+}
+
+/* --------------------------------------------------------- call button */
+
+// Wave T: a small lit button beside the doors. Pressing it never runs a
+// second copy of the arrival logic — it just clears whatever "waiting for
+// the elevator" timer is currently pending and reschedules through the
+// SAME scheduleArrival() the room already uses, with a wait under 2s
+// instead of the random 60-100s one. If the car is already opening/open/
+// closing the press is a no-op (nothing to rush).
+function CallButton({ onPress }) {
+  const [token, setToken] = useState(0)
+  const handleUse = () => {
+    setToken((t) => t + 1)
+    onPress?.()
+  }
+  return (
+    <group position={[ELEV_W / 2 + 0.18, 1.1, ELEV_FRONT_Z + 0.02]}>
+      <Touchable onUse={handleUse} reach={2.4} foley="switch" anchor={[0, 0, 0]}>
+        <PressKind token={token} depress={0.02} axis="z">
+          <group>
+            <mesh position={[0, 0, 0.01]}>
+              <boxGeometry args={[0.09, 0.09, 0.02]} />
+              <meshStandardMaterial color="#2a241c" roughness={0.6} metalness={0.3} />
+            </mesh>
+            <mesh position={[0, 0, 0.022]}>
+              <circleGeometry args={[0.03, 16]} />
+              <meshStandardMaterial color="#ffdca0" emissive="#ffb060" emissiveIntensity={1.2} toneMapped={false} />
+            </mesh>
+          </group>
+        </PressKind>
+      </Touchable>
+    </group>
   )
 }
 
@@ -428,13 +464,25 @@ export default function Departed({ film, config, doors = [], onDoor }) {
   const copTex = useMemo(() => makeTagTexture('COP'), [])
   const ratTex = useMemo(() => makeTagTexture('RAT'), [])
 
+  // Wave T: the call button's rush hook. `doorStateRef` mirrors `doorState`
+  // so the button (an imperative callback, not a render) always sees the
+  // current stage; `arrivalTimerRef` is the ONE timer the button is ever
+  // allowed to touch — the outermost "waiting for the car" one, never the
+  // open/close slide timers, so a press can't interrupt a door already in
+  // motion.
+  const doorStateRef = useRef('closed')
+  useEffect(() => { doorStateRef.current = doorState }, [doorState])
+  const arrivalTimerRef = useRef(null)
+  const rushRef = useRef(null)
+
   useEffect(() => {
     let live = true
     const timers = []
 
     function scheduleArrival(wait) {
-      timers.push(setTimeout(() => {
+      const id = setTimeout(() => {
         if (!live) return
+        arrivalTimerRef.current = null
         setDoorState('opening')
         notifyElevatorOpen()
         timers.push(setTimeout(() => {
@@ -450,11 +498,21 @@ export default function Departed({ film, config, doors = [], onDoor }) {
             }, SLIDE_MS))
           }, HOLD_MS))
         }, SLIDE_MS))
-      }, wait))
+      }, wait)
+      timers.push(id)
+      arrivalTimerRef.current = id
     }
     scheduleArrival(FIRST_WAIT_MS)
 
-    return () => { live = false; timers.forEach(clearTimeout) }
+    rushRef.current = () => {
+      if (doorStateRef.current !== 'closed' || arrivalTimerRef.current == null) return
+      clearTimeout(arrivalTimerRef.current)
+      const idx = timers.indexOf(arrivalTimerRef.current)
+      if (idx !== -1) timers.splice(idx, 1)
+      scheduleArrival(Math.random() * 2000)
+    }
+
+    return () => { live = false; rushRef.current = null; timers.forEach(clearTimeout) }
   }, [])
 
   useRoomAudio(startDepartedAudio)
@@ -469,6 +527,7 @@ export default function Departed({ film, config, doors = [], onDoor }) {
       <RoofShell grade={grade} />
       <Skyline grade={grade} />
       <ElevatorLobby doorState={doorState} score={film.score} />
+      <CallButton onPress={() => rushRef.current?.()} />
       <RailRat />
 
       {TAG_FIGURES.map((f, i) => (
