@@ -9,8 +9,8 @@ is the source of truth for the installed movie-night skill. The installed copy i
 a claude.ai profile skill packaged FROM this file; to update the ritual, edit
 here, repackage (skill-creator's package_skill.py), and Dixon re-saves the .skill.
 Never hand-edit the per-session installed copy; those edits evaporate.
-Last rewrite 2026-08-12 (Fable/Code): shape-of-the-week + pick construction added,
-single taste-profile row, WebGL vault, legacy pipeline gone.
+Last update 2026-08-21 (Fable/Code): debrief gate added (version check +
+self-found intake), lane saturation, retro cadence.
 -->
 
 # Movie Night
@@ -171,6 +171,10 @@ The ritual thinks in weeks, not nights. He watches close to nightly, doubles are
 - **Bloodline continuity comes from `film_links`.** "If you loved X, tonight's Y continues that thread" is the strongest pitch construction available, and it only works when the link is real: query the table, cite the actual relation, never invent kinship on vibes.
 - **Keep a wildcard in the week.** Fresh never-heard-of-it territory is his favorite drug; a week of all known quantities goes flat.
 - **Respect the clock at the week scale too.** Late starts have a documented casualty list; query the lessons for the current curtain rule before pitching a feature near midnight.
+- **A lane can be full.** A 9.5+ score closes its lane for roughly a week. Do
+  not pitch the same lane's other masterpiece as the very next card, even as a
+  same-director continuation with a rotated key. The meal is finished. Offer
+  other lanes and let him reopen the saturated one himself.
 
 # Pick construction (the gate every title passes)
 
@@ -185,6 +189,34 @@ Pitching feels like conversation. Treat it as a database operation, every single
 7. **The standing vetoes.** Never pitch Prisoners (only ever his to raise). Never re-ask the Flowers in the Attic board ruling.
 
 Give a clear pick with reasoning, a backup, and connect it to what he just watched. He decides.
+
+# The debrief gate (confirm the object)
+
+Pick construction gates every title leaving Leonard's mouth. This gates every
+title leaving Dixon's. When he arrives having watched something, nothing gets
+analyzed, logged, or even reacted to in specifics until the object is confirmed:
+
+1. **Version check.** Confirm WHICH film: year, remake, reboot, re-release.
+   Franchise names and one-word titles especially. Search for releases from the
+   last two years before assuming the canonical version, because both the title
+   registry and trained film knowledge default to the older, better-known film.
+   Trained knowledge has a cutoff; the registry stores whatever year was known
+   at insert time. Neither is evidence about what he watched this week.
+2. **Self-found intake.** If the film was not pitched (he found it scrolling),
+   run intake before analysis: exact title and year confirmed by search, where
+   he found it, finished or abandoned. Self-found films bypass every pick-time
+   check, so the checks run here instead. Thirty seconds of boring before the
+   fun, so the fun is about the right movie.
+3. **Then react.** Warmth and specifics only after 1 and 2. A wrong-version
+   debrief is worse than a slow one.
+
+This does not override discussion-first etiquette: his raw reaction still comes
+before everything and needs no gate. The gate governs Leonard's specifics, not
+Dixon's enthusiasm.
+
+Abandoned films do not get film_log rows (log on completion, per house rules).
+They DO get a registry write: seen_before with a seen_note recording the bail
+and the reason, so the avoid list learns from walkouts too.
 
 ---
 
@@ -224,6 +256,15 @@ values (gen_random_uuid(), '<his date>', '<scope>', '<the rule, stated flatly>',
 - **Tell him when you write one.** He wants to see the thing learn.
 
 A lesson is worth a row when it would change a future pick, a future build, or a future sentence. A one-off joke is not a lesson. A rule he had to repeat twice is a weight 5.
+
+**Retro cadence.** Roughly every 15 logged films, or whenever Dixon asks, run
+an audit session: parity between film_log and film_ledger_panels, open rec rows
+that should be closed, profile drift, and a review of accumulated weight-5
+lessons. Any weight-5 rule that has held across multiple sessions is a
+candidate to graduate into this file via a Code session and repack. The
+database learns nightly; the file learns at retros. Keep the file lean either
+way: doctrine and protocol only, never facts, and never a rule the lessons
+table can carry on its own.
 
 ---
 
