@@ -321,7 +321,13 @@ export const CONFIGS = {
   // Wave B stand-in.
   amadeus: {
     family: 'intimate-tension',
-    grade: { bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08 },
+    // P1 polish pass: rich warm/cold split, moderate grain (candlelit film
+    // stock, not digital-clean), heavy vignette closing the chamber in.
+    grade: {
+      bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08,
+      contrast: 0.14, sat: 0.06,
+      grain: 0.055, vignette: 0.62, bloomIntensity: 0.4,
+    },
     camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
     place: {
       shell: 'box',

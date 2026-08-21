@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
-import { bed as Bed, table as Table } from '../props.jsx'
+import { bed as Bed } from '../props.jsx'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startAmadeusAudio } from '../audio/recipes/amadeus.js'
 import {
@@ -10,6 +10,27 @@ import {
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim } from '../detail.jsx'
+
+// P1 finishing pass (IMMERSION-V2-POLISH-SPEC.md): materials.js surfaces on
+// every plane, heavy fabric drape with real folds, a real candle body under
+// each flame (no floating lights), a bevelled writing desk, baseboard trim.
+// The corner desk stays lightless on purpose (brief §5: "one desk in the
+// corner the candlelight never reaches") — no fixture was added near it.
+const wallMat = standardMat({ kind: 'plaster', tint: '#2c2014', wear: 0.45, roughness: 1, repeat: [2.2, 1.4] })
+const wallMatB = standardMat({ kind: 'plaster', tint: '#241a10', wear: 0.55, roughness: 1, repeat: [1.6, 1.4] })
+wallMat.side = THREE.DoubleSide
+wallMatB.side = THREE.DoubleSide
+const wallMatEntry = standardMat({ kind: 'plaster', tint: '#221808', wear: 0.5, roughness: 1, repeat: [2.2, 1.4] })
+const floorMat = standardMat({ kind: 'wood', tint: '#1c1409', wear: 0.6, roughness: 0.85, repeat: [3, 3.3] })
+const ceilingMat = standardMat({ kind: 'plaster', tint: '#160f08', wear: 0.6, roughness: 1, repeat: [2, 2.2] })
+const drapeMat = standardMat({ kind: 'fabric', tint: '#4a1414', wear: 0.35, roughness: 0.95 })
+const quiltMat = standardMat({ kind: 'fabric', tint: '#7a6a54', wear: 0.3, roughness: 0.9 })
+const deskMat = standardMat({ kind: 'wood', tint: '#241a0e', wear: 0.4, roughness: 0.6 })
+const chairMat = standardMat({ kind: 'wood', tint: '#221708', wear: 0.45, roughness: 0.65 })
+const waxMat = new THREE.MeshStandardMaterial({ color: '#e8d8b0', roughness: 0.4 })
+const holderMat = new THREE.MeshStandardMaterial({ color: '#8a6a30', roughness: 0.35, metalness: 0.55 })
 
 // 9.3 — "the deathbed dictation." Candlelit bedchamber: bed, heavy drape
 // planes, a chair pulled close, warm candle grade against one cold blue
@@ -202,7 +223,7 @@ function InkSurfaces({ boostApiRef }) {
 // surface at long intervals, built by displacing a subdivided plane's
 // vertices along its local Z rather than any shader — cheap at this vertex
 // count, and it never touches audio (kit.js owns the room's actual sound).
-function RippleWall({ pos, rot, w, h, color }) {
+function RippleWall({ pos, rot, w, h, mat }) {
   const geo = useMemo(() => new THREE.PlaneGeometry(w, h, 28, 1), [w, h])
   const baseZ = useMemo(() => {
     const arr = geo.attributes.position.array
@@ -242,7 +263,7 @@ function RippleWall({ pos, rot, w, h, color }) {
 
   return (
     <mesh geometry={geo} position={pos} rotation={rot}>
-      <meshStandardMaterial color={color} roughness={0.95} side={THREE.DoubleSide} />
+      <primitive object={mat} attach="material" />
     </mesh>
   )
 }
@@ -252,61 +273,74 @@ function RippleWall({ pos, rot, w, h, color }) {
 function Chamber({ grade }) {
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial color="#241a10" roughness={0.9} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial color="#1c140c" roughness={0.95} />
+        <primitive object={ceilingMat} attach="material" />
       </mesh>
       {/* the ripple-capable walls: left side + far wall */}
-      <RippleWall pos={[-ROOM_W / 2, 1.5, -0.4]} rot={[0, Math.PI / 2, 0]} w={ROOM_D * 0.7} h={2} color="#3a2a1a" />
-      <RippleWall pos={[0.4, 1.5, -ROOM_D / 2]} rot={[0, 0, 0]} w={ROOM_W * 0.7} h={2} color="#34261a" />
+      <RippleWall pos={[-ROOM_W / 2, 1.5, -0.4]} rot={[0, Math.PI / 2, 0]} w={ROOM_D * 0.7} h={2} mat={wallMat} />
+      <RippleWall pos={[0.4, 1.5, -ROOM_D / 2]} rot={[0, 0, 0]} w={ROOM_W * 0.7} h={2} mat={wallMatB} />
       {/* right wall, plain */}
       <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial color="#2c2014" roughness={0.92} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       {/* the cold window, far wall, blue counter-light source */}
       <mesh position={[1.55, 1.7, -ROOM_D / 2 + 0.015]}>
         <planeGeometry args={[0.7, 0.9]} />
         <meshStandardMaterial color="#3a5a72" emissive="#3a6a88" emissiveIntensity={0.35} roughness={0.3} />
       </mesh>
+      {/* mullion cross sells the window as a built opening, not a decal */}
+      <mesh position={[1.55, 1.7, -ROOM_D / 2 + 0.028]}>
+        <boxGeometry args={[0.7, 0.05, 0.02]} />
+        <meshStandardMaterial color="#100a05" roughness={0.7} />
+      </mesh>
+      <mesh position={[1.55, 1.7, -ROOM_D / 2 + 0.028]}>
+        <boxGeometry args={[0.05, 0.9, 0.02]} />
+        <meshStandardMaterial color="#100a05" roughness={0.7} />
+      </mesh>
       {/* +Z wall behind entry camera */}
       <mesh position={[0, ROOM_H / 2, ROOM_D / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial color="#241a10" roughness={0.94} />
+        <primitive object={wallMatEntry} attach="material" />
       </mesh>
+      {/* baseboard trim, perimeter */}
+      <Trim pos={[0, 0.045, -ROOM_D / 2 + 0.001]} wallLength={ROOM_W} along="x" color="#0e0a05" />
+      <Trim pos={[0, 0.045, ROOM_D / 2 - 0.001]} wallLength={ROOM_W} along="x" color="#0e0a05" />
+      <Trim pos={[-ROOM_W / 2 + 0.001, 0.045, 0]} wallLength={ROOM_D} along="z" color="#0e0a05" />
+      <Trim pos={[ROOM_W / 2 - 0.001, 0.045, 0]} wallLength={ROOM_D} along="z" color="#0e0a05" />
     </group>
   )
 }
 
+// Heavy drape: five narrower panels rather than two wide flat planes, each
+// canted a few degrees off true so the run reads as folded fabric hanging in
+// gathers instead of a single pressed sheet.
+const DRAPE_X = [-1.55, -1.28, -0.98, -0.7, -0.42]
 function DrapePanels() {
   return (
     <group>
-      {[-1.3, -0.6].map((x, i) => (
-        <mesh key={i} position={[x, 1.5, -ROOM_D / 2 + 0.06]} rotation={[0, 0, 0]}>
-          <planeGeometry args={[0.42, 2.1]} />
-          <meshStandardMaterial color="#4a1c1c" roughness={0.95} side={THREE.DoubleSide} />
+      {DRAPE_X.map((x, i) => (
+        <mesh key={i} position={[x, 1.5, -ROOM_D / 2 + 0.06 + (i % 2) * 0.025]} rotation={[0, (i % 2 ? 1 : -1) * 0.09, 0]}>
+          <planeGeometry args={[0.3, 2.15]} />
+          <primitive object={drapeMat} attach="material" />
         </mesh>
       ))}
     </group>
   )
 }
 
-// A chair pulled in close to the bed — the visitor's own seat.
+// A chair pulled in close to the bed — the visitor's own seat, bevelled
+// rather than sharp stock, matte wood surface with real grain.
 function PulledChair() {
   return (
     <group position={[0.15, 0, 0.55]} rotation={[0, -0.3, 0]}>
-      <mesh position={[0, 0.46, 0]}>
-        <boxGeometry args={[0.42, 0.06, 0.42]} />
-        <meshStandardMaterial color="#2c2014" roughness={0.85} />
-      </mesh>
-      <mesh position={[0, 0.76, -0.19]}>
-        <boxGeometry args={[0.42, 0.6, 0.06]} />
-        <meshStandardMaterial color="#2c2014" roughness={0.85} />
-      </mesh>
+      <Bevel pos={[0, 0.46, 0]} w={0.42} h={0.06} d={0.42} radius={0.015} mat={chairMat} />
+      <Bevel pos={[0, 0.76, -0.19]} w={0.42} h={0.6} d={0.06} radius={0.015} mat={chairMat} />
       {[[-0.18, -0.18], [0.18, -0.18], [-0.18, 0.18], [0.18, 0.18]].map(([x, z], i) => (
         <mesh key={i} position={[x, 0.23, z]}>
           <boxGeometry args={[0.04, 0.46, 0.04]} />
@@ -317,6 +351,47 @@ function PulledChair() {
   )
 }
 
+// A bevelled writing desk with real wood-grain material — used for both the
+// page desk and the corner shadow desk, in place of props.jsx's flat-colored
+// generic table, per the brief's "matte ink-page surfaces" desk furniture.
+function WoodDesk({ pos, rot, w = 0.55, d = 0.42, h = 0.6 }) {
+  return (
+    <group position={pos} rotation={rot}>
+      <Bevel pos={[0, h - 0.03, 0]} w={w} h={0.06} d={d} radius={0.012} mat={deskMat} />
+      {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
+        <mesh key={i} position={[sx * (w / 2 - 0.05), (h - 0.06) / 2, sz * (d / 2 - 0.05)]}>
+          <boxGeometry args={[0.045, h - 0.06, 0.045]} />
+          <primitive object={deskMat} attach="material" />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// A folded quilt laid over the bed's own flat linen box: a subdivided plane
+// with sine-wave Z displacement baked once into the geometry, so the heavy
+// fabric material actually reads as fold ridges under grazing candlelight
+// rather than a flat painted sheet.
+function QuiltFold({ pos, rot }) {
+  const geo = useMemo(() => {
+    const g = new THREE.PlaneGeometry(1.18, 0.85, 14, 10)
+    const p = g.attributes.position
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i), y = p.getY(i)
+      const fold = Math.sin(x * 9) * 0.014 + Math.sin(y * 5 + x * 2) * 0.01
+      p.setZ(i, fold)
+    }
+    g.computeVertexNormals()
+    return g
+  }, [])
+  useEffect(() => () => geo.dispose(), [geo])
+  return (
+    <mesh position={pos} rotation={[-Math.PI / 2, 0, rot[1]]} geometry={geo}>
+      <primitive object={quiltMat} attach="material" />
+    </mesh>
+  )
+}
+
 // The lit-exclusion desk: a corner desk the candlelight never reaches — no
 // light source is placed anywhere near it, and it sits far enough from both
 // candle practicals (distance-decayed point lights) that it stays genuinely
@@ -324,11 +399,14 @@ function PulledChair() {
 function ShadowDesk() {
   return (
     <group position={[-1.55, 0, 1.75]} rotation={[0, 0.5, 0]}>
-      <Table pos={[0, 0, 0]} w={0.7} d={0.45} h={0.62} color="#1a140c" />
+      <WoodDesk pos={[0, 0, 0]} w={0.7} d={0.45} h={0.62} />
     </group>
   )
 }
 
+// A real candle: wax body + a small brass saucer holder under the flame, so
+// the light source reads as an object rather than a bare glowing sphere
+// (spec's "no floating props"). Only the flame tip carries emissive.
 function CandleFlame({ pos }) {
   const ref = useRef()
   useFrame(({ clock }) => {
@@ -338,11 +416,19 @@ function CandleFlame({ pos }) {
   })
   return (
     <group position={pos}>
-      <mesh position={[0, 0.05, 0]}>
-        <sphereGeometry args={[0.02, 8, 8]} />
-        <meshStandardMaterial color="#ffcf8a" emissive="#ffcf8a" emissiveIntensity={1.8} />
+      <mesh position={[0, -0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.05, 0.055, 0.012, 16]} />
+        <primitive object={holderMat} attach="material" />
       </mesh>
-      <pointLight ref={ref} color="#ffb060" intensity={8} distance={3.2} decay={2} />
+      <mesh position={[0, 0.05, 0]}>
+        <cylinderGeometry args={[0.016, 0.018, 0.1, 10]} />
+        <primitive object={waxMat} attach="material" />
+      </mesh>
+      <mesh position={[0, 0.105, 0]}>
+        <sphereGeometry args={[0.018, 8, 8]} />
+        <meshStandardMaterial color="#ffcf8a" emissive="#ffcf8a" emissiveIntensity={1.8} toneMapped={false} />
+      </mesh>
+      <pointLight ref={ref} position={[0, 0.1, 0]} color="#ffb060" intensity={8} distance={3.2} decay={2} />
     </group>
   )
 }
@@ -391,12 +477,18 @@ export default function Amadeus({ film, config, doors = [], onDoor }) {
       <fogExp2 attach="fog" args={[grade.bg || '#180f08', 0.05]} />
       <ambientLight intensity={grade.ambient ?? 0.08} />
       <pointLight position={[1.55, 2, -ROOM_D / 2 + 0.3]} intensity={4} color="#3a6a88" distance={3} decay={2} />
+      {/* bounce fills: without these the right wall and far ceiling plane
+          fall to pure black rather than merely dark — the doctrine's "corners
+          die to black, whole planes do not" */}
+      <pointLight position={[ROOM_W / 2 - 0.5, 1.3, 0.4]} intensity={0.9} color="#5a3a1c" distance={3.4} decay={2} />
+      <pointLight position={[0.2, 0.5, 0.9]} intensity={0.6} color="#4a2c14" distance={3} decay={2} />
 
       <Chamber grade={grade} />
       <DrapePanels />
       <Bed pos={[-0.6, 0, 0.3]} rot={[0, 0.12, 0]} color="#6a5a48" frame="#2c2014" />
+      <QuiltFold pos={[-0.6, 0.505, 0.5]} rot={[0, 0.12, 0]} />
       <PulledChair />
-      <Table pos={[0.75, 0, -1.3]} rot={[0, -0.08, 0]} w={0.55} d={0.42} h={0.6} color="#2c2014" />
+      <WoodDesk pos={[0.75, 0, -1.3]} rot={[0, -0.08, 0]} w={0.55} d={0.42} h={0.6} />
       <ShadowDesk />
       <CandleFlame pos={[0.75, 0.62, -1.05]} />
       <CandleFlame pos={[-0.75, 0.72, 0.15]} />
