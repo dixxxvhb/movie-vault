@@ -340,8 +340,15 @@ function ScoreGlyphs({ film }) {
   const chars = useMemo(() => String((film.score ?? 9.8).toFixed(1)).split(''), [film.score])
   const settleAt = useMemo(() => chars.map((_, i) => 2.4 + i * 0.9 + Math.random() * 0.6), [chars])
   const stripTex = useMemo(() => makeGlyphStripTexture(GLYPH_COLOR, 401), [])
+  // Iteration 2 QA fix: this used to hardcode '#e8ffe0' — near-white — for
+  // the settled score glyphs while every other glyph in the room (the rain
+  // columns, the periphery strips) uses GLYPH_COLOR's green. The '8' in
+  // particular (a double-ring stroke) sat top-center of frame and, at
+  // near-white with toneMapped=false, was the single brightest thing in
+  // the shot, pulling focus from the shockwave. Recolored into the same
+  // green family as everything else.
   const finalTexes = useMemo(
-    () => chars.map((ch) => makeMatrixCharGlyphTexture(ch.charCodeAt(0), '#e8ffe0')),
+    () => chars.map((ch) => makeMatrixCharGlyphTexture(ch.charCodeAt(0), GLYPH_COLOR)),
     [chars]
   )
   useEffect(() => () => { stripTex.dispose(); finalTexes.forEach((t) => t.dispose()) }, [stripTex, finalTexes])
