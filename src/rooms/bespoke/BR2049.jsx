@@ -11,6 +11,7 @@ import RainField from '../systems/RainField.jsx'
 import ScheduledCut from '../systems/ScheduledCut.jsx'
 import { makeBillboardTexture, makeWetConcreteTexture } from './br2049Textures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // BLADE RUNNER 2049 (2017) · 9.8 · "the sea wall." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): night, driving rain, waves detonating
@@ -349,7 +350,7 @@ export default function BR2049({ film, config, doors = [], goToStation, onDoor }
           key={key}
           position={[st.pos[0], 0.012, st.pos[2]]}
           rotation={[-Math.PI / 2, 0, 0]}
-          onClick={(e) => { e.stopPropagation(); stepTo(key) }}
+          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; stepTo(key) }}
           onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
           onPointerOut={() => { document.body.style.cursor = 'auto' }}
         >

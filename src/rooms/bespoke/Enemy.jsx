@@ -11,6 +11,7 @@ import { start as startEnemyAudio } from '../audio/recipes/enemy.js'
 import Duplicates from '../systems/Duplicates.jsx'
 import { makeBlindsGoboTexture, makeChalkTexture, makeMarkedScoreTexture } from './enemyTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // ENEMY (2013) · 9.6 · "the apartment, doubled." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the Toronto apartment, venetian-blind
@@ -370,7 +371,7 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
           key={key}
           position={[st.pos[0], 0.012, st.pos[2]]}
           rotation={[-Math.PI / 2, 0, 0]}
-          onClick={(e) => { e.stopPropagation(); stepTo(key) }}
+          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; stepTo(key) }}
           onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
           onPointerOut={() => { document.body.style.cursor = 'auto' }}
         >

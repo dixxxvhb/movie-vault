@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { makeDoorPlaqueTexture } from './doorTextures.js'
+import { wasDrag } from '../pointer.js'
 
 // The one shared door primitive every bloodline door renders through
 // (VAULT-IMMERSION-BRIEF-v2.md §6): frame + panel + a small plaque, styled
@@ -48,6 +49,7 @@ export default function Door({ position, rotationY = 0, scale = 1, grade, spec, 
 
   const handleClick = (e) => {
     e.stopPropagation()
+    if (wasDrag()) return
     if (locked) { pulseRef.current = 1; return }
     onDoor?.(spec)
   }

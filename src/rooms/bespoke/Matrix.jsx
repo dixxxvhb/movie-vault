@@ -9,6 +9,7 @@ import { useRoomAudio } from '../audio/engine.js'
 import { start as startMatrixAudio } from '../audio/recipes/matrix.js'
 import { getMatrixGlyphTextures, makeGlyphStripTexture, makeMatrixCharGlyphTexture } from './matrixTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // THE MATRIX (1999) · 9.8 · "the rooftop, mid bullet-time." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the helipad rooftop, hazy overcast city,
@@ -220,7 +221,7 @@ function WaveClickTarget({ onTouch }) {
   return (
     <mesh
       position={[0, 1.15, 0]}
-      onClick={(e) => { e.stopPropagation(); onTouch() }}
+      onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onTouch() }}
       onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
       onPointerOut={() => { document.body.style.cursor = 'auto' }}
     >
@@ -418,7 +419,7 @@ export default function Matrix({ film, config, doors = [], goToStation, onDoor }
           key={i}
           position={[st.pos[0], 0.01, st.pos[2]]}
           rotation={[-Math.PI / 2, 0, 0]}
-          onClick={(e) => { e.stopPropagation(); stepTo(i) }}
+          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; stepTo(i) }}
           onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
           onPointerOut={() => { document.body.style.cursor = 'auto' }}
         >
@@ -429,7 +430,7 @@ export default function Matrix({ film, config, doors = [], goToStation, onDoor }
       <mesh
         position={[ENTRY_STATION.pos[0], 0.01, ENTRY_STATION.pos[2]]}
         rotation={[-Math.PI / 2, 0, 0]}
-        onClick={(e) => { e.stopPropagation(); stepTo(-1) }}
+        onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; stepTo(-1) }}
         onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
         onPointerOut={() => { document.body.style.cursor = 'auto' }}
       >

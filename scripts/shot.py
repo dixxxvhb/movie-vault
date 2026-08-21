@@ -175,6 +175,70 @@ def check_walk(page, failures, args):
         print("  %-14s %.2fm in 700ms  %s -> %s" % ("walk arrowup", d2, start2, after2))
 
 
+def check_crosshair(page, failures, args):
+    """Wave M2 gate: the pointer-lock crosshair dot actually renders.
+
+    Headless Chrome cannot truly pointer-lock (there's no real cursor to
+    capture), so this forces the dot on via `?crosshair` — App.jsx shows it
+    unlocked when that query param is present, exactly for this check — and
+    asserts a small, distinct cluster of pixels sits dead centre, different
+    from its immediate surroundings. mix-blend-mode: difference means the
+    dot's rendered colour depends on whatever's behind it, so this compares
+    centre vs. a ring around it rather than asserting a fixed colour.
+
+    The Esc/unlock swallow logic (recentPointerUnlock, ~250ms window) is not
+    checked here — headless can't engage a real lock to unlock from, and
+    dispatching a synthetic `pointerlockchange` proved flakier than it was
+    worth. That logic is verified by code review instead (see the M2 report):
+    pointer.js's module-level listener sets `lastUnlockAt` off the same
+    event App's Esc handler already gates on.
+    """
+    from PIL import Image
+
+    base = args.url.split("?")[0]
+    url = base + "?room=darkknight&nocold&noguide&crosshair"
+    page.goto(url, wait_until="networkidle")
+    page.wait_for_selector("canvas", timeout=20000)
+    page.wait_for_timeout(1400)
+
+    path = os.path.join(OUT, "crosshair.png")
+    page.screenshot(path=path)
+
+    im = Image.open(path).convert("RGB")
+    w, h = im.size
+    cx, cy = w // 2, h // 2
+
+    def avg(box):
+        px = list(im.crop(box).getdata())
+        n = len(px)
+        return tuple(sum(c[i] for c in px) / n for i in range(3))
+
+    # a small block dead centre (the 4px CSS dot, doubled by dsf=2, plus a
+    # hair of slop for anti-aliasing) vs. a ring of samples well clear of it
+    # but still close enough to be roughly the same underlying scene content.
+    center = avg((cx - 4, cy - 4, cx + 4, cy + 4))
+    ring_boxes = [
+        (cx - 40, cy - 40, cx - 32, cy - 32),
+        (cx + 32, cy - 40, cx + 40, cy - 32),
+        (cx - 40, cy + 32, cx - 32, cy + 40),
+        (cx + 32, cy + 32, cx + 40, cy + 40),
+    ]
+    ring = [avg(b) for b in ring_boxes]
+    ring_mean = tuple(sum(r[i] for r in ring) / len(ring) for i in range(3))
+
+    diff = sum(abs(center[i] - ring_mean[i]) for i in range(3))
+    if diff < 12:
+        failures.append(
+            "crosshair: centre %s barely differs from surroundings %s (diff %.1f, want >=12)"
+            % (tuple(round(c, 1) for c in center), tuple(round(r, 1) for r in ring_mean), diff)
+        )
+    else:
+        print("  %-14s centre %s vs ring %s (diff %.1f)  -> %s"
+              % ("crosshair", tuple(round(c, 1) for c in center),
+                 tuple(round(r, 1) for r in ring_mean), diff,
+                 os.path.relpath(path, BASE)))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:5173")
@@ -260,6 +324,14 @@ def main():
             check_walk(page, failures, args)
         except Exception as e:
             failures.append("walk step: %s" % e)
+
+        # Wave M2: the pointer-lock crosshair (forced via ?crosshair; see
+        # check_crosshair's own docstring for why the Esc/unlock swallow
+        # logic is not exercised here).
+        try:
+            check_crosshair(page, failures, args)
+        except Exception as e:
+            failures.append("crosshair step: %s" % e)
 
         # The cold open. Checked by timing, not by looking: the lids must
         # actually cover the room early on and must be gone by the end. A blink

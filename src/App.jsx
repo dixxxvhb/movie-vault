@@ -7,7 +7,7 @@ import { ROOM } from './Room.jsx'
 import { STATIONS, setWalkBob, isWalkBobOn } from './CameraRig.jsx'
 import WalkStick from './WalkStick.jsx'
 import { CARD_W, CARD_H } from './Polaroid.jsx'
-import { setDragDistance } from './pointer.js'
+import { setDragDistance, requestPointerLock, exitPointerLock, subscribeLock, recentPointerUnlock } from './pointer.js'
 import MotelWorld from './MotelWorld.jsx'
 import FilmWorld from './rooms/FilmWorld.jsx'
 import ArchiveWorld from './rooms/ArchiveWorld.jsx'
@@ -169,6 +169,17 @@ export default function App() {
   const [lens, setLens] = useState(null)        // a vibe tag, or null
   const [lensOpen, setLensOpen] = useState(false)
   const [finding, setFinding] = useState(false)
+  // Wave M2: pointer lock. `pointerLocked` mirrors pointer.js's module state
+  // (read every frame's worth of DOM events there, not React state — this is
+  // just what the crosshair re-renders on). `forceCrosshair` is a one-time
+  // debug flag: headless screenshotting (scripts/shot.py) can't truly
+  // pointer-lock, so `?crosshair` shows the dot unlocked for the pixel check.
+  const [pointerLocked, setPointerLocked] = useState(false)
+  useEffect(() => subscribeLock(setPointerLocked), [])
+  const forceCrosshair = useMemo(() => new URLSearchParams(location.search).has('crosshair'), [])
+  // Opening Find releases pointer lock (M2 spec) — one effect catches both
+  // ways in ("/" and the dock button) instead of duplicating the call.
+  useEffect(() => { if (finding) exitPointerLock() }, [finding])
 
   // Where you are. 'motel' is the room you already know; 'entering:<slug>'
   // and 'exiting:<slug>' are the ~1.4s portal wash in either direction;
@@ -270,6 +281,7 @@ export default function App() {
   // all (hopCount === 0, the existing behaviour below, untouched).
   const exitFilm = () => {
     if (!world.startsWith('film:')) return
+    exitPointerLock()
     if (hopCount === 1 && hopChainRef.current.length) {
       const prev = hopChainRef.current.pop()
       setHopCount(0)
@@ -306,6 +318,7 @@ export default function App() {
   // print room just as easily as another ledger film's.
   const exitPrint = () => {
     if (!world.startsWith('print:')) return
+    exitPointerLock()
     if (hopCount === 1 && hopChainRef.current.length) {
       const prev = hopChainRef.current.pop()
       setHopCount(0)
@@ -338,6 +351,7 @@ export default function App() {
   }
   const exitHazy = () => {
     if (!world.startsWith('hazy:')) return
+    exitPointerLock()
     setWorld('exiting-hazy:' + world.slice(5))
     setTransition({ id: 'exit-hazy:' + world.slice(5) + ':' + Date.now() })
   }
@@ -390,6 +404,7 @@ export default function App() {
   const onDoorOpen = (spec) => {
     if (xrStore.getState().session != null) return
     if (world.startsWith('doorhop:')) return // already mid-hop; ignore a double-click
+    exitPointerLock()
     const fromKind = world.startsWith('film:') ? 'film' : world.startsWith('print:') ? 'print' : null
     if (!fromKind) return
     const fromSlug = fromKind === 'film' ? filmSlug : printSlug
@@ -474,6 +489,11 @@ export default function App() {
         if (picked) return openBox === 'drawer' ? enterHazy(picked) : enterPrint(picked)
       }
       if (e.key !== 'Escape') return
+      // Wave M2 sharp edge: the browser's own Esc-to-unlock-the-pointer can
+      // also reach this listener. If a pointerlockchange unlock landed in the
+      // last ~250ms, THIS Esc was that release, not a second press asking to
+      // exit the room — swallow it. First Esc unlocks, second exits.
+      if (recentPointerUnlock()) return
       // a room is the outermost layer there is — Esc closes it before it
       // starts closing anything back in the motel
       if (world.startsWith('film:')) return exitFilm()
@@ -677,7 +697,19 @@ export default function App() {
         dpr={[1, 2]}
         camera={{ position: STATIONS.center.pos, fov: STATIONS.center.fov, near: 0.05, far: 60 }}
         gl={{ antialias: true }}
-        onPointerMissed={() => setSelected(null)}
+        onPointerMissed={(e) => {
+          if (world === 'motel') return setSelected(null)
+          // Wave M2: pointer lock. Only walkable rooms offer it (never the
+          // motel, which stays click-to-station) and only on a device with a
+          // real mouse — a touch visitor has the walk stick, not a cursor to
+          // lock. onPointerMissed only fires when the click hit no mesh (see
+          // R3F's own `isClickEvent && !hits.length` gate), so this is
+          // already "clicked on non-interactive space."
+          const inRoom = filmMounted || printMounted || hazyMounted
+          if (inRoom && typeof navigator !== 'undefined' && navigator.maxTouchPoints === 0) {
+            requestPointerLock(e.target)
+          }
+        }}
       >
        <XR store={xrStore}>
         {/* gradeOverride can carry `bg` too — Memento's own film-palette bg
@@ -743,6 +775,14 @@ export default function App() {
         />
        </XR>
       </Canvas>
+
+      {/* Wave M2: the pointer-lock crosshair. Visible only while actually
+          locked, or forced on via `?crosshair` for a headless screenshot
+          check — scripts/shot.py can't truly pointer-lock a headless
+          browser, so that query param is the verification seam. */}
+      {(filmMounted || printMounted || hazyMounted) && (pointerLocked || forceCrosshair) && (
+        <div style={hud.crosshair} />
+      )}
 
       {transition && (
         <Develop
@@ -1020,6 +1060,14 @@ export default function App() {
 }
 
 const hud = {
+  // Wave M2: 4px dot, dead centre, 55% opacity, mix-blend difference so it
+  // reads against any scene without a matching backdrop of its own.
+  crosshair: {
+    position: 'fixed', top: '50%', left: '50%', width: 4, height: 4,
+    marginTop: -2, marginLeft: -2, borderRadius: '50%',
+    background: '#ffffff', opacity: 0.55, mixBlendMode: 'difference',
+    pointerEvents: 'none', zIndex: 5,
+  },
   brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.8)' },
   title: { fontSize: 26, fontStyle: 'italic', letterSpacing: '.01em' },
   sub: { fontSize: 12.5, color: '#b9ae98', marginTop: 2, fontFamily: 'system-ui, sans-serif' },

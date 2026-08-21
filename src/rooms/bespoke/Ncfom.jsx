@@ -7,6 +7,7 @@ import {
   makeHighwaySignTexture, makePeanutsLabelTexture, makeCoinFaceTexture, makeCoinBlankTexture,
 } from './ncfomTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // 8.3 — "the gas station counter." One small shop, two stations: the
 // customer side (where you approach the counter) and behind it (where the
@@ -185,6 +186,7 @@ function Coin({ station, onSpin }) {
 
   const handleClick = (e) => {
     e.stopPropagation()
+    if (wasDrag()) return
     if (phase !== 'still' || station !== 'front') return
     setPhase('spinning')
     spinRef.current = 0
@@ -297,7 +299,7 @@ export default function Ncfom({ film, config, goToStation, doors = [], onDoor })
           toggle sitting on top of the coin */}
       <mesh
         position={[1.5, 1.2, COUNTER_Z]}
-        onClick={(e) => { e.stopPropagation(); station === 'front' ? goBehind() : goFront() }}
+        onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; station === 'front' ? goBehind() : goFront() }}
         onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
         onPointerOut={() => { document.body.style.cursor = 'auto' }}
       >

@@ -11,6 +11,7 @@ import {
   makeHotTakeBrushTexture, makeFbiSignTexture,
 } from './stingTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // 9.6 — "the wire room builds itself." The betting parlor assembles on
 // entry (flats/scaffold/backdrop flying in over ~6s, staggered per wall,
@@ -322,7 +323,7 @@ function Hotspot({ pos, size, rot, onSelect }) {
     <mesh
       position={pos}
       rotation={rot || [0, 0, 0]}
-      onClick={(e) => { e.stopPropagation(); onSelect() }}
+      onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onSelect() }}
       onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
       onPointerOut={() => { document.body.style.cursor = 'auto' }}
     >

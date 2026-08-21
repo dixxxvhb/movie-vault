@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import * as THREE from 'three'
 import { HAZY_CLOSER } from './archiveConfig.js'
+import { wasDrag } from '../../pointer.js'
 
 // The Dark Drawer's one shared room (brief §3, Wave C: "room exists
 // UNDEVELOPED: near-black, fog, faint silhouettes ... No info surfaces ...
@@ -61,6 +62,7 @@ export default function Undeveloped({ film, goToStation }) {
 
   const advance = (e) => {
     e.stopPropagation()
+    if (wasDrag()) return
     if (advanced || !goToStation) return
     setAdvanced(true)
     goToStation(HAZY_CLOSER, 'closer')

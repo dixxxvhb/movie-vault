@@ -12,6 +12,7 @@ import {
   makeNoteTexture, makePolaroidTexture, makeFloorPolaroidTexture, makeMirrorNumeralTexture,
 } from './mementoTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -263,7 +264,7 @@ function CorridorClickPlanes({ onAdvance }) {
           <mesh
             key={i}
             position={[0, CORR_H / 2, z]}
-            onClick={(e) => { e.stopPropagation(); onAdvance() }}
+            onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
             onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
             onPointerOut={() => { document.body.style.cursor = 'auto' }}
           >

@@ -9,6 +9,7 @@ import { start as startBarbarianAudio } from '../audio/recipes/barbarian.js'
 import { notifyDepth } from './barbarianBus.js'
 import { makeIndexCardTexture, makeDoorRatingTexture, makeRainWindowTexture } from './barbarianTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // 7.6 — "the house on Barbary." The living room first (cozy, tidy, rain
 // outside), the basement door standing open, then a straight descent
@@ -424,7 +425,7 @@ export default function Barbarian({ film, config, goToStation, doors = [], onDoo
         <mesh
           key={i}
           position={[0, 1.3, z]}
-          onClick={(e) => { e.stopPropagation(); moveOneStep() }}
+          onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; moveOneStep() }}
           onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
           onPointerOut={() => { document.body.style.cursor = 'auto' }}
         >

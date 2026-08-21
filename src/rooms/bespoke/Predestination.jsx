@@ -8,6 +8,7 @@ import {
   makeLoopWallTexture, makeRingTextTexture, makeFixedScoreTexture, makeCertifiedBadgeTexture,
 } from './predestinationTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // 9.1 — "the bar." Low amber light, bottle shelf, two stools mid-
 // conversation, 70s-brown grade. Behind the bar a doorway opens onto a
@@ -211,7 +212,7 @@ function RingClickPlanes({ onAdvance }) {
             key={i}
             position={[mid.x, TUBE_H / 2, mid.z]}
             rotation={[0, angle, 0]}
-            onClick={(e) => { e.stopPropagation(); onAdvance() }}
+            onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
             onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
             onPointerOut={() => { document.body.style.cursor = 'auto' }}
           >
@@ -223,7 +224,7 @@ function RingClickPlanes({ onAdvance }) {
       {/* the doorway threshold itself, from the bar side */}
       <mesh
         position={[BAR_DOOR_X, BAR_DOOR_H / 2, BAR_DOOR_Z]}
-        onClick={(e) => { e.stopPropagation(); onAdvance() }}
+        onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
         onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
         onPointerOut={() => { document.body.style.cursor = 'auto' }}
       >

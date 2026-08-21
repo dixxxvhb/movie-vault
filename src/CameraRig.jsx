@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
-import { setDragDistance } from './pointer.js'
+import { setDragDistance, exitPointerLock } from './pointer.js'
 import { useXR } from '@react-three/xr'
 import { keyVec } from './walkKeys.js'
 import { resolveStep, floorYAt, publishWalkPos } from './rooms/colliders.js'
@@ -88,7 +88,7 @@ function aim(pos, look) {
 // `stationKey` is what drives the flight, so an object identity change on
 // re-render doesn't restart the camera mid-move.
 export default function CameraRig({ station = 'center', stationKey, walkable = null }) {
-  const { camera, gl } = useThree()
+  const { camera, gl, setEvents } = useThree()
   const inXR = useXR((s) => s.session != null)
   const key = stationKey ?? (typeof station === 'string' ? station : 'custom')
   const resolved = typeof station === 'string' ? (STATIONS[station] || STATIONS.center) : station
@@ -96,6 +96,11 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
   latest.current = resolved
   const walkableRef = useRef(walkable)
   walkableRef.current = walkable
+  // `walkable` is a fresh object every render (FilmWorld/ArchiveWorld pass a
+  // literal), but whether it's present at all is stable for the room's whole
+  // lifetime — true dep would tear the pointer-lock effect below down and
+  // rebuild it every frame for no reason.
+  const isWalkableRoom = walkable != null
 
   const base = useRef(aim(STATIONS.center.pos, STATIONS.center.look))
   const off = useRef({ yaw: 0, pitch: 0 })      // user's drag, relative to base
@@ -118,6 +123,11 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
 
   // begin a flight whenever the station changes
   useEffect(() => {
+    // Wave M2: every flight — a landmark click, a door hop, an exit — passes
+    // through here regardless of what triggered it, which makes this the one
+    // place that catches all of "flight start releases pointer lock" without
+    // hunting down every caller.
+    exitPointerLock()
     const s = latest.current
     const target = aim(s.pos, s.look)
     flight.current = {
@@ -215,6 +225,59 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       window.removeEventListener('pointerup', up)
     }
   }, [gl, key])
+
+  // Wave M2: pointer lock. Two things happen while locked, both scoped to
+  // walkable rooms only (the motel never sees this — `isWalkableRoom` is
+  // false there, so this effect is a no-op).
+  //
+  // 1. mousemove -> look. Under lock, clientX/clientY freeze at wherever the
+  //    cursor was when the lock engaged (the spec: only movementX/Y report
+  //    real deltas), so the existing drag-look effect above goes quietly
+  //    inert during lock (its dx/dy come out 0 every frame) rather than
+  //    fighting this one — no double-application, nothing to guard.
+  // 2. R3F's click/hover raycast normally reads event.offsetX/offsetY (see
+  //    the library's default `events.compute`, which is exactly that
+  //    formula) — under lock those are just as frozen as clientX/Y, so a
+  //    room's door/hotspot meshes would keep resolving against the spot you
+  //    clicked to engage the lock, not what the crosshair is actually on
+  //    once you've turned to look elsewhere. `setEvents({ compute })` is
+  //    R3F's own supported override point (same one VR reticle raycasting
+  //    uses) — swapping it to always raycast from viewport centre while
+  //    locked is far less code than hand-rolling a parallel raycast-and-
+  //    dispatch, and it means every room's existing onClick/wasDrag-guarded
+  //    handlers keep working unchanged, locked or not.
+  useEffect(() => {
+    if (!isWalkableRoom) return undefined
+    const target = gl.domElement
+    const defaultCompute = (event, state) => {
+      state.pointer.set(
+        (event.offsetX / state.size.width) * 2 - 1,
+        -(event.offsetY / state.size.height) * 2 + 1
+      )
+      state.raycaster.setFromCamera(state.pointer, state.camera)
+    }
+    const centerCompute = (event, state) => {
+      state.pointer.set(0, 0)
+      state.raycaster.setFromCamera(state.pointer, state.camera)
+    }
+    const applyForLockState = () => {
+      setEvents({ compute: document.pointerLockElement === target ? centerCompute : defaultCompute })
+    }
+    const move = (e) => {
+      if (document.pointerLockElement !== target) return
+      const sens = 0.0032 / Math.max(1, zoomShown.current * 0.82)
+      off.current.yaw -= e.movementX * sens
+      off.current.pitch = THREE.MathUtils.clamp(off.current.pitch - e.movementY * sens, -0.62, 0.62)
+    }
+    applyForLockState()
+    document.addEventListener('pointerlockchange', applyForLockState)
+    document.addEventListener('mousemove', move)
+    return () => {
+      document.removeEventListener('pointerlockchange', applyForLockState)
+      document.removeEventListener('mousemove', move)
+      setEvents({ compute: defaultCompute })
+    }
+  }, [isWalkableRoom, gl, setEvents])
 
   // keyboard zoom, because a laptop trackpad wheel is a miserable way to do
   // fine work and +/- is what everyone tries first

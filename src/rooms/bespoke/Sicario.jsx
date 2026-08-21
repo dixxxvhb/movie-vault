@@ -12,6 +12,7 @@ import {
   makeDuskSkyTexture, makeTunnelTexture, makeMissionBriefTexture, makeThermalNumeralTexture,
 } from './sicarioTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { wasDrag } from '../../pointer.js'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -248,7 +249,7 @@ function TunnelClickPlanes({ onAdvance }) {
           <mesh
             key={i}
             position={[0, y, z]}
-            onClick={(e) => { e.stopPropagation(); onAdvance() }}
+            onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; onAdvance() }}
             onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
             onPointerOut={() => { document.body.style.cursor = 'auto' }}
           >
