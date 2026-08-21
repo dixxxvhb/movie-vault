@@ -5,6 +5,7 @@ import GenericRoom from './GenericRoom.jsx'
 import Memento from './bespoke/Memento.jsx'
 import Departed from './bespoke/Departed.jsx'
 import BabyDriver from './bespoke/BabyDriver.jsx'
+import Sting from './bespoke/Sting.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -17,6 +18,7 @@ const BESPOKE = {
   memento: Memento,
   'the-departed': Departed,
   'baby-driver': BabyDriver,
+  'the-sting': Sting,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

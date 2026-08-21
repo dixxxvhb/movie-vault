@@ -178,6 +178,13 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------------------------------- the-sting
+  // Bespoke now (Phase 2, src/rooms/bespoke/Sting.jsx): grade/camera below
+  // match the bespoke room's own FRONT station exactly (its default entry
+  // view) so FilmWorld's ambientLight and the pre-enter camera line up with
+  // what the hand-built parlor actually shows. `place` is dead weight for
+  // the same reason as the-departed's/baby-driver's own entries above — the
+  // bespoke component never reads it; left in place as the pre-bespoke
+  // Wave B stand-in.
   'the-sting': {
     family: 'weird-fable',
     grade: { key: '#c8964a', fill: '#3a2c1a', sat: 0.1, ambient: 0.24 },
