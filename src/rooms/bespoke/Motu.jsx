@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { throne as Throne } from '../props.jsx'
@@ -7,6 +7,7 @@ import { start as startMotuAudio } from '../audio/recipes/motu.js'
 import { notifyPose } from './motuBus.js'
 import { makeProclamationTexture, makePetitionTexture, makeSealTexture } from './motuTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, registerFloor, clearOwner, resolveStep } from '../colliders.js'
 
 // 8.5 — "the throne, savored." A tall camp-cosmos hall: purple-green
 // atmosphere, a spotlight that SNAPS onto the empty throne on a timer (hard
@@ -22,6 +23,69 @@ const SPOT_PERIOD = 14   // seconds
 const SPOT_ON = 5
 
 const POSE_PERIOD = 2.7  // seconds between held lightning poses
+
+// The dais under the throne: [0, 0.08, -2.2], size [2.2, 0.16, 1.6].
+const DAIS_HALF_X = 1.1
+const DAIS_HALF_Z = 0.8
+const DAIS_CX = 0
+const DAIS_CZ = -2.2
+const DAIS_H = 0.16
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: contract #3 — "throne blocks; dais steps = either blocked or a
+// floor ramp onto the dais (your call from the geometry)." At only 0.16m
+// (a curb, not a step you'd need to climb), the dais reads as walkable-onto
+// rather than an obstacle — registerFloor gives it a step-up floor height
+// instead of a blocking rect, so the walker rides up onto it the same way
+// M1's Y-damping already eases any floor change. The throne itself (on top
+// of it) still blocks outright.
+const ROOM_ID = 'bespoke:motu'
+
+function motuFloor(x, z) {
+  if (x >= DAIS_CX - DAIS_HALF_X && x <= DAIS_CX + DAIS_HALF_X &&
+      z >= DAIS_CZ - DAIS_HALF_Z && z <= DAIS_CZ + DAIS_HALF_Z) {
+    return DAIS_H
+  }
+  return 0
+}
+
+const THRONE_RECT = { minX: -0.5, maxX: 0.5, minZ: -2.7, maxZ: -1.7, top: 1.6 }
+const COLUMN_RECTS = [[-2.3, -2.4], [2.3, -2.4]].map(([x, z]) => ({
+  minX: x - 0.26, maxX: x + 0.26, minZ: z - 0.26, maxZ: z + 0.26, top: ROOM_H - 0.4,
+}))
+const WALL_T = 0.12
+const MOTU_SHELL_RECTS = [
+  { minX: -ROOM_W / 2 - WALL_T, maxX: -ROOM_W / 2, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 },
+  { minX: ROOM_W / 2, maxX: ROOM_W / 2 + WALL_T, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 },
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: -ROOM_D / 2 - WALL_T, maxZ: -ROOM_D / 2 },
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: ROOM_D / 2, maxZ: ROOM_D / 2 + WALL_T },
+]
+
+function MotuColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [...MOTU_SHELL_RECTS, THRONE_RECT, ...COLUMN_RECTS])
+    registerFloor(ROOM_ID, motuFloor)
+    setBounds(ROOM_ID, {
+      kind: 'rect',
+      minX: -ROOM_W / 2 + 0.1, maxX: ROOM_W / 2 - 0.1,
+      minZ: -ROOM_D / 2 + 0.1, maxZ: ROOM_D / 2 - 0.1,
+    })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* ------------------------------------------------------------------ shell */
 
@@ -257,6 +321,7 @@ export default function Motu({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <MotuColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.fogColor || '#1a1424', 0.045]} />
       <ambientLight intensity={grade.ambient ?? 0.24} color={grade.fill || '#2a5a3a'} />
       <pointLight position={[-2.2, 2.6, -1]} intensity={(grade.keyIntensity ?? 1) * 12} color={grade.key || '#a84fd6'} distance={9} decay={2} />

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { podium as Podium, chairRow as ChairRow, slab as Slab } from '../props.jsx'
@@ -8,6 +8,7 @@ import {
   makeSpeechScrollTexture, makePlinthSealTexture, makeBronzePlaqueTexture, makeRevealLabelTexture,
 } from './disclosureDayTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 5.2 — "the podium." Over-lit civic hall, podium, rows of empty chairs,
 // flags without insignia. Speech text scrolls slowly and infinitely up
@@ -20,6 +21,62 @@ const CURTAIN_W = 2.6
 const CURTAIN_H = 2.6
 const CURTAIN_Y = 1.7
 const CURTAIN_Z = -ROOM_D / 2 + 0.06
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: contract #3 — "podium + chair rows block; chair ROWS should have
+// per-row rects with walkable gaps as rendered." Three rows at z -0.9/0.9/
+// 2.4 (FlagsAndRows below) — one rect per row rather than one blob covering
+// the whole seating block, so the 1.8m gaps between rows stay open aisles.
+const ROOM_ID = 'bespoke:disclosure-day'
+const WALL_T = 0.12
+
+const DD_SHELL_RECTS = [
+  { minX: -ROOM_W / 2 - WALL_T, maxX: -ROOM_W / 2, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 },
+  { minX: ROOM_W / 2, maxX: ROOM_W / 2 + WALL_T, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 },
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: -ROOM_D / 2 - WALL_T, maxZ: -ROOM_D / 2 },
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: ROOM_D / 2, maxZ: ROOM_D / 2 + WALL_T },
+]
+
+const PODIUM_RECT = { minX: -0.3, maxX: 0.3, minZ: -2.85, maxZ: -2.35, top: 1.2 }
+
+// One rect per chair row (count 7, spacing 0.62 — FlagsAndRows below).
+const ROW_COUNT = 7
+const ROW_SPACING = 0.62
+const ROW_HALF_X = (ROW_SPACING * (ROW_COUNT - 1)) / 2 + 0.22
+const CHAIR_ROW_RECTS = [-0.9, 0.9, 2.4].map((z) => ({
+  minX: -ROW_HALF_X, maxX: ROW_HALF_X, minZ: z - 0.22, maxZ: z + 0.22, top: 0.44,
+}))
+
+const FLAG_RECTS = [-2.4, 2.4].map((x) => ({
+  minX: x - 0.25, maxX: x + 0.25, minZ: -2.8 - 0.03, maxZ: -2.8 + 0.03, top: 2.2,
+}))
+
+const PLINTH_RECT = { minX: 1.45, maxX: 1.95, minZ: -1.35, maxZ: -0.85, top: 0.9 }
+
+function DisclosureColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [...DD_SHELL_RECTS, PODIUM_RECT, ...CHAIR_ROW_RECTS, ...FLAG_RECTS, PLINTH_RECT])
+    setBounds(ROOM_ID, {
+      kind: 'rect',
+      minX: -ROOM_W / 2 + 0.1, maxX: ROOM_W / 2 - 0.1,
+      minZ: -ROOM_D / 2 + 0.1, maxZ: ROOM_D / 2 - 0.1,
+    })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* ------------------------------------------------------------------ shell */
 
@@ -207,6 +264,7 @@ export default function DisclosureDay({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <DisclosureColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.fogColor || '#d8d2b8', 0.012]} />
       {/* over-lit and flat: several soft, even sources rather than one
           dramatic key — the brief's own "over-lit civic grade" */}
