@@ -13,11 +13,16 @@ import Assembler from './Assembler.jsx'
 import CurtainReveal from './CurtainReveal.jsx'
 import InkSpread from './InkSpread.jsx'
 import DwellConcede from './DwellConcede.jsx'
+import DustDrift from './DustDrift.jsx'
 
-// The system kit (IMMERSION-WAVEB-SPEC.md's 15). GenericRoom looks a config
-// entry's `type` up here and renders `<Comp {...params}/>`. Every system is
-// self-cleaning: no setInterval/setTimeout, clock-driven off useFrame so
-// StrictMode's double-mount never leaves a stray timer running.
+// The system kit (IMMERSION-WAVEB-SPEC.md's 15, +1 for Wave C). GenericRoom
+// looks a config entry's `type` up here and renders `<Comp {...params}/>`.
+// Every system is self-cleaning: no setInterval/setTimeout, clock-driven off
+// useFrame so StrictMode's double-mount never leaves a stray timer running.
+//
+// DustDrift is new, not in the original fifteen — added for the shoebox
+// print rooms' "drifting dust" (VAULT-IMMERSION-BRIEF-v2.md §3), which
+// nothing in the original kit covers (see DustDrift.jsx's own header).
 export const SYSTEMS = {
   ResetFlash,
   Duplicates,
@@ -34,6 +39,7 @@ export const SYSTEMS = {
   CurtainReveal,
   InkSpread,
   DwellConcede,
+  DustDrift,
 }
 
 export function System({ type, ...rest }) {
