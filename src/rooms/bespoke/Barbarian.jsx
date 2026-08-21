@@ -10,6 +10,8 @@ import { makeIndexCardTexture, makeDoorRatingTexture, makeRainWindowTexture } fr
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, registerFloor, clearOwner } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
+import { standardMat } from '../materials.js'
+import { FrameOn } from '../detail.jsx'
 
 // 7.6 — "the house on Barbary." The living room first (cozy, tidy, rain
 // outside), the basement door standing open, then a straight descent
@@ -71,64 +73,93 @@ function wallTex(tint, seed) {
   return tex
 }
 
+// PUNCH LIST: the living room needed to genuinely read cozy — real
+// materials.js plaster/wood instead of a flat speckle canvas, a rug
+// grounding the seating, and picture frames (FrameOn) breaking the walls
+// the way an actually-lived-in Airbnb would have them.
 function LivingRoomShell() {
-  const wallT = useMemo(() => wallTex('#c9b896', 601), [])
-  const floorT = useMemo(() => wallTex('#8a6a48', 602), [])
+  const wallMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#c9b896', scale: 1.2, wear: 0.3, repeat: [1.4, 1], roughness: 0.95 }), [])
+  const floorMat = useMemo(() => standardMat({ kind: 'wood', tint: '#8a6a48', scale: 1, wear: 0.35, repeat: [2.2, 2], roughness: 0.8 }), [])
   const sideW = (LR_W - LR_DOOR_W) / 2
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[LR_W, LR_D]} />
-        <meshStandardMaterial map={floorT} roughness={0.85} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, LR_H, 0]}>
         <planeGeometry args={[LR_W, LR_D]} />
-        <meshStandardMaterial map={wallT} roughness={0.95} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[0, LR_H / 2, LR_D / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[LR_W, LR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       {/* -Z wall, split around the basement door */}
       <mesh position={[-(sideW / 2 + LR_DOOR_W / 2), LR_H / 2, LR_DOOR_Z]}>
         <planeGeometry args={[sideW, LR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[sideW / 2 + LR_DOOR_W / 2, LR_H / 2, LR_DOOR_Z]}>
         <planeGeometry args={[sideW, LR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[0, (LR_DOOR_H + LR_H) / 2, LR_DOOR_Z]}>
         <planeGeometry args={[LR_DOOR_W, LR_H - LR_DOOR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.9} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[-LR_W / 2, LR_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[LR_D, LR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[LR_W / 2, LR_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[LR_D, LR_H]} />
-        <meshStandardMaterial map={wallT} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
+      {/* the rug, grounding the couch */}
+      <Rug />
+      {/* picture frames — an actually-lived-in Airbnb would have these.
+          Only the left wall and the back (door) wall are real walls here;
+          LivingRoomShell never draws a +Z wall on the camera's own side
+          (the entry station looks back in through that missing wall on
+          purpose — see livingRoomColliders' own note), so frames only go
+          on walls that actually exist. */}
+      <FrameOn pos={[-LR_W / 2 + 0.015, 1.55, 0.6]} rot={[0, Math.PI / 2, 0]} w={0.7} h={0.5} bar={0.045} color="#241c14" />
+      <FrameOn pos={[-LR_W / 2 + 0.015, 1.55, -0.5]} rot={[0, Math.PI / 2, 0]} w={0.5} h={0.7} bar={0.045} color="#241c14" />
+      <FrameOn pos={[LR_W / 2 - 0.015, 1.5, 0.3]} rot={[0, -Math.PI / 2, 0]} w={0.55} h={0.75} bar={0.045} color="#241c14" />
     </group>
   )
 }
 
+// A soft area rug under the couch — the couch material is fabric, the rug
+// gets its own materials.js carpet kind so the two surfaces read distinct.
+function Rug() {
+  const mat = useMemo(() => standardMat({ kind: 'carpet', tint: '#8a4a3a', scale: 1.6, wear: 0.4, roughness: 0.95 }), [])
+  return (
+    <mesh position={[-1.0, 0.006, 0.85]} rotation={[-Math.PI / 2, 0, 0.25]}>
+      <planeGeometry args={[1.7, 1.3]} />
+      <primitive object={mat} attach="material" />
+    </mesh>
+  )
+}
+
 function Couch() {
+  const fabricMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#5a6a58', scale: 1.8, wear: 0.3, roughness: 0.92 }), [])
+  const armMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a5a48', scale: 1.8, wear: 0.35, roughness: 0.92 }), [])
   return (
     <group position={[-1.2, 0, 0.9]} rotation={[0, 0.25, 0]}>
       <mesh position={[0, 0.24, 0]}>
         <boxGeometry args={[1.3, 0.4, 0.6]} />
-        <meshStandardMaterial color="#5a6a58" roughness={0.9} />
+        <primitive object={fabricMat} attach="material" />
       </mesh>
       <mesh position={[0, 0.5, -0.26]}>
         <boxGeometry args={[1.3, 0.5, 0.14]} />
-        <meshStandardMaterial color="#5a6a58" roughness={0.9} />
+        <primitive object={fabricMat} attach="material" />
       </mesh>
       {[-0.62, 0.62].map((x, i) => (
         <mesh key={i} position={[x, 0.42, 0]}>
           <boxGeometry args={[0.14, 0.44, 0.6]} />
-          <meshStandardMaterial color="#4a5a48" roughness={0.9} />
+          <primitive object={armMat} attach="material" />
         </mesh>
       ))}
     </group>
@@ -212,8 +243,14 @@ function LitDoorSignage({ film }) {
 
 const TUBE_W = 1.9, TUBE_H = 2.3
 
+// PUNCH LIST: the descent is raw poured concrete — materials.js 'concrete'
+// kind (pores, form lines, damp patches) instead of a flat speckle canvas,
+// so grazing light off DescentGlow actually models the surface. `dim`
+// lowers the tint per-segment same as before (the deeper passages are
+// meant to read darker, not just fog-darker).
 function Passage({ z0, z1, tint, dim }) {
-  const tex = useMemo(() => wallTex(tint, Math.round(z0 * 97) + 900), [tint, z0])
+  const wear = dim ? 0.75 : 0.5
+  const mat = useMemo(() => standardMat({ kind: 'concrete', tint, scale: 1.1, wear, repeat: [1, Math.max(1, Math.abs(z0 - z1) / 2)], roughness: dim ? 1 : 0.92 }), [tint, z0, z1, dim, wear])
   const len = z0 - z1
   const mid = (z0 + z1) / 2
   const yOff = stairRampY(mid)
@@ -221,19 +258,19 @@ function Passage({ z0, z1, tint, dim }) {
     <group position={[0, yOff, mid]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[TUBE_W, len]} />
-        <meshStandardMaterial map={tex} roughness={0.95} color={dim ? '#888' : '#fff'} />
+        <primitive object={mat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, TUBE_H, 0]}>
         <planeGeometry args={[TUBE_W, len]} />
-        <meshStandardMaterial map={tex} roughness={0.96} color={dim ? '#666' : '#fff'} />
+        <primitive object={mat} attach="material" />
       </mesh>
       <mesh position={[-TUBE_W / 2, TUBE_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[len, TUBE_H]} />
-        <meshStandardMaterial map={tex} roughness={0.9} color={dim ? '#777' : '#fff'} />
+        <primitive object={mat} attach="material" />
       </mesh>
       <mesh position={[TUBE_W / 2, TUBE_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[len, TUBE_H]} />
-        <meshStandardMaterial map={tex} roughness={0.9} color={dim ? '#777' : '#fff'} />
+        <primitive object={mat} attach="material" />
       </mesh>
     </group>
   )
@@ -300,7 +337,15 @@ function BasementDoor({ z, heavy, index }) {
   const pivot = useRef(null)
   const anim = useRef({ playing: false, t0: 0 })
   const thunkDone = useRef(false)
-  const doorTex = useMemo(() => wallTex(heavy ? '#221c16' : '#8a7048', 4100 + index), [heavy, index])
+  // PUNCH LIST: real wood/steel material + hardware — the light corridor
+  // door reads as a real materials.js wood slab, the heavy hidden-room door
+  // as brushed steel; both get a proper handle in matching metal instead of
+  // a bare dark cube.
+  const doorMat = useMemo(() => (heavy
+    ? standardMat({ kind: 'metal', tint: '#3a3a38', scale: 1.1, wear: 0.55, roughness: 0.55, metalness: 0.6 })
+    : standardMat({ kind: 'wood', tint: '#8a7048', scale: 1, wear: 0.4, roughness: 0.7 })
+  ), [heavy])
+  const handleMat = useMemo(() => standardMat({ kind: 'metal', tint: '#c9c2b0', scale: 1, wear: 0.3, roughness: 0.35, metalness: 0.8 }), [])
 
   const ownerId = 'room:barbarian:door' + index
   useEffect(() => {
@@ -343,11 +388,16 @@ function BasementDoor({ z, heavy, index }) {
         <group ref={pivot}>
           <mesh position={[doorW / 2, doorH / 2, 0]}>
             <boxGeometry args={[doorW, doorH, 0.07]} />
-            <meshStandardMaterial map={doorTex} roughness={0.9} color={heavy ? '#6a6258' : '#c9b896'} />
+            <primitive object={doorMat} attach="material" />
           </mesh>
-          <mesh position={[doorW - 0.1, doorH / 2, 0.05]}>
-            <boxGeometry args={[0.03, 0.05, 0.03]} />
-            <meshStandardMaterial color="#241c14" roughness={0.4} metalness={0.5} />
+          {/* the handle/hardware — a real lever, not a bare cube */}
+          <mesh position={[doorW - 0.1, doorH / 2, 0.045]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.012, 0.012, 0.11, 8]} />
+            <primitive object={handleMat} attach="material" />
+          </mesh>
+          <mesh position={[doorW - 0.16, doorH / 2, 0.03]}>
+            <boxGeometry args={[0.02, 0.05, 0.03]} />
+            <primitive object={handleMat} attach="material" />
           </mesh>
         </group>
       </group>
@@ -361,6 +411,18 @@ function BasementDoor({ z, heavy, index }) {
 function HiddenRoomProps() {
   return (
     <group position={[0, stairRampY(-5.4), -5.4]}>
+      {/* PUNCH LIST: the hidden room's own dread staging is lit by one
+          bare-bulb practical — a cord dropping from the ceiling, no shade,
+          hanging roughly over the bed. This is the room's actual light
+          source; DescentGlow (the camera-follow fill) stays as ambient
+          spill only, this is what the staging is meant to read by. */}
+      <group position={[-0.2, TUBE_H - 0.1, 0.1]}>
+        <mesh position={[0, 0.12, 0]}>
+          <cylinderGeometry args={[0.006, 0.006, 0.24, 6]} />
+          <meshStandardMaterial color="#0e0c0a" roughness={0.8} />
+        </mesh>
+        <LampPractical pos={[0, -0.02, 0]} color="#e8c888" intensity={0.75} distance={3.2} />
+      </group>
       {/* bed frame, skeletal */}
       <group position={[-0.5, 0, -0.3]}>
         {[[-0.55, -0.45], [0.55, -0.45], [-0.55, 0.45], [0.55, 0.45]].map(([x, z], i) => (

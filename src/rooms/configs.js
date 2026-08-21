@@ -445,7 +445,7 @@ export const CONFIGS = {
   // the same reason as the-departed's/baby-driver's own entries above.
   barbarian: {
     family: 'dread',
-    grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416' },
+    grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416', grain: 0.08, vignette: 0.62, bloomIntensity: 0.2 },
     camera: { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 },
     place: {
       shell: 'box',
