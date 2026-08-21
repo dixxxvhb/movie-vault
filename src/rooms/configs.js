@@ -40,7 +40,11 @@ export const CONFIGS = {
   // flagged for the architect).
   memento: {
     family: 'mind-bender',
-    grade: { key: '#c98a4a', fill: '#3a5560', sat: 0.05 },
+    // grain/vignette/bloomIntensity: the Wave P1 baseline triplet, actively
+    // overridden per-frame by Memento.jsx's own split-grade lerp (warm room
+    // vs. silver corridor) — these three are just what shows before the
+    // first useFrame tick and the floor gradeBus falls back to.
+    grade: { key: '#c98a4a', fill: '#3a5560', sat: 0.05, grain: 0.06, vignette: 0.75, bloomIntensity: 0.24 },
     camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1.6], fov: 46 },
     place: {
       shell: 'box',

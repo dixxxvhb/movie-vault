@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { gaze } from '../../CameraRig.jsx'
-import { bed as Bed, table as Table, counter as Counter, mirrorPlane as MirrorPlane, paperScatter as PaperScatter } from '../props.jsx'
+import { bed as Bed, counter as Counter, mirrorPlane as MirrorPlane, paperScatter as PaperScatter } from '../props.jsx'
 import { makeMetaTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
@@ -15,6 +15,9 @@ import {
 import DoorRow from '../DoorRow.jsx'
 import Touchable from '../Touchable.jsx'
 import { OpenKind } from '../touchKinds.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim, crumpledPaper as CrumpledPaper, cup as Cup } from '../detail.jsx'
+import LightRig, { LIGHT_SCALE } from '../lightRig.js'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -64,57 +67,6 @@ const NOTE_COPY = [
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
 const WALL_T = 0.15
 
-/* ----------------------------------------------------------- wall texture */
-
-const roomTexCache = new Map()
-function buildWallTexture(tint) {
-  if (roomTexCache.has(tint)) return roomTexCache.get(tint)
-  const S = 512
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  ctx.globalAlpha = 0.1
-  let s = 91
-  const r = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
-  for (let x = 0; x < S; x += 3) {
-    ctx.strokeStyle = r() > 0.5 ? '#000' : '#3a2a18'
-    ctx.beginPath()
-    ctx.moveTo(x + Math.sin(x * 0.05) * 6, 0)
-    ctx.lineTo(x + Math.sin(x * 0.05 + 3) * 6, S)
-    ctx.stroke()
-  }
-  ctx.globalAlpha = 1
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  roomTexCache.set(tint, tex)
-  return tex
-}
-
-const corrTexCache = new Map()
-function buildCorridorTexture(tint) {
-  if (corrTexCache.has(tint)) return corrTexCache.get(tint)
-  const S = 256
-  const c = document.createElement('canvas')
-  c.width = c.height = S
-  const ctx = c.getContext('2d')
-  ctx.fillStyle = tint
-  ctx.fillRect(0, 0, S, S)
-  ctx.globalAlpha = 0.09
-  for (let y = 0; y < S; y += 5) {
-    ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#000'
-    ctx.fillRect(0, y, S, 1)
-  }
-  ctx.globalAlpha = 1
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-  tex.repeat.set(2, 1)
-  corrTexCache.set(tint, tex)
-  return tex
-}
-
 /* --------------------------------------------------------------- shell(s) */
 
 // The Discount Inn's own wallpaper — a fixed worn brown, not grade.fill
@@ -123,54 +75,73 @@ function buildCorridorTexture(tint) {
 // opposite of "warm into the room").
 const WALL_PAINT = '#4a3a26'
 
+// Every plaster surface below is its own standardMat() call with a nudged
+// tint/scale/wear so no two adjacent walls share one material instance
+// (materials.js's own rule) — the Discount Inn's paint job was never applied
+// in one uniform coat, and grazing light across four IDENTICAL walls reads
+// as a texture tile, not a room.
 function RoomShell({ grade }) {
-  const wallTex = useMemo(() => buildWallTexture(WALL_PAINT), [])
-  const floorTex = useMemo(() => buildWallTexture('#2a221a'), [])
+  const floorMat = useMemo(() => standardMat({ kind: 'carpet', tint: '#241c14', scale: 1.1, wear: 0.65, repeat: [3, 3.3] }), [])
+  const ceilMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#40331f', scale: 1.3, wear: 0.3, repeat: [2, 2] }), [])
+  const wallBack = useMemo(() => standardMat({ kind: 'plaster', tint: WALL_PAINT, scale: 1, wear: 0.42, repeat: [1.6, 1] }), [])
+  const wallLeftDoor = useMemo(() => standardMat({ kind: 'plaster', tint: '#453521', scale: 0.9, wear: 0.55, repeat: [0.8, 1], seed: 401 }), [])
+  const wallRightDoor = useMemo(() => standardMat({ kind: 'plaster', tint: '#4c3c27', scale: 1.15, wear: 0.35, repeat: [0.8, 1], seed: 402 }), [])
+  const wallAboveDoor = useMemo(() => standardMat({ kind: 'plaster', tint: '#463522', scale: 1, wear: 0.4, repeat: [1, 0.3], seed: 403 }), [])
+  const wallW = useMemo(() => standardMat({ kind: 'plaster', tint: '#4a3927', scale: 1.25, wear: 0.5, repeat: [2, 1] }), [])
+  const wallE = useMemo(() => standardMat({ kind: 'plaster', tint: '#443422', scale: 0.85, wear: 0.3, repeat: [2, 1], seed: 404 }), [])
+  const doorFrameMat = useMemo(() => standardMat({ kind: 'wood', tint: '#1c140c', scale: 0.6, wear: 0.55, roughness: 0.75 }), [])
+
   const sidePanelW = (ROOM_W - DOOR_W) / 2
+  const baseY = 0.045
 
   return (
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={floorTex} roughness={0.94} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_H, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial map={wallTex} roughness={0.96} />
+        <primitive object={ceilMat} attach="material" />
       </mesh>
       {/* +Z wall, behind the entry camera */}
       <mesh position={[0, ROOM_H / 2, ROOM_D / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[ROOM_W, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallBack} attach="material" />
       </mesh>
       {/* -Z wall, split around the doorway */}
       <mesh position={[-(sidePanelW / 2 + DOOR_W / 2), ROOM_H / 2, DOOR_Z]}>
         <planeGeometry args={[sidePanelW, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallLeftDoor} attach="material" />
       </mesh>
       <mesh position={[sidePanelW / 2 + DOOR_W / 2, ROOM_H / 2, DOOR_Z]}>
         <planeGeometry args={[sidePanelW, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallRightDoor} attach="material" />
       </mesh>
       <mesh position={[0, (DOOR_H + ROOM_H) / 2, DOOR_Z]}>
         <planeGeometry args={[DOOR_W, ROOM_H - DOOR_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.9} />
+        <primitive object={wallAboveDoor} attach="material" />
       </mesh>
-      {/* door frame trim */}
-      {[-DOOR_W / 2, DOOR_W / 2].map((x, i) => (
-        <mesh key={i} position={[x, DOOR_H / 2, DOOR_Z + 0.02]}>
-          <boxGeometry args={[0.06, DOOR_H, 0.06]} />
-          <meshStandardMaterial color="#1c140c" roughness={0.6} />
-        </mesh>
+      {/* door frame: beveled jambs + head, dark stained wood, standing proud
+          of the wall plane rather than a naked flush box */}
+      {[-DOOR_W / 2 - 0.03, DOOR_W / 2 + 0.03].map((x, i) => (
+        <Bevel key={i} pos={[x, DOOR_H / 2, DOOR_Z + 0.025]} w={0.08} h={DOOR_H} d={0.07} radius={0.012} mat={doorFrameMat} />
       ))}
+      <Bevel pos={[0, DOOR_H + 0.02, DOOR_Z + 0.025]} w={DOOR_W + 0.2} h={0.08} d={0.07} radius={0.012} mat={doorFrameMat} />
+      {/* baseboards, all four walls */}
+      <Trim pos={[0, baseY, ROOM_D / 2 - 0.01]} wallLength={ROOM_W} along="x" color="#1c140c" />
+      <Trim pos={[-(sidePanelW / 2 + DOOR_W / 2), baseY, DOOR_Z + 0.01]} wallLength={sidePanelW} along="x" color="#1c140c" />
+      <Trim pos={[sidePanelW / 2 + DOOR_W / 2, baseY, DOOR_Z + 0.01]} wallLength={sidePanelW} along="x" color="#1c140c" />
+      <Trim pos={[-ROOM_W / 2 + 0.01, baseY, 0]} wallLength={ROOM_D} along="z" color="#1c140c" />
+      <Trim pos={[ROOM_W / 2 - 0.01, baseY, 0]} wallLength={ROOM_D} along="z" color="#1c140c" />
       {/* side walls */}
       <mesh position={[-ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.88} />
+        <primitive object={wallW} attach="material" />
       </mesh>
       <mesh position={[ROOM_W / 2, ROOM_H / 2, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, ROOM_H]} />
-        <meshStandardMaterial map={wallTex} roughness={0.88} />
+        <primitive object={wallE} attach="material" />
       </mesh>
     </group>
   )
@@ -180,7 +151,14 @@ function RoomShell({ grade }) {
 // (unmounted — this function simply returns null for its solid geometry,
 // which IS the "gone" state; the fog swallows the resulting void).
 function CorridorCell({ index, level }) {
-  const tex = useMemo(() => buildCorridorTexture('#2e2a22'), [])
+  // corridor concrete: floor/ceiling get their own params from the side
+  // walls (materials.js rule — no two adjacent surfaces share one instance),
+  // and darken slightly cell by cell so the far end reads a shade deeper
+  // than the mouth even before the un-develop wireframe stage takes over.
+  const depthWear = clamp(0.4 + index * 0.03, 0.4, 0.62)
+  const floorMat = useMemo(() => standardMat({ kind: 'concrete', tint: '#2a2620', scale: 1.1, wear: depthWear, repeat: [1.4, 1.4] }), [depthWear])
+  const ceilMat = useMemo(() => standardMat({ kind: 'concrete', tint: '#28241d', scale: 0.9, wear: depthWear, repeat: [1.4, 1.4], seed: 500 + index }), [depthWear, index])
+  const wallMat = useMemo(() => standardMat({ kind: 'concrete', tint: '#2e2a22', scale: 1, wear: depthWear, repeat: [1.4, 1.4], seed: 600 + index }), [depthWear, index])
   const wireGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(CORR_W, CORR_H, CELL_LEN)), [])
   const z0 = DOOR_Z - index * CELL_LEN
   const z1 = DOOR_Z - (index + 1) * CELL_LEN
@@ -190,19 +168,19 @@ function CorridorCell({ index, level }) {
     <group key="solid">
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, mid]}>
         <planeGeometry args={[CORR_W, CELL_LEN]} />
-        <meshStandardMaterial map={tex} roughness={0.92} />
+        <primitive object={floorMat} attach="material" />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, CORR_H, mid]}>
         <planeGeometry args={[CORR_W, CELL_LEN]} />
-        <meshStandardMaterial map={tex} roughness={0.95} />
+        <primitive object={ceilMat} attach="material" />
       </mesh>
       <mesh position={[-CORR_W / 2, CORR_H / 2, mid]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[CELL_LEN, CORR_H]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
       <mesh position={[CORR_W / 2, CORR_H / 2, mid]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[CELL_LEN, CORR_H]} />
-        <meshStandardMaterial map={tex} roughness={0.88} />
+        <primitive object={wallMat} attach="material" />
       </mesh>
     </group>
   ) : level === 1 ? (
@@ -225,12 +203,12 @@ function CorridorCell({ index, level }) {
 // the view rather than a hallway that ends. One plane, facing back up the
 // corridor, closes it.
 function CorridorEndCap() {
-  const tex = useMemo(() => buildCorridorTexture('#221e18'), [])
+  const mat = useMemo(() => standardMat({ kind: 'concrete', tint: '#1c1912', scale: 0.8, wear: 0.65, repeat: [1.2, 1.2] }), [])
   const z = DOOR_Z - CELLS * CELL_LEN
   return (
     <mesh position={[0, CORR_H / 2, z]}>
       <planeGeometry args={[CORR_W, CORR_H]} />
-      <meshStandardMaterial map={tex} roughness={0.95} />
+      <primitive object={mat} attach="material" />
     </mesh>
   )
 }
@@ -284,12 +262,38 @@ const WALL_ITEMS = (() => {
         z,
         seed: ri * 10 + ci,
         rot: ((ri * 7 + ci * 13) % 9 - 4) * 0.03,
+        // depth: a few mm of standoff varied per item, per the polish spec
+        // ("papers at slightly varied angles/depths") — a wall of paper that
+        // is all flush with the plaster reads as decals, not pinned pages.
+        depth: 0.004 + ((ri * 13 + ci * 7) % 5) * 0.0026,
         text: isPolaroid ? null : NOTE_COPY[noteI++ % NOTE_COPY.length],
       })
     })
   })
   return items
 })()
+
+// A single tape corner: a small translucent quad crossing a page's edge at
+// 45 degrees, standing a hair further proud than the page itself so it
+// never z-fights. Two per item (opposite corners) is enough to read as
+// pinned rather than floating.
+function TapeCorners({ x, y, z, rot, w, h, seed }) {
+  const s = 0.028 + ((seed * 7) % 3) * 0.004
+  const corners = [
+    { dy: h / 2 - s * 0.3, dz: -w / 2 + s * 0.3, a: 0.78 },
+    { dy: -h / 2 + s * 0.3, dz: w / 2 - s * 0.3, a: -0.78 + Math.PI },
+  ]
+  return (
+    <group>
+      {corners.map((c, i) => (
+        <mesh key={i} position={[x + 0.0012, y + c.dy, z + c.dz]} rotation={[0, rot, c.a]}>
+          <planeGeometry args={[s, s * 0.55]} />
+          <meshStandardMaterial color="#d8cba0" roughness={0.7} transparent opacity={0.55} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
 
 // Wave T: a note quad you can touch to flip over. The wall's own base
 // orientation (position + rotation.y=PI/2 + the item's little per-note tilt)
@@ -306,7 +310,7 @@ function FlippableNote({ it, w, h, frontTex }) {
   useEffect(() => () => backTex.dispose(), [backTex])
 
   return (
-    <group position={[-ROOM_W / 2 + 0.012, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
+    <group position={[-ROOM_W / 2 + 0.012 + (it.depth || 0), it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
       <Touchable onUse={() => setToken((t) => t + 1)} reach={2.4} foley="paper" anchor={[0, 0, 0]}>
         <OpenKind token={token} mode="hinge" hingeAxis="y" angle={Math.PI}>
           <mesh position={[0, 0, 0.0015]}>
@@ -338,16 +342,25 @@ function NoteWall() {
         const h = it.type === 'note' ? 0.18 : 0.195
         // every note quad flips (8 of them, comfortably past the "at least
         // 6" law); polaroids stay static wall dressing, unchanged.
+        const depthX = wallX + (it.depth || 0)
         if (it.type === 'note') {
-          return <FlippableNote key={i} it={it} w={w} h={h} frontTex={tex} />
+          return (
+            <group key={i}>
+              <FlippableNote it={it} w={w} h={h} frontTex={tex} />
+              <TapeCorners x={wallX} y={it.y} z={it.z} rot={Math.PI / 2} w={w} h={h} seed={it.seed} />
+            </group>
+          )
         }
         return (
-          <mesh key={i} position={[wallX, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
-            <planeGeometry args={[w, h]} />
-            {tex
-              ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.3} roughness={0.92} side={THREE.DoubleSide} />
-              : <meshStandardMaterial key="blank" color="#e8dfc8" roughness={0.92} side={THREE.DoubleSide} />}
-          </mesh>
+          <group key={i}>
+            <mesh position={[depthX, it.y, it.z]} rotation={[0, Math.PI / 2, it.rot]}>
+              <planeGeometry args={[w, h]} />
+              {tex
+                ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.3} roughness={0.92} side={THREE.DoubleSide} />
+                : <meshStandardMaterial key="blank" color="#e8dfc8" roughness={0.92} side={THREE.DoubleSide} />}
+            </mesh>
+            <TapeCorners x={wallX} y={it.y} z={it.z} rot={Math.PI / 2} w={w} h={h} seed={it.seed} />
+          </group>
         )
       })}
     </group>
@@ -421,13 +434,29 @@ function MirrorNumeral({ score }) {
 // pool a couple of meters wide, camera-attached. Without this the un-develop
 // stages (wireframe, gone) are technically correct but invisible: the
 // corridor was reading as a solid black void past the door.
-function CorridorGlow() {
+//
+// PUNCH LIST FIX: this used to run at raw intensity 130, colocated with the
+// camera — a point light has no near-field cap (irradiance ~ 1/distance^decay
+// as distance->0), so ANY nearby surface (the door frame, the corridor walls
+// a meter to either side) got hit with an unbounded amount of light. Looking
+// back down the corridor toward the warm room compounded it: the room's own
+// key/fill were also lighting that same doorway, and the sum blew to
+// near-white well before tone mapping could roll it off. Retuned to
+// LIGHT_SCALE.practicals units (same "how bright does this feel" authoring
+// scale the rest of the toolkit uses) and — the actual fix — the glow now
+// fades OUT as the camera nears the room again (t>0.6, the same split-grade
+// signal Memento already tracks) rather than staying at full strength right
+// up against the doorway it's about to blow out.
+function CorridorGlow({ warmthRef }) {
   const ref = useRef()
   useFrame(({ camera }) => {
     if (!ref.current) return
     ref.current.position.copy(camera.position)
+    const warmth = warmthRef?.current ?? 0
+    const fade = 1 - clamp((warmth - 0.55) / 0.45, 0, 1)
+    ref.current.intensity = LIGHT_SCALE.practicals * 0.95 * fade
   })
-  return <pointLight ref={ref} color="#cfd8dc" intensity={130} distance={10} decay={1.7} />
+  return <pointLight ref={ref} color="#cfd8dc" intensity={LIGHT_SCALE.practicals * 0.95} distance={7.5} decay={2} />
 }
 
 function ColdFlicker({ position }) {
@@ -458,6 +487,8 @@ function NightstandDrawer({ film }) {
   const [token, setToken] = useState(0)
   const palette = sheetOf(film.palette)
   const [tex, setTex] = useState(null)
+  const drawerMat = useMemo(() => standardMat({ kind: 'wood', tint: '#20160c', scale: 0.7, wear: 0.4, roughness: 0.7 }), [])
+  const frontMat = useMemo(() => standardMat({ kind: 'wood', tint: '#2a1d10', scale: 0.55, wear: 0.35, roughness: 0.55 }), [])
   useEffect(() => {
     let live = true
     const t = makeMetaTexture(film, palette)
@@ -471,15 +502,9 @@ function NightstandDrawer({ film }) {
       <Touchable onUse={() => setToken((t) => t + 1)} reach={2.2} foley="creak" anchor={[0, 0.4, 0.2]}>
         <OpenKind token={token} mode="slide" axis="z" distance={0.16}>
           {/* drawer carcass */}
-          <mesh position={[0, 0.34, 0.02]}>
-            <boxGeometry args={[0.4, 0.14, 0.34]} />
-            <meshStandardMaterial color="#1c1408" roughness={0.85} />
-          </mesh>
+          <Bevel pos={[0, 0.34, 0.02]} w={0.4} h={0.14} d={0.34} radius={0.008} mat={drawerMat} />
           {/* drawer front */}
-          <mesh position={[0, 0.34, 0.19]}>
-            <boxGeometry args={[0.42, 0.16, 0.04]} />
-            <meshStandardMaterial color="#241a10" roughness={0.7} />
-          </mesh>
+          <Bevel pos={[0, 0.34, 0.19]} w={0.42} h={0.16} d={0.04} radius={0.012} mat={frontMat} />
           {/* pull */}
           <mesh position={[0, 0.34, 0.215]}>
             <boxGeometry args={[0.12, 0.02, 0.02]} />
@@ -498,6 +523,153 @@ function NightstandDrawer({ film }) {
     </group>
   )
 }
+
+/* -------------------------------------------------------- furniture + set */
+
+// Dresser: replaces the generic flat-color Table prop with beveled,
+// wood-grained carcass + two drawer fronts, same footprint the old Table
+// call and the collider list both already assume ([-1.55,0,-0.4] rot 0.1).
+function Dresser() {
+  const bodyMat = useMemo(() => standardMat({ kind: 'wood', tint: '#241a0f', scale: 0.6, wear: 0.45, roughness: 0.6 }), [])
+  const frontMat = useMemo(() => standardMat({ kind: 'wood', tint: '#2e2013', scale: 0.5, wear: 0.3, roughness: 0.45, seed: 77 }), [])
+  const topMat = useMemo(() => standardMat({ kind: 'wood', tint: '#1c130b', scale: 0.9, wear: 0.55, roughness: 0.5, seed: 78 }), [])
+  return (
+    <group position={[-1.55, 0, -0.4]} rotation={[0, 0.1, 0]}>
+      <Bevel pos={[0, 0.26, 0]} w={0.6} h={0.5} d={0.44} radius={0.014} mat={bodyMat} castShadow receiveShadow />
+      <Bevel pos={[0, 0.51, 0]} w={0.64} h={0.03} d={0.47} radius={0.006} mat={topMat} receiveShadow />
+      {[0.14, -0.14].map((y, i) => (
+        <Bevel key={i} pos={[0, 0.32 + y, 0.225]} w={0.5} h={0.17} d={0.02} radius={0.01} mat={frontMat} />
+      ))}
+      {[0.14, -0.14].map((y, i) => (
+        <mesh key={'pull' + i} position={[0, 0.32 + y, 0.24]}>
+          <boxGeometry args={[0.1, 0.016, 0.016]} />
+          <meshStandardMaterial color="#0e0a06" metalness={0.4} roughness={0.5} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+// Nightstand carcass: the plain footprint the old flat-color Table prop used
+// to fill ([1.4,0,1.35] rot -0.15, w0.5 d0.4 h0.5) — NightstandDrawer only
+// renders the drawer/pull/notepad, sitting inside/on this body.
+function NightstandBody() {
+  const bodyMat = useMemo(() => standardMat({ kind: 'wood', tint: '#26190d', scale: 0.65, wear: 0.4, roughness: 0.6, seed: 55 }), [])
+  const topMat = useMemo(() => standardMat({ kind: 'wood', tint: '#1a1109', scale: 0.9, wear: 0.5, roughness: 0.45, seed: 56 }), [])
+  return (
+    <group position={[1.4, 0, 1.35]} rotation={[0, -0.15, 0]}>
+      <Bevel pos={[0, 0.23, 0]} w={0.46} h={0.44} d={0.36} radius={0.012} mat={bodyMat} castShadow receiveShadow />
+      <Bevel pos={[0, 0.465, 0]} w={0.5} h={0.03} d={0.4} radius={0.006} mat={topMat} receiveShadow />
+    </group>
+  )
+}
+
+// Duvet fold: a second slab riding just above the mattress, its far edge
+// pulled down into a soft crease — the polish spec's own suggested device
+// ("a second displaced slab with a soft edge") rather than fighting props.jsx's
+// shared Bed (used by a dozen other rooms) for a bespoke silhouette. Lives in
+// the same local frame the Bed call below uses, so the same pos/rot keeps
+// them welded together.
+function DuvetFold() {
+  const geo = useMemo(() => {
+    const g = new THREE.PlaneGeometry(1.2, 1.5, 10, 14)
+    const p = g.attributes.position
+    for (let i = 0; i < p.count; i++) {
+      const vy = p.getY(i) // -0.75..0.75 local (becomes world Z after rotation below)
+      const vx = p.getX(i)
+      const foldT = clamp((vy + 0.75) / 1.5, 0, 1) // 0 at foot, 1 at head
+      // the duvet sags off the mattress edge near the foot and settles into
+      // a soft ridge along the middle third — not a flat plane, not a
+      // random crumple.
+      const ridge = Math.sin(vx * 2.4) * 0.012 * foldT
+      const foot = (1 - foldT) * -0.05 * Math.max(0, 1 - Math.abs(vx) * 1.2)
+      p.setZ(i, ridge + foot)
+    }
+    g.computeVertexNormals()
+    return g
+  }, [])
+  useEffect(() => () => geo.dispose(), [geo])
+  const mat = useMemo(() => standardMat({ kind: 'fabric', tint: '#a89880', scale: 1.4, wear: 0.35, roughness: 1 }), [])
+  return (
+    <mesh geometry={geo} position={[0, 0.505, -0.05]} rotation={[-Math.PI / 2, 0, 0]}>
+      <primitive object={mat} attach="material" />
+    </mesh>
+  )
+}
+
+// Bathroom nook: tile floor patch + backsplash behind the sink counter,
+// standing in for the film's tattoo-mirror bathroom tile.
+function BathroomTile() {
+  const floorMat = useMemo(() => standardMat({ kind: 'tile', tint: '#9aa4a6', scale: 1.3, wear: 0.4, repeat: [1, 1] }), [])
+  const backMat = useMemo(() => standardMat({ kind: 'tile', tint: '#8d979a', scale: 1.6, wear: 0.3, repeat: [1, 1], seed: 900 }), [])
+  return (
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[1.55, 0.002, -0.75]}>
+        <planeGeometry args={[1.3, 0.9]} />
+        <primitive object={floorMat} attach="material" />
+      </mesh>
+      <mesh position={[1.55, 1.0, -0.99]}>
+        <planeGeometry args={[1.15, 0.35]} />
+        <primitive object={backMat} attach="material" />
+      </mesh>
+    </group>
+  )
+}
+
+// Environmental-storytelling clutter, authored to the film's world per the
+// polish spec (never random confetti, never film-branded props): a motel
+// ashtray, an instant-camera-shaped object, strewn note papers, a pen, a
+// tumbler.
+function Ashtray({ pos }) {
+  const mat = useMemo(() => standardMat({ kind: 'metal', tint: '#38342c', scale: 0.6, wear: 0.5, metalness: 0.5 }), [])
+  return (
+    <group position={V3AsArray(pos)}>
+      <mesh position={[0, 0.012, 0]}>
+        <cylinderGeometry args={[0.05, 0.045, 0.022, 16]} />
+        <primitive object={mat} attach="material" />
+      </mesh>
+      <mesh position={[0, 0.024, 0]}>
+        <torusGeometry args={[0.04, 0.006, 8, 20]} />
+        <primitive object={mat} attach="material" />
+      </mesh>
+      {/* two spent butts, tiny crumpled cylinders */}
+      {[[0.012, 0.01], [-0.016, -0.005]].map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.03, z]} rotation={[0, i, Math.PI / 2.1]}>
+          <cylinderGeometry args={[0.003, 0.003, 0.03, 6]} />
+          <meshStandardMaterial color="#e8e0d0" roughness={0.9} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+function InstantCameraProp({ pos, rot }) {
+  const bodyMat = useMemo(() => standardMat({ kind: 'plaster', tint: '#2a2c2e', scale: 0.5, wear: 0.2, roughness: 0.55 }), [])
+  return (
+    <group position={V3AsArray(pos)} rotation={V3AsArray(rot)}>
+      <Bevel pos={[0, 0.035, 0]} w={0.14} h={0.09} d={0.11} radius={0.012} mat={bodyMat} />
+      <mesh position={[0, 0.045, 0.058]}>
+        <cylinderGeometry args={[0.028, 0.032, 0.03, 20]} />
+        <meshStandardMaterial color="#111214" roughness={0.35} metalness={0.2} />
+      </mesh>
+      <mesh position={[0.045, 0.075, 0.05]}>
+        <boxGeometry args={[0.03, 0.018, 0.02]} />
+        <meshStandardMaterial color="#e8e4dc" roughness={0.6} />
+      </mesh>
+    </group>
+  )
+}
+
+function Pen({ pos, rot }) {
+  return (
+    <mesh position={V3AsArray(pos)} rotation={rot ? V3AsArray(rot) : [0, 0, Math.PI / 2]}>
+      <cylinderGeometry args={[0.004, 0.0045, 0.14, 8]} />
+      <meshStandardMaterial color="#1a3a2a" roughness={0.4} metalness={0.2} />
+    </mesh>
+  )
+}
+
+const V3AsArray = (v) => (Array.isArray(v) ? v : [0, 0, 0])
 
 /* ------------------------------------------------------------------ room */
 
@@ -546,6 +718,8 @@ export default function Memento({ film, config, doors = [], onDoor }) {
   // walker has actually crossed DOOR_Z into the corridor — not the compass
   // bearing of its opening camera cut — is what actually means "you are in
   // the corridor now."
+  const warmthRef = useRef(1)
+
   useFrame(({ camera }, dt) => {
     const z = camera.position.z
 
@@ -567,9 +741,14 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       const roomFacing = -Math.cos(yaw)
       t = (roomFacing + 1) / 2
     }
+    warmthRef.current = t
     setGradeOverride({
       sat: THREE.MathUtils.lerp(-1, grade.sat ?? 0.05, t),
-      contrast: THREE.MathUtils.lerp(0.16, grade.contrast ?? 0, t),
+      // warm ceiling retuned down (was grade.contrast ?? 0, i.e. flat) — the
+      // corridor look-back punch list fix pairs a LOWER contrast ceiling
+      // with a capped bloom below so the warm end never has two different
+      // paths pushing toward clipping at once.
+      contrast: THREE.MathUtils.lerp(0.16, Math.min(grade.contrast ?? 0, 0.08), t),
       hue: 0,
       // config.grade.bg has no override for this slug, so it falls back to
       // the film's own card-front palette — Memento's is white, right for a
@@ -578,6 +757,16 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       // file is mid-edit elsewhere this session; this keeps the fix scoped
       // to this room).
       bg: t > 0.5 ? '#241c14' : '#0c0a08',
+      // per-side grade triplet (Wave P1): corridor reads slightly grainier
+      // and darker-vignetted (colder, more clinical); the warm room end
+      // gets a touch more grain (film-warm, not clean digital) but LESS
+      // bloom — bloomIntensity is the other half of the corridor-blowout
+      // fix, since Bloom sits on TOP of whatever the raw lights already put
+      // out and was amplifying the CorridorGlow/key overlap right at the
+      // doorway.
+      grain: THREE.MathUtils.lerp(0.09, 0.055, t),
+      vignette: THREE.MathUtils.lerp(0.82, 0.68, t),
+      bloomIntensity: THREE.MathUtils.lerp(0.26, 0.2, t),
     })
 
     // door fade, gated on distance to the threshold rather than which side
@@ -635,22 +824,60 @@ export default function Memento({ film, config, doors = [], onDoor }) {
 
   useRoomAudio(startMementoAudio)
 
+  // Layered lighting per the P0 doctrine: the room lamp is the KEY (the
+  // room's one motivated warm source, and the one light in this room that
+  // earns a shadow map — spec's "ONE 512 shadow light max"), a cool bounce
+  // off the far wall stands in for hallway/window spill, and ColdFlicker
+  // (below, still its own animated component — the toolkit has no flicker
+  // primitive) is the bathroom's practical.
+  const roomLights = useMemo(() => ({
+    key: {
+      pos: [0, 2.15, 0.6], color: grade.key || '#c98a4a',
+      intensity: grade.keyIntensity ?? 2.6, distance: 13, decay: 2,
+      castShadow: true, shadowMapSize: 512, shadowBias: -0.002,
+    },
+    bounce: [
+      { pos: [0, 1.2, 1.8], color: grade.fill || '#3a5560', intensity: 1.9, distance: 12, decay: 2 },
+      { pos: [-1.9, 0.9, 0.4], color: '#8a6a44', intensity: 1.1, distance: 5.5, decay: 2 },
+    ],
+  }), [grade.key, grade.keyIntensity, grade.fill])
+
   return (
     <group>
-      <fogExp2 attach="fog" args={['#0c0a08', 0.035]} />
-      <pointLight position={[0, 2.3, 0.6]} intensity={(grade.keyIntensity ?? 1.6) * 26} color={grade.key || '#c98a4a'} distance={14} decay={2} />
-      <pointLight position={[0, 1.2, 1.8]} intensity={10} color={grade.fill || '#3a5560'} distance={10} decay={2} />
+      <fogExp2 attach="fog" args={['#0c0a08', 0.028]} />
+      <ambientLight intensity={0.09} color="#3a2c1e" />
+      <LightRig lights={roomLights} />
 
       <RoomShell grade={grade} />
-      <CorridorGlow />
+      <CorridorGlow warmthRef={warmthRef} />
 
       <Bed pos={[-1.35, 0, 1.15]} rot={[0, 0.14, 0]} />
-      <Table pos={[-1.55, 0, -0.4]} rot={[0, 0.1, 0]} w={0.6} d={0.45} h={0.55} color="#2c2014" />
-      <PaperScatter pos={[-1.5, 0.56, -0.4]} rot={[Math.PI / 2, 0, 0]} count={10} area={[0.5, 0.4]} color="#e6dcc0" />
-      <Table pos={[1.4, 0, 1.35]} rot={[0, -0.15, 0]} w={0.5} d={0.4} h={0.5} color="#3a2c1c" />
+      <DuvetFold />
+      <Dresser />
+      {/* NOTE: paperScatter's own per-instance rotation already flattens the
+          quads onto the local XZ plane — passing an extra outer rot here
+          (the pattern several other rooms/configs.js entries copy) double-
+          rotates both the tilt AND the x/z scatter axes, standing the
+          "scattered papers" up on edge instead of laying them flat. Fixed
+          locally for this call only (props.jsx is shared by a dozen other
+          rooms — out of scope for this room's own polish pass). */}
+      <PaperScatter pos={[-1.5, 0.51, -0.4]} count={10} area={[0.5, 0.4]} color="#e6dcc0" />
+      <NightstandBody />
       <NightstandDrawer film={film} />
 
+      {/* clutter: motel ashtray + strewn notes on the dresser top, a pen and
+          tumbler with the meta notepad on the nightstand, the instant-camera
+          shape propped beside it — environmental storytelling, never film
+          dialogue/props-with-logos. */}
+      <Ashtray pos={[-1.7, 0.53, -0.55]} />
+      <InstantCameraProp pos={[-1.38, 0.53, -0.32]} rot={[0, 0.4, 0]} />
+      <CrumpledPaper pos={[-1.75, 0.53, -0.3]} rot={[0.3, 0.6, 0]} radius={0.045} color="#e6dcc0" seed={11} />
+      <CrumpledPaper pos={[-1.62, 0.01, -0.6]} rot={[0, 1.1, 0]} radius={0.04} color="#e2d8bc" seed={12} />
+      <Pen pos={[1.62, 0.51, 1.28]} />
+      <Cup pos={[1.22, 0.51, 1.42]} color="#c9d0d2" h={0.09} r1={0.028} r2={0.024} />
+
       {/* bathroom nook */}
+      <BathroomTile />
       <Counter pos={[1.55, 0, -0.75]} rot={[0, -0.2, 0]} w={1.1} d={0.5} h={0.85} color="#8a8f92" />
       <ColdFlicker position={[1.55, 2.1, -0.75]} />
       <MirrorNumeral score={film.score} />
