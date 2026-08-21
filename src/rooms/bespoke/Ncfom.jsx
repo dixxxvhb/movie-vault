@@ -8,6 +8,7 @@ import {
 } from './ncfomTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
+import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 
 // 8.3 — "the gas station counter." One small shop, two stations: the
 // customer side (where you approach the counter) and behind it (where the
@@ -18,6 +19,15 @@ import { wasDrag } from '../../pointer.js'
 // session's own audio recipe (audio/recipes/ncfom.js) it ignores the HUD
 // mute toggle entirely rather than trying to grey the button out from in
 // here, which would require touching App.jsx.
+//
+// Wave M3: free walk. The counter and the shelves block straight-through
+// movement; the only open path around the counter is past its RIGHT
+// (+X) end — the shelves seal off the left corridor the whole way down.
+// goBehind/goFront (the old walk-around click strip) stay clickable
+// flights, but the coin's reveal no longer depends on which station you
+// last clicked: it's gated on where the walker actually is right now
+// (`behind`, read from camera.position each frame), so genuinely walking
+// around costs and pays off exactly like clicking did.
 const ROOM_W = 3.8
 const ROOM_D = 4.6
 const ROOM_H = 2.4
@@ -155,10 +165,11 @@ function PeanutsBag() {
 // state machine: 'still' -> 'spinning' -> 'landed'. The face chosen on
 // landing is picked once and held (a ref, not re-rolled on re-render); which
 // texture actually gets drawn on the visible faces is decided separately by
-// `revealed` (true only at the behind-the-counter station) so the geometry
-// genuinely carries no result at all from the front — this is not a camera
-// trick, the mesh itself shows a blank disc there.
-function Coin({ station, onSpin }) {
+// `revealed` (true only once the walker is actually past the counter, Wave
+// M3: derived from live position, not a click-only station flag) so the
+// geometry genuinely carries no result at all from the front — this is not
+// a camera trick, the mesh itself shows a blank disc there.
+function Coin({ behind, onSpin }) {
   const [phase, setPhase] = useState('still')
   const faceRef = useRef(Math.random() > 0.5 ? 'star' : 'ring')
   const spinRef = useRef(0)
@@ -181,13 +192,13 @@ function Coin({ station, onSpin }) {
     }
   })
 
-  const revealed = station === 'behind' && phase === 'landed'
+  const revealed = behind && phase === 'landed'
   const faceTex = revealed ? (faceRef.current === 'star' ? starTex : ringTex) : blankTex
 
   const handleClick = (e) => {
     e.stopPropagation()
     if (wasDrag()) return
-    if (phase !== 'still' || station !== 'front') return
+    if (phase !== 'still' || behind) return
     setPhase('spinning')
     spinRef.current = 0
     onSpin?.()
@@ -197,7 +208,7 @@ function Coin({ station, onSpin }) {
     <group
       position={[0.15, 0, -0.35]}
       onClick={handleClick}
-      onPointerOver={(e) => { e.stopPropagation(); if (phase === 'still' && station === 'front') document.body.style.cursor = 'pointer' }}
+      onPointerOver={(e) => { e.stopPropagation(); if (phase === 'still' && !behind) document.body.style.cursor = 'pointer' }}
       onPointerOut={() => { document.body.style.cursor = 'auto' }}
     >
       <mesh ref={meshRef} position={[0, 0.958, 0]} rotation={[Math.PI / 2, 0, 0]}>
@@ -259,12 +270,39 @@ function HighwaySign({ film }) {
 // counter, the coin, and the door/sign sightline both stations rely on.
 const DOOR_MOUNT = { position: [ROOM_W / 2 - 0.05, 0, 0.6], rotationY: -Math.PI / 2, spacing: 0.9, scale: 0.72 }
 
-/* ------------------------------------------------------------------ room */
+/* -------------------------------------------------------------- colliders */
+
+const OWNER_ID = 'bespoke:ncfom'
+const WALL_T = 0.15
+// the threshold the walker has to cross (moving north, -Z) to count as
+// "behind the counter" — the counter's own back face, per COUNTER_Z/d=0.6
+const BEHIND_Z = COUNTER_Z - 0.3
+
+function ncfomRects() {
+  const hw = ROOM_W / 2, hd = ROOM_D / 2
+  const doorHalf = DOOR_W / 2
+  return [
+    // -Z wall (behind station side), solid
+    { minX: -hw, maxX: hw, minZ: -hd - WALL_T, maxZ: -hd },
+    // +Z wall (entry), split around the door
+    { minX: -hw, maxX: -doorHalf, minZ: hd, maxZ: hd + WALL_T },
+    { minX: doorHalf, maxX: hw, minZ: hd, maxZ: hd + WALL_T },
+    // side walls
+    { minX: -hw - WALL_T, maxX: -hw, minZ: -hd, maxZ: hd },
+    { minX: hw, maxX: hw + WALL_T, minZ: -hd, maxZ: hd },
+    // the counter itself — blocks straight through
+    { minX: -1.1, maxX: 1.1, minZ: -0.7, maxZ: -0.1, top: 0.95 },
+    // the shelves along the left wall — seal off that corridor entirely
+    { minX: -1.875, maxX: -1.525, minZ: -1.8, maxZ: 0.6 },
+  ]
+}
+
+const BOUNDS = { kind: 'rect', minX: -ROOM_W / 2 + 0.1, maxX: ROOM_W / 2 - 0.1, minZ: -ROOM_D / 2 + 0.1, maxZ: ROOM_D / 2 - 0.1 }
 
 export default function Ncfom({ film, config, goToStation, doors = [], onDoor }) {
   const { grade } = config
 
-  const [station, setStation] = useState('front')
+  const [behind, setBehind] = useState(false)
 
   // Wind, and only wind — mounted directly (not via useRoomAudio), because
   // this recipe deliberately ignores the shared engine's mute gate. See
@@ -274,8 +312,22 @@ export default function Ncfom({ film, config, goToStation, doors = [], onDoor })
     return stop
   }, [])
 
-  const goBehind = () => { setStation('behind'); goToStation?.(BEHIND_STATION, 'behind') }
-  const goFront = () => { setStation('front'); goToStation?.(FRONT_STATION, 'front') }
+  useEffect(() => {
+    registerColliders(OWNER_ID, ncfomRects())
+    setBounds(OWNER_ID, BOUNDS)
+    return () => clearOwner(OWNER_ID)
+  }, [])
+
+  // position-gated, Wave M3: the coin's reveal (and the walk-around click's
+  // own choice of direction) follows where the walker actually is, not
+  // which flight was clicked last.
+  useFrame(({ camera }) => {
+    const now = camera.position.z < BEHIND_Z
+    if (now !== behind) setBehind(now)
+  })
+
+  const goBehind = () => goToStation?.(BEHIND_STATION, 'behind')
+  const goFront = () => goToStation?.(FRONT_STATION, 'front')
 
   return (
     <group>
@@ -292,14 +344,14 @@ export default function Ncfom({ film, config, goToStation, doors = [], onDoor })
       <Counter pos={[0, 0, COUNTER_Z]} rot={[0, 0, 0]} w={2.2} d={0.6} h={0.95} color="#8a7a5a" />
       <Register />
       <PeanutsBag />
-      <Coin station={station} />
+      <Coin behind={behind} />
 
       {/* the walk-around: a slim invisible strip past the counter's own
-          end, so approaching from either side is a real step, not a menu
-          toggle sitting on top of the coin */}
+          end (the ONLY open path — the shelves seal the other side), for
+          anyone who wants the flight instead of the walk */}
       <mesh
         position={[1.5, 1.2, COUNTER_Z]}
-        onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; station === 'front' ? goBehind() : goFront() }}
+        onClick={(e) => { e.stopPropagation(); if (wasDrag()) return; behind ? goFront() : goBehind() }}
         onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer' }}
         onPointerOut={() => { document.body.style.cursor = 'auto' }}
       >
