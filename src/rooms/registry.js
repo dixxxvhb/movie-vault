@@ -12,6 +12,7 @@ import Stby from './bespoke/Stby.jsx'
 import Amadeus from './bespoke/Amadeus.jsx'
 import Predestination from './bespoke/Predestination.jsx'
 import Ncfom from './bespoke/Ncfom.jsx'
+import Barbarian from './bespoke/Barbarian.jsx'
 
 // Phase 2: bespoke rooms, keyed by slug rather than family — a hand-authored
 // composition for a Tier 1 film that still resolves through the same
@@ -31,6 +32,7 @@ const BESPOKE = {
   amadeus: Amadeus,
   predestination: Predestination,
   ncfom: Ncfom,
+  barbarian: Barbarian,
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

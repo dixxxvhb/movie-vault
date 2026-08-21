@@ -401,10 +401,14 @@ export const CONFIGS = {
   },
 
   // ---------------------------------------------------------------- barbarian
+  // Bespoke now (Phase 2, src/rooms/bespoke/Barbarian.jsx): grade/camera
+  // below match the bespoke room's own living-room entry station (index -1;
+  // the descent below it moves via goToStation). `place` is dead weight for
+  // the same reason as the-departed's/baby-driver's own entries above.
   barbarian: {
     family: 'dread',
-    grade: { key: '#e8a860', fill: '#141416', ambient: 0.12 },
-    camera: { pos: [0, 1.5, 1.6], look: [0, 1.3, -1], fov: 46 },
+    grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416' },
+    camera: { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 },
     place: {
       shell: 'box',
       shellParams: { w: 3.8, d: 3.8, h: 2.5, wallMat: 'flat', doorGap: true },
