@@ -3,12 +3,13 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { lampPractical as LampPractical } from '../props.jsx'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
-import { useRoomAudio } from '../audio/engine.js'
+import { useRoomAudio, playOneShot } from '../audio/engine.js'
 import { start as startBarbarianAudio } from '../audio/recipes/barbarian.js'
 import { notifyDepth } from './barbarianBus.js'
 import { makeIndexCardTexture, makeDoorRatingTexture, makeRainWindowTexture } from './barbarianTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, registerFloor, clearOwner } from '../colliders.js'
+import Touchable from '../Touchable.jsx'
 
 // 7.6 — "the house on Barbary." The living room first (cozy, tidy, rain
 // outside), the basement door standing open, then a straight descent
@@ -259,6 +260,101 @@ function DoorRecesses() {
   )
 }
 
+/* ------------------------------------------------------------- doors */
+// Wave T: the corridor was fully open (DoorRecesses are flat side insets,
+// "never a real door you can open" per their own comment) — no physical
+// gate anywhere in the descent. Two real doors go in at the same z
+// thresholds depthForZ already uses to swap which segment is dressed
+// (DEPTH_BOUNDS[0]/[1]), so opening a door and crossing into the next
+// visual zone are the same physical step: door 0 gates the corridor of
+// doors (light), door 1 gates the hidden room and is the heaviest —
+// slower swing, a lower-pitched thunk landing at the end of its travel.
+// No third door before the rope passage: that dead end was already
+// ungated by design ("nobody should descend further than the rope").
+const DOOR_INSET = 0.06   // collider stays inset from both side walls —
+                          // defensive margin against the "full-span rect"
+                          // penetration fallback documented on corridorColliders
+                          // above; the door MESH still reads visually closed
+const DOOR_THICK = 0.12
+const DOORS = [
+  { z: DEPTH_BOUNDS[0], heavy: false },
+  { z: DEPTH_BOUNDS[1], heavy: true },
+]
+
+function doorRect(z) {
+  return {
+    minX: -TUBE_W / 2 + DOOR_INSET, maxX: TUBE_W / 2 - DOOR_INSET,
+    minZ: z - DOOR_THICK / 2, maxZ: z + DOOR_THICK / 2,
+  }
+}
+
+function BasementDoor({ z, heavy, index }) {
+  const DUR = heavy ? 1500 : 700
+  const OPEN_ANGLE = Math.PI * 0.42
+  const doorW = TUBE_W - 0.06
+  const doorH = TUBE_H - 0.08
+  const hingeX = -TUBE_W / 2 + 0.02
+
+  const [open, setOpen] = useState(false)
+  const openRef = useRef(false)
+  const pivot = useRef(null)
+  const anim = useRef({ playing: false, t0: 0 })
+  const thunkDone = useRef(false)
+  const doorTex = useMemo(() => wallTex(heavy ? '#221c16' : '#8a7048', 4100 + index), [heavy, index])
+
+  const ownerId = 'room:barbarian:door' + index
+  useEffect(() => {
+    registerColliders(ownerId, open ? [] : [doorRect(z)])
+    return () => clearOwner(ownerId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, z])
+
+  const handleUse = () => {
+    if (openRef.current) return
+    openRef.current = true
+    setOpen(true)
+    thunkDone.current = false
+    anim.current = { playing: true, t0: performance.now() }
+  }
+
+  useFrame(() => {
+    const g = pivot.current
+    if (!g) return
+    const a = anim.current
+    if (a.playing) {
+      const t = Math.min(1, (performance.now() - a.t0) / DUR)
+      const e = 1 - Math.pow(1 - t, 3)
+      g.rotation.y = OPEN_ANGLE * e
+      if (t >= 1) {
+        a.playing = false
+        if (heavy && !thunkDone.current) {
+          thunkDone.current = true
+          // heavier, lower-pitched than the shared thunk default — the
+          // hidden room's own door landing at the end of its travel
+          playOneShot('thunk', { startFreq: 70, endFreq: 22, gain: 0.3 })
+        }
+      }
+    }
+  })
+
+  return (
+    <Touchable onUse={handleUse} reach={2.0} foley="creak" disabled={open} anchor={[0, 1.1, z]}>
+      <group position={[hingeX, stairRampY(z), z]}>
+        <group ref={pivot}>
+          <mesh position={[doorW / 2, doorH / 2, 0]}>
+            <boxGeometry args={[doorW, doorH, 0.07]} />
+            <meshStandardMaterial map={doorTex} roughness={0.9} color={heavy ? '#6a6258' : '#c9b896'} />
+          </mesh>
+          <mesh position={[doorW - 0.1, doorH / 2, 0.05]}>
+            <boxGeometry args={[0.03, 0.05, 0.03]} />
+            <meshStandardMaterial color="#241c14" roughness={0.4} metalness={0.5} />
+          </mesh>
+        </group>
+      </group>
+    </Touchable>
+  )
+}
+
 // Abstract masses only — never explicit, same discipline as Stby's
 // FleshMass: a bed frame reduced to its own outline, a tripod REDUCED to
 // three legs and a dark box, a bucket that is just a bucket.
@@ -491,6 +587,8 @@ export default function Barbarian({ film, config, doors = [], onDoor }) {
       <Passage z0={-4.6} z1={-6.6} tint="#2a2620" dim />
       <RopeMarks />
       <Passage z0={-6.6} z1={-9.4} tint="#161410" dim />
+
+      {DOORS.map((d, i) => <BasementDoor key={i} z={d.z} heavy={d.heavy} index={i} />)}
 
       <DoorRow
         doors={doors}
