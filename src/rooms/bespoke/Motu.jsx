@@ -208,7 +208,7 @@ function LightningPoses() {
 function ProclamationScroll({ film }) {
   const tex = useMemo(() => makeProclamationTexture(film), [film.slug, film.hot_take])
   return (
-    <group position={[-2.55, 2.1, -2.7]} rotation={[0, 0.35, 0]}>
+    <group position={[2.15, 2.1, -1.6]} rotation={[0, -0.35, 0]}>
       <mesh>
         <planeGeometry args={[1.5, 1.0]} />
         <meshBasicMaterial map={tex} toneMapped={false} side={THREE.DoubleSide} />
@@ -258,7 +258,7 @@ export default function Motu({ film, config, doors = [], onDoor }) {
   return (
     <group>
       <fogExp2 attach="fog" args={[grade.fogColor || '#1a1424', 0.045]} />
-      <ambientLight intensity={grade.ambient ?? 0.16} color={grade.fill || '#2a5a3a'} />
+      <ambientLight intensity={grade.ambient ?? 0.24} color={grade.fill || '#2a5a3a'} />
       <pointLight position={[-2.2, 2.6, -1]} intensity={(grade.keyIntensity ?? 1) * 12} color={grade.key || '#a84fd6'} distance={9} decay={2} />
       <pointLight position={[2.2, 2.0, 1.4]} intensity={8} color={grade.fill || '#2a5a3a'} distance={8} decay={2} />
 
