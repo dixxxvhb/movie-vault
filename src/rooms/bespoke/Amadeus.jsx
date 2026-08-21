@@ -27,6 +27,12 @@ const floorMat = standardMat({ kind: 'wood', tint: '#1c1409', wear: 0.6, roughne
 const ceilingMat = standardMat({ kind: 'plaster', tint: '#160f08', wear: 0.6, roughness: 1, repeat: [2, 2.2] })
 const drapeMat = standardMat({ kind: 'fabric', tint: '#4a1414', wear: 0.35, roughness: 0.95 })
 const quiltMat = standardMat({ kind: 'fabric', tint: '#7a6a54', wear: 0.3, roughness: 0.9 })
+// props.jsx's shared bed() hardcodes a near-white '#e8e0d0' pillow box —
+// fine under GenericRoom's flatter lighting, but at candle-close range here
+// it clipped to a flat blown-out card. A local muted-linen overlay, sized a
+// hair larger, sits over it rather than forking the shared prop (Memento and
+// Enemy also use bed() and must stay untouched).
+const pillowCoverMat = standardMat({ kind: 'fabric', tint: '#9a8c70', wear: 0.25, roughness: 0.95 })
 const deskMat = standardMat({ kind: 'wood', tint: '#241a0e', wear: 0.4, roughness: 0.6 })
 const chairMat = standardMat({ kind: 'wood', tint: '#221708', wear: 0.45, roughness: 0.65 })
 const waxMat = new THREE.MeshStandardMaterial({ color: '#e8d8b0', roughness: 0.4 })
@@ -412,7 +418,11 @@ function CandleFlame({ pos }) {
   useFrame(({ clock }) => {
     if (!ref.current) return
     const t = clock.elapsedTime
-    ref.current.intensity = (0.85 + Math.sin(t * 9) * 0.08 + Math.sin(t * 23.7) * 0.05) * 9
+    // Architect review: at 9x the flicker was blowing the near bed/quilt out
+    // to a flat amber slab (furniture reading as its own light source
+    // instead of lit-by-candle). Dropped so the flame stays the source and
+    // the quilt folds model in visible light/shadow instead of clipping.
+    ref.current.intensity = (0.85 + Math.sin(t * 9) * 0.08 + Math.sin(t * 23.7) * 0.05) * 2.2
   })
   return (
     <group position={pos}>
@@ -428,7 +438,7 @@ function CandleFlame({ pos }) {
         <sphereGeometry args={[0.018, 8, 8]} />
         <meshStandardMaterial color="#ffcf8a" emissive="#ffcf8a" emissiveIntensity={1.8} toneMapped={false} />
       </mesh>
-      <pointLight ref={ref} position={[0, 0.1, 0]} color="#ffb060" intensity={8} distance={3.2} decay={2} />
+      <pointLight ref={ref} position={[0, 0.1, 0]} color="#ffb060" intensity={2.2} distance={2.6} decay={2} />
     </group>
   )
 }
@@ -482,11 +492,23 @@ export default function Amadeus({ film, config, doors = [], onDoor }) {
           die to black, whole planes do not" */}
       <pointLight position={[ROOM_W / 2 - 0.5, 1.3, 0.4]} intensity={0.9} color="#5a3a1c" distance={3.4} decay={2} />
       <pointLight position={[0.2, 0.5, 0.9]} intensity={0.6} color="#4a2c14" distance={3} decay={2} />
+      {/* architect review (2nd pass): the first attempt here sampled to a
+          mean of 0.19/255 — indistinguishable from pure black. Moved close
+          against the left/drape wall itself and raised enough to actually
+          graze that plane; still reads as dim, not lit. */}
+      <pointLight position={[-1.85, 1.9, -1.3]} intensity={3.6} color="#5a3418" distance={4.4} decay={2} />
 
       <Chamber grade={grade} />
       <DrapePanels />
       <Bed pos={[-0.6, 0, 0.3]} rot={[0, 0.12, 0]} color="#6a5a48" frame="#2c2014" />
       <QuiltFold pos={[-0.6, 0.505, 0.5]} rot={[0, 0.12, 0]} />
+      {/* muted-linen pillow overlay — see pillowCoverMat's own comment */}
+      <group position={[-0.6, 0, 0.3]} rotation={[0, 0.12, 0]}>
+        <mesh position={[0, 0.56, -0.85]}>
+          <boxGeometry args={[1.3, 0.26, 0.34]} />
+          <primitive object={pillowCoverMat} attach="material" />
+        </mesh>
+      </group>
       <PulledChair />
       <WoodDesk pos={[0.75, 0, -1.3]} rot={[0, -0.08, 0]} w={0.55} d={0.42} h={0.6} />
       <ShadowDesk />

@@ -324,7 +324,7 @@ export const CONFIGS = {
     // P1 polish pass: rich warm/cold split, moderate grain (candlelit film
     // stock, not digital-clean), heavy vignette closing the chamber in.
     grade: {
-      bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.08,
+      bg: '#180f08', fogColor: '#180f08', key: '#e8a860', fill: '#1a2a3a', ambient: 0.11,
       contrast: 0.14, sat: 0.06,
       grain: 0.055, vignette: 0.62, bloomIntensity: 0.4,
     },
