@@ -61,7 +61,12 @@ export function makeTunnelTexture(tint) {
 // inline, per data/hot_takes.json) rendered verbatim on an ops-document
 // panel at the entry, styled dark olive with a stamped feel rather than a
 // printed card — this room's version of Departed's case-file dossier.
-export function makeMissionBriefTexture(film, palette) {
+//
+// Wave T: the panel now flips to a second page (Sicario.jsx splits the
+// hot_take at its own amendment bracket and calls this twice, once per
+// page) — `text`/`stampLabel` let the same drawing code serve both pages
+// without a second, drifting copy of the layout.
+export function makeMissionBriefTexture(film, palette, { text: textOverride, stampLabel = 'CLEARED' } = {}) {
   const W = 1500, H = 1050
   const c = canvas(W, H)
   const ctx = c.getContext('2d')
@@ -94,12 +99,12 @@ export function makeMissionBriefTexture(film, palette) {
   ctx.fillStyle = 'rgba(160,40,30,0.55)'
   ctx.font = '700 30px Georgia, serif'
   ctx.textAlign = 'center'
-  ctx.fillText('CLEARED', 0, 10)
+  ctx.fillText(stampLabel, 0, 10)
   ctx.restore()
 
   ctx.font = 'italic 34px Georgia, serif'
   ctx.textAlign = 'left'
-  const text = film.hot_take || 'no hot take on record for this one yet.'
+  const text = textOverride ?? (film.hot_take || 'no hot take on record for this one yet.')
   const words = text.split(/\s+/)
   const maxW = W - 210
   const lines = []

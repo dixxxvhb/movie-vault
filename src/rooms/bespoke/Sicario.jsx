@@ -12,6 +12,8 @@ import {
   makeDuskSkyTexture, makeTunnelTexture, makeMissionBriefTexture, makeThermalNumeralTexture,
 } from './sicarioTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import Touchable from '../Touchable.jsx'
+import { OpenKind } from '../touchKinds.jsx'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -290,18 +292,49 @@ function ThermalScore({ film }) {
 
 /* ---------------------------------------------------------- entry record */
 
+// Wave T: the split seam. The hot take already carries the Jul 25 amendment
+// inline (data/hot_takes.json) as a trailing "[Amended ...]" bracket — page
+// 1 keeps the original take, page 2 carries the amendment verbatim, both
+// substrings of the SAME string, nothing paraphrased or dropped. A hot_take
+// without that bracket (a different film's data shape, belt-and-suspenders)
+// falls back to the nearest sentence boundary past the midpoint so the
+// panel still gets two honest pages instead of a blank second one.
+function splitBriefPages(hotTake) {
+  const text = hotTake || ''
+  const m = text.match(/\[Amended[^\]]*\]/)
+  if (m) {
+    return [text.slice(0, m.index).trim(), text.slice(m.index).trim()]
+  }
+  const mid = Math.floor(text.length / 2)
+  const dot = text.indexOf('. ', mid)
+  const seam = dot === -1 ? mid : dot + 1
+  return [text.slice(0, seam).trim(), text.slice(seam).trim()]
+}
+
 function MissionBrief({ film }) {
   const palette = sheetOf(film.palette)
-  const [briefTex, setBriefTex] = useState(null)
+  const [page1Tex, setPage1Tex] = useState(null)
+  const [page2Tex, setPage2Tex] = useState(null)
   const [metaTex, setMetaTex] = useState(null)
+  const [token, setToken] = useState(0)
+
+  const [page1Text, page2Text] = useMemo(() => splitBriefPages(film.hot_take), [film.hot_take])
 
   useEffect(() => {
     let live = true
-    const t = makeMissionBriefTexture(film, palette)
-    if (live) setBriefTex(t)
+    const t = makeMissionBriefTexture(film, palette, { text: page1Text, stampLabel: 'CLEARED' })
+    if (live) setPage1Tex(t)
     return () => { live = false; t.dispose() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [film.slug])
+  }, [film.slug, page1Text])
+
+  useEffect(() => {
+    let live = true
+    const t = makeMissionBriefTexture(film, palette, { text: page2Text, stampLabel: 'AMENDMENT' })
+    if (live) setPage2Tex(t)
+    return () => { live = false; t.dispose() }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [film.slug, page2Text])
 
   useEffect(() => {
     let live = true
@@ -314,18 +347,31 @@ function MissionBrief({ film }) {
   // Propped upright on its own post, well clear of the ground plane and
   // angled slightly toward the entry camera — never flush against another
   // surface, per the standing depth-clip lesson (BabyDriver's own QA note).
+  // The panel itself is Touchable: press flips it (two coincident FrontSide
+  // pages rather than one DoubleSide plane, same "rigid 180 never mirrors
+  // the text" trick as Memento's wall notes) to reveal the amendment page.
   return (
     <group position={[1.9, 0, 0.4]} rotation={[0, -0.5, 0]}>
       <mesh position={[0, 0.55, 0]}>
         <boxGeometry args={[0.06, 1.1, 0.06]} />
         <meshStandardMaterial color="#2a2620" roughness={0.9} />
       </mesh>
-      <mesh position={[0, 1.25, 0.02]}>
-        <planeGeometry args={[1.05, 0.74]} />
-        {briefTex
-          ? <meshBasicMaterial key="mapped" map={briefTex} toneMapped={false} side={THREE.DoubleSide} />
-          : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
-      </mesh>
+      <Touchable onUse={() => setToken((t) => t + 1)} reach={2.2} foley="paper" anchor={[0, 1.25, 0]}>
+        <OpenKind token={token} mode="hinge" hingeAxis="y" angle={Math.PI}>
+          <mesh position={[0, 1.25, 0.021]}>
+            <planeGeometry args={[1.05, 0.74]} />
+            {page1Tex
+              ? <meshBasicMaterial key="mapped" map={page1Tex} toneMapped={false} side={THREE.FrontSide} />
+              : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
+          </mesh>
+          <mesh position={[0, 1.25, -0.021]} rotation={[0, Math.PI, 0]}>
+            <planeGeometry args={[1.05, 0.74]} />
+            {page2Tex
+              ? <meshBasicMaterial key="mapped" map={page2Tex} toneMapped={false} side={THREE.FrontSide} />
+              : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
+          </mesh>
+        </OpenKind>
+      </Touchable>
       <mesh position={[0, 0.78, 0.02]} rotation={[0, 0, 0]}>
         <planeGeometry args={[0.9, 0.2]} />
         {metaTex
