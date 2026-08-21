@@ -8,6 +8,7 @@ import {
   makeInkTexture, makePageBaseTexture, makeInkScoreTexture, makeMarginTakeTexture,
 } from './amadeusTextures.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 9.3 — "the deathbed dictation." Candlelit bedchamber: bed, heavy drape
 // planes, a chair pulled close, warm candle grade against one cold blue
@@ -20,6 +21,73 @@ import DoorRow from '../DoorRow.jsx'
 const ROOM_W = 4.2
 const ROOM_D = 4.6
 const ROOM_H = 2.6
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: walls + bed/chair/desk all block (contract #3, Amadeus row).
+function rotatedHalfExtentsRad(hx, hz, rotY) {
+  const c = Math.abs(Math.cos(rotY)), s = Math.abs(Math.sin(rotY))
+  return { hx: hx * c + hz * s, hz: hx * s + hz * c }
+}
+function rectXZ(cx, cz, hx, hz, top) {
+  return { minX: cx - hx, maxX: cx + hx, minZ: cz - hz, maxZ: cz + hz, top }
+}
+
+const WALL_T = 0.12
+const AMADEUS_SHELL_RECTS = [
+  { minX: -ROOM_W / 2 - WALL_T, maxX: -ROOM_W / 2, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 }, // left
+  { minX: ROOM_W / 2, maxX: ROOM_W / 2 + WALL_T, minZ: -ROOM_D / 2, maxZ: ROOM_D / 2 },   // right
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: -ROOM_D / 2 - WALL_T, maxZ: -ROOM_D / 2 }, // far (window wall)
+  { minX: -ROOM_W / 2, maxX: ROOM_W / 2, minZ: ROOM_D / 2, maxZ: ROOM_D / 2 + WALL_T },   // near (entry)
+]
+
+// Bed pos [-0.6,0,0.3] rot.y 0.12 — props.jsx's own FOOTPRINTS.bed half
+// extents (0.65, 1).
+const BED_EXT = rotatedHalfExtentsRad(0.65, 1, 0.12)
+const BED_RECT = rectXZ(-0.6, 0.3, BED_EXT.hx, BED_EXT.hz, 0.7)
+
+// PulledChair: group [0.15,0,0.55] rot.y -0.3 — seat 0.42x0.42 plus the back
+// panel sticking out to local z=-0.19-0.03, giving a slightly deeper local
+// footprint (hx 0.21, hz 0.24) than the bare seat alone.
+const CHAIR_EXT = rotatedHalfExtentsRad(0.21, 0.24, -0.3)
+const CHAIR_RECT = rectXZ(0.15, 0.55, CHAIR_EXT.hx, CHAIR_EXT.hz, 0.76)
+
+// Desk-side table: pos [0.75,0,-1.3] rot.y -0.08, w=0.55 d=0.42.
+const DESK_EXT = rotatedHalfExtentsRad(0.275, 0.21, -0.08)
+const DESK_RECT = rectXZ(0.75, -1.3, DESK_EXT.hx, DESK_EXT.hz, 0.6)
+
+// ShadowDesk: group [-1.55,0,1.75] rot.y 0.5, Table w=0.7 d=0.45 at local
+// origin — world position is the group's own position.
+const SHADOW_DESK_EXT = rotatedHalfExtentsRad(0.35, 0.225, 0.5)
+const SHADOW_DESK_RECT = rectXZ(-1.55, 1.75, SHADOW_DESK_EXT.hx, SHADOW_DESK_EXT.hz, 0.62)
+
+const ROOM_ID = 'bespoke:amadeus'
+
+function AmadeusColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [
+      ...AMADEUS_SHELL_RECTS, BED_RECT, CHAIR_RECT, DESK_RECT, SHADOW_DESK_RECT,
+    ])
+    setBounds(ROOM_ID, {
+      kind: 'rect',
+      minX: -ROOM_W / 2 + 0.1, maxX: ROOM_W / 2 - 0.1,
+      minZ: -ROOM_D / 2 + 0.1, maxZ: ROOM_D / 2 - 0.1,
+    })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* -------------------------------------------------------------------- ink */
 
@@ -280,6 +348,7 @@ export default function Amadeus({ film, config, doors = [], onDoor }) {
 
   return (
     <group>
+      <AmadeusColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.bg || '#180f08', 0.05]} />
       <ambientLight intensity={grade.ambient ?? 0.08} />
       <pointLight position={[1.55, 2, -ROOM_D / 2 + 0.3]} intensity={4} color="#3a6a88" distance={3} decay={2} />

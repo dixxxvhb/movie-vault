@@ -9,6 +9,7 @@ import { useRoomAudio } from '../audio/engine.js'
 import { start as startBabyDriverAudio } from '../audio/recipes/baby-driver.js'
 import { useBeat } from '../audio/clock.js'
 import DoorRow from '../DoorRow.jsx'
+import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -29,6 +30,51 @@ const decay = (frac, k = 3) => Math.pow(clamp01(1 - frac), k)
 // bloodlines), so this mount renders zero doors for now; it's here so a
 // later link touching this slug has somewhere to go without another pass.
 const DOOR_MOUNT = { position: [4.6, 0, -4.0], rotationY: 0, spacing: 0.9 }
+
+/* ------------------------------------------------------------- colliders */
+// Wave M3: contract #3 — "the car (vehicleMass) and bank facade block;
+// bounds = the curbside area, no wandering into the far street void."
+function rotatedHalfExtentsRad(hx, hz, rotY) {
+  const c = Math.abs(Math.cos(rotY)), s = Math.abs(Math.sin(rotY))
+  return { hx: hx * c + hz * s, hz: hx * s + hz * c }
+}
+
+// The car: CAR_POS/CAR_ROT, W=1.7 H=1.05 D=3.7 (Car's own local consts).
+const CAR_EXT = rotatedHalfExtentsRad(0.85, 1.85, CAR_ROT)
+const CAR_RECT = {
+  minX: CAR_POS[0] - CAR_EXT.hx, maxX: CAR_POS[0] + CAR_EXT.hx,
+  minZ: CAR_POS[2] - CAR_EXT.hz, maxZ: CAR_POS[2] + CAR_EXT.hz, top: 1.05,
+}
+
+// BankFacade's own wall box [10, 5.2, 0.3] at z=-4.3, widened on Z to also
+// cover the four columns standing 0.2m proud of it at z=-4.1.
+const FACADE_RECT = { minX: -5, maxX: 5, minZ: -4.65, maxZ: -3.95, top: 5.2 }
+
+const ROOM_ID = 'bespoke:baby-driver'
+
+function BabyDriverColliders({ spawn }) {
+  useEffect(() => {
+    registerColliders(ROOM_ID, [CAR_RECT, FACADE_RECT])
+    // The curbside area only — the sidewalk/street plane runs to x=±8, far
+    // wider than the staged scene; bounds keeps the walker on the block the
+    // room is actually composed around, not out into the empty street.
+    setBounds(ROOM_ID, { kind: 'rect', minX: -5.5, maxX: 5.5, minZ: -4.0, maxZ: 5.5 })
+    if (import.meta.env.DEV && spawn) {
+      const [sx, , sz] = spawn
+      const probes = [[0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]
+      const stuck = probes.every(([dx, dz]) => {
+        const r = resolveStep(sx, sz, dx, dz, 0.28)
+        return Math.hypot(r.x - sx, r.z - sz) < 0.02
+      })
+      if (stuck) {
+        // eslint-disable-next-line no-console
+        console.warn('[colliders] spawn point for "%s" looks boxed in by its own colliders', ROOM_ID)
+      }
+    }
+    return () => clearOwner(ROOM_ID)
+  }, [spawn])
+  return null
+}
 
 /* -------------------------------------------------------------- facade */
 
@@ -370,6 +416,7 @@ export default function BabyDriver({ film, config, infoVisible = true, doors = [
 
   return (
     <group>
+      <BabyDriverColliders spawn={config.camera?.pos} />
       {/* QA fix: grade.fogColor now carries a light sky-blue override from
           configs.js (was falling through to this component's own '#e8d8b0'
           fallback only when unset — but the film's dark card-front bg WAS
