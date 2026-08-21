@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
+import { RoundedBox } from '@react-three/drei'
 import { gaze } from '../../CameraRig.jsx'
 import { makeMetaTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
@@ -8,13 +9,18 @@ import { useRoomAudio } from '../audio/engine.js'
 import { start as startDepartedAudio } from '../audio/recipes/the-departed.js'
 import { notifyElevatorOpen } from './departedBus.js'
 import {
-  makeSkyTexture, makeGravelTexture, makeTagTexture,
+  makeSkyTexture, makeTagTexture,
   makeFloorIndicatorTexture, makeDossierTexture,
+  makeTarSeamTexture, makeRustStreakTexture,
 } from './departedTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
 import { PressKind } from '../touchKinds.jsx'
+import { standardMat } from '../materials.js'
+import { Bevel, Trim } from '../detail.jsx'
+import { FogLayers } from '../atmosphere.jsx'
+import LightRig from '../lightRig.js'
 
 // 9.9 — "the elevator and the roof." Boston golden-hour haze, a gravel roof
 // behind a parapet, an elevator lobby standing on it, and the reveal-as-event
@@ -131,17 +137,34 @@ function DepartedColliders({ spawn }) {
 
 /* --------------------------------------------------------------- roof/sky */
 
+// Parapet material shared by all four runs + the cap trim — one instance,
+// not four, per materials.js's own caching contract.
+const parapetMat = standardMat({ kind: 'concrete', tint: '#2a241c', wear: 0.55, scale: 1.4, repeat: [3, 1] })
+const capMat = standardMat({ kind: 'concrete', tint: '#3a3428', wear: 0.35, scale: 1, repeat: [4, 1] })
+
 function RoofShell({ grade }) {
-  const gravelTex = useMemo(() => makeGravelTexture(), [])
+  // P1 polish pass: gravel via materials.js's own aggregate generator
+  // (roughnessMap is what sells the grazing golden-hour key across the
+  // whole floor) plus a tar-seam alpha overlay for the membrane-roof story.
+  const gravelMat = useMemo(
+    () => standardMat({ kind: 'gravel', tint: '#332c22', wear: 0.45, scale: 1.6, repeat: [5, 4] }),
+    []
+  )
+  const tarTex = useMemo(() => makeTarSeamTexture(ROOF_W, ROOF_D), [])
   const skyTex = useMemo(
     () => makeSkyTexture(grade.fill || '#3a2e22', grade.key || '#e8b060', '#241a10'),
     [grade.fill, grade.key]
   )
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[ROOF_W, ROOF_D]} />
-        <meshStandardMaterial map={gravelTex} roughness={0.96} />
+        <primitive object={gravelMat} attach="material" />
+      </mesh>
+      {/* tar seams, a hair proud to avoid z-fighting the gravel */}
+      <mesh position={[0, 0.003, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[ROOF_W, ROOF_D]} />
+        <meshBasicMaterial map={tarTex} transparent opacity={0.8} depthWrite={false} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-2} />
       </mesh>
       {/* sky dome — a warm gradient behind everything, the haze itself */}
       <mesh position={[0, 0, -20]}>
@@ -153,23 +176,27 @@ function RoofShell({ grade }) {
         <circleGeometry args={[3.4, 24]} />
         <meshBasicMaterial color="#ffdca0" transparent opacity={0.85} fog={false} />
       </mesh>
-      {/* parapet: four low walls, gap-free — the rat gets its own segment */}
-      <mesh position={[0, PARAPET_H / 2, -ROOF_D / 2]}>
-        <boxGeometry args={[ROOF_W, PARAPET_H, PARAPET_T]} />
-        <meshStandardMaterial color="#2a241c" roughness={0.9} />
+      {/* layered horizon glow — a low wide band picking up the sun's own
+          color, sitting just above the skyline silhouette */}
+      <mesh position={[0, 3.0, -24]}>
+        <planeGeometry args={[90, 5]} />
+        <meshBasicMaterial color={grade.key || '#e8b060'} transparent opacity={0.16} fog={false} depthWrite={false} />
       </mesh>
-      <mesh position={[0, PARAPET_H / 2, ROOF_D / 2]}>
-        <boxGeometry args={[ROOF_W, PARAPET_H, PARAPET_T]} />
-        <meshStandardMaterial color="#2a241c" roughness={0.9} />
-      </mesh>
-      <mesh position={[-ROOF_W / 2, PARAPET_H / 2, 0]}>
-        <boxGeometry args={[PARAPET_T, PARAPET_H, ROOF_D]} />
-        <meshStandardMaterial color="#2a241c" roughness={0.9} />
-      </mesh>
-      <mesh position={[ROOF_W / 2, PARAPET_H / 2, 0]}>
-        <boxGeometry args={[PARAPET_T, PARAPET_H, ROOF_D]} />
-        <meshStandardMaterial color="#2a241c" roughness={0.9} />
-      </mesh>
+      {/* haze band drifting along the horizon — cheap ground-fog reused at
+          skyline height for a layered, filmic haze rather than a flat fog
+          density number */}
+      <FogLayers pos={[0, 2.4, -18]} size={[70, 10]} color="rgba(232,176,96,0.35)" opacity={0.22} speed={0.01} />
+      {/* parapet: four low walls, gap-free — the rat gets its own segment.
+          Bevel gives each run a manufactured concrete-cap edge instead of a
+          naked box, and a Trim cap along the top catches the low golden key
+          in a hard grazing line — the long-shadow "rim on the parapet" the
+          brief asks for. */}
+      <Bevel pos={[0, PARAPET_H / 2, -ROOF_D / 2]} w={ROOF_W} h={PARAPET_H} d={PARAPET_T} radius={0.02} mat={parapetMat} receiveShadow castShadow />
+      <Bevel pos={[0, PARAPET_H / 2, ROOF_D / 2]} w={ROOF_W} h={PARAPET_H} d={PARAPET_T} radius={0.02} mat={parapetMat} receiveShadow />
+      <Bevel pos={[-ROOF_W / 2, PARAPET_H / 2, 0]} w={PARAPET_T} h={PARAPET_H} d={ROOF_D} radius={0.02} mat={parapetMat} receiveShadow />
+      <Bevel pos={[ROOF_W / 2, PARAPET_H / 2, 0]} w={PARAPET_T} h={PARAPET_H} d={ROOF_D} radius={0.02} mat={parapetMat} receiveShadow />
+      <Trim pos={[0, PARAPET_H + 0.02, -ROOF_D / 2]} along="x" wallLength={ROOF_W} kind="crown" height={0.06} depth={PARAPET_T + 0.02} color="#4a4030" />
+      <Trim pos={[0, PARAPET_H + 0.02, ROOF_D / 2]} along="x" wallLength={ROOF_W} kind="crown" height={0.06} depth={PARAPET_T + 0.02} color="#4a4030" />
     </group>
   )
 }
@@ -241,6 +268,9 @@ function CallButton({ onPress }) {
 
 /* -------------------------------------------------------------- elevator */
 
+const housingMat = standardMat({ kind: 'concrete', tint: '#332c22', wear: 0.4, scale: 1.2 })
+const doorMat = standardMat({ kind: 'metal', tint: '#5a4a30', wear: 0.4, roughness: 0.85, metalness: 0.5 })
+
 function ElevatorLobby({ doorState, score }) {
   const doorT = useRef(0)   // 0 closed .. 1 open
   const leftRef = useRef()
@@ -259,10 +289,11 @@ function ElevatorLobby({ doorState, score }) {
 
   return (
     <group position={[0, 0, ELEV_Z]}>
-      {/* the housing — a small penthouse structure standing on the roof */}
-      <mesh position={[0, ELEV_H / 2, 0]}>
+      {/* the housing — a small penthouse structure standing on the roof,
+          concrete surface with materials.js grazing-light variance */}
+      <mesh position={[0, ELEV_H / 2, 0]} receiveShadow castShadow>
         <boxGeometry args={[ELEV_W, ELEV_H, ELEV_D]} />
-        <meshStandardMaterial color="#332c22" roughness={0.85} />
+        <primitive object={housingMat} attach="material" />
       </mesh>
       {/* the empty, lit car — visible the moment the doors part */}
       <mesh position={[0, 1.1, -0.15]}>
@@ -271,14 +302,17 @@ function ElevatorLobby({ doorState, score }) {
       </mesh>
       <pointLight ref={carLightRef} position={[0, 1.6, -0.1]} color="#fff3d0" intensity={0} distance={4} decay={2} />
 
-      {/* two door slabs, sliding apart on X */}
-      <mesh ref={leftRef} position={[-DOOR_W / 2, DOOR_H / 2, ELEV_D / 2 + 0.02]}>
-        <boxGeometry args={[DOOR_W, DOOR_H, 0.05]} />
-        <meshStandardMaterial color="#5a4a30" roughness={0.5} metalness={0.3} />
-      </mesh>
-      <mesh ref={rightRef} position={[DOOR_W / 2, DOOR_H / 2, ELEV_D / 2 + 0.02]}>
-        <boxGeometry args={[DOOR_W, DOOR_H, 0.05]} />
-        <meshStandardMaterial color="#5a4a30" roughness={0.5} metalness={0.3} />
+      {/* two door slabs, sliding apart on X — brushed metal, beveled edges,
+          a thin dark seam standing in for the panel gap between them */}
+      <RoundedBox ref={leftRef} args={[DOOR_W, DOOR_H, 0.05]} radius={0.012} smoothness={2} position={[-DOOR_W / 2, DOOR_H / 2, ELEV_D / 2 + 0.02]}>
+        <primitive object={doorMat} attach="material" />
+      </RoundedBox>
+      <RoundedBox ref={rightRef} args={[DOOR_W, DOOR_H, 0.05]} radius={0.012} smoothness={2} position={[DOOR_W / 2, DOOR_H / 2, ELEV_D / 2 + 0.02]}>
+        <primitive object={doorMat} attach="material" />
+      </RoundedBox>
+      <mesh position={[0, DOOR_H / 2, ELEV_D / 2 + 0.045]}>
+        <boxGeometry args={[0.012, DOOR_H * 0.94, 0.01]} />
+        <meshStandardMaterial color="#100d08" roughness={0.7} />
       </mesh>
 
       {/* the floor indicator, permanently reading the score */}
@@ -388,12 +422,40 @@ const TAG_FIGURES = [
   { pos: [-0.9, 0, -0.9], initial: 'COP' },
 ]
 
-/* --------------------------------------------------------- dossier + vent */
+// Cigarette butts — small clutter, authored (not scattered blind) in a loose
+// huddle just off the vent's downwind side, the way a roof crew's smoke
+// break actually leaves them. Cheap enough (5) not to need instancing.
+const BUTT_SEEDS = [
+  [0.5, -0.15, 0.02], [0.62, -0.22, 1.4], [0.44, 0.05, -0.6],
+  [0.7, -0.05, 2.1], [0.56, -0.3, 3.0],
+]
+function CigaretteButts() {
+  return (
+    <group>
+      {BUTT_SEEDS.map(([x, z, rot], i) => (
+        <group key={i} position={[x, 0.009, z]} rotation={[Math.PI / 2, 0, rot]}>
+          <mesh position={[0, -0.02, 0]}>
+            <cylinderGeometry args={[0.007, 0.007, 0.07, 6]} />
+            <meshStandardMaterial color="#e8e0cc" roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 0.025, 0]}>
+            <cylinderGeometry args={[0.0075, 0.0075, 0.02, 6]} />
+            <meshStandardMaterial color="#c9793a" roughness={0.7} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+const ventBodyMat = standardMat({ kind: 'metal', tint: '#4a4438', wear: 0.55, roughness: 0.82, metalness: 0.3 })
 
 function RoofVentDossier({ film }) {
   const palette = sheetOf(film.palette)
   const [dossierTex, setDossierTex] = useState(null)
   const [metaTex, setMetaTex] = useState(null)
+  const rustTexA = useMemo(() => makeRustStreakTexture(5), [])
+  const rustTexB = useMemo(() => makeRustStreakTexture(11), [])
 
   useEffect(() => {
     let live = true
@@ -413,10 +475,16 @@ function RoofVentDossier({ film }) {
 
   return (
     <group position={[-3.2, 0, 1.6]} rotation={[0, 0.3, 0]}>
-      {/* the vent itself */}
-      <mesh position={[0, 0.32, 0]}>
-        <boxGeometry args={[0.9, 0.64, 0.6]} />
-        <meshStandardMaterial color="#4a4438" roughness={0.8} metalness={0.15} />
+      {/* the vent itself: beveled body, rust streaks bleeding from the
+          fasteners along its front and side faces */}
+      <Bevel pos={[0, 0.32, 0]} w={0.9} h={0.64} d={0.6} radius={0.02} mat={ventBodyMat} castShadow />
+      <mesh position={[-0.2, 0.34, 0.302]}>
+        <planeGeometry args={[0.22, 0.5]} />
+        <meshBasicMaterial map={rustTexA} transparent opacity={0.85} depthWrite={false} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
+      </mesh>
+      <mesh position={[0.452, 0.34, 0.1]} rotation={[0, Math.PI / 2, 0]}>
+        <planeGeometry args={[0.5, 0.5]} />
+        <meshBasicMaterial map={rustTexB} transparent opacity={0.7} depthWrite={false} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
       </mesh>
       <mesh position={[0, 0.66, 0]} rotation={[-Math.PI / 2, 0, 0.05]}>
         <planeGeometry args={[0.78, 0.55]} />
@@ -431,6 +499,7 @@ function RoofVentDossier({ film }) {
           ? <meshBasicMaterial key="mapped" map={metaTex} transparent depthWrite={false} side={THREE.DoubleSide} />
           : <meshBasicMaterial key="blank" transparent opacity={0} />}
       </mesh>
+      <CigaretteButts />
     </group>
   )
 }
@@ -517,12 +586,38 @@ export default function Departed({ film, config, doors = [], onDoor }) {
 
   useRoomAudio(startDepartedAudio)
 
+  // P1 polish pass: the two flat point lights become a layered rig — a low,
+  // wide golden-hour key (the same direction as the sun disc/skyline glow
+  // in RoofShell, so shadows actually agree with the visible sun), one warm
+  // practical at the elevator lintel, a cool sky bounce, and a rim on the
+  // parapet's far side for the "long shadows, low sun" feel the brief asks
+  // for. Only the key casts (one 512 map, spec's own "one shadow map max").
+  const lights = useMemo(() => ({
+    key: {
+      type: 'spot', pos: [9, 3.6, -8], target: [-2, 0, -1],
+      color: grade.key || '#e8b060', intensity: (grade.keyIntensity ?? 1) * 1.5,
+      distance: 34, decay: 1.7, angle: 0.95, penumbra: 0.5,
+      castShadow: true, shadowMapSize: 512, shadowNear: 1, shadowFar: 24,
+    },
+    practicals: [
+      { pos: [0, 2.35, -3.7], color: '#ffd39a', intensity: 0.4, distance: 5, decay: 2 },
+      // the near-camera general exposure light — non-shadow-casting so it
+      // never fights the key's own grazing shadow direction, but strong
+      // enough that the foreground (floor, tag figures, elevator face)
+      // reads instead of sitting in silhouette under a distant sun alone.
+      { pos: [0, 2.6, 1.4], color: '#ffcf9a', intensity: 1.0, distance: 11, decay: 1.8 },
+    ],
+    bounce: [
+      { pos: [0, 1.4, 4], color: grade.fill || '#3a2e22', intensity: 0.7, distance: 18, decay: 1.7 },
+    ],
+    rim: { pos: [-9, 2.2, -2], color: '#ffd9a0', intensity: 0.8, distance: 22, decay: 2 },
+  }), [grade.key, grade.fill, grade.keyIntensity])
+
   return (
     <group>
       <DepartedColliders spawn={config.camera?.pos} />
       <fogExp2 attach="fog" args={[grade.fogColor || '#e8b060', 0.016]} />
-      <pointLight position={[0, 3.2, 1]} intensity={(grade.keyIntensity ?? 1) * 22} color={grade.key || '#e8b060'} distance={22} decay={2} />
-      <pointLight position={[0, 1.6, 3]} intensity={8} color={grade.fill || '#3a2e22'} distance={12} decay={2} />
+      <LightRig lights={lights} />
 
       <RoofShell grade={grade} />
       <Skyline grade={grade} />

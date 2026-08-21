@@ -32,24 +32,79 @@ export function makeSkyTexture(top, mid, bottom) {
   return tex
 }
 
-// Roof gravel — small tonal speckle, tiled.
-export function makeGravelTexture() {
-  const S = 256
-  const c = canvas(S, S)
+// P1 polish pass: the roof floor now uses materials.js's own 'gravel'
+// generator (aggregate speckle) instead of this hand-rolled one — kept the
+// tar-seam + rust-streak decals local since they're specific to this room's
+// vent/roof story, not general enough for the shared toolkit.
+
+// Tar seams: a few long dark strokes crossing the roof at roughly regular
+// spacing, the tarred-over expansion joints a real membrane roof has. Drawn
+// as one big alpha texture rather than N decal quads — cheaper, and a seam
+// this long as individual Decal quads would need awkward stretching.
+export function makeTarSeamTexture(w, d) {
+  const W = 1024, H = Math.round(1024 * (d / w))
+  const c = canvas(W, H)
   const ctx = c.getContext('2d')
-  ctx.fillStyle = '#332c22'
-  ctx.fillRect(0, 0, S, S)
-  const r = rngFor(77)
-  ctx.globalAlpha = 0.55
-  for (let i = 0; i < 2600; i++) {
-    const v = 20 + Math.floor(r() * 46)
-    ctx.fillStyle = `rgb(${v + 32},${v + 22},${v + 10})`
-    ctx.fillRect(r() * S, r() * S, 1.5, 1.5)
+  ctx.clearRect(0, 0, W, H)
+  const r = rngFor(211)
+  ctx.strokeStyle = 'rgba(10,8,5,0.55)'
+  ctx.lineWidth = 5
+  // three long seams running roughly along Z (the roof's long axis in UV Y)
+  for (let i = 0; i < 3; i++) {
+    const x = W * (0.22 + i * 0.28) + (r() - 0.5) * 40
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    let cx = x
+    for (let y = 0; y <= H; y += 40) {
+      cx += (r() - 0.5) * 10
+      ctx.lineTo(cx, y)
+    }
+    ctx.stroke()
   }
-  ctx.globalAlpha = 1
+  // one cross-seam
+  ctx.beginPath()
+  const y0 = H * (0.4 + r() * 0.2)
+  ctx.moveTo(0, y0)
+  let cy = y0
+  for (let x = 0; x <= W; x += 40) {
+    cy += (r() - 0.5) * 8
+    ctx.lineTo(x, cy)
+  }
+  ctx.stroke()
   const tex = new THREE.CanvasTexture(c)
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-  tex.repeat.set(5, 4)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+// A rust streak running down a metal vent/duct face — a tapered vertical
+// stain bleeding from a corroded seam or fastener, orange-brown rather than
+// the generic dark scuff/stain decals in detail.jsx.
+export function makeRustStreakTexture(seed = 1) {
+  const W = 96, H = 220
+  const c = canvas(W, H)
+  const ctx = c.getContext('2d')
+  ctx.clearRect(0, 0, W, H)
+  const r = rngFor(seed)
+  const drips = 3 + Math.floor(r() * 3)
+  for (let i = 0; i < drips; i++) {
+    const x = W * (0.2 + r() * 0.6)
+    const y0 = H * r() * 0.3
+    const len = H * (0.4 + r() * 0.55)
+    const w0 = 3 + r() * 5
+    const g = ctx.createLinearGradient(x, y0, x, y0 + len)
+    g.addColorStop(0, 'rgba(150,70,20,0.75)')
+    g.addColorStop(0.5, 'rgba(120,54,16,0.4)')
+    g.addColorStop(1, 'rgba(90,40,12,0)')
+    ctx.fillStyle = g
+    ctx.beginPath()
+    ctx.moveTo(x - w0, y0)
+    ctx.lineTo(x + w0, y0)
+    ctx.lineTo(x + w0 * 0.3, y0 + len)
+    ctx.lineTo(x - w0 * 0.3, y0 + len)
+    ctx.closePath()
+    ctx.fill()
+  }
+  const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   return tex
 }

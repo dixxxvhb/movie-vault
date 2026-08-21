@@ -68,7 +68,12 @@ export const CONFIGS = {
   // it, GenericRoom never runs for a slug with a BESPOKE entry).
   'the-departed': {
     family: 'intimate-tension',
-    grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.22 },
+    // P1 polish pass (IMMERSION-V2-POLISH-SPEC.md): golden-hour triplet —
+    // moderate grain (film-stock warmth, not noise), a gentle vignette (this
+    // room is wide open sky, a heavy vignette would fight the haze), bloom
+    // kept modest so the sun disc/skyline glow reads without blowing out
+    // the dossier sheet.
+    grade: { key: '#e8b060', fill: '#3a2e22', sat: 0.08, ambient: 0.27, grain: 0.06, vignette: 0.5, bloomIntensity: 0.34 },
     camera: { pos: [0, 1.6, 3.4], look: [0, 1.45, -3.3], fov: 54, far: 90 },
     place: {
       shell: 'open',
