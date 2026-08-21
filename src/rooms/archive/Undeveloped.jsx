@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
-import * as THREE from 'three'
-import { HAZY_CLOSER } from './archiveConfig.js'
-import { wasDrag } from '../../pointer.js'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { HAZY_CLOSER, HAZY_ENTRY } from './archiveConfig.js'
+import { setBounds, clearOwner } from '../colliders.js'
 
 // The Dark Drawer's one shared room (brief §3, Wave C: "room exists
 // UNDEVELOPED: near-black, fog, faint silhouettes ... No info surfaces ...
@@ -12,12 +12,14 @@ import { wasDrag } from '../../pointer.js'
 // Deliberately bespoke rather than routed through GenericRoom: there is
 // nothing here for the template engine's shell/prop kit to stage.
 //
-// "Walk toward but never resolve": one advance station (goToStation, the
-// same seam Memento's corridor uses — see bespoke/Memento.jsx and
-// FilmWorld.jsx/ArchiveWorld.jsx) brings the silhouettes closer, but their
-// material opacity is capped well under 1 regardless of distance. Proximity
-// changes how much fog sits between you and one; it never changes whether it
-// resolves.
+// "Walk toward but never resolve": free walk (Wave M3), circle bounds only
+// and no prop colliders — the silhouettes are walked THROUGH, not around.
+// Crossing a fixed depth (ADVANCE_TRIGGER_Z below, roughly 2m past spawn)
+// fires the one advance (goToStation, the same seam Memento's corridor uses
+// — see bespoke/Memento.jsx and FilmWorld.jsx/ArchiveWorld.jsx) that brings
+// the silhouettes closer, but their material opacity is capped well under 1
+// regardless of distance. Proximity changes how much fog sits between you
+// and one; it never changes whether it resolves.
 const W = 6, D = 10, H = 3
 
 function seedOf(str) {
@@ -56,17 +58,38 @@ function Silhouette({ x, z, rot, pose }) {
   )
 }
 
+// Wave M3: circle bounds only, no prop colliders — walking through the
+// silhouettes is the design (brief §3: "faint silhouettes you can walk
+// through but never resolve"), so nothing here should ever stop the
+// walker. Sized to roughly fill the room's own W x D footprint without
+// reaching past it; a hazy room this dim needs no tighter fit than that.
+const BOUNDS_R = 4.2
+const BOUNDS_CZ = -1
+
+// The one-shot advance used to be a click hotspot a couple meters in front
+// of the entry station; it's now a plain position trigger at the same
+// rough depth — "roughly 2m forward of spawn" per the M3 spec — read off
+// HAZY_ENTRY's own z rather than a second hardcoded number, so the two
+// stay in lockstep if the entry station is ever re-authored.
+const ADVANCE_TRIGGER_Z = HAZY_ENTRY.pos[2] - 2
+
 export default function Undeveloped({ film, goToStation }) {
   const figures = useMemo(() => makeFigures(seedOf(film?.slug) + 41), [film?.slug])
   const [advanced, setAdvanced] = useState(false)
 
-  const advance = (e) => {
-    e.stopPropagation()
-    if (wasDrag()) return
+  useEffect(() => {
+    const ownerId = 'room:' + (film?.slug ?? 'undeveloped')
+    setBounds(ownerId, { kind: 'circle', cx: 0, cz: BOUNDS_CZ, r: BOUNDS_R })
+    return () => clearOwner(ownerId)
+  }, [film?.slug])
+
+  useFrame(({ camera }) => {
     if (advanced || !goToStation) return
-    setAdvanced(true)
-    goToStation(HAZY_CLOSER, 'closer')
-  }
+    if (camera.position.z <= ADVANCE_TRIGGER_Z) {
+      setAdvanced(true)
+      goToStation(HAZY_CLOSER, 'closer')
+    }
+  })
 
   return (
     <group>
@@ -86,20 +109,6 @@ export default function Undeveloped({ film, goToStation }) {
       </mesh>
 
       {figures.map((f, i) => <Silhouette key={i} {...f} />)}
-
-      {/* the one interaction that isn't leaving: step forward, once. A bare
-          hotspot, not a prop — nothing here is meant to be looked at
-          directly, only walked toward without ever quite arriving. Facing
-          the camera (no rotation — its default normal is +Z, and the camera
-          sits further along +Z looking back toward -Z) rather than lying
-          flat on the floor: a floor-flat plane is viewed edge-on from a
-          standing eye height and is effectively unclickable. */}
-      {!advanced && (
-        <mesh position={[0, 1.3, -1]} onClick={advance}>
-          <planeGeometry args={[3, 2.2]} />
-          <meshBasicMaterial transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
-        </mesh>
-      )}
     </group>
   )
 }
