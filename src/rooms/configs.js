@@ -227,10 +227,15 @@ export const CONFIGS = {
   },
 
   // ------------------------------------------------------------ nightcrawler
+  // Bespoke now (Phase 2, src/rooms/bespoke/Nightcrawler.jsx): grade/camera
+  // below match the bespoke room's own entry composition (guardrail,
+  // sodium-grid horizon). `place` is dead weight for the same reason as
+  // the-departed's/baby-driver's own entries above — the bespoke component
+  // never reads it; left in place as the pre-bespoke Wave B stand-in.
   nightcrawler: {
     family: 'momentum',
-    grade: { key: '#e88a30', fill: '#0e1218', ambient: 0.15 },
-    camera: { pos: [0, 1.6, 2.4], look: [0, 1.3, -4], fov: 50, far: 200 },
+    grade: { bg: '#050608', fogColor: '#050608', key: '#ff8a2a', fill: '#0e1218', ambient: 0.1, keyIntensity: 1 },
+    camera: { pos: [0, 1.6, 2.2], look: [0, 1.15, -6], fov: 52, far: 200 },
     place: {
       shell: 'open',
       shellParams: { ground: 'concrete', groundColor: '#1a1a1c', skyTop: '#0e1218', skyBottom: '#1c1610', horizon: true, distantCity: 30 },
