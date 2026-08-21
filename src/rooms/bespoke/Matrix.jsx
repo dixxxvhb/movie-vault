@@ -10,6 +10,7 @@ import { start as startMatrixAudio } from '../audio/recipes/matrix.js'
 import { getMatrixGlyphTextures, makeGlyphStripTexture, makeMatrixCharGlyphTexture } from './matrixTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
+import { setBounds, clearOwner } from '../colliders.js'
 
 // THE MATRIX (1999) · 9.8 · "the rooftop, mid bullet-time." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the helipad rooftop, hazy overcast city,
@@ -22,6 +23,15 @@ import { wasDrag } from '../../pointer.js'
 // Geometry in meters. The sculpture sits at the world origin; the entry
 // station and three orbit stations ring it at radius ~3.2m so you can walk
 // around the freeze without ever leaving the helipad.
+//
+// Wave M3: free walk across the whole pad (setBounds circle at the ledge —
+// RoofShell's own ground disc is radius 7, its drop-off ring just past
+// that). The orbit/entry ring pads stay clickable landmarks — clicking one
+// still flies you there exactly as before — but walking into a pad's own
+// radius now fires the SAME state a click would (the ring highlight), just
+// without triggering a flight: `activate` is the state-only half of the old
+// `stepTo`, so a walk-triggered pad never fights the walker for control of
+// camera.position the way a flight would.
 const GLYPH_COLOR = '#5fe88a'
 const SHELL_COLOR = '#bcd8a0'
 
@@ -364,13 +374,27 @@ function InfoPlinth({ film }) {
 
 const DOOR_MOUNT = { position: [2.6, 0, 2.2], rotationY: -Math.PI / 4, spacing: 1.0, scale: 0.85 }
 
+// A pad's own trigger radius is a bit more generous than its visual ring
+// (0.22-0.28) — easy to walk into without lining up a precise footstep.
+const PAD_TRIGGER_R = 0.6
+const PAD_BOUNDS_R = 6.5
+
 export default function Matrix({ film, config, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationIndex, setStationIndex] = useState(-1) // -1 = entry
+  const stationRef = useRef(-1)
   const burstRef = useRef(null)
 
-  const stepTo = (i) => {
+  // State-only half of the old stepTo: updates which pad is "active" (the
+  // ring highlight, InfoPlinth etc.) without moving the camera. Both the
+  // click handler and the walk-proximity check below call this; only the
+  // click handler also flies.
+  const activate = (i) => {
+    stationRef.current = i
     setStationIndex(i)
+  }
+  const stepTo = (i) => {
+    activate(i)
     goToStation?.(i < 0 ? ENTRY_STATION : STATIONS[i], i < 0 ? 'entry' : 'orbit-' + i)
   }
 
@@ -380,6 +404,26 @@ export default function Matrix({ film, config, doors = [], goToStation, onDoor }
   useFrame(({ clock }) => {
     if (burstRef.current != null && clock.elapsedTime - burstRef.current > 1.2) burstRef.current = null
   })
+
+  // Wave M3: walking into a pad's own radius activates it, same as a click
+  // would — just without the flight (see activate/stepTo split above).
+  useFrame(({ camera }) => {
+    const check = (i, pos) => {
+      const dx = camera.position.x - pos[0]
+      const dz = camera.position.z - pos[2]
+      if (Math.hypot(dx, dz) < PAD_TRIGGER_R && stationRef.current !== i) activate(i)
+    }
+    STATIONS.forEach((st, i) => check(i, st.pos))
+    check(-1, ENTRY_STATION.pos)
+  })
+
+  useEffect(() => {
+    const ownerId = 'room:' + (film?.slug ?? 'matrix')
+    // no wall colliders — the whole point is walking freely around the
+    // frozen wave; the only thing that needs containing is the ledge.
+    setBounds(ownerId, { kind: 'circle', cx: 0, cz: 0, r: PAD_BOUNDS_R })
+    return () => clearOwner(ownerId)
+  }, [film?.slug])
 
   // overcast green-tinted grade, steady — this room has no split/depth
   // logic, so the override just republishes the config's own grade fields
