@@ -209,14 +209,47 @@ function StagingCrates() {
   )
 }
 
-// The tunnel mouth: a dark opening ringed by a low frame, sitting in the
-// ground between the camera's entry position and the silhouette line.
+// The tunnel mouth: a ring frame around a painted cut in the ground.
+//
+// ARCHITECT FIX (two rounds): round 1 deleted the opaque cap outright to
+// "reveal the real tunnel" — that exposed the FULL 11m sloped shaft from
+// directly above/outside the ground station, including cell 0/1's ceiling
+// planes poking a couple metres above y=0 near the mouth (a known, already-
+// documented quirk of this geometry, previously hidden by the old flat
+// black disc) and the 9.9 numeral clear across the far end, killing the
+// "waits at the bottom" reveal entirely. Round 2: the disc is back, but
+// repainted — a canvas gradient (bright near the rim under the mouth
+// work-lights, fading to black toward the far edge) rather than one flat
+// #020202 fill, so the opening reads as "a lit ramp descending into dark"
+// exactly like the brief asks, without literally exposing geometry that
+// was never composed to be seen from this angle.
+const mouthDiscTex = (() => {
+  if (typeof document === 'undefined') return null
+  const S = 256
+  const c = document.createElement('canvas')
+  c.width = c.height = S
+  const ctx = c.getContext('2d')
+  // gradient runs along local +Z->-Z (canvas Y): near-rim (mouth-ward,
+  // canvas bottom) lit warm-white, far edge (deeper into the cut, canvas
+  // top) black.
+  const g = ctx.createLinearGradient(0, 0, 0, S)
+  g.addColorStop(0, '#050403')
+  g.addColorStop(0.55, '#0a0806')
+  g.addColorStop(0.82, '#4a4438')
+  g.addColorStop(1, '#8a8270')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, S, S)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+})()
+
 function TunnelMouth() {
   return (
     <group position={[0, 0, -1.2]}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
         <circleGeometry args={[1.15, 28]} />
-        <meshBasicMaterial color="#020202" />
+        <meshBasicMaterial map={mouthDiscTex} color="#ffffff" fog={false} />
       </mesh>
       <mesh position={[0, 0.08, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.2, 0.09, 8, 28]} />
@@ -318,14 +351,26 @@ function CableRun() {
 // The tunnel has no fixtures of its own, so a dim pool of light travels with
 // the camera — same device as Memento's CorridorGlow — scaled by the dwell
 // decay factor (the room darkening the longer you stay).
-function DescentGlow({ decayRef, tint }) {
+//
+// ARCHITECT FIX: this rendered unconditionally at ALL times, including at
+// the ground station — a raw intensity-55 point light colocated with the
+// camera, sitting right next to the tunnel mouth's metal ring, was the
+// stray white specular blob in the arrival frame (same bug class, same
+// fix, as Memento's CorridorGlow: retuned to LIGHT_SCALE units and now
+// fades to 0 via `inTunnelRef` instead of running full-strength at the
+// entry composition where it has nothing useful to light).
+function DescentGlow({ decayRef, tint, inTunnelRef }) {
   const ref = useRef()
   useFrame(({ camera }) => {
     if (!ref.current) return
     ref.current.position.copy(camera.position)
-    ref.current.intensity = 55 * decayRef.current
+    // 55 matches the original tunnel-descent brightness (this was never too
+    // bright WHILE actually inside the shaft — only running unconditionally
+    // at the ground station, colocated with the camera, was the bug).
+    const active = inTunnelRef?.current ? 1 : 0
+    ref.current.intensity = 55 * decayRef.current * active
   })
-  return <pointLight ref={ref} color={tint} intensity={55} distance={7} decay={1.8} />
+  return <pointLight ref={ref} color={tint} intensity={0} distance={6.5} decay={2} />
 }
 
 /* -------------------------------------------------------------------- 9.9 */
@@ -416,17 +461,29 @@ function MissionBrief({ film }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [film.slug])
 
-  // Propped upright on its own post, well clear of the ground plane and
-  // angled slightly toward the entry camera — never flush against another
-  // surface, per the standing depth-clip lesson (BabyDriver's own QA note).
-  // The panel itself is Touchable: press flips it (two coincident FrontSide
-  // pages rather than one DoubleSide plane, same "rigid 180 never mirrors
-  // the text" trick as Memento's wall notes) to reveal the amendment page.
+  // ARCHITECT FIX: was propped on a single thin 1.1m post under a board
+  // centered at y=1.25 — a 0.22m gap between the visible top of the post
+  // and the board's own frame read as "floating," and the -0.5 rad yaw
+  // (~29deg) off the entry camera's own forward axis made it look tilted
+  // rather than deliberately angled. Now bolted: a flat base plate stakes
+  // it to the ground, the post itself runs the full height to the board's
+  // underside, and a back-brace triangulates it to the post the way a real
+  // job-site sign stand is actually held up. Yaw pulled in to a slight,
+  // clearly-intentional turn instead of a near-diagonal one.
   return (
-    <group position={[1.9, 0, 0.4]} rotation={[0, -0.5, 0]}>
-      <mesh position={[0, 0.55, 0]}>
-        <boxGeometry args={[0.06, 1.1, 0.06]} />
+    <group position={[1.9, 0, 0.4]} rotation={[0, -0.22, 0]}>
+      <mesh position={[0, 0.015, 0]}>
+        <boxGeometry args={[0.3, 0.03, 0.24]} />
+        <meshStandardMaterial color="#1c1a15" roughness={0.85} metalness={0.15} />
+      </mesh>
+      <mesh position={[0, 0.46, 0]}>
+        <boxGeometry args={[0.065, 0.92, 0.065]} />
         <meshStandardMaterial color="#2a2620" roughness={0.9} />
+      </mesh>
+      {/* back-brace, angled from the base up to the post near the board */}
+      <mesh position={[0, 0.45, -0.09]} rotation={[0.62, 0, 0]}>
+        <boxGeometry args={[0.045, 0.62, 0.045]} />
+        <meshStandardMaterial color="#241f1a" roughness={0.9} />
       </mesh>
       <Touchable onUse={() => setToken((t) => t + 1)} reach={2.2} foley="paper" anchor={[0, 1.25, 0]}>
         <OpenKind token={token} mode="hinge" hingeAxis="y" angle={Math.PI}>
@@ -456,15 +513,32 @@ function MissionBrief({ film }) {
 
 /* ------------------------------------------------------- bloodline doors */
 
-// Bloodline doors (brief §6): "the staging ground's perimeter." Mounted off
-// to the left side of the tunnel mouth at ground level, standing clear of the
-// silhouette line and mission-brief panel, visible from the entry station.
+// Bloodline doors (brief §6): "the staging ground's perimeter."
+//
+// ARCHITECT FIX: at [-2.4, 0.8, 1.2] the row sat only ~2m from the entry
+// camera (pos [0,1.9,3.2]) and off-axis just enough to straddle the FOV
+// edge — close enough that even a single 0.9m-wide door leaf swallowed
+// nearly half the arrival frame. The brief's own arrival composition (the
+// silhouette-line-at-sunset frame) has to win that shot; the doors move
+// behind the camera's entry z (4.6 > the camera's 3.2) so they're
+// completely out of frame on arrival and found by walking/turning instead,
+// same as any other perimeter detail.
 const DOOR_MOUNT = {
-  position: [-2.4, 0.8, 1.2],
-  rotationY: 0,
-  spacing: 1.0,
-  scale: 0.85,
+  position: [3.2, 0.8, 4.6],
+  rotationY: 2.6,
+  spacing: 0.95,
+  scale: 0.78,
 }
+
+// ARCHITECT FIX: Door.jsx styles frame/panel from whatever `grade` object it
+// gets handed (grade.key/fill/acc) — the LIVE room grade published through
+// gradeBus (Sicario's own GREEN/THERMAL tunnel-optics override) was leaking
+// into these doors' material language even though they stand on the dusk
+// ground, nowhere near the tunnel, which is how a staging-ground door ended
+// up saturated night-vision green. A dedicated, static color block instead —
+// dusty steel + worn tarp canvas, this room's own material language up top —
+// so the doors read as part of the site, not a shader glitch.
+const SICARIO_DOOR_GRADE = { key: '#5a5346', fill: '#3a362c', acc: '#847a63' }
 
 /* ------------------------------------------------------------------ room */
 
@@ -591,12 +665,20 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
         </>
       )}
 
+      {/* ARCHITECT FIX: cells 0-1's ceiling/walls poke a couple metres above
+          y=0 near the mouth (documented quirk, DuskGround's own comment
+          above) — invisible in the dark original, but the new mouth
+          work-lights lit it up into a gray box/pyramid silhouetted against
+          the sky. The painted mouth disc already sells "a lit ramp
+          descending" from outside; the real geometry only needs to exist
+          once you're actually inside it (inTunnel), so it's skipped here
+          for the two cells close enough to break the skyline. */}
       {Array.from({ length: CELLS }, (_, i) => (
-        <TunnelCell key={i} index={i} tex={tunnelTex} />
+        (inTunnel || i >= 2) && <TunnelCell key={i} index={i} tex={tunnelTex} />
       ))}
       <CableRun />
       <TunnelEndCap />
-      <DescentGlow decayRef={decayRef} tint={tint} />
+      <DescentGlow decayRef={decayRef} tint={tint} inTunnelRef={inTunnelRef} />
       <ThermalScore film={film} />
 
       <DoorRow
@@ -605,7 +687,7 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
         rotationY={DOOR_MOUNT.rotationY}
         spacing={DOOR_MOUNT.spacing}
         scale={DOOR_MOUNT.scale}
-        grade={grade}
+        grade={SICARIO_DOOR_GRADE}
         onDoor={onDoor}
       />
     </group>
