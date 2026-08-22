@@ -34,9 +34,17 @@ function hashStr(str) {
   return h >>> 0
 }
 
+// sRGB bytes for the canvas, NOT THREE.Color's .r/.g/.b. Since r152
+// ColorManagement is on by default, so `new THREE.Color('#808080').r` is the
+// LINEAR value (0.216), not 0.5. Painting those linear bytes onto a canvas
+// that makeSurface() then tags SRGBColorSpace made the GPU gamma-decode them
+// a second time: every tint lost 6-12x of its albedo (#8a6c3c rendered 7.7x
+// too dark, #5a4424 12x). That double-gamma was the "materials.js rooms
+// need ~7x more light than the wallCanvas() fallback" bug of 2026-08-21.
+// getHex() hands back the sRGB encoding whatever the working color space is.
 function hexToRgb(hex) {
-  const c = new THREE.Color(hex)
-  return [Math.round(c.r * 255), Math.round(c.g * 255), Math.round(c.b * 255)]
+  const h = new THREE.Color(hex).getHex()
+  return [(h >> 16) & 255, (h >> 8) & 255, h & 255]
 }
 
 function shade([r, g, b], amt, alpha = 1) {
