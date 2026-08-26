@@ -1,10 +1,14 @@
 {
+ "_source": "film_titles where seen_before and no film_log row, pulled 2026-08-26 (v3: memory_score/seen_bucket columns are the split; seen_note prose parse retired).",
  "archive": [
   {
    "slug": "10-cloverfield-lane",
    "title": "10 Cloverfield Lane",
    "year": 2016,
    "seen_note": "confirmed seen 2026-08-10 during pitch; no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/q8A39vcBDruhvoDTJd6L8a4lnTi.jpg",
    "genres": [
     "Thriller",
@@ -22,6 +26,9 @@
    "title": "Apollo 13",
    "year": 1995,
    "seen_note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/tVeKscCm2fY1xDXZk8PgnZ87h9S.jpg",
    "genres": [
     "Drama",
@@ -37,6 +44,9 @@
    "title": "Armageddon",
    "year": 1998,
    "seen_note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/eTM3qtGhDU8cvjpoa6KEt5E2auU.jpg",
    "genres": [
     "Action",
@@ -53,6 +63,9 @@
    "title": "Arrival",
    "year": 2016,
    "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 10,
+   "seen_bucket": "R",
    "poster": "/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
    "genres": [
     "Drama",
@@ -69,6 +82,9 @@
    "title": "Black Swan",
    "year": 2010,
    "seen_note": "hazy — seen long ago",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "L",
    "poster": "/viWheBd44bouiLCHgNMvahLThqx.jpg",
    "genres": [
     "Drama",
@@ -85,6 +101,9 @@
    "title": "Bugonia",
    "year": 2025,
    "seen_note": "vault archive — memory 9.5, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.5,
+   "seen_bucket": "R",
    "poster": "/oxgsAQDAAxA92mFGYCZllgWkH9J.jpg",
    "genres": [
     "Science Fiction",
@@ -101,6 +120,9 @@
    "title": "Center Stage",
    "year": 2000,
    "seen_note": "vault archive — memory 9.2",
+   "abandon_note": null,
+   "memory_score": 9.2,
+   "seen_bucket": "?",
    "poster": "/95Et0t08Nv6S8FD593HpXyvcRt8.jpg",
    "genres": [
     "Drama",
@@ -116,6 +138,9 @@
    "title": "Chicago",
    "year": 2002,
    "seen_note": "vault archive — memory 9.6",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "?",
    "poster": "/3ED8cWCXY9zkx77Sd0N5qMbsdDP.jpg",
    "genres": [
     "Comedy",
@@ -132,6 +157,9 @@
    "title": "Conclave",
    "year": 2024,
    "seen_note": "vault archive — memory 9.6, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "R",
    "poster": "/m5x8D0bZ3eKqIVWZ5y7TnZ2oTVg.jpg",
    "genres": [
     "Drama",
@@ -147,6 +175,9 @@
    "title": "Contact",
    "year": 1997,
    "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 10,
+   "seen_bucket": "R",
    "poster": "/bCpMIywuNZeWt3i5UMLEIc0VSwM.jpg",
    "genres": [
     "Drama",
@@ -162,17 +193,29 @@
    "slug": "cosmos",
    "title": "Cosmos",
    "year": 2019,
-   "seen_note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
-   "poster": null,
-   "genres": [],
-   "director": [],
-   "runtime": null
+   "seen_note": null,
+   "abandon_note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
+   "memory_score": null,
+   "seen_bucket": null,
+   "poster": "/kDAr2tO1hfZKeDBunuK6hnBFSPY.jpg",
+   "genres": [
+    "Science Fiction",
+    "Mystery"
+   ],
+   "director": [
+    "Zander Weaver",
+    "Elliot Weaver"
+   ],
+   "runtime": 128
   },
   {
    "slug": "deep-impact",
    "title": "Deep Impact",
    "year": 1998,
    "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 10,
+   "seen_bucket": "R",
    "poster": "/a3vQS7JKqlOb3MdVJHuTCP9s7Mg.jpg",
    "genres": [
     "Action",
@@ -189,6 +232,9 @@
    "title": "District 9",
    "year": 2009,
    "seen_note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/tuGlQkqLxnodDSk6mp5c2wvxUEd.jpg",
    "genres": [
     "Science Fiction"
@@ -203,6 +249,9 @@
    "title": "Don't Look Up",
    "year": 2021,
    "seen_note": "vault archive — memory 9.6, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "R",
    "poster": "/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg",
    "genres": [
     "Comedy",
@@ -219,6 +268,9 @@
    "title": "Dune",
    "year": 2021,
    "seen_note": "vault archive — memory 9.7, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.7,
+   "seen_bucket": "R",
    "poster": "/gDzOcq0pfeCeqMBwKIJlSmQpjkZ.jpg",
    "genres": [
     "Science Fiction",
@@ -235,6 +287,9 @@
    "title": "Dune: Part Two",
    "year": 2024,
    "seen_note": "vault archive — memory 9.9, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.9,
+   "seen_bucket": "R",
    "poster": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
    "genres": [
     "Science Fiction",
@@ -250,6 +305,9 @@
    "title": "Edge of Tomorrow",
    "year": 2014,
    "seen_note": "hazy — seen a few years back, faded",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "F",
    "poster": "/nBM9MMa2WCwvMG4IJ3eiGUdbPe6.jpg",
    "genres": [
     "Action",
@@ -265,6 +323,9 @@
    "title": "Everything Everywhere All at Once",
    "year": 2022,
    "seen_note": "vault archive — memory 9.4, seen a few years back",
+   "abandon_note": null,
+   "memory_score": 9.4,
+   "seen_bucket": "F",
    "poster": "/u68AjlvlutfEIcpmbYpKcdi09ut.jpg",
    "genres": [
     "Action",
@@ -282,6 +343,9 @@
    "title": "Flowers in the Attic",
    "year": 2014,
    "seen_note": "vault archive — memory 4.3, the floor (John and Tori retaliation watch)",
+   "abandon_note": null,
+   "memory_score": 4.3,
+   "seen_bucket": "?",
    "poster": "/owzDkkxL2DogC2mq1fgIvrlDcux.jpg",
    "genres": [
     "Drama",
@@ -299,6 +363,9 @@
    "title": "Get Out",
    "year": 2017,
    "seen_note": "vault archive — memory 9.6",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "?",
    "poster": "/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
    "genres": [
     "Mystery",
@@ -315,6 +382,9 @@
    "title": "Gone Girl",
    "year": 2014,
    "seen_note": "vault archive — memory 9.6",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "?",
    "poster": "/ts996lKsxvjkO2yiYG0ht4qAicO.jpg",
    "genres": [
     "Mystery",
@@ -331,6 +401,9 @@
    "title": "Gravity",
    "year": 2013,
    "seen_note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/kZ2nZw8D681aphje8NJi8EfbL1U.jpg",
    "genres": [
     "Science Fiction",
@@ -347,6 +420,9 @@
    "title": "Guardians of the Galaxy",
    "year": 2014,
    "seen_note": "seen — confirmed 2026-08-17 lightning round",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg",
    "genres": [
     "Action",
@@ -363,6 +439,9 @@
    "title": "Inception",
    "year": 2010,
    "seen_note": "vault archive — memory 9.7, seen a few years back",
+   "abandon_note": null,
+   "memory_score": 9.7,
+   "seen_bucket": "F",
    "poster": "/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
    "genres": [
     "Action",
@@ -379,6 +458,9 @@
    "title": "Interstellar",
    "year": 2014,
    "seen_note": "vault archive — memory 10.0",
+   "abandon_note": null,
+   "memory_score": 10,
+   "seen_bucket": "?",
    "poster": "/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
    "genres": [
     "Adventure",
@@ -395,6 +477,9 @@
    "title": "James Bond (the franchise)",
    "year": null,
    "seen_note": "hazy — most seen and loved over decades, no number",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "?",
    "poster": "/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg",
    "genres": [],
    "director": [],
@@ -405,6 +490,9 @@
    "title": "Kingsman: The Secret Service",
    "year": 2015,
    "seen_note": "vault archive — memory 9.6; rewatch queued (his call)",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "F",
    "poster": "/17i5YPTfHOjXoieArpATWGRhLj1.jpg",
    "genres": [
     "Crime",
@@ -422,6 +510,9 @@
    "title": "Knives Out",
    "year": 2019,
    "seen_note": "hazy — seen a few years back, did not stick",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "F",
    "poster": "/pThyQovXQrw2m0s9x82twj48Jq4.jpg",
    "genres": [
     "Comedy",
@@ -438,6 +529,9 @@
    "title": "La La Land",
    "year": 2016,
    "seen_note": "hazy — seen a few years back",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "F",
    "poster": "/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
    "genres": [
     "Comedy",
@@ -454,6 +548,9 @@
    "title": "Life of Pi",
    "year": 2012,
    "seen_note": "hazy — seen long ago, load-bearing in his taste",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "L",
    "poster": "/iLgRu4hhSr6V1uManX6ukDriiSc.jpg",
    "genres": [
     "Adventure",
@@ -469,6 +566,9 @@
    "title": "Mad Max: Fury Road",
    "year": 2015,
    "seen_note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "?",
    "poster": "/ulcAi4dKpAjHwYGS08vNyx9H6I9.jpg",
    "genres": [
     "Action",
@@ -485,6 +585,9 @@
    "title": "Midsommar",
    "year": 2019,
    "seen_note": "hazy — seen a few years back, faded",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "F",
    "poster": "/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",
    "genres": [
     "Horror",
@@ -501,6 +604,9 @@
    "title": "Mission: Impossible",
    "year": 1996,
    "seen_note": "vault archive — whole franchise seen and loved, memory 9.5 as a run",
+   "abandon_note": null,
+   "memory_score": 9.5,
+   "seen_bucket": "?",
    "poster": "/l5uxY5m5OInWpcExIpKG6AR3rgL.jpg",
    "genres": [
     "Adventure",
@@ -517,6 +623,9 @@
    "title": "Moulin Rouge!",
    "year": 2001,
    "seen_note": "hazy — seen long ago",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "L",
    "poster": "/2kjM5CUZRIU5yOANUowrbJcRL9L.jpg",
    "genres": [
     "Drama",
@@ -533,6 +642,9 @@
    "title": "Nope",
    "year": 2022,
    "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/AcKVlWaNVVVFQwro3nLXqPljcYA.jpg",
    "genres": [
     "Horror",
@@ -549,6 +661,9 @@
    "title": "Old",
    "year": 2021,
    "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/vclShucpUmPhdAOmKgf3B3Z4POD.jpg",
    "genres": [
     "Thriller",
@@ -565,6 +680,9 @@
    "title": "Oppenheimer",
    "year": 2023,
    "seen_note": "vault archive — memory 10.0",
+   "abandon_note": null,
+   "memory_score": 10,
+   "seen_bucket": "?",
    "poster": "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
    "genres": [
     "Drama",
@@ -580,6 +698,9 @@
    "title": "Parasite",
    "year": 2019,
    "seen_note": "vault archive — memory 9.6 (corrected from 9.7 on the spot)",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "F",
    "poster": "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
    "genres": [
     "Comedy",
@@ -596,6 +717,9 @@
    "title": "Planet of the Apes (the modern trilogy)",
    "year": null,
    "seen_note": "vault archive — memory 8.9, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 8.9,
+   "seen_bucket": "R",
    "poster": "/oqA45qMyyo1TtrnVEBKxqmTPhbN.jpg",
    "genres": [],
    "director": [],
@@ -606,6 +730,9 @@
    "title": "Prisoners",
    "year": 2013,
    "seen_note": "hazy — seen; standing rule: NEVER pitch, only Dixon raises it",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "?",
    "poster": "/uhviyknTT5cEQXbn6vWIqfM4vGm.jpg",
    "genres": [
     "Drama",
@@ -622,6 +749,9 @@
    "title": "Project Hail Mary",
    "year": 2026,
    "seen_note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/yihdXomYb5kTeSivtFndMy5iDmf.jpg",
    "genres": [
     "Science Fiction",
@@ -638,6 +768,9 @@
    "title": "Saw",
    "year": 2004,
    "seen_note": "vault archive — memory 9.3",
+   "abandon_note": null,
+   "memory_score": 9.3,
+   "seen_bucket": "?",
    "poster": "/rLNSOudrayDBo1uqXjrhxcjODIC.jpg",
    "genres": [
     "Horror",
@@ -654,6 +787,9 @@
    "title": "Shutter Island",
    "year": 2010,
    "seen_note": "hazy — seen long ago, rewatch could be loud",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "L",
    "poster": "/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg",
    "genres": [
     "Drama",
@@ -670,6 +806,9 @@
    "title": "Sinners",
    "year": 2025,
    "seen_note": "confirmed seen 2026-08-14 at pick time, no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
    "genres": [
     "Horror",
@@ -686,6 +825,9 @@
    "title": "Snowpiercer",
    "year": 2013,
    "seen_note": "vault archive — memory 9.4, SEEN AND LOVED buzz Jul 22",
+   "abandon_note": null,
+   "memory_score": 9.4,
+   "seen_bucket": "F",
    "poster": "/kw6YQudA0TMcNmGUGy5XIw7zbnV.jpg",
    "genres": [
     "Action",
@@ -702,6 +844,9 @@
    "title": "Spider-Man: Into the Spider-Verse",
    "year": 2018,
    "seen_note": "hazy — seen a few years back",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "F",
    "poster": "/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
    "genres": [
     "Animation",
@@ -721,6 +866,9 @@
    "title": "Star Trek",
    "year": 2009,
    "seen_note": "seen — confirmed 2026-08-17 during pitch",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/9vaRPXj44Q2meHgt3VVfQufiHOJ.jpg",
    "genres": [
     "Science Fiction",
@@ -737,6 +885,9 @@
    "title": "Step Up",
    "year": 2006,
    "seen_note": "vault archive — memory 8.4",
+   "abandon_note": null,
+   "memory_score": 8.4,
+   "seen_bucket": "?",
    "poster": "/fmw52kXk2kN8AQil7tgOD41gt4Q.jpg",
    "genres": [
     "Music",
@@ -754,6 +905,9 @@
    "title": "Tenet",
    "year": 2020,
    "seen_note": "vault archive — memory 9.6, seen a few years back",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "F",
    "poster": "/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
    "genres": [
     "Action",
@@ -770,6 +924,9 @@
    "title": "The Bourne trilogy",
    "year": null,
    "seen_note": "vault archive — memory 9.3, scored as a run",
+   "abandon_note": null,
+   "memory_score": 9.3,
+   "seen_bucket": "?",
    "poster": "/aP8swke3gmowbkfZ6lmNidu0y9p.jpg",
    "genres": [],
    "director": [],
@@ -780,6 +937,9 @@
    "title": "The Cabin in the Woods",
    "year": 2012,
    "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/zZZe5wn0udlhMtdlDjN4NB72R6e.jpg",
    "genres": [
     "Horror",
@@ -796,6 +956,9 @@
    "title": "The Girl with the Dragon Tattoo",
    "year": 2011,
    "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/8bokS83zGdhaXgN9tjidUKmAftW.jpg",
    "genres": [
     "Thriller",
@@ -812,6 +975,9 @@
    "title": "The Lord of the Rings (trilogy)",
    "year": null,
    "seen_note": "vault archive — memory 9.8, scored as a whole",
+   "abandon_note": null,
+   "memory_score": 9.8,
+   "seen_bucket": "?",
    "poster": "/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
    "genres": [],
    "director": [],
@@ -822,6 +988,9 @@
    "title": "The Martian",
    "year": 2015,
    "seen_note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "?",
    "poster": "/fASz8A0yFE3QB6LgGoOfwvFSseV.jpg",
    "genres": [
     "Science Fiction",
@@ -838,6 +1007,9 @@
    "title": "The Prestige",
    "year": 2006,
    "seen_note": "vault archive — memory 9.1, seen a few years back",
+   "abandon_note": null,
+   "memory_score": 9.1,
+   "seen_bucket": "F",
    "poster": "/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg",
    "genres": [
     "Drama",
@@ -854,6 +1026,9 @@
    "title": "The Silence of the Lambs",
    "year": 1991,
    "seen_note": "vault archive — memory 9.6",
+   "abandon_note": null,
+   "memory_score": 9.6,
+   "seen_bucket": "?",
    "poster": "/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
    "genres": [
     "Crime",
@@ -870,6 +1045,9 @@
    "title": "The Substance",
    "year": 2024,
    "seen_note": "vault archive — memory 9.7, seen in the past year",
+   "abandon_note": null,
+   "memory_score": 9.7,
+   "seen_bucket": "R",
    "poster": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
    "genres": [
     "Horror",
@@ -886,6 +1064,9 @@
    "title": "The Truman Show",
    "year": 1998,
    "seen_note": "vault archive — memory 9.8",
+   "abandon_note": null,
+   "memory_score": 9.8,
+   "seen_bucket": "?",
    "poster": "/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
    "genres": [
     "Comedy",
@@ -901,6 +1082,9 @@
    "title": "Titanic",
    "year": 1997,
    "seen_note": "vault archive — memory 9.8",
+   "abandon_note": null,
+   "memory_score": 9.8,
+   "seen_bucket": "?",
    "poster": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
    "genres": [
     "Drama",
@@ -916,6 +1100,9 @@
    "title": "Us",
    "year": 2019,
    "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/ux2dU1jQ2ACIMShzB3yP93Udpzc.jpg",
    "genres": [
     "Horror",
@@ -932,6 +1119,9 @@
    "title": "War of the Worlds",
    "year": 2005,
    "seen_note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": null,
    "poster": "/6Biy7R9LfumYshur3YKhpj56MpB.jpg",
    "genres": [
     "Adventure",
@@ -948,6 +1138,9 @@
    "title": "West Side Story",
    "year": 1961,
    "seen_note": "hazy — childhood",
+   "abandon_note": null,
+   "memory_score": null,
+   "seen_bucket": "C",
    "poster": "/nzCMu6D5q60i2bVrIQ0DxlRSgCZ.jpg",
    "genres": [
     "Crime",
@@ -965,6 +1158,9 @@
    "title": "Whiplash",
    "year": 2014,
    "seen_note": "archive addition — memory 8.7, rewatch queued per Dixon",
+   "abandon_note": null,
+   "memory_score": 8.7,
+   "seen_bucket": "?",
    "poster": "/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
    "genres": [
     "Drama",
@@ -981,6 +1177,9 @@
    "title": "Zodiac",
    "year": 2007,
    "seen_note": "vault archive — memory 9.7, seen a few years back",
+   "abandon_note": null,
+   "memory_score": 9.7,
+   "seen_bucket": "F",
    "poster": "/6YmeO4pB7XTh8P8F960O1uA14JO.jpg",
    "genres": [
     "Crime",

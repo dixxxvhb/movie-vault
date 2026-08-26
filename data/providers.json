@@ -1,5 +1,5 @@
 {
- "_source": "film_titles.watch_providers (TMDB, US) for film_watchlist status='queued', plus film_services where active. Pulled 2026-08-14.",
+ "_source": "film_titles.watch_providers (TMDB, US) for film_watchlist status='queued', plus film_services where active. Pulled 2026-08-26.",
  "mine": [
   "Amazon Prime Video",
   "Paramount+",
@@ -7,165 +7,173 @@
   "YouTube (free with ads)"
  ],
  "titles": {
-  "Andor": {
+  "Her": {
+   "flat": [],
    "free": [],
+   "rent": true
+  },
+  "Andor": {
    "flat": [
     "Disney Plus"
    ],
+   "free": [],
    "rent": false
   },
-  "Apollo 13": {
-   "free": [
-    "BYUtv"
+  "Munich": {
+   "flat": [],
+   "free": [],
+   "rent": true
+  },
+  "The Menu": {
+   "flat": [
+    "fuboTV",
+    "FXNow",
+    "YouTube TV"
    ],
+   "free": [],
+   "rent": true
+  },
+  "Whiplash": {
+   "flat": [
+    "fuboTV",
+    "MGM Plus",
+    "MGM Plus Roku Premium Channel",
+    "MGM+ Amazon Channel",
+    "Philo",
+    "Sony Pictures Core Amazon Channel"
+   ],
+   "free": [],
+   "rent": true
+  },
+  "Apollo 13": {
    "flat": [
     "Netflix",
     "Netflix Standard with Ads"
    ],
-   "rent": true
-  },
-  "Atomic Blonde": {
    "free": [],
-   "flat": [
-    "HBO Max Amazon Channel",
-    "Cinemax Amazon Channel",
-    "HBO Max",
-    "Cinemax Apple TV Channel"
-   ],
-   "rent": true
-  },
-  "Children of Men": {
-   "free": [],
-   "flat": [],
-   "rent": true
-  },
-  "Dune: Part Three": {
-   "free": [],
-   "flat": [],
-   "rent": false
-  },
-  "Her": {
-   "free": [],
-   "flat": [],
-   "rent": true
-  },
-  "Jack Reacher": {
-   "free": [
-    "YouTube Free"
-   ],
-   "flat": [
-    "Paramount Plus Premium",
-    "Paramount Plus Essential",
-    "Philo",
-    "Paramount+ Amazon Channel",
-    "YouTube TV",
-    "Paramount+ Roku Premium Channel",
-    "Starz Amazon Channel",
-    "Starz",
-    "Starz Apple TV Channel"
-   ],
    "rent": true
   },
   "John Wick": {
-   "free": [],
    "flat": [
-    "Philo",
-    "AMC Plus Apple TV Channel ",
+    "AMC",
+    "AMC Plus Apple TV channel",
+    "AMC+",
     "AMC+ Amazon Channel",
     "AMC+ Roku Premium Channel",
-    "AMC+",
-    "AMC"
+    "Lionsgate+ Amazon Channels",
+    "Philo",
+    "YouTube TV"
    ],
-   "rent": true
-  },
-  "Kingsman: The Secret Service": {
    "free": [],
-   "flat": [],
-   "rent": true
-  },
-  "Michael Clayton": {
-   "free": [],
-   "flat": [],
-   "rent": true
-  },
-  "Munich": {
-   "free": [],
-   "flat": [],
    "rent": true
   },
   "Prisoners": {
-   "free": [],
    "flat": [],
-   "rent": true
-  },
-  "Run Lola Run": {
-   "free": [
-    "YouTube Free"
-   ],
-   "flat": [
-    "Hulu",
-    "Sundance Now"
-   ],
-   "rent": true
-  },
-  "Sicario: Day of the Soldado": {
    "free": [],
-   "flat": [
-    "Philo",
-    "Starz Amazon Channel",
-    "Starz",
-    "Starz Apple TV Channel",
-    "Starz Roku Premium Channel"
-   ],
    "rent": true
   },
   "Spotlight": {
-   "free": [
-    "Kanopy",
-    "Shout! Factory TV",
-    "YouTube Free",
-    "Plex",
-    "Plex Channel",
-    "Tubi TV"
-   ],
    "flat": [
     "fuboTV"
    ],
+   "free": [
+    "Kanopy",
+    "Plex",
+    "Plex Channel",
+    "Shout! Factory TV",
+    "Tubi TV",
+    "YouTube Free"
+   ],
+   "rent": true
+  },
+  "Jack Reacher": {
+   "flat": [
+    "Paramount Plus Essential",
+    "Paramount Plus Premium",
+    "Paramount+ Amazon Channel",
+    "Paramount+ Roku Premium Channel",
+    "Philo",
+    "Starz",
+    "Starz Amazon Channel",
+    "Starz Apple TV channel",
+    "YouTube TV"
+   ],
+   "free": [
+    "YouTube Free"
+   ],
+   "rent": true
+  },
+  "Run Lola Run": {
+   "flat": [
+    "Howdy Amazon Channel",
+    "Hulu",
+    "Sony Pictures Core Amazon Channel",
+    "Sundance Now"
+   ],
+   "free": [
+    "YouTube Free"
+   ],
+   "rent": true
+  },
+  "Atomic Blonde": {
+   "flat": [
+    "Cinemax Amazon Channel",
+    "Cinemax Apple TV channel",
+    "HBO Max",
+    "HBO Max Amazon Channel"
+   ],
+   "free": [],
    "rent": true
   },
   "The Accountant": {
+   "flat": [
+    "TBS",
+    "TNT",
+    "tru TV",
+    "YouTube TV"
+   ],
    "free": [],
-   "flat": [],
    "rent": true
   },
-  "The Menu": {
+  "Children of Men": {
+   "flat": [],
    "free": [],
-   "flat": [
-    "fuboTV",
-    "FXNow"
-   ],
    "rent": true
+  },
+  "Michael Clayton": {
+   "flat": [],
+   "free": [],
+   "rent": true
+  },
+  "Dune: Part Three": {
+   "flat": [],
+   "free": [],
+   "rent": false
   },
   "The Vast of Night": {
-   "free": [],
    "flat": [],
+   "free": [],
    "rent": false
   },
   "Tinker Tailor Soldier Spy": {
-   "free": [],
    "flat": [],
+   "free": [],
    "rent": true
   },
-  "Whiplash": {
-   "free": [],
+  "Sicario: Day of the Soldado": {
    "flat": [
-    "fuboTV",
-    "MGM+ Amazon Channel",
     "Philo",
-    "MGM Plus Roku Premium Channel",
-    "MGM Plus",
-    "Sony Pictures Core Amazon Channel"
+    "Starz",
+    "Starz Amazon Channel",
+    "Starz Apple TV channel",
+    "Starz Roku Premium Channel"
    ],
+   "free": [],
+   "rent": true
+  },
+  "Kingsman: The Secret Service": {
+   "flat": [],
+   "free": [],
    "rent": true
   }
  }

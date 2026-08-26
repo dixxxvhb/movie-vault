@@ -1,525 +1,538 @@
 {
- "_source": "film_titles joined to film_ledger_panels on title_id, pulled 2026-08-12. poster = TMDB poster_path, served from image.tmdb.org (no API key) and vendored into public/posters/ at build time.",
- "amadeus": {
-  "year": 1984,
-  "runtime": 160,
-  "poster": "/gQRfiyfGvr1az0quaYyMram3Aqt.jpg",
+ "game": {
+  "year": 1997,
   "genres": [
    "Drama",
-   "History",
-   "Music"
+   "Thriller",
+   "Mystery"
   ],
+  "poster": "/4UOa079915QjiTA2u5hT2yKVgUu.jpg",
+  "runtime": 129,
   "director": [
-   "Miloš Forman"
+   "David Fincher"
   ]
  },
- "annihilation": {
-  "year": 2018,
-  "runtime": 115,
-  "poster": "/4YRplSk6BhH6PRuE9gfyw9byUJ6.jpg",
-  "genres": [
-   "Science Fiction",
-   "Horror"
-  ],
-  "director": [
-   "Alex Garland"
-  ]
- },
- "barbarian": {
-  "year": 2022,
-  "runtime": 103,
-  "poster": "/idT5mnqPcJgSkvpDX7pJffBzdVH.jpg",
-  "genres": [
-   "Horror",
-   "Mystery",
-   "Thriller"
-  ],
-  "director": [
-   "Zach Cregger"
-  ]
- },
- "batman": {
-  "year": 2005,
-  "runtime": 140,
-  "poster": "/sPX89Td70IDDjVr85jdSBb4rWGr.jpg",
-  "genres": [
-   "Drama",
-   "Crime",
-   "Action"
-  ],
-  "director": [
-   "Christopher Nolan"
-  ]
- },
- "br2049": {
-  "year": 2017,
-  "runtime": 164,
-  "poster": "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
+ "moon": {
+  "year": 2009,
   "genres": [
    "Science Fiction",
    "Drama"
   ],
+  "poster": "/35IU0Mq0zFsN1mYwDGts5mKc77n.jpg",
+  "runtime": 97,
   "director": [
-   "Denis Villeneuve"
+   "Duncan Jones"
   ]
  },
- "bullettrain": {
-  "year": 2022,
-  "runtime": 126,
-  "poster": "/j8szC8OgrejDQjjMKSVXyaAjw3V.jpg",
+ "stby": {
+  "year": 2018,
   "genres": [
-   "Action",
-   "Comedy",
-   "Thriller"
+   "Fantasy",
+   "Science Fiction",
+   "Comedy"
   ],
+  "poster": "/peTl1V04E9ppvhgvNmSX0r2ALqO.jpg",
+  "runtime": 112,
   "director": [
-   "David Leitch"
+   "Boots Riley"
   ]
  },
- "cmiyc": {
-  "year": 2002,
-  "runtime": 141,
-  "poster": "/ctjEj2xM32OvBXCq8zAdK3ZrsAj.jpg",
-  "genres": [
-   "Drama",
-   "Crime"
-  ],
-  "director": [
-   "Steven Spielberg"
-  ]
- },
- "coherence": {
-  "year": 2014,
-  "runtime": 89,
-  "poster": "/ezUtb9m5DeLwL2gxi4gktzNCvQv.jpg",
-  "genres": [
-   "Thriller",
-   "Science Fiction"
-  ],
-  "director": [
-   "James Ward Byrkit"
-  ]
- },
- "darkknight": {
-  "year": 2008,
-  "runtime": 152,
-  "poster": "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+ "tdkr": {
+  "year": 2012,
   "genres": [
    "Action",
    "Crime",
+   "Drama",
    "Thriller"
   ],
+  "poster": "/hr0L2aueqlP2BYUblTTjmtn0hw4.jpg",
+  "runtime": 165,
   "director": [
    "Christopher Nolan"
   ]
  },
- "disclosure-day": {
-  "year": 2026,
-  "runtime": 146,
-  "poster": "/AnJ8IQJI23hNpYXVNaythu061Ru.jpg",
+ "cmiyc": {
+  "year": 2002,
   "genres": [
-   "Science Fiction",
-   "Thriller"
+   "Drama",
+   "Crime"
   ],
+  "poster": "/ctjEj2xM32OvBXCq8zAdK3ZrsAj.jpg",
+  "runtime": 141,
   "director": [
    "Steven Spielberg"
   ]
  },
  "enemy": {
   "year": 2013,
-  "runtime": 91,
-  "poster": "/vf40tyDRKZsBmaLsYeopzfFLzLx.jpg",
   "genres": [
    "Thriller",
    "Mystery"
   ],
+  "poster": "/vf40tyDRKZsBmaLsYeopzfFLzLx.jpg",
+  "runtime": 91,
   "director": [
    "Denis Villeneuve"
   ]
  },
- "exmachina": {
-  "year": 2015,
-  "runtime": 108,
-  "poster": "/dmJW8IAKHKxFNiUnoDR7JfsK7Rp.jpg",
-  "genres": [
-   "Drama",
-   "Science Fiction"
-  ],
-  "director": [
-   "Alex Garland"
-  ]
- },
- "game": {
-  "year": 1997,
-  "runtime": 129,
-  "poster": "/4UOa079915QjiTA2u5hT2yKVgUu.jpg",
-  "genres": [
-   "Drama",
-   "Thriller",
-   "Mystery"
-  ],
-  "director": [
-   "David Fincher"
-  ]
- },
- "malignant": {
-  "year": 2021,
-  "runtime": 111,
-  "poster": "/dGv2BWjzwAz6LB8a8JeRIZL8hSz.jpg",
-  "genres": [
-   "Horror",
-   "Mystery"
-  ],
-  "director": [
-   "James Wan"
-  ]
- },
- "matrix": {
-  "year": 1999,
-  "runtime": 136,
-  "poster": "/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg",
-  "genres": [
-   "Action",
-   "Science Fiction"
-  ],
-  "director": [
-   "Lana Wachowski",
-   "Lilly Wachowski"
-  ]
- },
- "maverick": {
-  "year": 2022,
-  "runtime": 131,
-  "poster": "/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg",
-  "genres": [
-   "Action",
-   "Drama"
-  ],
-  "director": [
-   "Joseph Kosinski"
-  ]
- },
- "memento": {
-  "year": 2000,
-  "runtime": 113,
-  "poster": "/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg",
-  "genres": [
-   "Mystery",
-   "Thriller"
-  ],
-  "director": [
-   "Christopher Nolan"
-  ]
- },
- "moon": {
-  "year": 2009,
-  "runtime": 97,
-  "poster": "/35IU0Mq0zFsN1mYwDGts5mKc77n.jpg",
-  "genres": [
-   "Science Fiction",
-   "Drama"
-  ],
-  "director": [
-   "Duncan Jones"
-  ]
- },
  "ncfom": {
   "year": 2007,
-  "runtime": 122,
-  "poster": "/uB7RDZby43Wvu8SKGHHTwGyTDBX.jpg",
   "genres": [
    "Crime",
    "Thriller",
    "Western"
   ],
+  "poster": "/uB7RDZby43Wvu8SKGHHTwGyTDBX.jpg",
+  "runtime": 122,
   "director": [
    "Joel Coen",
    "Ethan Coen"
   ]
  },
- "niceguys": {
-  "year": 2016,
-  "runtime": 116,
-  "poster": "/clq4So9spa9cXk3MZy2iMdqkxP2.jpg",
+ "batman": {
+  "year": 2005,
   "genres": [
-   "Comedy",
+   "Drama",
    "Crime",
    "Action"
   ],
+  "poster": "/sPX89Td70IDDjVr85jdSBb4rWGr.jpg",
+  "runtime": 140,
   "director": [
-   "Shane Black"
+   "Christopher Nolan"
   ]
  },
- "nightcrawler": {
-  "year": 2014,
-  "runtime": 118,
-  "poster": "/j9HrX8f7GbZQm1BrBiR40uFQZSb.jpg",
+ "br2049": {
+  "year": 2017,
   "genres": [
-   "Crime",
+   "Science Fiction",
+   "Drama"
+  ],
+  "poster": "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
+  "runtime": 164,
+  "director": [
+   "Denis Villeneuve"
+  ]
+ },
+ "matrix": {
+  "year": 1999,
+  "genres": [
+   "Action",
+   "Science Fiction"
+  ],
+  "poster": "/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg",
+  "runtime": 136,
+  "director": [
+   "Lana Wachowski",
+   "Lilly Wachowski"
+  ]
+ },
+ "amadeus": {
+  "year": 1984,
+  "genres": [
    "Drama",
-   "Thriller"
-  ],
-  "director": [
-   "Dan Gilroy"
-  ]
- },
- "obsession": {
-  "year": 2026,
-  "runtime": 109,
-  "poster": "/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
-  "genres": [
-   "Horror",
-   "Thriller"
-  ],
-  "director": [
-   "Curry Barker",
-   "Farhan Rana Rajpoot"
-  ]
- },
- "poorthings": {
-  "year": 2023,
-  "runtime": 141,
-  "poster": "/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg",
-  "genres": [
-   "Science Fiction",
-   "Romance",
-   "Comedy"
-  ],
-  "director": [
-   "Yorgos Lanthimos"
-  ]
- },
- "predestination": {
-  "year": 2014,
-  "runtime": 98,
-  "poster": "/38Xr1JnV1ZcLQ55zmdSp6n475cZ.jpg",
-  "genres": [
-   "Science Fiction",
-   "Thriller"
-  ],
-  "director": [
-   "Peter Spierig",
-   "Michael Spierig"
-  ]
- },
- "pressure": {
-  "year": 2026,
-  "runtime": 101,
-  "poster": "/gFjEggtrejCN79r6SXRjM269OtG.jpg",
-  "genres": [
-   "Thriller",
    "History",
-   "War"
+   "Music"
   ],
+  "poster": "/gQRfiyfGvr1az0quaYyMram3Aqt.jpg",
+  "runtime": 160,
   "director": [
-   "Anthony Maras"
+   "Miloš Forman"
+  ]
+ },
+ "memento": {
+  "year": 2000,
+  "genres": [
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/fKTPH2WvH8nHTXeBYBVhawtRqtR.jpg",
+  "runtime": 113,
+  "director": [
+   "Christopher Nolan"
   ]
  },
  "sicario": {
   "year": 2015,
-  "runtime": 122,
-  "poster": "/lz8vNyXeidqqOdJW9ZjnDAMb5Vr.jpg",
   "genres": [
    "Action",
    "Crime",
    "Thriller"
   ],
+  "poster": "/lz8vNyXeidqqOdJW9ZjnDAMb5Vr.jpg",
+  "runtime": 122,
   "director": [
    "Denis Villeneuve"
   ]
  },
- "silverlake": {
-  "year": 2018,
-  "runtime": 139,
-  "poster": "/6sq6fOb02zjhguNpi5VOklq6Nj.jpg",
+ "maverick": {
+  "year": 2022,
   "genres": [
-   "Crime",
-   "Drama",
-   "Mystery"
+   "Action",
+   "Drama"
   ],
+  "poster": "/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg",
+  "runtime": 131,
   "director": [
-   "David Robert Mitchell"
+   "Joseph Kosinski"
   ]
  },
- "source-code": {
-  "year": 2011,
-  "runtime": 93,
-  "poster": "/nTr0lvAzeQmUjgSgDEHTJpnrxTz.jpg",
+ "niceguys": {
+  "year": 2016,
   "genres": [
-   "Thriller",
+   "Comedy",
+   "Crime",
+   "Action"
+  ],
+  "poster": "/clq4So9spa9cXk3MZy2iMdqkxP2.jpg",
+  "runtime": 116,
+  "director": [
+   "Shane Black"
+  ]
+ },
+ "oblivion": {
+  "year": 2013,
+  "genres": [
+   "Action",
    "Science Fiction",
+   "Adventure",
    "Mystery"
   ],
+  "poster": "/bYLM3GpNUZnoFElPXp1zlhDPdtv.jpg",
+  "runtime": 124,
   "director": [
-   "Duncan Jones"
+   "Joseph Kosinski"
+  ]
+ },
+ "pressure": {
+  "year": 2026,
+  "genres": [
+   "Thriller",
+   "History",
+   "War"
+  ],
+  "poster": "/gFjEggtrejCN79r6SXRjM269OtG.jpg",
+  "runtime": 101,
+  "director": [
+   "Anthony Maras"
   ]
  },
  "stardust": {
   "year": 2007,
-  "runtime": 127,
-  "poster": "/7zbFmxy3DqKYL2M8Hop6uylp2Uy.jpg",
   "genres": [
    "Adventure",
    "Fantasy",
    "Romance",
    "Family"
   ],
+  "poster": "/7zbFmxy3DqKYL2M8Hop6uylp2Uy.jpg",
+  "runtime": 127,
   "director": [
    "Matthew Vaughn"
   ]
  },
- "stby": {
-  "year": 2018,
-  "runtime": 112,
-  "poster": "/peTl1V04E9ppvhgvNmSX0r2ALqO.jpg",
-  "genres": [
-   "Fantasy",
-   "Science Fiction",
-   "Comedy"
-  ],
-  "director": [
-   "Boots Riley"
-  ]
- },
  "sunshine": {
   "year": 2007,
-  "runtime": 108,
-  "poster": "/oKGGeJ8qvm0UmClz43VJ31fzPP7.jpg",
   "genres": [
    "Science Fiction",
    "Thriller"
   ],
+  "poster": "/oKGGeJ8qvm0UmClz43VJ31fzPP7.jpg",
+  "runtime": 108,
   "director": [
    "Danny Boyle"
   ]
  },
- "tdkr": {
-  "year": 2012,
-  "runtime": 165,
-  "poster": "/hr0L2aueqlP2BYUblTTjmtn0hw4.jpg",
-  "genres": [
-   "Action",
-   "Crime",
-   "Drama",
-   "Thriller"
-  ],
-  "director": [
-   "Christopher Nolan"
-  ]
- },
- "the-sting": {
-  "year": 1973,
-  "runtime": 129,
-  "poster": "/ckmYng37zey8INYf6d10cVgIG93.jpg",
-  "genres": [
-   "Comedy",
-   "Crime",
-   "Drama"
-  ],
-  "director": [
-   "George Roy Hill"
-  ]
- },
  "triangle": {
   "year": 2009,
-  "runtime": 99,
-  "poster": "/cRlMrbc4Iof7vN0ZqHwJnMBYBLi.jpg",
   "genres": [
    "Horror"
   ],
+  "poster": "/cRlMrbc4Iof7vN0ZqHwJnMBYBLi.jpg",
+  "runtime": 99,
   "director": [
    "Christopher Smith"
   ]
  },
- "minority-report": {
-  "year": 2002,
-  "runtime": 145,
-  "poster": "/qtgFcnwh9dAFLocsDk2ySDVS8UF.jpg",
-  "genres": [
-   "Science Fiction",
-   "Action",
-   "Thriller"
-  ],
-  "director": [
-   "Steven Spielberg"
-  ]
- },
- "the-departed": {
-  "year": 2006,
-  "runtime": 151,
-  "poster": "/nT97ifVT2J1yMQmeq20Qblg61T.jpg",
-  "genres": [
-   "Drama",
-   "Thriller",
-   "Crime"
-  ],
-  "director": [
-   "Martin Scorsese"
-  ]
- },
- "masters-of-the-universe-2026": {
-  "year": 2026,
-  "runtime": 141,
-  "poster": "/oRuyGUHdoaQxWP3SDfafGkStxTC.jpg",
-  "genres": [
-   "Action",
-   "Fantasy",
-   "Science Fiction"
-  ],
-  "director": [
-   "Travis Knight"
-  ]
- },
- "baby-driver": {
-  "year": 2017,
-  "runtime": 113,
-  "poster": "/tYzFuYXmT8LOYASlFCkaPiAFAl0.jpg",
-  "genres": [
-   "Action",
-   "Crime"
-  ],
-  "director": [
-   "Edgar Wright"
-  ]
- },
- "hereditary": {
-  "year": 2018,
-  "runtime": 128,
-  "poster": "/4GFPuL14eXi66V96xBWY73Y9PfR.jpg",
+ "barbarian": {
+  "year": 2022,
   "genres": [
    "Horror",
    "Mystery",
    "Thriller"
   ],
+  "poster": "/idT5mnqPcJgSkvpDX7pJffBzdVH.jpg",
+  "runtime": 103,
   "director": [
-   "Ari Aster"
+   "Zach Cregger"
   ]
  },
- "oblivion": {
-  "year": 2013,
-  "runtime": 124,
-  "poster": "/bYLM3GpNUZnoFElPXp1zlhDPdtv.jpg",
+ "coherence": {
+  "year": 2014,
   "genres": [
-   "Action",
-   "Science Fiction",
-   "Adventure",
+   "Thriller",
+   "Science Fiction"
+  ],
+  "poster": "/ezUtb9m5DeLwL2gxi4gktzNCvQv.jpg",
+  "runtime": 89,
+  "director": [
+   "James Ward Byrkit"
+  ]
+ },
+ "exmachina": {
+  "year": 2015,
+  "genres": [
+   "Drama",
+   "Science Fiction"
+  ],
+  "poster": "/dmJW8IAKHKxFNiUnoDR7JfsK7Rp.jpg",
+  "runtime": 108,
+  "director": [
+   "Alex Garland"
+  ]
+ },
+ "malignant": {
+  "year": 2021,
+  "genres": [
+   "Horror",
    "Mystery"
   ],
+  "poster": "/dGv2BWjzwAz6LB8a8JeRIZL8hSz.jpg",
+  "runtime": 111,
   "director": [
-   "Joseph Kosinski"
+   "James Wan"
+  ]
+ },
+ "obsession": {
+  "year": 2026,
+  "genres": [
+   "Horror",
+   "Thriller"
+  ],
+  "poster": "/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg",
+  "runtime": 109,
+  "director": [
+   "Curry Barker",
+   "Farhan Rana Rajpoot"
   ]
  },
  "rogue-one": {
   "year": 2016,
-  "runtime": 133,
-  "poster": "/i0yw1mFbB7sNGHCs7EXZPzFkdA1.jpg",
   "genres": [
    "Action",
    "Adventure",
    "Science Fiction"
   ],
+  "poster": "/i0yw1mFbB7sNGHCs7EXZPzFkdA1.jpg",
+  "runtime": 133,
   "director": [
    "Gareth Edwards"
   ]
- }
+ },
+ "the-sting": {
+  "year": 1973,
+  "genres": [
+   "Comedy",
+   "Crime",
+   "Drama"
+  ],
+  "poster": "/ckmYng37zey8INYf6d10cVgIG93.jpg",
+  "runtime": 129,
+  "director": [
+   "George Roy Hill"
+  ]
+ },
+ "darkknight": {
+  "year": 2008,
+  "genres": [
+   "Action",
+   "Crime",
+   "Thriller"
+  ],
+  "poster": "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+  "runtime": 152,
+  "director": [
+   "Christopher Nolan"
+  ]
+ },
+ "hereditary": {
+  "year": 2018,
+  "genres": [
+   "Horror",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/4GFPuL14eXi66V96xBWY73Y9PfR.jpg",
+  "runtime": 128,
+  "director": [
+   "Ari Aster"
+  ]
+ },
+ "poorthings": {
+  "year": 2023,
+  "genres": [
+   "Science Fiction",
+   "Romance",
+   "Comedy"
+  ],
+  "poster": "/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg",
+  "runtime": 141,
+  "director": [
+   "Yorgos Lanthimos"
+  ]
+ },
+ "silverlake": {
+  "year": 2018,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Mystery"
+  ],
+  "poster": "/6sq6fOb02zjhguNpi5VOklq6Nj.jpg",
+  "runtime": 139,
+  "director": [
+   "David Robert Mitchell"
+  ]
+ },
+ "baby-driver": {
+  "year": 2017,
+  "genres": [
+   "Action",
+   "Crime"
+  ],
+  "poster": "/tYzFuYXmT8LOYASlFCkaPiAFAl0.jpg",
+  "runtime": 113,
+  "director": [
+   "Edgar Wright"
+  ]
+ },
+ "bullettrain": {
+  "year": 2022,
+  "genres": [
+   "Action",
+   "Comedy",
+   "Thriller"
+  ],
+  "poster": "/j8szC8OgrejDQjjMKSVXyaAjw3V.jpg",
+  "runtime": 126,
+  "director": [
+   "David Leitch"
+  ]
+ },
+ "source-code": {
+  "year": 2011,
+  "genres": [
+   "Thriller",
+   "Science Fiction",
+   "Mystery"
+  ],
+  "poster": "/nTr0lvAzeQmUjgSgDEHTJpnrxTz.jpg",
+  "runtime": 93,
+  "director": [
+   "Duncan Jones"
+  ]
+ },
+ "annihilation": {
+  "year": 2018,
+  "genres": [
+   "Science Fiction",
+   "Horror"
+  ],
+  "poster": "/4YRplSk6BhH6PRuE9gfyw9byUJ6.jpg",
+  "runtime": 115,
+  "director": [
+   "Alex Garland"
+  ]
+ },
+ "nightcrawler": {
+  "year": 2014,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/j9HrX8f7GbZQm1BrBiR40uFQZSb.jpg",
+  "runtime": 118,
+  "director": [
+   "Dan Gilroy"
+  ]
+ },
+ "the-departed": {
+  "year": 2006,
+  "genres": [
+   "Drama",
+   "Thriller",
+   "Crime"
+  ],
+  "poster": "/nT97ifVT2J1yMQmeq20Qblg61T.jpg",
+  "runtime": 151,
+  "director": [
+   "Martin Scorsese"
+  ]
+ },
+ "disclosure-day": {
+  "year": 2026,
+  "genres": [
+   "Science Fiction",
+   "Thriller"
+  ],
+  "poster": "/AnJ8IQJI23hNpYXVNaythu061Ru.jpg",
+  "runtime": 146,
+  "director": [
+   "Steven Spielberg"
+  ]
+ },
+ "predestination": {
+  "year": 2014,
+  "genres": [
+   "Science Fiction",
+   "Thriller"
+  ],
+  "poster": "/38Xr1JnV1ZcLQ55zmdSp6n475cZ.jpg",
+  "runtime": 98,
+  "director": [
+   "Peter Spierig",
+   "Michael Spierig"
+  ]
+ },
+ "minority-report": {
+  "year": 2002,
+  "genres": [
+   "Science Fiction",
+   "Action",
+   "Thriller"
+  ],
+  "poster": "/qtgFcnwh9dAFLocsDk2ySDVS8UF.jpg",
+  "runtime": 145,
+  "director": [
+   "Steven Spielberg"
+  ]
+ },
+ "one-battle-after-another": {
+  "year": 2025,
+  "genres": [
+   "Thriller",
+   "Crime",
+   "Comedy"
+  ],
+  "poster": "/lbBWwxBht4JFP5PsuJ5onpMqugW.jpg",
+  "runtime": 162,
+  "director": [
+   "Paul Thomas Anderson"
+  ]
+ },
+ "masters-of-the-universe-2026": {
+  "year": 2026,
+  "genres": [
+   "Action",
+   "Fantasy",
+   "Science Fiction"
+  ],
+  "poster": "/oRuyGUHdoaQxWP3SDfafGkStxTC.jpg",
+  "runtime": 141,
+  "director": [
+   "Travis Knight"
+  ]
+ },
+ "_source": "film_titles joined to film_ledger_panels on title_id, pulled 2026-08-26. poster = TMDB poster_path, served from image.tmdb.org (no API key) and vendored into public/posters/ at build time."
 }

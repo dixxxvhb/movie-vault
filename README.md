@@ -1,8 +1,8 @@
 # The Vault
 
 Dixon's movie-night ledger as a real room. A first-person 3D motel space where
-every scored film hangs as a Polaroid, connected by red string, readable up
-close. Built with **Vite + React-Three-Fiber (Three.js)**.
+every scored film hangs as a Polaroid, readable up close. Bloodlines light up
+in red only while you hold a film, and are gone on release. Built with **Vite + React-Three-Fiber (Three.js)**.
 
 **Live:** https://dixxxvhb.github.io/movie-vault/
 
@@ -17,7 +17,7 @@ four jobs:
 | Wall | Holds |
 |---|---|
 | North — **the Ledger** | Every scored film. **Height is the score**, not the rank |
-| North lit — **the Investigation** | The same wall with `film_links` strung in red, room dimmed |
+| North lit — **the Investigation** | The same wall gone dim; holding a film lights its `film_links` in red (#C42B2B), released they vanish. The Thread is opt-in, never standing string |
 | South — **the Door** | The queue: what's next |
 | West — **the Mirror** | The taste lessons, taped up |
 
@@ -33,8 +33,9 @@ night he saw it:
 | **the Shoebox** (under the window) | Seen, scored **from memory, in pencil**. Faded prints |
 | **the Dark Drawer** (in the nightstand) | Seen, unscorable. Frames that were never developed |
 
-The split is read out of `film_titles.seen_note`: a memory score anywhere in
-the note puts a film in the Shoebox, everything else is a dark frame. Archive
+The split is read from registry columns (v3): `film_titles.memory_score`
+present puts a film in the Shoebox, seen with no score is a dark frame. The
+old seen_note prose parse is retired. Archive
 scores **never** sit on the Ledger's axis and never move a Ledger anchor — a
 remembered 10 and a recorded 10 are different currencies, so they are never
 measured against the same wall. That is why the archive is at your feet and not
@@ -286,7 +287,7 @@ Push to `master`. The GitHub Action builds and deploys to Pages.
   lighting, dust, postprocessing, station camera.
 - **M2 (shipped)** real TMDB posters, vendored, Polaroid-graded.
 - **M3 (shipped)** inspect: lean in, card turns, case file from `panel_html`.
-- **M4 (shipped)** the Investigation: `film_links` as red string, room dims.
+- **M4 (shipped)** the Investigation: room dims, `film_links` light on hold, gone on release.
 - **M5 (shipped)** the Door (queue) and the Mirror (taste lessons).
 - **M6 (shipped)** the Shoebox and the Dark Drawer, `film_quotes` as scraps, and
   the cold open (a 3.4s wake-up blink, skippable on any input, `?nocold` to

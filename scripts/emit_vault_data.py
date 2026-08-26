@@ -284,33 +284,25 @@ LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
 # Shoebox), or an undeveloped dark frame awaiting the chemical bath of a rewatch
 # (the Dark Drawer).
 #
-# The split is read out of seen_note, which is prose, not an enum. A memory
-# score anywhere in the note puts the film in the Shoebox; everything else is a
-# dark frame. Notes matching NEITHER known shape are reported rather than
-# silently binned -- the same reasoning as the drift guard above.
+# The split is read from real registry columns (v3, 2026-08-26):
+# film_titles.memory_score present puts the film in the Shoebox; seen_before
+# with no score is a dark frame. The old seen_note prose parse (and its
+# parenthesized-aside trap) is gone; the columns are the source of truth.
 ARCHIVE_IN = load("archive.json")["archive"]
-# A print used to read "vault archive - memory 10.0", which is the machinery
-# talking. Where a title has a snap_line, the print says that instead: one line
-# about the film, in his own words.
+# Where a title has a snap_line, the print says that instead: one line about
+# the film, in his own words.
 ARCH_EXTRA = load("archive_extra.json")["titles"]
-
-MEMORY_RE = re.compile(r"memory\s+(\d+(?:\.\d+)?)", re.I)
-KNOWN_DARK_RE = re.compile(r"hazy|no memory score", re.I)
 
 archive = []
 _by_slug = {}
-_unclassified = []
 _dupes = []
 
 for a in ARCHIVE_IN:
-    note = a.get("seen_note") or ""
-    # Parenthesized asides can cite ANOTHER film's memory score ("asteroid
-    # rematch vs Deep Impact (memory 10.0)") — classify on the note with the
-    # asides removed, or the aside's number gets pinned on the wrong film.
-    m = MEMORY_RE.search(re.sub(r"\([^)]*\)", "", note))
-    memory = float(m.group(1)) if m else None
-    if memory is None and not KNOWN_DARK_RE.search(note):
-        _unclassified.append("%s -> %r" % (a["slug"], note))
+    # abandon_note covers walkouts (Cosmos): the note moved off seen_note when
+    # abandonments became first-class columns.
+    note = a.get("seen_note") or a.get("abandon_note") or ""
+    memory = a.get("memory_score")
+    memory = float(memory) if memory is not None else None
 
     row = {
         "slug": a["slug"],
@@ -358,11 +350,6 @@ drawer = sorted([a for a in archive if a["kind"] == "drawer"],
 if _dupes:
     sys.stderr.write("ARCHIVE: %d duplicate slug(s) merged -> %s\n"
                      % (len(_dupes), ", ".join(sorted(set(_dupes)))))
-if _unclassified:
-    sys.stderr.write(
-        "ARCHIVE: %d seen_note(s) match no known shape (filed as dark frames):\n  %s\n"
-        % (len(_unclassified), "\n  ".join(_unclassified))
-    )
 
 # ----------------------------------------------------------------- the quotes
 #
