@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { seenSlugs, subscribeVisits } from './visits.js'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -84,7 +85,7 @@ function wrapText(ctx, text, x0, y, maxW, lh, size, color, accent) {
   return y
 }
 
-function Slip({ texture, position, rotation, size, onPick, picked }) {
+function Slip({ texture, position, rotation, size, onPick, picked, dim = false }) {
   const ref = useRef()
   const [hovered, setHovered] = useState(false)
   useFrame((_, dt) => {
@@ -110,12 +111,17 @@ function Slip({ texture, position, rotation, size, onPick, picked }) {
       </mesh>
       <mesh>
         <planeGeometry args={size} />
+        {/* An unearned law is dimmer and flatter, the way a note you have not
+            finished writing sits on a wall: present, legible as an object,
+            not yet legible as a thought. */}
         <meshStandardMaterial
           map={texture}
           emissiveMap={texture}
           emissive="#ffffff"
-          emissiveIntensity={0.24}
+          emissiveIntensity={dim ? 0.07 : 0.24}
           roughness={0.95}
+          transparent
+          opacity={dim ? 0.62 : 1}
         />
       </mesh>
       {/* a strip of tape, not a pin */}
@@ -178,7 +184,8 @@ export function QueueWall({ queue, origin, rotation }) {
   return (
     <group position={origin} rotation={rotation}>
       {slips.map((s) => (
-        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation} size={s.size} />
+        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation}
+              size={s.size} dim={!s.earned} />
       ))}
     </group>
   )
@@ -186,7 +193,26 @@ export function QueueWall({ queue, origin, rotation }) {
 
 /* ---------------------------------------------------------------- the mirror */
 
-export function LessonsWall({ lessons, origin, rotation }) {
+export function LessonsWall({ lessons, films = [], origin, rotation }) {
+  // The Mirror is the one wall that is not a record of what he watched, it is
+  // a record of what watching them TAUGHT him. So it is the natural home for
+  // the only progression in the Vault: a law is legible once you have walked
+  // the films it cites.
+  //
+  // Unearned laws are not hidden. Hiding them would make the wall look empty
+  // and give a visitor nothing to be curious about. They are taped up in his
+  // hand with the rule itself still to come, listing the films that would
+  // finish them, which is a rumour rather than a quest marker: it tells you
+  // the shape of what you have not seen without pointing at it.
+  // slug -> title, so an unfinished law can name the films that would
+  // finish it in his words rather than in slugs.
+  const titleOf = useMemo(() => {
+    const m = new Map(films.map((f) => [f.slug, f.title]))
+    return (slug) => m.get(slug) || slug
+  }, [films])
+  const [seen, setSeen] = useState(() => new Set(seenSlugs()))
+  useEffect(() => subscribeVisits(() => setSeen(new Set(seenSlugs()))), [])
+
   const slips = useMemo(() => {
     const cols = 3
     const CW = 0.34, CH = 0.24
@@ -194,15 +220,29 @@ export function LessonsWall({ lessons, origin, rotation }) {
       const col = i % cols
       const row = Math.floor(i / cols)
       const s = scatter(i, 4177)
-      const tex = slipTexture({
-        seed: i * 6271 + 11,
-        w: 460, h: 330,
-        kicker: '·'.repeat(l.weight || 1),
-        lines: [{ text: l.rule, size: 27, color: '#26231d' }],
-      })
+      const cites = l.cites || []
+      const have = cites.filter((c) => seen.has(c)).length
+      const earned = cites.length > 0 && have === cites.length
+      const tex = earned || !cites.length
+        ? slipTexture({
+            seed: i * 6271 + 11,
+            w: 460, h: 330,
+            kicker: '·'.repeat(l.weight || 1),
+            lines: [{ text: l.rule, size: 27, color: '#26231d' }],
+          })
+        : slipTexture({
+            seed: i * 6271 + 11,
+            w: 460, h: 330,
+            kicker: have ? have + ' of ' + cites.length : null,
+            lines: [
+              { text: 'something these have in common', size: 26, color: '#6d6455' },
+              { text: cites.map(titleOf).join(', '), size: 25, color: '#26231d' },
+            ],
+          })
       return {
         key: i,
         tex,
+        earned: earned || !cites.length,
         size: [CW, CH],
         position: [
           (col - (cols - 1) / 2) * (CW + 0.06) + s.dx,
@@ -212,7 +252,7 @@ export function LessonsWall({ lessons, origin, rotation }) {
         rotation: [0, 0, s.rot],
       }
     })
-  }, [lessons])
+  }, [lessons, seen, titleOf])
 
   return (
     <group position={origin} rotation={rotation}>

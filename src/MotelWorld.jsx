@@ -131,7 +131,8 @@ export default function MotelWorld({
 
       {/* the mirror wall: what he likes. Pushed off the window at z = 0.75 */}
       {data?.lessons?.length > 0 && (
-        <LessonsWall lessons={data.lessons} origin={[-HW + 0.016, 0, -0.45]} rotation={[0, Math.PI / 2, 0]} />
+        <LessonsWall lessons={data.lessons} films={data.films}
+                     origin={[-HW + 0.016, 0, -0.45]} rotation={[0, Math.PI / 2, 0]} />
       )}
 
       {/* the archive: everything he has watched but never scored live */}

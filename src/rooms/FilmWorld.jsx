@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 import CameraRig from '../CameraRig.jsx'
 import { getRoomComponent } from './registry.js'
+import { enterRoom } from '../visits.js'
 
 // The room a film opens into. Mounted only while world is 'film:<slug>' or
 // 'exiting:<slug>' (App.jsx) — MotelWorld's lights and walls die with
@@ -18,6 +19,13 @@ import { getRoomComponent } from './registry.js'
 // same as `config` itself — nothing below ever reaches back up for either.
 export default function FilmWorld({ slug, film, config, doors, onDoor }) {
   const { camera } = useThree()
+
+  // The visit. Banked on the way OUT, and only if you stayed: walking through
+  // a doorway and straight back out is not a visit, and a taste law that
+  // crystallises because somebody clipped the corner of a room is a law that
+  // lied to them. Written as an effect cleanup so it cannot be forgotten.
+  useEffect(() => enterRoom(slug), [slug])
+
   // `i` toggles the record away for pure ambience. Local state, because
   // nothing outside this room needs to know about it.
   const [infoOn, setInfoOn] = useState(true)
