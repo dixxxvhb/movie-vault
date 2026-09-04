@@ -854,7 +854,20 @@ export default function App() {
         }
         @media (max-width: 720px) {
           .vault-hint { display: none; }
-          .vault-dock { padding: 10px 12px 12px; }
+          .vault-dock {
+            padding: 10px 12px 12px;
+            /* The row scrolls and always did, but on a 390px screen it simply
+               stopped mid-word at "THE MIRRO" with nothing to say there was
+               more, which reads as a broken layout rather than a scroller.
+               A mask fades the last 34px so the cut is deliberate, and
+               scroll-snap makes a thumb flick land on a whole button instead
+               of halfway through one. */
+            -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+            mask-image: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+            scroll-snap-type: x proximity;
+            scroll-padding-left: 12px;
+          }
+          .vault-dock > * { scroll-snap-align: start; }
         }
       `}</style>
 

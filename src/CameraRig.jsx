@@ -22,16 +22,24 @@ const EYE = 1.62
 // physically prevented from turning your head to see the door behind you. Every
 // station now looks a full 360. The authored aim is still the aim — it is where
 // you are pointed when you arrive — it just no longer holds your neck.
+// `frame` is the world width a station MUST show. On a portrait phone the
+// camera dollies backwards along its own view axis until that width fits
+// (framedPos below); on desktop the pull computes to zero and the authored
+// position is used unchanged. Only the stations that frame a WALL declare it,
+// because the shoebox and the drawer are objects you crouch over and stepping
+// back from those would be the wrong instinct entirely.
 export const STATIONS = {
-  center: { pos: [0, EYE, 1.25], look: [0, 1.45, -HD], fov: 60 },
-  ledger: { pos: [0, 1.5, 0.55], look: [0, 1.46, -HD], fov: 54 },
+  center: { pos: [0, EYE, 1.25], look: [0, 1.45, -HD], fov: 60, frame: 3.4, maxBack: 0.6 },
+  // 3.9 of the 4.2m wall: the cards, both pencil rules, and the score numerals
+  // at both edges. Losing the numerals loses the one thing the Ledger says.
+  ledger: { pos: [0, 1.5, 0.55], look: [0, 1.46, -HD], fov: 54, frame: 3.9, maxBack: 1.3 },
   // The Investigation is not a different wall — it is the Ledger wall with the
   // string lit. Stand back so the whole web is in frame at once.
-  investigation: { pos: [0, 1.48, 1.35], look: [0, 1.44, -HD], fov: 62 },
+  investigation: { pos: [0, 1.48, 1.35], look: [0, 1.44, -HD], fov: 62, frame: 3.9, maxBack: 0.5 },
   // aimed at the queue slips, not at the door itself — the door is scenery,
   // the list of what's next is the content
-  door: { pos: [0.5, 1.58, 0.05], look: [-0.6, 1.5, HD], fov: 62 },
-  mirror: { pos: [-0.2, 1.5, 0.15], look: [-HW, 1.45, 0.2], fov: 56 },
+  door: { pos: [0.5, 1.58, 0.05], look: [-0.6, 1.5, HD], fov: 62, frame: 2.4, maxBack: 1.2 },
+  mirror: { pos: [-0.2, 1.5, 0.15], look: [-HW, 1.45, 0.2], fov: 56, frame: 2.6, maxBack: 1.5 },
   // The archive is on the floor, so both of these look DOWN — you crouch over a
   // box, you do not stand back and admire it. Never aimed straight down: with a
   // near-vertical view vector the yaw solve degenerates and the camera spins.
@@ -159,7 +167,7 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
     flight.current = {
       t: 0,
       fromPos: camera.position.clone(),
-      toPos: new THREE.Vector3(...s.pos),
+      toPos: new THREE.Vector3(...framedPos(s, camera.aspect)),
       fromYaw: shown.current.yaw,
       fromPitch: shown.current.pitch,
       // take the short way around the circle
@@ -500,16 +508,63 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
 const REF_ASPECT = 16 / 10
 const MAX_WIDEN = 1.9
 
+// Widening the fov alone cannot save a portrait phone, and the numbers say so.
+// The Ledger wall is 4.2m wide and the room is 4.0m deep, so from the composed
+// ledger station (2.55m off the wall) a 390x844 screen sees a 45 degree
+// horizontal field, which is 2.12m of a 4.2m wall. Exactly half. Memento, the
+// 10.0, the entire argument of the wall, sits off the left edge on the device
+// most visitors arrive on.
+//
+// You cannot fix that with more fov without turning the room into a fisheye.
+// What a photographer does instead is step back, so that is what this does: a
+// station may declare `frame`, the world width it must actually show, and on a
+// narrow viewport the camera dollies backwards along its own view axis until
+// that width fits. `maxBack` keeps it from reversing through the wall behind.
+//
+// Desktop is untouched: at 16/10 or wider every station already frames its
+// content, the required pull-back computes to zero, and the returned position
+// is the authored one.
+function framedPos(station, aspect) {
+  const need = station.frame
+  if (!need || !aspect || aspect >= REF_ASPECT) return station.pos
+
+  const [px, py, pz] = station.pos
+  const [lx, ly, lz] = station.look || [px, py, pz - 1]
+
+  // horizontal half-angle actually available, after applyFov's widening
+  const vFov = THREE.MathUtils.degToRad(
+    THREE.MathUtils.clamp(widenedFov(station.fov, aspect), FOV_MIN, FOV_MAX)
+  )
+  const hHalf = Math.atan(Math.tan(vFov / 2) * aspect)
+  if (hHalf <= 0.001) return station.pos
+
+  const wantDist = need / 2 / Math.tan(hHalf)
+
+  // current distance to the thing being framed, measured along the view axis
+  const dx = lx - px
+  const dy = ly - py
+  const dz = lz - pz
+  const len = Math.hypot(dx, dy, dz)
+  if (len < 0.001) return station.pos
+  const back = wantDist - len
+  if (back <= 0.01) return station.pos
+
+  const pull = Math.min(back, station.maxBack ?? 1.3)
+  return [px - (dx / len) * pull, py - (dy / len) * pull, pz - (dz / len) * pull]
+}
+
+function widenedFov(fov, aspect) {
+  if (!aspect || aspect >= REF_ASPECT) return fov
+  const widen = Math.min(REF_ASPECT / aspect, MAX_WIDEN)
+  return THREE.MathUtils.radToDeg(
+    2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * widen)
+  )
+}
+
 function applyFov(camera, fov) {
-  let f = fov
-  const aspect = camera.aspect || REF_ASPECT
-  if (aspect < REF_ASPECT) {
-    const widen = Math.min(REF_ASPECT / aspect, MAX_WIDEN)
-    f = THREE.MathUtils.radToDeg(
-      2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(f) / 2) * widen)
-    )
-  }
-  const v = THREE.MathUtils.clamp(f, FOV_MIN, FOV_MAX)
+  const v = THREE.MathUtils.clamp(
+    widenedFov(fov, camera.aspect || REF_ASPECT), FOV_MIN, FOV_MAX
+  )
   if (Math.abs(camera.fov - v) < 0.001) return
   camera.fov = v
   camera.updateProjectionMatrix()
