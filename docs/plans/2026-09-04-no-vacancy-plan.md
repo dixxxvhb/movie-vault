@@ -193,6 +193,135 @@ for the person who walked *that* path. That is the ending: not a score, a gift.
 
 ---
 
+## 2b. The three things the panel caught that no design had
+
+Three judges scored six designs and picked three different winners, on an
+aggregate that is a near tie (Second Watch 119, Night Audit 117, No Vacancy
+116). The split is not a problem: the designs agree on almost everything that
+matters and disagree on the shell. What is worth more than the winner is what
+all six missed.
+
+### Miss 1: nobody designed for film 48
+
+*"Every one of these six designed a finished monument to a thing that gets one
+film longer every few nights."*
+
+This is the truest fact about the project and the plan above was wrong before
+this paragraph existed. The archive is not a corpus of 47, it is a habit that
+has run 47 times. On the night film 48 is scored, a hand-authored world has a
+hole in it and stays dishonest until somebody with taste sits down and builds
+a room.
+
+Two consequences, both binding:
+
+- **Procedural placement is not a nice-to-have, it is the whole reason the
+  Court wins.** Door position, floor, number and light colour all derive from
+  the data. Film 48 appears at the right spacing on the right floor with
+  nobody touching a level file. Any design that requires hand-authored
+  geography per film is disqualified on this ground alone.
+- **The in-between state is a designed thing, not a gap.** A film scored last
+  night and not yet staged gets an honest room: taped out on the floor under
+  worklights, the take on the wall, the number on the door, and visibly not
+  dressed yet. Somebody visiting the morning after should see that it happened
+  and see that it is not finished, and that should read as deliberate.
+
+### Miss 2: nobody gave Dixon a verb
+
+*"All six built for a stranger and then handed me a mode toggle. The KEEPER
+switch is the tell, because it is a design saying the only way to be the owner
+here is to turn the game off."*
+
+He is the person who will open this most, and the moment that matters is 1am,
+film just finished, take just written, wanting to see what his own building did
+about it. That is not the stranger's 40-minute walk and it should not be served
+by turning the game off.
+
+**The owner's verb: the new room is already lit when he arrives, and walking
+into it is how he sees his own take staged for the first time.** Not a mode.
+Not a toggle. A destination that only exists because he wrote something.
+
+This is the single largest gap between the plan and the ask and it needs its
+own design pass. Flagged, not solved.
+
+### Miss 3: nobody designed the first twenty seconds on a phone
+
+*"This ships as a public GitHub Pages link, which means first contact is
+overwhelmingly a stranger holding a 390px screen with one thumb, no pointer
+lock, no keyboard, no context, and roughly twenty seconds of patience."*
+
+All six cold opens are darkness and a request to walk, and every one of them
+throws away the single thing the current build does best: putting 47 Polaroids
+in front of a stranger in one glance with zero input.
+
+**Ruling: the arrival is designed at 390px first, and it gives before it
+asks.** Something legible and moving in the first three seconds with no input
+at all, that then invites the walk. The courtyard read (a blank ground floor,
+a packed top floor) is the right image because it teaches the whole archive in
+one glance, so it has to be the FIRST thing, not something you reach after
+leaving Room 4 and turning a corner.
+
+Touch is the primary platform, not an accessibility bullet. `SIT` becomes a
+first-class verb for exactly this reason: sitting lets a room perform itself
+hands-off at full quality, any input standing you back up, which makes the
+whole building completable with one thumb.
+
+### Grafts the judges required, all adopted
+
+- **Ear to the door.** One lowpass biquad at ~380 Hz over the recipe each room
+  already has. All three judges ranked it the top graft.
+- **The Vault never editorialises a night.** A hard rule, in the repo beside
+  the other hard rules. The Departed's room holds a hotel pen and a stack of
+  paper turned face down and squared to the table edge, and the Vault says
+  nothing about it. The place remembers. It does not comment.
+- **Score is attention, not construction.** Nothing gets built smaller. What
+  changes is whether the room notices you: 9.5+ withholds and waits, the sevens
+  run a loop and ignore you, under 7.0 talks over you. Disclosure Day at 5.2
+  keeps the biggest room in the game. This replaces the "a 5.0 is a grey
+  blockout" idea from the recon, which was a licence to build less, and Dixon
+  asked for more.
+- **The first watch has no Dixon in it.** Entering a room gives you zero
+  commentary. His voice arrives as the payoff for something you already felt,
+  never as the toll for entry.
+- **Two doors out**, each painted with a real line he said about the film,
+  neither correct. Zero UI, and it is how the ending gets its data.
+- **The divergence ending.** The read-back names where you disagreed with him,
+  not where you agreed, because agreement is flattery.
+- **The hazy room is built wrong on purpose.** A Shoebox film gets proportions
+  slightly off, a doorway a touch too narrow, one prop that does not belong,
+  because he is remembering it rather than watching it. Developing it corrects
+  the geometry. Best unbuilt idea in the batch.
+- **The blank nights.** Fifteen dark units for the nights he watched nothing,
+  generated free from `watched`. Shared-night clusters (10A The Nice Guys, 10B
+  Batman Begins, 10C The Dark Knight, all July 24) under one porch light.
+- **The Departed moves The Matrix.** Two designers found it independently,
+  which means it is real. A plate physically slides a tenth, in sightline,
+  because a new number arrived and needed the room.
+- **One prop per room is a mechanism, not decor**, and `nudge` is banned as a
+  default. If a touchable does not change a state that is part of the room's
+  argument, it does not get a prompt. This is the direct fix for 16 of 29.
+- **Everything a room gives you is obtainable from outside it.** Declining
+  Hereditary must cost a visitor nothing.
+- **The Dark Drawer room**: a chair, a light, and a card that reads what he
+  remembers, which is nothing. Four draw calls for the most honest room in
+  the building.
+
+### One judge claim that was wrong, checked
+
+Two judges asserted the taste laws carry no cited evidence and that the
+citation mechanic rests on a join table nobody has written. Verified against
+Supabase: **all 21 laws carry an evidence string and 16 name a teacher film.**
+The pipeline was discarding both. Fixed this session by deriving the citation
+graph from the evidence prose (commit `c778382`): 20 of 21 laws now cite their
+films, 40 citations, no hand-authored table, and it keeps working for lesson 22.
+
+Their underlying point stood, though, and the rest of it is real and owed:
+`emit_vault_data.py` still does not emit `emotional_key`, the 78 pitched
+titles, the 154 recommendations, or the `film_status` states. **Four of the
+designs' endings cannot be built until it does. That is Phase 1 work, before
+a single wall gets modelled.**
+
+---
+
 ## 3. Rulings (settled, do not relitigate)
 
 1. **The room number is the score.** Doors are placed procedurally from the
@@ -219,6 +348,24 @@ for the person who walked *that* path. That is the ending: not a score, a gift.
 10. **No physics engine.** Measured: `@react-three/rapier` is 815 KB gzipped
     against a 445 KB total bundle. `three-mesh-bvh` (62 KB) and `zustand` are
     already installed as drei transitive deps and cost nothing new.
+11. **Everything is derived from the data.** No level file lists films, no
+    geography is hand-authored per title. Film 48 must appear correctly with
+    nobody opening an editor. This is the disqualifying test for any
+    structural proposal.
+12. **The Vault never editorialises a night.** It renders what he wrote and
+    what happened. It does not add meaning, sympathy, or a reading. The place
+    remembers; it does not comment.
+13. **Score is attention, never construction.** No room is built smaller
+    because he liked it less. A low score changes whether the room notices you,
+    not how finished it is. Disclosure Day at 5.2 gets the biggest room in the
+    game and that is the review.
+14. **The first watch has no Dixon in it.** His voice is the payoff, never the
+    toll.
+15. **Touch at 390px is the primary platform**, not an accessibility bullet.
+    The arrival gives before it asks.
+16. **`nudge` is banned as a default.** One prop per room is a mechanism. If a
+    touchable does not change a state that is part of the room's argument, it
+    does not get a prompt.
 
 ---
 
@@ -372,38 +519,55 @@ event keyed on the frame counter rather than the wall clock.
 Each phase ends with a publish and a `docs/STATUS.md` row.
 
 **Phase 0 — done this session.** Data refreshed to 47 films. `PULL.sql`. Both
-flash hazards fixed. `settings.js`, `input.js`, keyboard turn, `?text`.
+flash hazards fixed. `settings.js`, `input.js`, keyboard turn, `?text`, and the
+derived citation graph.
 
-**Phase 1 — THE SLICE.** Two rooms and the door between them: **Malignant 5.4
+**Phase 1 — THE PIPELINE.** Before a single wall gets modelled, because four of
+the six designs' endings cannot be built without it. Emit `emotional_key`, the
+78 pitched titles, the 154 recommendations with reasoning, the full
+`film_status` state per title, and `certified_on`/`certified_score`. Fix the
+four bloodlines silently dropped at build time. Add `plain_summary` per film.
+Small, dull, and everything downstream is blocked on it.
+
+**Phase 2 — THE SLICE.** Two rooms and the door between them: **Malignant 5.4
 and Sorry to Bother You 9.4.** Three of six independent designers chose this
 same pair, which settles it. The authored bloodline note already reads:
 "Comparably insane ideas. One opened a door and made him look, one had a doctor
-explain a chart. 5.4 versus 9.4 is the whole doctrine."
+explain a chart. 5.4 versus 9.4 is the whole doctrine." The law that cites them
+is the highest-weighted law on the Mirror, and the citation graph now resolves
+it to exactly `[malignant, stby]`.
 Build: fragments on props, the pocket you cannot see from the door, the house
-lights, one go-stand-somewhere-else sightline per room, the bloodline door, and
-the law writing itself on the Mirror.
+lights, one go-stand-somewhere-else sightline per room, ear to the door, two
+doors out with real lines painted on them, the bloodline door, and the law
+writing itself on the Mirror.
 **Gate: does walking those two rooms produce the click?** If not, the design is
-wrong and we know in two weeks instead of four months.
+wrong and we know in two weeks instead of four months. Judge it on a phone.
 
-**Phase 2 — the spine.** The zustand store and the scene table. The character
+**Phase 3 — the spine.** The zustand store and the scene table. The character
 controller extracted with real state. Per-room `React.lazy`. The render-path
 fixes. Deterministic mode and the verification harness.
 
-**Phase 3 — the shell.** Title (the motel seen from the road), pause, the
-Options panel, the pre-room gate, the save file. Kill the ten-button dock.
+**Phase 4 — the shell and the arrival.** The arrival designed at 390px first,
+giving before it asks. Title, pause, the Options panel, the pre-room content
+gate, the save file, `SIT` as a first-class verb. Kill the ten-button dock.
 
-**Phase 4 — the building.** The Court exterior, procedural door placement,
-walkway, courtyard, stairs. Ear-to-the-door. Room 4 relocated into it.
+**Phase 5 — the building.** The Court exterior, **procedural** door placement
+from the data, walkway, courtyard, stairs, blank nights, shared-night clusters.
+Room 4 relocated into it. The north wall becomes a scale model of where you
+are standing.
 
-**Phase 5 — the rooms.** All 47 to the Phase 1 standard. The six films with
+**Phase 6 — the rooms.** All 47 to the Phase 2 standard. The six films with
 panels and no room yet (Se7en, L.A. Confidential, The Big Short, Inside Man,
 The Amateur, One Battle After Another). Richer prop vocabulary, placement
-primitives, composite shells.
+primitives, composite shells. **Plus the standby state**, so film 48 has an
+honest room the morning after.
 
-**Phase 6 — below grade and the far wing.** The storage level, blank plates,
-certification. The 78 pitched doors.
+**Phase 7 — below grade and the far wing.** The storage level, blank plates,
+certification, the hazy rooms built wrong on purpose. The 78 pitched doors.
 
-**Phase 7 — the ending.** Dawn, the taste read-back, the one recommendation.
+**Phase 8 — the ending, and the owner's verb.** Dawn, the divergence read-back,
+the one recommendation. And the 1am path: Dixon walks in and the room for the
+film he scored two hours ago is already lit.
 
 ---
 
@@ -411,12 +575,25 @@ certification. The 78 pitched doors.
 
 1. **The Court, or the strip?** Multi-storey where floor is a score band gives
    the 53-metre gap and the whole-taste-at-a-glance read. A single flat strip
-   is friendlier and loses the ranking as a spatial fact. I want the Court.
-2. **Is Room 4 still the front door?** The plan starts you in Room 4 and has
-   you walk out. The alternative starts you at the road looking at the sign.
-3. **The basement guess.** Dialling a number on an unscored film and having
-   yours sit beside his forever: good, or does it cheapen the numbers? This is
-   the one mechanic that touches the sacred part.
-4. **Dawn as a soft ending at ~40 minutes** — or no clock at all?
-5. **The 78 pitched doors.** They include films he said no to, with the reason.
-   Public site. Comfortable?
+   is much cheaper (roughly twelve draw calls, and `DoorRow.jsx` already
+   exists) and loses the ranking as a spatial fact. One judge picked each. I
+   want the Court, because the ranking as architecture is the whole idea.
+2. **The basement guess.** Dialling a number on an unscored film and having
+   yours sit beside his forever: good, or does it cheapen the numbers? The one
+   mechanic that touches the sacred part, so it is yours to rule on.
+3. **Dawn as a soft ending at ~40 minutes,** or no clock at all?
+4. **The 78 pitched doors.** They include films you said no to, with the
+   reason you gave. Public site. Comfortable?
+5. **The owner's verb.** What do you actually want at 1am, take just written?
+   The plan says the new room is already lit and walking into it is the
+   reward. That is a guess and it is the one thing here nobody can research.
+
+---
+
+## 10. Provenance
+
+19 recon agents (2.9M tokens), 6 designers, 3 judges (1.2M tokens). Raw results:
+`journal.jsonl` under
+`.claude/projects/C--Users-bowle/<session>/subagents/workflows/wf_7351b9cd-3e9`
+(recon) and `wf_16001b53-2a7` (design panel). The six full designs are worth
+reading before Phase 2; each has staging detail this document compresses.
