@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { get as getSetting } from './settings.js'
 
 // The arrival. You do not fade into this room, you wake up in it — the room is
 // already there and your eyes are what was shut. Four blinks, focus settling,
@@ -34,8 +35,11 @@ const LIDS = `
 export default function ColdOpen({ onDone }) {
   // ?nocold skips it outright — the screenshot harness and anyone deep-linking
   // to a station should not have to wait to see the room.
+  // ?nocold for the harness; motion.coldOpen for anyone who asked (or whose
+  // OS asked) not to have a full-screen motion event fired at them before
+  // they have touched anything.
   const skipped = typeof window !== 'undefined' &&
-    window.location.search.includes('nocold')
+    (window.location.search.includes('nocold') || getSetting('motion.coldOpen') === false)
   const [done, setDone] = useState(skipped)
   const fired = useRef(skipped)
 

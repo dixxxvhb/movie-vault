@@ -5,7 +5,7 @@ import { ROOM } from './Room.jsx'
 import { setDragDistance, exitPointerLock } from './pointer.js'
 import { useXR } from '@react-three/xr'
 import { keyVec, pollDevices, turnAxis } from './input.js'
-import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
+import { get as getSetting, set as setSetting, subscribe as subscribeSettings } from './settings.js'
 import { resolveStep, floorYAt, publishWalkPos, consumeTeleport } from './rooms/colliders.js'
 import { publishWalkEvent } from './rooms/walkBus.js'
 
@@ -66,14 +66,17 @@ export const gaze = { yaw: 0, pitch: 0, zoom: 1 }
 // `gaze` — read every frame inside useFrame, and toggled from the film HUD,
 // which lives outside the Canvas entirely). Default on; persisted so the
 // choice survives a reload.
-const BOB_KEY = 'vault-bob'
-function readBobPersisted() {
-  try { return localStorage.getItem(BOB_KEY) } catch { return null }
+// Now backed by the settings profile rather than its own key, so the film
+// HUD's toggle and the Options panel are the same switch rather than two
+// switches that disagree. The legacy `vault-bob` value was folded in by
+// settings.js's v0 migration, so nobody loses a choice they already made.
+let bobEnabled = getSetting('motion.headBob') !== false
+if (typeof window !== 'undefined') {
+  subscribeSettings(() => { bobEnabled = getSetting('motion.headBob') !== false })
 }
-let bobEnabled = readBobPersisted() !== 'off'
 export function setWalkBob(on) {
   bobEnabled = on
-  try { localStorage.setItem(BOB_KEY, on ? 'on' : 'off') } catch { /* private mode */ }
+  setSetting('motion.headBob', on)
 }
 export function isWalkBobOn() {
   return bobEnabled
@@ -164,8 +167,15 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
     exitPointerLock()
     const s = latest.current
     const target = aim(s.pos, s.look)
+    // 'cut' replaces the 780ms flight with an instant reposition. This is the
+    // single highest-value vestibular mitigation in the project: unrequested
+    // camera translation is the largest offender, and the evidence says
+    // ELIMINATING optical flow beats attenuating it. The develop wash that
+    // already covers a world swap covers this too, so it does not read as a
+    // glitch, it reads as a cut.
+    const instant = getSetting('motion.travel') === 'cut'
     flight.current = {
-      t: 0,
+      t: instant ? 1 : 0,
       fromPos: camera.position.clone(),
       toPos: new THREE.Vector3(...framedPos(s, camera.aspect)),
       fromYaw: shown.current.yaw,

@@ -4,7 +4,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { ROOM } from './Room.jsx'
-import { STATIONS, setWalkBob, isWalkBobOn } from './CameraRig.jsx'
+import { STATIONS } from './CameraRig.jsx'
 import WalkStick from './WalkStick.jsx'
 import { CARD_W, CARD_H } from './Polaroid.jsx'
 import { setDragDistance, requestPointerLock, exitPointerLock, subscribeLock, recentPointerUnlock } from './pointer.js'
@@ -24,6 +24,7 @@ import { startRoomTone, stopRoomTone } from './roomTone.js'
 import { isSoundOn, setSoundOn } from './rooms/audio/engine.js'
 import { subscribeGrade } from './rooms/gradeBus.js'
 import { subscribeLevel, blendGrade } from './rooms/houseLights.js'
+import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
 
@@ -123,16 +124,24 @@ function layout(films, scoreToY) {
 // (an EffectComposer remount is a frame of flash) — only which effects it
 // carries changes.
 function Post({ grade }) {
-  if (useInXR()) return null
+  const inXR = useInXR()
+  // HIGH CONTRAST. The accessibility research is blunt about this one: the
+  // vignette runs at 0.92 by default, which is not a mood, it is content being
+  // hidden at the edges of the frame. High contrast drops the vignette to a
+  // trace, kills the grain and the chromatic fringing (both of which reduce
+  // effective contrast for no information), and lifts contrast.
+  const [hc, setHc] = useState(() => !!getSetting('vision.highContrast'))
+  useEffect(() => subscribeSettings(() => setHc(!!getSetting('vision.highContrast'))), [])
+  if (inXR) return null
   // Wave P0 (IMMERSION-V2-POLISH-SPEC.md #5): `grade.grain`/`vignette`/
   // `bloomIntensity` are an OPTIONAL per-room triplet on top of the
   // existing hue/sat/contrast grade — a room that never sets them (every
   // room except darkknight today) gets the exact same 0.3/0.05/0.92
   // defaults this composer already shipped, so the motel and every
   // untouched film room stay byte-identical.
-  const grain = grade?.grain ?? 0.05
-  const vignette = grade?.vignette ?? 0.92
-  const bloomIntensity = grade?.bloomIntensity ?? 0.3
+  const grain = hc ? 0 : (grade?.grain ?? 0.05)
+  const vignette = hc ? 0.18 : (grade?.vignette ?? 0.92)
+  const bloomIntensity = hc ? 0.06 : (grade?.bloomIntensity ?? 0.3)
   return (
     <EffectComposer>
       {/* QA sweep 2026-08-21: 0.42/0.72 let several rooms' hot-take sheet
@@ -143,11 +152,11 @@ function Post({ grade }) {
       <Bloom intensity={bloomIntensity} luminanceThreshold={0.85} luminanceSmoothing={0.25} mipmapBlur />
       {/* barely there. At 0.0006 the fringing read as a rendering fault on
           every card edge rather than as lens character. */}
-      <ChromaticAberration offset={[0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
+      <ChromaticAberration offset={hc ? [0, 0] : [0.00022, 0.0003]} blendFunction={BlendFunction.NORMAL} />
       <Noise opacity={grain} blendFunction={BlendFunction.OVERLAY} />
       <Vignette eskil={false} offset={0.24} darkness={vignette} />
       {grade && <HueSaturation hue={grade.hue || 0} saturation={grade.sat || 0} />}
-      {grade && <BrightnessContrast brightness={0} contrast={grade.contrast || 0} />}
+      {grade && <BrightnessContrast brightness={hc ? 0.06 : 0} contrast={(grade.contrast || 0) + (hc ? 0.14 : 0)} />}
     </EffectComposer>
   )
 }
@@ -185,11 +194,10 @@ export default function App() {
   // (roomTone.js's air handler). Lazy-init from whatever's persisted so a
   // returning visitor who already unmuted once doesn't have to again.
   const [sound, setSound] = useState(() => isSoundOn())
-  // Wave M1: walk bob, next to sound in the film HUD — same "on by default,
-  // persisted" shape. CameraRig.jsx owns the actual module state (it's read
-  // every frame inside useFrame, outside React); this is just the HUD's
-  // mirror of it so the button can re-render when clicked.
-  const [bob, setBob] = useState(() => isWalkBobOn())
+  // Walk bob moved to the Options panel and out of the film HUD, so it is
+  // reachable from the motel too. CameraRig owns the module state (read every
+  // frame inside useFrame, outside React) and now backs it with the settings
+  // profile, so the two are one switch rather than two that disagree.
   // A bespoke room (Memento's gaze-driven split) can publish a grade override
   // via rooms/gradeBus.js without rooms/* ever importing this file — this is
   // the one subscription that closes the loop, merged onto the room's own
@@ -997,13 +1005,6 @@ export default function App() {
             >
               {sound ? 'sound ·on' : 'sound'}
             </button>
-            <button
-              onClick={() => { const next = !bob; setWalkBob(next); setBob(next) }}
-              style={{ ...hud.filmSoundBtn, ...(bob ? hud.navOn : null) }}
-              title="the camera's walk bob — off for a steadier eye"
-            >
-              {bob ? 'bob ·on' : 'bob'}
-            </button>
           </div>
           <button
             onClick={exitFilm}
@@ -1167,7 +1168,10 @@ const hud = {
     pointerEvents: 'none', zIndex: 5,
   },
   gear: {
-    position: 'fixed', top: 18, right: 58, width: 30, height: 30,
+    // Below the top strip rather than in it: the motel has the guest card's
+    // `?` up there and a film room has its own sound button, and a control
+    // that has to exist in EVERY world cannot fight either of them.
+    position: 'fixed', top: 58, right: 20, width: 30, height: 30,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     background: 'rgba(14,10,8,.62)', color: '#b7a98e',
     border: '1px solid rgba(180,160,120,.28)', borderRadius: '50%',

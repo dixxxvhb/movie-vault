@@ -50,9 +50,13 @@ const ROW = {
 }
 const LABEL = { flex: 1 }
 const HINT = { display: 'block', color: '#8d8371', fontSize: 12, marginTop: 2 }
+// Longhand border properties on purpose. Toggling between `border` (shorthand)
+// on one state and `borderColor` on the other makes React warn on every
+// re-render, which it did, in every room, until this was split out.
 const BTN = {
   background: 'rgba(30,24,18,.9)', color: '#d9cdb4',
-  border: '1px solid rgba(180,160,120,.3)', borderRadius: 2,
+  borderWidth: 1, borderStyle: 'solid', borderColor: 'rgba(180,160,120,.3)',
+  borderRadius: 2,
   padding: '6px 11px', fontSize: 12.5, cursor: 'pointer', font: 'inherit',
 }
 const BTN_ON = { ...BTN, color: '#1a1410', background: '#d9c9a4', borderColor: '#d9c9a4' }

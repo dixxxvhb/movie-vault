@@ -1,4 +1,5 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { get as getSetting, subscribe as subscribeSettings } from '../settings.js'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -81,6 +82,12 @@ export function HazeCone({ pos = [0, 2.2, 0], rot = [0, 0, 0], length = 2.2, rad
 // story-timer machinery.
 export function DustField({ pos = [0, 0, 0], density = 60, size = 0.012, color = '#c9c3ae', area = [4, 2.4, 4], speed = 0.12, opacity = 0.35 }) {
   const ref = useRef()
+  // Ambient drifting motes are exactly the kind of always-on peripheral motion
+  // that makes a scene hard to look at for some people, and they carry no
+  // information. Hooks run before the bail-out because a conditional hook is a
+  // different and worse bug than a wasted allocation.
+  const [dustOn, setDustOn] = useState(() => getSetting('motion.dust') !== false)
+  useEffect(() => subscribeSettings(() => setDustOn(getSetting('motion.dust') !== false)), [])
   const count = Math.min(Math.max(density, 1), 220)
   const { positions, base, seeds } = useMemo(() => {
     const positions = new Float32Array(count * 3)
@@ -111,6 +118,8 @@ export function DustField({ pos = [0, 0, 0], density = 60, size = 0.012, color =
     }
     g.geometry.attributes.position.needsUpdate = true
   })
+
+  if (!dustOn) return null
 
   return (
     <group position={V3(pos)}>
