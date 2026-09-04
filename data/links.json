@@ -286,5 +286,29 @@
   "weight": 3,
   "relation": "bloodline",
   "directional": true
+ },
+ {
+  "to": "Se7en",
+  "from": "Inside Man",
+  "note": "The guessing-night weekend bracket: fun con Friday, abyss Monday. Both detectives, both designs, opposite exits. The con he half-guessed and docked for it (8.4) against the sermon he partially decoded and it flattened him anyway (9.6). The bracket settled the doctrine: a twist dies when you see it coming, a design gets worse.",
+  "weight": 3,
+  "relation": "bracket",
+  "directional": true
+ },
+ {
+  "to": "The Departed",
+  "from": "L.A. Confidential",
+  "note": "Named in the debrief. Same lane as The Departed at 9.9: a department rotten from the top, cops who cannot tell which side they are performing. Different verdict on the exit. Scorsese lets nobody out. Hanson lets the animal drive to Arizona and keeps the honest one inside with a medal.",
+  "weight": 3,
+  "relation": "institutional-rot",
+  "directional": true
+ },
+ {
+  "to": "One Battle After Another",
+  "from": "The Big Short",
+  "note": "He named the kinship unprompted, mid-debrief, one night apart: the same anesthetic-then-scalpel trick, quirky and cute and informative until the register flips and the joke becomes the accusation. OBAA runs it on a family, The Big Short runs it on the entire economy. One tenth apart on the wall.",
+  "weight": 3,
+  "relation": "tonal-morph kin",
+  "directional": true
  }
 ]

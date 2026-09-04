@@ -534,5 +534,68 @@
    "Travis Knight"
   ]
  },
- "_source": "film_titles joined to film_ledger_panels on title_id, pulled 2026-08-26. poster = TMDB poster_path, served from image.tmdb.org (no API key) and vendored into public/posters/ at build time."
+ "_source": "film_titles joined to film_ledger_panels on title_id, pulled 2026-08-26. poster = TMDB poster_path, served from image.tmdb.org (no API key) and vendored into public/posters/ at build time.",
+ "the-big-short": {
+  "year": 2015,
+  "genres": [
+   "Comedy",
+   "Drama"
+  ],
+  "poster": "/scVEaJEwP8zUix8vgmMoJJ9Nq0w.jpg",
+  "runtime": 131,
+  "director": [
+   "Adam McKay"
+  ]
+ },
+ "la-confidential": {
+  "year": 1997,
+  "genres": [
+   "Crime",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/lWCgf5sD5FpMljjpkRhcC8pXcch.jpg",
+  "runtime": 138,
+  "director": [
+   "Curtis Hanson"
+  ]
+ },
+ "se7en": {
+  "year": 1995,
+  "genres": [
+   "Crime",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg",
+  "runtime": 127,
+  "director": [
+   "David Fincher"
+  ]
+ },
+ "inside-man": {
+  "year": 2006,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/ffMUgkDZICNiyaws1Jkv8qG8uFW.jpg",
+  "runtime": 129,
+  "director": [
+   "Spike Lee"
+  ]
+ },
+ "the-amateur": {
+  "year": 2025,
+  "genres": [
+   "Thriller",
+   "Action"
+  ],
+  "poster": "/SNEoUInCa5fAgwuEBMIMBGvkkh.jpg",
+  "runtime": 123,
+  "director": [
+   "James Hawes"
+  ]
+ }
 }

@@ -1,5 +1,5 @@
 {
- "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-26. vibe_tags verbatim; rewatch = film_log.is_rewatch.",
+ "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-26. vibe_tags verbatim; rewatch = film_log.is_rewatch. Five films appended 2026-09-04 (Se7en, Inside Man, The Big Short, The Amateur, L.A. Confidential).",
  "films": {
   "game": {
    "vibes": [
@@ -405,6 +405,60 @@
     "spectacle",
     "villain-forward",
     "queer-read"
+   ],
+   "rewatch": false
+  },
+  "the-big-short": {
+   "vibes": [
+    "satire",
+    "tonal-morph",
+    "ensemble",
+    "fun",
+    "true-story"
+   ],
+   "rewatch": false
+  },
+  "la-confidential": {
+   "vibes": [
+    "crime",
+    "ensemble",
+    "twisty",
+    "noir",
+    "morally gray",
+    "la",
+    "oscar-canon"
+   ],
+   "rewatch": false
+  },
+  "se7en": {
+   "vibes": [
+    "crime",
+    "dread",
+    "reveal-as-event",
+    "procedural",
+    "neo-noir",
+    "fincher"
+   ],
+   "rewatch": false
+  },
+  "inside-man": {
+   "vibes": [
+    "heist",
+    "con",
+    "twisty",
+    "fun",
+    "villain-forward",
+    "slick"
+   ],
+   "rewatch": false
+  },
+  "the-amateur": {
+   "vibes": [
+    "fun",
+    "well-made",
+    "one-man-show",
+    "spy",
+    "revenge"
    ],
    "rewatch": false
   }

@@ -1,5 +1,5 @@
 {
- "_source": "film_log joined to film_ledger_panels on title_id, latest watch per slug (distinct on slug order by watched_at desc). Pulled 2026-08-26 from swjqlfcqvcrnydpyjyog. hot_take is VERBATIM Dixon, profanity intact.",
+ "_source": "film_log joined to film_ledger_panels on title_id, latest watch per slug (distinct on slug order by watched_at desc). Pulled 2026-08-26 from swjqlfcqvcrnydpyjyog. hot_take is VERBATIM Dixon, profanity intact. Five films appended 2026-09-04 (Se7en, Inside Man, The Big Short, The Amateur, L.A. Confidential).",
  "takes": {
   "game": {
    "context": "after Sicario; free with ads on YouTube",
@@ -168,6 +168,26 @@
   "masters-of-the-universe-2026": {
    "context": "solo, independent-woman night, found it himself scrolling Prime after bailing on Goodfellas the night before",
    "hot_take": "oh my god. That movie was so fucking fun. I loved every minute of it. I think Skeletor is my new favorite villain of all time."
+  },
+  "the-big-short": {
+   "context": "solo weeknight, pitched and watched same night, Paramount+",
+   "hot_take": "yessss! so so similar to one battle after another in so many ways. so quirky and fun and cute and informative which really invites you to be open and learn new complicated things but not think too much about them. then holy fuck it opens up a whole crisis scenario play out over years that feel like real time. then it gets SOOOO SATISFYING and then not two seconds later it's like holy siht well fuck these people we have been loving from the get go are actually also just fucking idiot monsters who didn't realize if they bet against the ECONOMY there would be NO ECONOMY left to pay them out!!!!! like fucking idiots!!!!"
+  },
+  "la-confidential": {
+   "context": "Solo, Mon Aug 31. Picked off the Oscar slate, the 138-minute one, over the weeknight ceiling on purpose.",
+   "hot_take": "good movie!! jesus christ how ANY crimes got solved before fingerprints is just a goddamn miracle haha"
+  },
+  "se7en": {
+   "context": "solo, bracket night two, first watch with the box unspoiled",
+   "hot_take": "yes a really brilliant plot and WHATS IN THE BOXXXXX is so iconic i love love. brad pitt is incredible in this. that whole scene was just a masterclass."
+  },
+  "inside-man": {
+   "context": "solo, weekend bracket night one, self-picked from the guessing-night slate",
+   "hot_take": "okay so he basically just built a shitty apartment in the ground in a bank and lived there for a week to steal some diamonds and out a nazi?"
+  },
+  "the-amateur": {
+   "context": "solo, Saturday, self-found (no pitch), finished",
+   "hot_take": "solid movie. mostly enjoyed. very smart stuff which was fun although the tech seemed highly unrelalistic haha"
   }
  }
 }
