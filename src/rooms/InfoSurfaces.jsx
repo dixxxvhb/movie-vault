@@ -9,7 +9,7 @@ import { sheetOf } from '../palette.js'
 // Polaroid.jsx:27-32 is the precedent for the async-effect + material-key-flip
 // pattern), and every texture is disposed on unmount — a new precedent here,
 // since nothing else in the app builds and discards a texture on every visit.
-export default function InfoSurfaces({ film, config, visible = true }) {
+export default function InfoSurfaces({ film, config, visible = true, takeOnProps = false }) {
   const palette = sheetOf(film.palette)
   const [hotTakeTex, setHotTakeTex] = useState(null)
   const [scoreTex, setScoreTex] = useState(null)
@@ -61,12 +61,19 @@ export default function InfoSurfaces({ film, config, visible = true }) {
           room around it, so it's unlit (meshBasicMaterial) now — the
           texture's own baked contrast is the only thing that reaches the
           screen, and Bloom can no longer double-count it. */}
-      <mesh position={hotTakePos} rotation={hotTakeRot}>
-        <planeGeometry args={[1.2, 0.75]} />
-        {hotTakeTex
-          ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
-          : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} side={THREE.DoubleSide} />}
-      </mesh>
+      {/* When Fragments.jsx has broken the take across the room's own props,
+          this card must not also exist. Two copies of the same review, one of
+          them legible from the doorway, would make the fragments decorative
+          and hand the player back the exact reason not to walk anywhere. The
+          score and the meta line stay: those are the record, not the writing. */}
+      {!takeOnProps && (
+        <mesh position={hotTakePos} rotation={hotTakeRot}>
+          <planeGeometry args={[1.2, 0.75]} />
+          {hotTakeTex
+            ? <meshBasicMaterial key="mapped" map={hotTakeTex} toneMapped={false} side={THREE.DoubleSide} />
+            : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} side={THREE.DoubleSide} />}
+        </mesh>
+      )}
 
       {/* the score object */}
       <mesh position={scorePos}>

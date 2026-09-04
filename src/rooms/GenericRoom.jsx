@@ -5,6 +5,7 @@ import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
 import { useHouseLights } from './useHouseLights.js'
 import MotelUnderneath, { motelAnchorsFor } from './MotelUnderneath.jsx'
+import Fragments, { planFragments } from './Fragments.jsx'
 import DoorRow from './DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
 import Touchable from './Touchable.jsx'
@@ -514,6 +515,11 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
   const props = place.props || []
   const systems = place.systems || []
   const doorMount = useMemo(() => defaultDoorMount(place), [place])
+  // If the room's own props can carry the take, they do, and the floating
+  // card stands down. A room with no carrier props keeps the card rather
+  // than losing the review entirely.
+  const fragments = useMemo(() => planFragments(film, config), [film, config])
+  const takeOnProps = fragments.length > 0
 
   // Phase 3: template-room audio. Keyed by film.slug against
   // audio/recipes/index.js's TEMPLATE_RECIPES map — a slug with no entry
@@ -606,6 +612,11 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
           a room that wants to override an anchor can simply draw over it. */}
       <MotelUnderneath shell={place.shell || 'box'} anchors={motelAnchors} />
 
+      {/* The take, printed on the room instead of hung on a card. Gated on the
+          same `i` toggle as the rest of the record, because a visitor who
+          asked for pure ambience asked for that too. */}
+      {infoVisible && <Fragments film={film} config={lit} plan={fragments} />}
+
       {/* configs.js/presets.js keyIntensity values were transcribed at
           Default.jsx's "developing memory" scale (~2.4) — fine for that
           room's deliberately underlit void, but this renderer's physically-
@@ -670,7 +681,7 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
         <System key={i} {...sys} lightRef={sys.type === 'PulseBeat' ? keyLightRef : undefined} />
       ))}
 
-      <InfoComponent film={film} config={config} visible={infoVisible} />
+      <InfoComponent film={film} config={config} visible={infoVisible} takeOnProps={takeOnProps} />
 
       <DoorRow
         doors={doors}
