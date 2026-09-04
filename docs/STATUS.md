@@ -45,10 +45,17 @@ films taught him has written itself on the wall. Real visits, no test hook.
 - [ ] `data/archive.json` is 64 against 65 live. `PULL.sql` query 10 fixes it
 
 **Phase 2, the slice.** House lights done everywhere. Still owed:
-- [ ] FRAGMENTS in the 16 bespoke rooms. `planFragments` finds no carriers
-      there because those rooms hand-place their own props, so they still show
-      the floating card. Needs `info.fragments` authored per bespoke room, or
-      a carrier registry each room can opt into
+- [x] ~~Fragments in the 16 bespoke rooms~~ **CLOSED, do not reopen.** Tried
+      deriving carriers from each room's collider registry so the take could
+      auto-place without per-room authoring. Built it, looked at it, reverted
+      it. Two reasons. The placement was bad: a scrap ends up edge-on beside a
+      door frame, which is worse than no scrap. And more importantly the
+      premise was wrong. The floating-card problem is a TEMPLATE-room problem.
+      The bespoke sixteen already hand-place his writing in world (Memento's
+      wall of notes, Sicario's mission brief on its stand, Sorry to Bother
+      You's RegalView poster), and a generic fallback degrades rooms that
+      already solved it better. If a specific bespoke room ever reads as
+      card-y, author `info.fragments` for that one room.
 - [ ] The bloodline door between the two, opening on the authored note
 - [ ] The pocket you cannot see from the door, and one go-stand-somewhere-else
       sightline per room
