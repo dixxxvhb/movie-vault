@@ -36,12 +36,10 @@ films taught him has written itself on the wall. Real visits, no test hook.
 
 ## Agreed, not started
 
-**Phase 1, the pipeline.** Blocks everything downstream.
-- [ ] Emit `emotional_key` (47 films, authored, never rendered)
-- [ ] Emit the 78 `pitched` titles with their reasons
+**Phase 1, the pipeline.** Half done. Remaining, and still blocking:
+- [ ] Emit the 78 `pitched` titles with their reasons (the far wing)
 - [ ] Emit the 154 recommendations with reasoning (every proposed ending needs them)
 - [ ] Emit full `film_status` state per title, plus `certified_on` / `certified_score`
-- [ ] Fix the 4 bloodlines silently dropped at build time (39 in, 35 out)
 - [ ] `plain_summary` per film, 2-3 sentences, ~8th-grade. Hand-written, never auto-simplified
 - [ ] `data/archive.json` is 64 against 65 live. `PULL.sql` query 10 fixes it
 
@@ -74,14 +72,12 @@ the ending.
   A sweep that opens nine pages in one browser reports 22fps for the wall and
   35 for memento; that is measurement contention, not a regression. Measure
   one page per browser instance.
-- **The mobile arrival is broken, and it is the primary platform.**
-  Screenshotted at 390x844: the ledger wall is cropped on BOTH sides, so
-  Memento (the 10.0, the entire argument of the wall) is cut off the left edge
-  and The Sting is cut off the right. Two thirds of the screen is empty ceiling
-  and floor. The dock runs off the edge mid-word at "THE MIRRO". The one thing
-  this build does better than anything else, 47 Polaroids in a single glance,
-  is exactly what fails on the device most visitors arrive on. Evidence:
-  `_shots/sweep-mobile.png`.
+- **The mobile arrival WAS broken and is now fixed** (`4aed73e`). At 390x844
+  the wall used to crop on both sides with Memento off the left edge. Stations
+  now declare the world width they must show and the rig steps back to fit.
+  Before and after: `_shots/sweep-mobile.png` and `_shots/frame-phone.png`.
+  Still true that the wall sits small in portrait with dead ceiling and floor
+  above and below it; the arrival composition is Phase 4 work.
 
 ## Standing hazards
 
