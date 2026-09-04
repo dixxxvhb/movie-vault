@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { setStickVec } from './walkKeys.js'
+import { setStickVec } from './input.js'
 
 // Wave M1: the mobile walk stick. Pure DOM (not a Canvas/R3F component) so
 // it sits above everything with a plain fixed div, same as the film HUD

@@ -4,7 +4,8 @@ import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
 import { setDragDistance, exitPointerLock } from './pointer.js'
 import { useXR } from '@react-three/xr'
-import { keyVec } from './walkKeys.js'
+import { keyVec, pollDevices, turnAxis } from './input.js'
+import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
 import { resolveStep, floorYAt, publishWalkPos, consumeTeleport } from './rooms/colliders.js'
 import { publishWalkEvent } from './rooms/walkBus.js'
 
@@ -120,6 +121,19 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
   const walkVel = useRef({ x: 0, z: 0 })
   const walkY = useRef(null)
   const bobPhase = useRef(0)
+
+  // Keyboard / gamepad turn. Read into refs from the settings store once and
+  // on change, rather than walking an object path every frame inside
+  // useFrame. snapArmed latches a snap turn to one step per press.
+  const turnMode = useRef(getSetting('motion.turn') || 'smooth')
+  const snapDeg = useRef(getSetting('motion.snapDegrees') || 45)
+  const lookRate = useRef(getSetting('motion.lookSpeed') || 1)
+  const snapArmed = useRef(false)
+  useEffect(() => subscribeSettings(() => {
+    turnMode.current = getSetting('motion.turn') || 'smooth'
+    snapDeg.current = getSetting('motion.snapDegrees') || 45
+    lookRate.current = getSetting('motion.lookSpeed') || 1
+  }), [])
 
   // Wave P0: the flight-landing micro-dip (IMMERSION-V2-POLISH-SPEC.md #4 —
   // "eased stop ... plus landing micro-dip after a flight, 2cm/250ms").
@@ -311,6 +325,33 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
     if (inXR) return
 
     camera.rotation.order = 'YXZ'
+
+    // Gamepads are not event-driven — navigator.getGamepads() hands back a
+    // fresh snapshot and the diff is ours to do — so the pad is polled once
+    // per frame here, before anything reads an action.
+    pollDevices()
+
+    // Look without a mouse. Drag-to-look with no keyboard alternative is a
+    // WCAG 2.2 single-pointer failure on its own, and it also locks out
+    // anyone who can press a key but cannot hold and drag. Two modes:
+    // smooth turn at an adjustable rate, or snap turn, which doubles as the
+    // strongest vestibular mitigation there is (rotation is worse than
+    // translation for sickness, and discrete beats continuous).
+    const turn = turnAxis()
+    if (turn !== 0) {
+      if (turnMode.current === 'snap') {
+        // One step per press, not per frame. snapArmed latches until the key
+        // comes back up, so holding turn does not spin.
+        if (!snapArmed.current) {
+          snapArmed.current = true
+          off.current.yaw -= turn * (snapDeg.current * Math.PI) / 180
+        }
+      } else {
+        off.current.yaw -= turn * 1.9 * lookRate.current * dt
+      }
+    } else {
+      snapArmed.current = false
+    }
 
     zoomShown.current = THREE.MathUtils.damp(zoomShown.current, zoom.current, 10, dt)
 
