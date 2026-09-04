@@ -20,6 +20,20 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 | `?text` route | `02221ef` | Whole Vault as a document, split ahead of the 3D bundle. 460 KB to 50 KB on that path |
 | Derived citation graph | `c778382` | 20 of 21 taste laws now cite their evidence films, 40 citations, no hand-authored table |
 
+## Done, session two (the slice)
+
+| What | Commit | Notes |
+|---|---|---|
+| Pipeline: emotional_key + forward bloodlines | `6be2f8c` | 47 keys emitted; the 4 "dropped" links point at queued films and now resolve with state. Zero dropped for the first time |
+| Portrait phone fits the wall | `4aed73e` | Stations declare `frame`, the world width they must show; the rig dollies back on narrow viewports. Desktop byte-identical |
+| THE HOUSE LIGHTS | `f18f244` | A switch by the door in every room, derived from the shell. Film state and motel state, ~700ms apart. All 26 template rooms, every shell kind, 60fps in both |
+| FRAGMENTS | `bfa5831` | The take is printed on the room's own props, not a card. Auto-split, verified lossless across all 47 takes. The floating card stands down |
+| THE LAWS | `5e55bc0` | `visits.js`, the first persistence. The Mirror fills in behind you: walk the films a law cites and it writes itself |
+
+**The slice is proven.** Stand in Malignant for seven seconds, stand in Sorry
+to Bother You for seven seconds, walk to the Mirror, and the doctrine those two
+films taught him has written itself on the wall. Real visits, no test hook.
+
 ## Agreed, not started
 
 **Phase 1, the pipeline.** Blocks everything downstream.
@@ -31,9 +45,15 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 - [ ] `plain_summary` per film, 2-3 sentences, ~8th-grade. Hand-written, never auto-simplified
 - [ ] `data/archive.json` is 64 against 65 live. `PULL.sql` query 10 fixes it
 
-**Phase 2, the slice.** Malignant 5.4 and Sorry to Bother You 9.4, and the door
-between them. Gate: does walking those two rooms produce the click? Judge it on
-a phone.
+**Phase 2, the slice.** DONE for the template path (Malignant). Still owed:
+- [ ] The house lights and fragments in the 16 BESPOKE rooms, which do not
+      route through GenericRoom. Sorry to Bother You is one of them, so half
+      the slice pair is still on the old card
+- [ ] The bloodline door between the two, opening on the authored note
+- [ ] The pocket you cannot see from the door, and one go-stand-somewhere-else
+      sightline per room
+- [ ] Ear to the door (needs the walkway)
+- [ ] Judge the whole thing on a phone
 
 **Then:** spine (zustand store, controller, lazy rooms, render path,
 deterministic mode), shell and arrival, the building, the rooms, below grade,
