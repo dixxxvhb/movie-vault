@@ -5,6 +5,7 @@ import { gaze } from '../../CameraRig.jsx'
 import { makeHotTakeTexture, makeMetaTexture } from '../infoTextures.js'
 import { sheetOf } from '../../palette.js'
 import { setGradeOverride, clearGradeOverride } from '../gradeBus.js'
+import { flicker } from '../../flashPolicy.js'
 import { useRoomAudio } from '../audio/engine.js'
 import { start as startEnemyAudio } from '../audio/recipes/enemy.js'
 import Duplicates from '../systems/Duplicates.jsx'
@@ -426,8 +427,12 @@ function ScoreDuo({ film, corrected }) {
     if (!lieRef.current) return
     const t = clock.elapsedTime
     if (corrected && t < flickerUntil.current) {
-      // rapid on/off — the flicker itself
-      lieRef.current.material.opacity = Math.floor(t * 22) % 2 === 0 ? 1 : 0.15
+      // The lie correcting itself. This was `Math.floor(t * 22) % 2` — an
+      // 11 Hz hard square wave, small on screen but squarely inside the
+      // 3-55 Hz band. flicker() gives the same 0.7s twitch as a decaying
+      // oscillation instead, which reads better anyway: the number settles
+      // rather than blinking off.
+      lieRef.current.material.opacity = flicker(t - (flickerUntil.current - 0.7), 0.7, { hz: 2.5, low: 0.15 })
     } else if (corrected) {
       lieRef.current.material.opacity = 1
     }
