@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import { Prop, footprint } from './props.jsx'
 import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
+import { useHouseLights } from './useHouseLights.js'
+import MotelUnderneath, { motelAnchorsFor } from './MotelUnderneath.jsx'
 import DoorRow from './DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
 import Touchable from './Touchable.jsx'
@@ -496,8 +498,18 @@ function TouchedProp({ pp, index, pairPulse, onPairBump }) {
 // InfoSurfaces. Defaults to InfoSurfaces so every existing Ledger config is
 // untouched; archive/FadedRoom.jsx is the only caller that overrides it.
 export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces, doors = [], onDoor }) {
-  const { grade } = config
+  // The house lights. Every film room is a motel room with a film dressed over
+  // it, and the switch by the door drains one out and brings the other back.
+  // This has to sit above `grade` because everything below reads the BLENDED
+  // grade, not the authored one: the point of the switch is that the room's
+  // own key and fill move with it, not just the post pass.
+  const { config: lit, t: house } = useHouseLights(config)
+  const { grade } = lit
   const place = config.place || {}
+  const motelAnchors = useMemo(
+    () => motelAnchorsFor(place.shell || 'box', place.shellParams || {}, config.camera),
+    [place.shell, place.shellParams, config.camera]
+  )
   const Shell = SHELLS[place.shell] || SHELLS.box
   const props = place.props || []
   const systems = place.systems || []
@@ -588,6 +600,11 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
           what FogExp2 wants — a linear near/far pair computed from that same
           number was crushing every room to black a few meters out. */}
       <fogExp2 attach="fog" args={[grade.fogColor, grade.fogDensity ?? 0.045]} />
+
+      {/* The motel underneath. The switch is always present and always
+          reachable; the fixtures fade up with it. Rendered before the shell so
+          a room that wants to override an anchor can simply draw over it. */}
+      <MotelUnderneath shell={place.shell || 'box'} anchors={motelAnchors} />
 
       {/* configs.js/presets.js keyIntensity values were transcribed at
           Default.jsx's "developing memory" scale (~2.4) — fine for that
