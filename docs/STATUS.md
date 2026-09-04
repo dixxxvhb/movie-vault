@@ -47,6 +47,22 @@ the ending.
 4. The 78 pitched doors are public. Comfortable?
 5. The owner's verb. What do you want at 1am with the take just written?
 
+## Verified this session, worth not re-deriving
+
+- **All 60fps.** Wall, malignant, enemy, memento, darkknight, br2049, sicario,
+  stby, barbarian: zero console errors, 60fps each when measured in isolation.
+  A sweep that opens nine pages in one browser reports 22fps for the wall and
+  35 for memento; that is measurement contention, not a regression. Measure
+  one page per browser instance.
+- **The mobile arrival is broken, and it is the primary platform.**
+  Screenshotted at 390x844: the ledger wall is cropped on BOTH sides, so
+  Memento (the 10.0, the entire argument of the wall) is cut off the left edge
+  and The Sting is cut off the right. Two thirds of the screen is empty ceiling
+  and floor. The dock runs off the edge mid-word at "THE MIRRO". The one thing
+  this build does better than anything else, 47 Polaroids in a single glance,
+  is exactly what fails on the device most visitors arrive on. Evidence:
+  `_shots/sweep-mobile.png`.
+
 ## Standing hazards
 
 - **Flash.** `flashPolicy.js` covers `DwellConcede` and `Enemy`. Still
