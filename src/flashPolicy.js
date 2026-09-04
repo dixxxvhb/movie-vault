@@ -25,34 +25,22 @@
 // than at it, because a wave that peaks twice per cycle can read as double
 // its nominal rate.
 
+import { get, set, subscribe } from './settings.js'
+
 export const SAFE_HZ = 2.5
 
-const KEY = 'vault-flash'
 const LEVELS = ['full', 'reduced', 'none']
 
-function prefersReducedMotion() {
-  if (typeof window === 'undefined' || !window.matchMedia) return false
-  try {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  } catch {
-    return false
-  }
+// The level lives in the settings store (one profile, one key, one panel);
+// it is cached in a module local because strobe() is called every frame from
+// inside useFrame and must not walk an object path 60 times a second.
+let level = get('flash.level') || 'full'
+if (typeof window !== 'undefined') {
+  subscribe(() => {
+    const next = get('flash.level')
+    if (LEVELS.indexOf(next) !== -1) level = next
+  })
 }
-
-function initial() {
-  try {
-    const saved = window.localStorage.getItem(KEY)
-    if (LEVELS.indexOf(saved) !== -1) return saved
-  } catch {
-    // private mode / storage disabled — fall through to the media query
-  }
-  // No stored choice: the OS setting decides. Someone who has asked their
-  // system for less motion has already answered this question.
-  return prefersReducedMotion() ? 'reduced' : 'full'
-}
-
-let level = initial()
-const listeners = new Set()
 
 export function flashLevel() {
   return level
@@ -61,17 +49,7 @@ export function flashLevel() {
 export function setFlashLevel(next) {
   if (LEVELS.indexOf(next) === -1) return
   level = next
-  try {
-    window.localStorage.setItem(KEY, next)
-  } catch {
-    // not persisting is survivable; the session still honours the choice
-  }
-  listeners.forEach((fn) => fn(level))
-}
-
-export function onFlashLevel(fn) {
-  listeners.add(fn)
-  return () => listeners.delete(fn)
+  set('flash.level', next)
 }
 
 // strobe(t, opts) -> 0..1
