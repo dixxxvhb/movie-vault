@@ -242,6 +242,10 @@
   {
    "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine (the score) runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos, and the hand closes around the whole film at once.",
    "weight": 3
+  },
+  {
+   "rule": "A predictable villain is not a tax when the pleasure is located in the unfolding rather than the reveal. This is the antibodies doctrine applied to villain identity, not just twist endings: he will call the bad guy early, say so out loud, and still score the film in the 9s, because what he is buying is the walk toward the visible thing.",
+   "weight": 3
   }
  ],
  "count": 47,
