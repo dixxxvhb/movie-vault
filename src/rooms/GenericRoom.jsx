@@ -3,9 +3,7 @@ import * as THREE from 'three'
 import { Prop, footprint } from './props.jsx'
 import { System, SYSTEMS } from './systems/index.jsx'
 import InfoSurfaces from './InfoSurfaces.jsx'
-import { useHouseLights } from './useHouseLights.js'
-import MotelUnderneath, { motelAnchorsFor } from './MotelUnderneath.jsx'
-import Fragments, { planFragments } from './Fragments.jsx'
+import { planFragments } from './Fragments.jsx'
 import DoorRow from './DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from './colliders.js'
 import Touchable from './Touchable.jsx'
@@ -499,27 +497,21 @@ function TouchedProp({ pp, index, pairPulse, onPairBump }) {
 // InfoSurfaces. Defaults to InfoSurfaces so every existing Ledger config is
 // untouched; archive/FadedRoom.jsx is the only caller that overrides it.
 export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces, doors = [], onDoor }) {
-  // The house lights. Every film room is a motel room with a film dressed over
-  // it, and the switch by the door drains one out and brings the other back.
-  // This has to sit above `grade` because everything below reads the BLENDED
-  // grade, not the authored one: the point of the switch is that the room's
-  // own key and fill move with it, not just the post pass.
-  const { config: lit, t: house } = useHouseLights(config)
-  const { grade } = lit
+  // NOTE: the house lights are applied UPSTREAM now. FilmWorld blends the
+  // grade and mounts the switch, the fixtures and the fragments, because the
+  // sixteen bespoke rooms never come through here and the switch has to be in
+  // every room. `config` arriving here is already the lit one.
+  const { grade } = config
   const place = config.place || {}
-  const motelAnchors = useMemo(
-    () => motelAnchorsFor(place.shell || 'box', place.shellParams || {}, config.camera),
-    [place.shell, place.shellParams, config.camera]
-  )
   const Shell = SHELLS[place.shell] || SHELLS.box
   const props = place.props || []
   const systems = place.systems || []
   const doorMount = useMemo(() => defaultDoorMount(place), [place])
   // If the room's own props can carry the take, they do, and the floating
   // card stands down. A room with no carrier props keeps the card rather
-  // than losing the review entirely.
-  const fragments = useMemo(() => planFragments(film, config), [film, config])
-  const takeOnProps = fragments.length > 0
+  // than losing the review entirely. FilmWorld renders the scraps; this only
+  // needs to know whether they exist.
+  const takeOnProps = planFragments(film, config).length > 0
 
   // Phase 3: template-room audio. Keyed by film.slug against
   // audio/recipes/index.js's TEMPLATE_RECIPES map — a slug with no entry
@@ -607,15 +599,6 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
           number was crushing every room to black a few meters out. */}
       <fogExp2 attach="fog" args={[grade.fogColor, grade.fogDensity ?? 0.045]} />
 
-      {/* The motel underneath. The switch is always present and always
-          reachable; the fixtures fade up with it. Rendered before the shell so
-          a room that wants to override an anchor can simply draw over it. */}
-      <MotelUnderneath shell={place.shell || 'box'} anchors={motelAnchors} />
-
-      {/* The take, printed on the room instead of hung on a card. Gated on the
-          same `i` toggle as the rest of the record, because a visitor who
-          asked for pure ambience asked for that too. */}
-      {infoVisible && <Fragments film={film} config={lit} plan={fragments} />}
 
       {/* configs.js/presets.js keyIntensity values were transcribed at
           Default.jsx's "developing memory" scale (~2.4) — fine for that

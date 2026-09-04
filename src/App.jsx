@@ -22,6 +22,7 @@ import Find, { buildIndex } from './Find.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
 import { isSoundOn, setSoundOn } from './rooms/audio/engine.js'
 import { subscribeGrade } from './rooms/gradeBus.js'
+import { subscribeLevel, blendGrade } from './rooms/houseLights.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
 
@@ -194,6 +195,15 @@ export default function App() {
   // config.grade below, at the Post call site.
   const [gradeOverride, setGradeOverrideState] = useState(null)
   useEffect(() => subscribeGrade(setGradeOverrideState), [])
+  // The house-lights level, for the post pass. This is applied AFTER the
+  // room's own grade override rather than being published onto the same
+  // bus, because bespoke rooms write that bus themselves (Stby's swerve,
+  // Memento's split, Barbarian's smash cut) and a second writer would
+  // stamp on them. As a post-stage it composes instead: flick the lights
+  // during Stby's penthouse cut and you get the penthouse with the lights
+  // on. Quantised so a settled room does not re-render every frame.
+  const [houseT, setHouseT] = useState(0)
+  useEffect(() => subscribeLevel((v) => setHouseT(Math.round(v * 60) / 60)), [])
   const [lens, setLens] = useState(null)        // a vibe tag, or null
   const [lensOpen, setLensOpen] = useState(false)
   const [finding, setFinding] = useState(false)
@@ -751,7 +761,9 @@ export default function App() {
             and config.grade.bg falls back to that same palette when a
             bespoke room's CONFIGS entry doesn't set its own; the bus lets
             the room correct it without configs.js needing a matching edit */}
-        <color attach="background" args={[activeRoomConfig ? (gradeOverride?.bg || activeRoomConfig.grade.bg) : '#05040a']} />
+        <color attach="background" args={[activeRoomConfig
+          ? blendGrade({ ...activeRoomConfig.grade, ...(gradeOverride || {}) }, houseT).bg
+          : '#05040a']} />
 
         <XRPlayer station={view.station} />
         {motelMounted && (
@@ -804,7 +816,10 @@ export default function App() {
 
         <Post
           grade={activeRoomConfig
-            ? (gradeOverride ? { ...activeRoomConfig.grade, ...gradeOverride } : activeRoomConfig.grade)
+            ? blendGrade(
+                gradeOverride ? { ...activeRoomConfig.grade, ...gradeOverride } : activeRoomConfig.grade,
+                houseT
+              )
             : null}
         />
        </XR>

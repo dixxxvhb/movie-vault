@@ -3,6 +3,10 @@ import { useThree } from '@react-three/fiber'
 import CameraRig from '../CameraRig.jsx'
 import { getRoomComponent } from './registry.js'
 import { enterRoom } from '../visits.js'
+import { HouseRig, useLitConfig } from './useHouseLights.js'
+import MotelUnderneath, { motelAnchorsFor } from './MotelUnderneath.jsx'
+import Fragments, { planFragments } from './Fragments.jsx'
+import { resetHouse, subscribeLevel } from './houseLights.js'
 
 // The room a film opens into. Mounted only while world is 'film:<slug>' or
 // 'exiting:<slug>' (App.jsx) — MotelWorld's lights and walls die with
@@ -48,6 +52,31 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
     }
   }, [camera, config.camera?.far])
 
+  // THE HOUSE LIGHTS, for every room including the sixteen bespoke ones,
+  // which never touch GenericRoom. Blending here rather than inside the room
+  // means a bespoke file needs no change at all: it is handed a config whose
+  // grade already carries the switch.
+  //
+  // Level is quantised to 1/60 before it reaches state, so a settled room
+  // stops re-rendering and only the ~700ms of travel costs anything.
+  const [house, setHouse] = useState(0)
+  useEffect(() => {
+    resetHouse()
+    setHouse(0)
+    return subscribeLevel((v) => setHouse(Math.round(v * 60) / 60))
+  }, [slug])
+
+  const lit = useLitConfig(config, house)
+  const motelAnchors = useMemo(
+    () => motelAnchorsFor(config.place?.shell || 'box', config.place?.shellParams || {}, config.camera),
+    [config.place?.shell, config.place?.shellParams, config.camera]
+  )
+  // A bespoke room has no `place.props`, so planFragments finds no carriers
+  // and returns nothing. That is correct for now: those rooms hand-place
+  // their own writing and a scrap floating at the origin would be worse than
+  // no scrap. Authoring info.fragments per bespoke room is the follow-up.
+  const fragments = useMemo(() => planFragments(film, config), [film, config])
+
   const Family = getRoomComponent(slug, config.family)
 
   // A bespoke room's own interior navigation (Memento's corridor stations)
@@ -69,7 +98,11 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
 
   return (
     <>
-      <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
+      <ambientLight intensity={lit.grade.ambient} color={lit.grade.fill} />
+      <HouseRig />
+      <MotelUnderneath shell={config.place?.shell || 'box'} anchors={motelAnchors}
+                       filmAmbient={config.grade?.ambient} />
+      {infoOn && fragments.length > 0 && <Fragments film={film} config={lit} plan={fragments} />}
       {/* Wave M1: free walk inside a film room (Dixon's ruling — you never
           free-walk the motel, but a room you've stepped inside is a place,
           not a photograph). Eye height is the authored station's own y —
@@ -78,7 +111,7 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
       <CameraRig station={cam.station} stationKey={cam.key} walkable={{ eye: config.camera.pos[1] ?? 1.55 }} />
       <Family
         film={film}
-        config={config}
+        config={lit}
         infoVisible={infoOn}
         goToStation={goToStation}
         doors={doors}

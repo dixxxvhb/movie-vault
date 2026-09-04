@@ -1,71 +1,42 @@
-// The hook every room uses to run the house lights.
+// The house-lights rig. One ticker, mounted once per room by FilmWorld.
 //
-// Returns { config, t } where `config` is the room's own config with its grade
-// blended toward the motel state, and `t` is the damped 0..1 level so a room
-// can also fade individual props in and out with it.
+// Why this is not a hook inside GenericRoom any more: the sixteen bespoke
+// rooms do not route through GenericRoom, and the whole mechanic depends on
+// the switch being in EVERY room. Driving the damp from FilmWorld, which every
+// film room passes through, means a bespoke room gets the house lights without
+// a single line changing in its own file.
 //
-// It publishes to gradeBus for the same two-halves reason useRoomDevelop.js
-// documents: the post-processing pass lives outside the Canvas and reads the
-// bus, while GenericRoom's own point lights read config.grade directly. Both
-// have to move or the switch only half works, and a room whose colour grade
-// changes while its actual lights do not reads as a filter rather than a
-// fixture.
+// It also fixes a fight. Bespoke rooms publish their own grade overrides
+// (Sorry to Bother You's swerve, Memento's split, Barbarian's smash cut) and a
+// second writer on the same bus would stamp on them. So the house blend is not
+// published to gradeBus at all: App applies it AFTER merging whatever the room
+// published, which makes it a post-stage rather than a competitor. Flick the
+// lights during Stby's penthouse cut and you get the penthouse with the lights
+// on, which is both correct and funny.
 
-import { useEffect, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
-import { setGradeOverride, clearGradeOverride } from './gradeBus.js'
-import {
-  blendGrade, houseTarget, setHouseLevel, resetHouse, subscribeHouse,
-} from './houseLights.js'
+import { blendGrade, houseLevel, tickHouse } from './houseLights.js'
 
-// ~700ms to travel, which is a fluorescent tube deciding to commit rather than
-// a crossfade. Damping rather than a fixed tween so a second flick mid-travel
-// turns around from where it actually is instead of snapping.
-const RATE = 4.6
-
-export function useHouseLights(config) {
-  const [grade, setGrade] = useState(null)
-  const t = useRef(0)
-  const settled = useRef(true)
-
-  // Every room mount starts in the film. The first watch has no Dixon in it,
-  // and a visitor who flicked the switch in one room must not walk into the
-  // next with the lights already up.
-  useEffect(() => {
-    resetHouse()
-    t.current = 0
-    settled.current = true
-    setGrade(null)
-    const unsub = subscribeHouse(() => { settled.current = false })
-    return () => {
-      unsub()
-      resetHouse()
-      clearGradeOverride()
-    }
-  }, [config])
-
-  useFrame((_, dt) => {
-    const want = houseTarget()
-    if (settled.current && Math.abs(t.current - want) < 0.0005) return
-    t.current = THREE.MathUtils.damp(t.current, want, RATE, dt)
-    if (Math.abs(t.current - want) < 0.002) {
-      t.current = want
-      settled.current = true
-    }
-    setHouseLevel(t.current)
-    const g = blendGrade(config.grade, t.current)
-    setGradeOverride(g)
-    setGrade(g)
-  })
-
-  return {
-    config: grade ? { ...config, grade } : config,
-    t: t.current,
-  }
+// Drives the damp. Returns nothing; everything reads houseLevel().
+export function HouseRig() {
+  useFrame((_, dt) => { tickHouse(Math.min(dt, 0.1)) })
+  return null
 }
 
-// A read-only companion for components that only need the level and should not
-// own the animation (props fading in and out with the switch). Returns the
-// live number without causing a re-render, so read it inside useFrame.
-export { houseLevel } from './houseLights.js'
+// The room's config with its grade blended toward the motel state. FilmWorld
+// hands the RESULT down as `config`, so every room's own key and fill lights
+// move with the switch and not just the colour grade. A room whose grade
+// changes while its actual fixtures do not reads as a filter, not a lamp.
+//
+// Recomputed only while the switch is travelling: `level` is quantised to
+// 1/60 so a settled room stops producing new objects every frame and React
+// stops re-rendering the whole room tree for nothing.
+export function useLitConfig(config, level) {
+  return useMemo(() => {
+    if (level <= 0.001) return config
+    return { ...config, grade: blendGrade(config.grade, level) }
+  }, [config, level])
+}
+
+export { houseLevel }

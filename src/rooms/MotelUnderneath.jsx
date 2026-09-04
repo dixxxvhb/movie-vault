@@ -182,7 +182,7 @@ function WallUnit({ x, y, z, ry, mat, grillMat }) {
   )
 }
 
-function CeilingFixture({ x, y, z }) {
+function CeilingFixture({ x, y, z, power = 1 }) {
   // The thing the switch actually operates, and the reason the motel state
   // reads as LIT rather than as a colour filter. A grade blend alone made the
   // room merely grey; a room needs a source. This is a dome of yellowed
@@ -197,7 +197,7 @@ function CeilingFixture({ x, y, z }) {
     // at a staged room's 1.5-3m throw (its own comment, found empirically).
     // A fixture on the same scale has to be in the same units or it reads as
     // a nightlight.
-    if (lamp.current) lamp.current.intensity = t * 62
+    if (lamp.current) lamp.current.intensity = t * 62 * power
     if (dome.current) {
       dome.current.material.emissiveIntensity = 0.05 + t * 2.6
       dome.current.material.opacity = 0.25 + t * 0.7
@@ -241,8 +241,18 @@ function PadByThePhone({ x, y, z, ry, paperMat, penMat }) {
 }
 
 // ------------------------------------------------------------------- the layer
-export default function MotelUnderneath({ shell, anchors }) {
+export default function MotelUnderneath({ shell, anchors, filmAmbient = 0.1 }) {
   const group = useRef()
+
+  // The fixture's job is to bring a DARK room up to "lit". A room that was
+  // already bright does not need a second sun, and giving Sorry to Bother
+  // You's fluorescent call floor the same 62 as Malignant's near-black
+  // bedroom blew its walls to paper white. Scaled against the film's own
+  // ambient, with a floor so the bulb is always visibly doing something.
+  const power = useMemo(
+    () => Math.max(0.28, 1 - Math.min(1, (filmAmbient || 0) / 0.34)),
+    [filmAmbient]
+  )
 
   // Three shared materials for the whole layer. Cloned per mount because their
   // opacity is animated and a shared instance would leak the fade between
@@ -285,7 +295,9 @@ export default function MotelUnderneath({ shell, anchors }) {
       {/* The fixture is outside the faded group because its own light and
           emissive ride the level directly. A lamp that fades its opacity is a
           lamp made of glass; a lamp that fades its output is a lamp. */}
-      {a.fixture && <CeilingFixture x={a.fixture[0]} y={a.fixture[1]} z={a.fixture[2]} />}
+      {a.fixture && (
+        <CeilingFixture x={a.fixture[0]} y={a.fixture[1]} z={a.fixture[2]} power={power} />
+      )}
 
       <group ref={group} visible={false}>
         {a.window && (

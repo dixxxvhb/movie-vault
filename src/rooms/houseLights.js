@@ -48,10 +48,35 @@ export function toggleHouse() {
   setHouseTarget(target > 0.5 ? 0 : 1)
 }
 
-// Called by the room's own frame loop with the damped value, so anything
-// reading houseLevel() sees the animated number rather than the destination.
-export function setHouseLevel(v) {
-  level = v
+// The damping lives HERE rather than in a hook, because it has to run for
+// every room, and bespoke rooms do not go through GenericRoom. One ticker
+// (HouseRig, mounted by FilmWorld) drives this, and everything that needs the
+// animated number reads houseLevel(). ~700ms to travel: a fluorescent tube
+// deciding to commit, not a crossfade. Damped rather than tweened so a second
+// flick mid-travel turns around from where it actually is.
+const RATE = 4.6
+const levelListeners = new Set()
+
+export function tickHouse(dt) {
+  if (Math.abs(level - target) < 0.0005) {
+    if (level !== target) {
+      level = target
+      levelListeners.forEach((fn) => fn(level))
+    }
+    return false
+  }
+  level += (target - level) * (1 - Math.exp(-dt * RATE))
+  if (Math.abs(level - target) < 0.002) level = target
+  levelListeners.forEach((fn) => fn(level))
+  return true
+}
+
+// For the post pass, which lives outside the Canvas and cannot read a frame
+// loop. Fires only while the switch is actually moving.
+export function subscribeLevel(fn) {
+  levelListeners.add(fn)
+  fn(level)
+  return () => levelListeners.delete(fn)
 }
 
 // Every room mount starts in the film. A visitor who flicked the switch in
@@ -61,6 +86,7 @@ export function resetHouse() {
   level = 0
   target = 0
   listeners.forEach((fn) => fn(target))
+  levelListeners.forEach((fn) => fn(level))
 }
 
 export function subscribeHouse(fn) {
@@ -112,10 +138,14 @@ export function motelGradeFor(grade) {
     ...g,
     key: MOTEL_KEY,
     fill: MOTEL_FILL,
-    // a bare overhead is BRIGHTER than almost any authored film rig and much
-    // worse, which is the joke
-    ambient: Math.max(0.42, (g.ambient ?? 0.1) * 2.2),
-    keyIntensity: Math.max(1.15, (g.keyIntensity ?? 1) * 1.1),
+    // A bare overhead is brighter than almost any authored film rig and much
+    // worse, which is the joke. But it is a SPECIFIC brightness, not a
+    // multiplier: the first version used max(0.42, ambient * 2.2), which took
+    // Sorry to Bother You's already-fluorescent call floor to 1.1 ambient and
+    // blew the walls to white. Clamped at both ends, so a pitch-dark room
+    // comes up to a room and a bright one settles down to the same room.
+    ambient: Math.min(0.5, Math.max(0.34, (g.ambient ?? 0.1) * 1.7)),
+    keyIntensity: Math.min(1.5, Math.max(1.05, (g.keyIntensity ?? 1) * 1.05)),
     sat: -0.34,
     contrast: -0.16,
     grain: 0.035,
