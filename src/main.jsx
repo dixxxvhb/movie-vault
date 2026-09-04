@@ -10,6 +10,7 @@ import { applyUrlOverrides } from './settings.js'
 // is never even fetched on that path.
 const App = lazy(() => import('./App.jsx'))
 const TextMode = lazy(() => import('./TextMode.jsx'))
+const Threshold = lazy(() => import('./Threshold.jsx'))
 
 function wantsText() {
   try {
@@ -51,11 +52,25 @@ function TextRoute() {
 // the cold open has already run.
 applyUrlOverrides()
 
+// The threshold renders BEFORE the app, not over it. The accessibility spec is
+// specific about this: the gate has to be on top before any WebGL work begins,
+// because the cold open is itself a full-screen motion event and putting the
+// warning after it is putting the warning after the thing it warns about.
+function Root() {
+  const [entered, setEntered] = useState(false)
+  return (
+    <Suspense fallback={null}>
+      <Threshold onDone={() => setEntered(true)} />
+      {entered ? <App /> : null}
+    </Suspense>
+  )
+}
+
 function boot() {
   const text = wantsText()
   createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <Suspense fallback={null}>{text ? <TextRoute /> : <App />}</Suspense>
+      <Suspense fallback={null}>{text ? <TextRoute /> : <Root />}</Suspense>
     </React.StrictMode>
   )
 }

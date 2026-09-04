@@ -90,12 +90,21 @@ the ending.
 
 ## Standing hazards
 
-- **Flash.** `flashPolicy.js` covers `DwellConcede` and `Enemy`. Still
-  unrouted: `ResetFlash`, `ScheduledCut`, Barbarian's smash cut, `Develop`'s
-  wash, `ColdOpen`'s blink. Each passes alone; WCAG counts flashes in
-  aggregate. A flash bus with a 700 ms floor is owed.
-- **No content warning anywhere.** The site has horror, strobing, a hard cut to
-  full daylight and a flash to white, and warns about none of it.
-- **No pause.** Nothing freezes scheduled room events.
+- ~~Flash~~ **CLOSED.** `flashPolicy.js` covers `DwellConcede` and `Enemy`
+  (rate and saturation), and `claimFlash` now gates every full-view luminance
+  event through one shared budget with a hard 700ms floor, which caps the
+  whole app at 1.4 Hz no matter how many systems fire. `ResetFlash` and
+  `ScheduledCut` route through it and both respect `content.roomEvents`.
+  Still unrouted and worth doing: Barbarian's smash cut, `Develop`'s wash,
+  `ColdOpen`'s blink (the last already honours `motion.coldOpen`).
+- ~~No content warning~~ **CLOSED.** `Threshold.jsx` renders before any WebGL
+  work, names the specific hazards with the specific films, and offers the
+  calm and steady presets in the same breath. Verified: zero canvas elements
+  behind the gate.
+- ~~No pause~~ **CLOSED.** `frameloop="never"` while Options is open.
 - **`?text` is the only screen-reader path.** The canvas has no focusable
-  proxies yet.
+  proxies yet. This is the largest remaining accessibility gap.
+- **Most Options switches are stored but unread.** Wired: flash level,
+  keyboard turn, travel, head bob, cold open, dust, high contrast, room
+  events. Not yet: text size, captions, mono, plain language, hold-to-toggle,
+  invert Y, per-room content skip.

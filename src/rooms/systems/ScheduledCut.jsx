@@ -1,6 +1,8 @@
 import React, { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { claimFlash } from '../../flashPolicy.js'
+import { get as getSetting } from '../../settings.js'
 
 // {period, duration, altGrade, altLights}: a hard swap of background/lighting
 // for `duration` ms every `period` sec, no easing, then back (stby swerve,
@@ -21,14 +23,19 @@ export default function ScheduledCut({ period = 60, duration = 4000, altGrade = 
     // which read as the room being permanently blown out rather than cut
     // TO occasionally.
     const t = (clock.elapsedTime + period * 0.4) % period
-    const active = t < durSec
-    ref.current.material.opacity = active ? 0.6 : 0
+    const eventsOn = getSetting('content.roomEvents') !== false
+    const active = eventsOn && t < durSec
+    // The cut is a held state rather than a spike, so it claims once and then
+    // keeps its own budget for the duration (claimFlash lets a source that is
+    // already running finish).
+    const amount = active ? claimFlash('scheduledCut', 0.6) : 0
+    ref.current.material.opacity = amount
     if (active) {
       ref.current.position.copy(camera.position)
       ref.current.quaternion.copy(camera.quaternion)
       ref.current.translateZ(-0.4)
     }
-    if (light.current) light.current.intensity = active ? 40 : 0
+    if (light.current) light.current.intensity = amount > 0 ? 40 * (amount / 0.6) : 0
   })
   return (
     <group>

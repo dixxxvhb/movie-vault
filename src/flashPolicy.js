@@ -108,3 +108,47 @@ export function flicker(elapsed, dur = 0.7, { hz = SAFE_HZ, low = 0.15 } = {}) {
   const depth = (1 - low) * decay * (level === 'reduced' ? 0.4 : 1)
   return 1 - depth * (1 - wave)
 }
+
+// ------------------------------------------------- full-view luminance events
+//
+// A different problem from a strobe. ResetFlash, ScheduledCut, Barbarian's
+// smash cut, Develop's chemical wash and the cold open's blink are each ONE
+// large luminance change, not an oscillation, so each passes the three-flashes
+// rule comfortably on its own. WCAG counts flashes in aggregate, though, and
+// nothing stopped two of them landing in the same second, or a develop wash
+// arriving on top of a room already mid-cut.
+//
+// So they all pass through here. One shared budget, a hard 700ms floor between
+// events (which caps the whole app at 1.4 Hz no matter how many systems fire),
+// and a gain that the flash setting scales to zero.
+//
+// It is deliberately NOT a queue. A flash that arrives during another one is
+// dropped, not deferred: a delayed flash is a flash in the wrong place, and
+// the room is better off skipping a beat than firing one late.
+
+const EVENT_FLOOR_MS = 700
+let lastEventAt = -1e9
+let lastEventBy = null
+
+export function flashGain() {
+  if (level === 'none') return 0
+  return level === 'reduced' ? 0.32 : 1
+}
+
+// Returns 0..1: how much of the requested flash this caller may actually show.
+// `id` identifies the source so a system already mid-flash keeps its own
+// budget rather than being cut off by its own next frame.
+export function claimFlash(id, wantedAmount) {
+  const gain = flashGain()
+  if (gain <= 0 || wantedAmount <= 0.001) return 0
+  const now = performance.now()
+  if (lastEventBy === id && now - lastEventAt < 2500) {
+    // same source, still inside its own event: let it finish
+    lastEventAt = now
+    return wantedAmount * gain
+  }
+  if (now - lastEventAt < EVENT_FLOOR_MS) return 0
+  lastEventAt = now
+  lastEventBy = id
+  return wantedAmount * gain
+}

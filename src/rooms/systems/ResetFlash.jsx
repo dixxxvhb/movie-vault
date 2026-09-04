@@ -1,6 +1,8 @@
 import React, { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { claimFlash } from '../../flashPolicy.js'
+import { get as getSetting } from '../../settings.js'
 
 // {period, jitter}: a white flash overlay that sweeps the room on a clock
 // (coherence, source-code). Clock-driven rather than setInterval-driven on
@@ -15,7 +17,11 @@ export default function ResetFlash({ period = 60, jitter = 0.15 }) {
     const t = clock.elapsedTime % p
     // a fast spike near the top of every cycle, near-zero the rest of the time
     const spike = Math.max(0, 1 - t / 0.22)
-    ref.current.material.opacity = spike * spike * 0.85
+    // Through the shared budget: one flash per 700ms across the whole app no
+    // matter how many systems want one, and zero when the player has asked
+    // for no flashing. `content.roomEvents` turns the beat off entirely.
+    const want = getSetting('content.roomEvents') === false ? 0 : spike * spike * 0.85
+    ref.current.material.opacity = claimFlash('resetFlash', want)
     ref.current.position.copy(camera.position)
     ref.current.quaternion.copy(camera.quaternion)
     ref.current.translateZ(-0.3)
