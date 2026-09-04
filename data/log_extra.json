@@ -1,5 +1,5 @@
 {
- "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-26. vibe_tags verbatim; rewatch = film_log.is_rewatch. Five films appended 2026-09-04 (Se7en, Inside Man, The Big Short, The Amateur, L.A. Confidential).",
+ "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-26. vibe_tags verbatim; rewatch = film_log.is_rewatch. emotional_key added 2026-09-04 (seven values: tense/dread/fun/cozy/awe/sad/camp).",
  "films": {
   "game": {
    "vibes": [
@@ -7,7 +7,8 @@
     "well-made",
     "predictable"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "moon": {
    "vibes": [
@@ -18,7 +19,8 @@
     "staged-not-explained",
     "gorgeous"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "sad"
   },
   "stby": {
    "vibes": [
@@ -28,7 +30,8 @@
     "gonzo",
     "magical-realism"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "camp"
   },
   "tdkr": {
    "vibes": [
@@ -39,11 +42,13 @@
     "villain",
     "well-made"
    ],
-   "rewatch": true
+   "rewatch": true,
+   "key": "awe"
   },
   "cmiyc": {
    "vibes": [],
-   "rewatch": false
+   "rewatch": false,
+   "key": "cozy"
   },
   "enemy": {
    "vibes": [
@@ -53,7 +58,8 @@
     "dread",
     "one-man-show"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "ncfom": {
    "vibes": [
@@ -63,7 +69,8 @@
     "split-watch",
     "masterful"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "batman": {
    "vibes": [
@@ -74,7 +81,8 @@
     "fear",
     "crime"
    ],
-   "rewatch": true
+   "rewatch": true,
+   "key": "fun"
   },
   "br2049": {
    "vibes": [
@@ -82,7 +90,8 @@
     "gorgeous",
     "heartbreaking"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "sad"
   },
   "matrix": {
    "vibes": [
@@ -92,7 +101,8 @@
     "sci-fi",
     "first-watch-of-a-classic"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "awe"
   },
   "amadeus": {
    "vibes": [
@@ -102,7 +112,8 @@
     "epic",
     "period"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "sad"
   },
   "memento": {
    "vibes": [
@@ -111,7 +122,8 @@
     "structure-as-twist",
     "tragic"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "awe"
   },
   "sicario": {
    "vibes": [
@@ -120,7 +132,8 @@
     "morally gray",
     "slow burn"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "maverick": {
    "vibes": [
@@ -129,7 +142,8 @@
     "crowd-pleaser",
     "over-the-top"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "niceguys": {
    "vibes": [
@@ -139,7 +153,8 @@
     "buddy",
     "daytime"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "oblivion": {
    "vibes": [
@@ -150,7 +165,8 @@
     "kosinski",
     "momentum"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "pressure": {
    "vibes": [
@@ -160,11 +176,13 @@
     "one-room-tension",
     "accidental-watch"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "stardust": {
    "vibes": [],
-   "rewatch": true
+   "rewatch": true,
+   "key": "cozy"
   },
   "sunshine": {
    "vibes": [
@@ -174,7 +192,8 @@
     "third-act-swerve",
     "dying-sun"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "triangle": {
    "vibes": [
@@ -183,7 +202,8 @@
     "midday-watch",
     "wtf-delivered"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "barbarian": {
    "vibes": [
@@ -195,7 +215,8 @@
     "guessing-machine",
     "ronettes-funeral"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "coherence": {
    "vibes": [
@@ -204,7 +225,8 @@
     "paranoid",
     "low-budget-miracle"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "exmachina": {
    "vibes": [
@@ -212,7 +234,8 @@
     "tense",
     "three-hander"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "malignant": {
    "vibes": [
@@ -223,7 +246,8 @@
     "over-the-top",
     "villain"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "camp"
   },
   "obsession": {
    "vibes": [
@@ -233,11 +257,13 @@
     "monkeys-paw",
     "low-budget"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "camp"
   },
   "rogue-one": {
    "vibes": [],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "the-sting": {
    "vibes": [
@@ -247,7 +273,8 @@
     "classic",
     "staged-not-explained"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "darkknight": {
    "vibes": [
@@ -258,7 +285,8 @@
     "villain",
     "chaos"
    ],
-   "rewatch": true
+   "rewatch": true,
+   "key": "awe"
   },
   "hereditary": {
    "vibes": [
@@ -269,7 +297,8 @@
     "coronation",
     "endurance-event"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "poorthings": {
    "vibes": [
@@ -279,7 +308,8 @@
     "fable",
     "pre-social"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "awe"
   },
   "silverlake": {
    "vibes": [
@@ -289,7 +319,8 @@
     "la",
     "surreal"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "baby-driver": {
    "vibes": [
@@ -300,7 +331,8 @@
     "iconic-soundtrack",
     "fun"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "bullettrain": {
    "vibes": [
@@ -310,7 +342,8 @@
     "choreography",
     "fun-deck"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "source-code": {
    "vibes": [
@@ -321,7 +354,8 @@
     "solo night",
     "structure-as-twist"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "annihilation": {
    "vibes": [
@@ -331,7 +365,8 @@
     "mind-bendy",
     "cosmic-horror"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "nightcrawler": {
    "vibes": [
@@ -341,7 +376,8 @@
     "neo-noir",
     "satire"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "the-departed": {
    "vibes": [
@@ -352,7 +388,8 @@
     "crime",
     "scorsese"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "disclosure-day": {
    "vibes": [
@@ -362,7 +399,8 @@
     "daytime watch",
     "spielberg"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "camp"
   },
   "predestination": {
    "vibes": [
@@ -372,7 +410,8 @@
     "solo night",
     "Snook showcase"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "awe"
   },
   "minority-report": {
    "vibes": [
@@ -383,7 +422,8 @@
     "big-swing",
     "epic"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "one-battle-after-another": {
    "vibes": [
@@ -396,7 +436,8 @@
     "family-anchor",
     "pta"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "masters-of-the-universe-2026": {
    "vibes": [
@@ -406,7 +447,8 @@
     "villain-forward",
     "queer-read"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "camp"
   },
   "the-big-short": {
    "vibes": [
@@ -416,7 +458,8 @@
     "fun",
     "true-story"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "la-confidential": {
    "vibes": [
@@ -428,7 +471,8 @@
     "la",
     "oscar-canon"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "tense"
   },
   "se7en": {
    "vibes": [
@@ -439,7 +483,8 @@
     "neo-noir",
     "fincher"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "dread"
   },
   "inside-man": {
    "vibes": [
@@ -450,7 +495,8 @@
     "villain-forward",
     "slick"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   },
   "the-amateur": {
    "vibes": [
@@ -460,7 +506,8 @@
     "spy",
     "revenge"
    ],
-   "rewatch": false
+   "rewatch": false,
+   "key": "fun"
   }
  }
 }

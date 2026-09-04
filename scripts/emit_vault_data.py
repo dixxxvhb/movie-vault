@@ -171,6 +171,12 @@ for slug, (date, score, title) in META.items():
         "vibes": (LOG_EXTRA.get(slug) or {}).get("vibes") or [],
         # a rewatch is a film he came back to; the wall gives it a second pin.
         "rewatch": bool((LOG_EXTRA.get(slug) or {}).get("rewatch")),
+        # film_log.emotional_key: one of tense/dread/fun/cozy/awe/sad/camp,
+        # authored on all 47 films and never rendered until now. It is the
+        # one taxonomy in this data that groups by FEEL rather than by score,
+        # which is how a visitor actually decides which door to open, and
+        # critically it does not leak the number.
+        "key": (LOG_EXTRA.get(slug) or {}).get("key"),
         # the film's own room (Vault Immersion, Wave A): the hot take is
         # rendered VERBATIM there, never cleaned up -- see hot_takes.json.
         "hot_take": (HOT_TAKES.get(slug) or {}).get("hot_take"),
@@ -192,14 +198,34 @@ def as_slug(name):
 
 links = []
 dropped = 0
+# A bloodline whose other end is a film he has not watched yet used to be
+# thrown away silently. Four of them were, and they are not broken data: they
+# are the connections that point FORWARD. Sicario to Day of the Soldado.
+# Ex Machina to Her. Memento to Run Lola Run. Coherence to The Vast of Night.
+# Those are doors onto rooms that do not exist, which is a truer thing than a
+# missing edge, so they now resolve against the queue and carry the state of
+# each end. A room can render a door that will not open yet.
+_QUEUE_TITLES = {q["title"] for q in load("queue.json")["queue"]}
+
+def _link_end(title):
+    s = as_slug(title)
+    if s:
+        return s, "wall"
+    if title in _QUEUE_TITLES:
+        return title, "queued"
+    return None, None
+
 for l in LINKS:
-    a, b = as_slug(l.get("from")), as_slug(l.get("to"))
+    a, a_state = _link_end(l.get("from"))
+    b, b_state = _link_end(l.get("to"))
     if not a or not b:
         dropped += 1
         continue
     links.append({
         "from": a,
         "to": b,
+        "fromState": a_state,
+        "toState": b_state,
         "relation": l.get("relation"),
         "note": l.get("note"),
         "weight": l.get("weight") or 1,
@@ -460,7 +486,9 @@ print("wrote", OUT, "-", data["count"], "films, avg", data["avg"])
 print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),
-      "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")
+      "| links:", len(links),
+      "(%d forward into the queue)" % sum(1 for l in links if l["toState"] == "queued"),
+      ("(%d unresolved, dropped)" % dropped) if dropped else "")
 print("  queue:", len(QUEUE), "(%d with a place to watch)" % _where, "| lessons:", len(LESSONS),
       "(%d cite films, %d cite none)" % (len(LESSONS) - _uncited, _uncited))
 print("  vibes:", sum(1 for f in films if f["vibes"]),
