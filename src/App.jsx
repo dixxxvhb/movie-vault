@@ -17,6 +17,7 @@ import { fadedConfigFor, hazyConfigFor } from './rooms/archive/archiveConfig.js'
 import { doorsForSlug } from './rooms/doors.js'
 import ColdOpen from './ColdOpen.jsx'
 import Guide from './Guide.jsx'
+import Options from './Options.jsx'
 import Lens, { useVibes } from './Lens.jsx'
 import Find, { buildIndex } from './Find.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
@@ -202,6 +203,12 @@ export default function App() {
   // stamp on them. As a post-stage it composes instead: flick the lights
   // during Stby's penthouse cut and you get the penthouse with the lights
   // on. Quantised so a settled room does not re-render every frame.
+  // Settings and pause. Pause is real: `frameloop="never"` stops R3F driving
+  // the render loop at all, so every scheduled room event, every timer and
+  // every animation stops with it. WCAG 2.2.2 has no exemption that covers a
+  // room that cuts to a different set on a sixty-second clock while you are
+  // reading, and until now nothing in the Vault could be stopped.
+  const [optionsOpen, setOptionsOpen] = useState(false)
   const [houseT, setHouseT] = useState(0)
   useEffect(() => subscribeLevel((v) => setHouseT(Math.round(v * 60) / 60)), [])
   const [lens, setLens] = useState(null)        // a vibe tag, or null
@@ -737,6 +744,9 @@ export default function App() {
         // sets one. No light casting means no visual change at all, which
         // is what keeps the motel byte-identical (shot suite's own gate).
         shadows
+        // Pause. Not a dimmed overlay over a room that keeps running: the
+        // render loop actually stops.
+        frameloop={optionsOpen ? 'never' : 'always'}
         dpr={[1, 2]}
         camera={{ position: STATIONS.center.pos, fov: STATIONS.center.fov, near: 0.05, far: 60 }}
         gl={{ antialias: true }}
@@ -1103,6 +1113,32 @@ export default function App() {
         </div>
       )}
 
+      {/* SETTINGS. Its own entry point, in every world, right of the film HUD
+          and left of the guest card's `?` in the motel. The two toggles that
+          existed before this lived inside a film room's HUD, which meant a
+          visitor standing in the motel could not reach either one, and a
+          setting a player cannot find has not been shipped. */}
+      <button
+        onClick={() => setOptionsOpen((v) => !v)}
+        aria-label="settings and accessibility"
+        title="settings and accessibility"
+        aria-expanded={optionsOpen}
+        style={hud.gear}
+      >
+        {/* three sliders, drawn rather than an icon font, because nothing in
+            this project imports an asset */}
+        <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
+          <g stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+            <path d="M2 4h11M2 7.5h11M2 11h11" opacity=".55" />
+            <circle cx="5" cy="4" r="1.6" fill="#12100c" />
+            <circle cx="9.5" cy="7.5" r="1.6" fill="#12100c" />
+            <circle cx="4" cy="11" r="1.6" fill="#12100c" />
+          </g>
+        </svg>
+      </button>
+
+      <Options open={optionsOpen} onClose={() => setOptionsOpen(false)} />
+
       {data && world === 'motel' && (
         <Guide
           counts={{
@@ -1129,6 +1165,13 @@ const hud = {
     marginTop: -2, marginLeft: -2, borderRadius: '50%',
     background: '#ffffff', opacity: 0.55, mixBlendMode: 'difference',
     pointerEvents: 'none', zIndex: 5,
+  },
+  gear: {
+    position: 'fixed', top: 18, right: 58, width: 30, height: 30,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'rgba(14,10,8,.62)', color: '#b7a98e',
+    border: '1px solid rgba(180,160,120,.28)', borderRadius: '50%',
+    cursor: 'pointer', backdropFilter: 'blur(3px)', zIndex: 20, padding: 0,
   },
   brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.8)' },
   title: { fontSize: 26, fontStyle: 'italic', letterSpacing: '.01em' },
