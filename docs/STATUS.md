@@ -29,6 +29,7 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 | THE HOUSE LIGHTS | `f18f244` | A switch by the door in every room, derived from the shell. Film state and motel state, ~700ms apart. All 26 template rooms, every shell kind, 60fps in both |
 | FRAGMENTS | `bfa5831` | The take is printed on the room's own props, not a card. Auto-split, verified lossless across all 47 takes. The floating card stands down |
 | THE LAWS | `5e55bc0` | `visits.js`, the first persistence. The Mirror fills in behind you: walk the films a law cites and it writes itself |
+| House lights in the bespoke 16 | `9ccb970` | Rig moved up to FilmWorld. Every room has the switch now, zero lines changed in any bespoke file. Blend applied after the room's own grade override, so it composes with Stby's swerve instead of fighting it |
 
 **The slice is proven.** Stand in Malignant for seven seconds, stand in Sorry
 to Bother You for seven seconds, walk to the Mirror, and the doctrine those two
@@ -43,10 +44,11 @@ films taught him has written itself on the wall. Real visits, no test hook.
 - [ ] `plain_summary` per film, 2-3 sentences, ~8th-grade. Hand-written, never auto-simplified
 - [ ] `data/archive.json` is 64 against 65 live. `PULL.sql` query 10 fixes it
 
-**Phase 2, the slice.** DONE for the template path (Malignant). Still owed:
-- [ ] The house lights and fragments in the 16 BESPOKE rooms, which do not
-      route through GenericRoom. Sorry to Bother You is one of them, so half
-      the slice pair is still on the old card
+**Phase 2, the slice.** House lights done everywhere. Still owed:
+- [ ] FRAGMENTS in the 16 bespoke rooms. `planFragments` finds no carriers
+      there because those rooms hand-place their own props, so they still show
+      the floating card. Needs `info.fragments` authored per bespoke room, or
+      a carrier registry each room can opt into
 - [ ] The bloodline door between the two, opening on the authored note
 - [ ] The pocket you cannot see from the door, and one go-stand-somewhere-else
       sightline per room
