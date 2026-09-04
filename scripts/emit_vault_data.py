@@ -379,6 +379,67 @@ for q in QUOTES_IN:
         "said_by": q.get("said_by"),
     })
 
+# ------------------------------------------------------- the citation graph
+#
+# A taste law is a rule plus the films that taught it, and until now only the
+# rule survived the pipeline. That mattered more than it looked: the whole
+# progression design turns on "a law crystallises once you have walked the
+# films it cites", and the lessons were shipping as bare {rule, weight}.
+#
+# The citations do not need hand-authoring. Every evidence string names its
+# films in plain prose ("Malignant 5.4 versus Sorry to Bother You 9.4"), so
+# the slugs are DERIVED by matching known titles against that prose. That
+# keeps working for lesson 22 without anybody maintaining a join table.
+#
+# Longest title first, so "The Dark Knight Rises" is claimed before "The Dark
+# Knight" can match inside it. Aliases cover the short forms he actually
+# writes ("Maverick", "BR2049") and are the only hand-maintained part.
+_ALIASES = {
+    "Maverick": "maverick",
+    "BR2049": "br2049",
+    "Blade Runner 2049": "br2049",
+    "Sorry to Bother You": "stby",
+    "The Dark Knight Rises": "tdkr",
+    "Catch Me If You Can": "cmiyc",
+    "No Country for Old Men": "ncfom",
+    "The Nice Guys": "niceguys",
+    "Under the Silver Lake": "silverlake",
+    "Poor Things": "poorthings",
+    "Bullet Train": "bullettrain",
+    "Ex Machina": "exmachina",
+}
+
+_title_to_slug = {f["title"]: f["slug"] for f in films}
+_title_to_slug.update({a["title"]: a["slug"] for a in archive})
+_title_to_slug.update(_ALIASES)
+_titles_by_len = sorted(_title_to_slug, key=len, reverse=True)
+
+_uncited = 0
+for _lesson in LESSONS:
+    _ev = _lesson.get("evidence") or ""
+    _claimed = []
+    _seen = set()
+    _mask = _ev
+    for _t in _titles_by_len:
+        _i = _mask.find(_t)
+        if _i < 0:
+            continue
+        _slug = _title_to_slug[_t]
+        if _slug not in _seen:
+            _seen.add(_slug)
+            _claimed.append(_slug)
+        # blank the span so a shorter title cannot match inside a longer one
+        _mask = _mask[:_i] + (" " * len(_t)) + _mask[_i + len(_t):]
+    # the film explicitly credited as the teacher always leads the list
+    _tb = _lesson.get("taught_by")
+    if _tb and _tb in _claimed:
+        _claimed.remove(_tb)
+    if _tb:
+        _claimed.insert(0, _tb)
+    _lesson["cites"] = _claimed
+    if not _claimed:
+        _uncited += 1
+
 data = {
     "generated_from": ("ledger_meta + ledger_panels + photos + titles + log_extra + links + "
                        "queue + providers + lessons + archive + archive_extra + quotes"),
@@ -400,7 +461,8 @@ print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),
       "| links:", len(links), ("(%d unresolved, dropped)" % dropped) if dropped else "")
-print("  queue:", len(QUEUE), "(%d with a place to watch)" % _where, "| lessons:", len(LESSONS))
+print("  queue:", len(QUEUE), "(%d with a place to watch)" % _where, "| lessons:", len(LESSONS),
+      "(%d cite films, %d cite none)" % (len(LESSONS) - _uncited, _uncited))
 print("  vibes:", sum(1 for f in films if f["vibes"]),
       "| rewatches:", sum(1 for f in films if f["rewatch"]),
       "| snap lines:", sum(1 for a in archive if a.get("snap")),

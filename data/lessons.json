@@ -1,88 +1,131 @@
 {
+ "_source": "film_lessons where active and scope='taste'. rule + weight + evidence prose + taught_by slug. Pulled 2026-09-04 via scripts/PULL.sql query 8.",
  "lessons": [
   {
    "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them. Weight recency of influence when reaching for older classics.",
-   "weight": 5
+   "weight": 5,
+   "evidence": "\"I have all the antibodies.\" The Game, 6.8.",
+   "taught_by": "game"
   },
   {
    "rule": "He runs an execution meritocracy. He pays for CONTROL, not ambition. The reach only counts if the hand closes. He does line-item accounting: strong acts still get paid even when one act fumbles.",
-   "weight": 5
+   "weight": 5,
+   "evidence": "Sicario 9.9 with no twist at all. Coherence 8.9 with no budget. The Game 6.8, competent and hollow.",
+   "taught_by": null
   },
   {
    "rule": "An unguessable IDEA is not the same as an unguessable REVEAL. A wild concept delivered as exposition does not land. It has to be staged as an event happening in real time. Corollary: a film that plays deliberately flat for an hour to hide a swerve is paying in the wrong currency, because he clocks it early anyway and resents the decoy hour.",
-   "weight": 5
+   "weight": 5,
+   "evidence": "Malignant 5.4 versus Sorry to Bother You 9.4. Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart.",
+   "taught_by": "malignant"
   },
   {
    "rule": "Never split a tension movie across two nights. The held breath breaks and it costs the film real points.",
-   "weight": 4
+   "weight": 4,
+   "evidence": "No Country for Old Men, split-watch asterisk, 8.3. His lesson, stated by him.",
+   "taught_by": "ncfom"
   },
   {
    "rule": "His bad memory is an asset, not a bug. Long-gap rewatches play like first watches and score like them. This is the strongest argument for mining the Hazy Wing.",
-   "weight": 4
+   "weight": 4,
+   "evidence": "The Dark Knight Rises, 9.6. He had forgotten the Talia reveal completely and got to have it twice.",
+   "taught_by": "tdkr"
   },
   {
    "rule": "The antibodies tax is not automatic on pre-2000 twist classics. It only applies when the film's pleasure is located in the surprise itself (The Game, 6.8). When the pleasure is located in craft and scale-of-con, a 2026 twist-brain fires past the movie and the movie wins anyway (The Sting, 9.6, highest pre-2000 score on the wall and a three-way tie at the 9.6 step). Pitch old classics on where the pleasure lives, not on spoiler-safety.",
-   "weight": 4
+   "weight": 4,
+   "evidence": "The Sting 9.6 with a minus-35 voice memo predicting a hidden con under the con, Luther alive, Lonnegan in on it. Zero for three: \"it really was just simply happening in front of me.\" The film hides scale, not truth.",
+   "taught_by": "the-sting"
   },
   {
    "rule": "The rating measures resonance, not craft. Well-made but no personal pull lands low-mid 7s; recommendation-worthy starts around 8. Quality is the floor, the number is what the film did to HIM.",
-   "weight": 4
+   "weight": 4,
+   "evidence": "Minority Report 7.5: \"i respected and appreciated the epicness and story and big swing and it was fairly well done across the board but i just wouldnt really recommend to anyone or will really have an impact on my life.\" Resolved his existential crisis about the list.",
+   "taught_by": "minority-report"
   },
   {
    "rule": "Runtime: soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight. Night owl, asleep around 2am, awake around 10am.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Sat through 2h44 of Blade Runner 2049 without complaint",
+   "taught_by": null
   },
   {
    "rule": "Group watches skew crowd-pleaser. His solo lane is headier. Factor guest context into recommendations when John and Tori are involved.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Obsession, 7.9, \"more john and tori's speed\"",
+   "taught_by": "obsession"
   },
   {
    "rule": "Sleepy nights need brains WITH the motion. The choreography button alone does not close a pitch.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "John Wick rejected as \"mindless action that may not stimulate\"",
+   "taught_by": null
   },
   {
    "rule": "The light and fun shelf is viable and was understocked. Counterprogramming against his dread lane works.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "The Nice Guys, 8.6, first comedy on the board",
+   "taught_by": "niceguys"
   },
   {
    "rule": "Gorgeous, idea-forward films that keep their ensemble deliberately thin cap in the mid-7s for him. Visual and concept execution can be near perfect and it still falls short, because character investment is a separate line item he docks for, not a bonus.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Annihilation 7.4 (lovely, cosmic, cold) against Coherence 8.9 and Sorry to Bother You 9.4, both of which staged equal insanity but made him care about someone in the room.",
+   "taught_by": "annihilation"
   },
   {
    "rule": "A great post-movie conversation does not equal a great score. Sprawling ambient weirdness that never closes its hand lands mid-6s for him even when he theorizes about it enthusiastically the next morning. Discussion value and rating are separate currencies.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Under the Silver Lake: predicted \"a 9 or a 6\", landed 6.7 after a rich debrief. \"This is rough. Let's go 6.7\"",
+   "taught_by": "silverlake"
   },
   {
    "rule": "Movement and music are amplifiers, not foundations. Choreography and score excellence add real points to films that already have brains; alone they do not close a pitch.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "The Matrix 9.9 (screamed at dodge this, movement design as language). Bullet Train 9.1. Stardust's score praised all night. The Amadeus dictation scene was everything. John Wick rejected as mindless action that may not stimulate.",
+   "taught_by": "matrix"
   },
   {
    "rule": "Structure films score by their human anchor. A loop or puzzle executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9. Extends the thin-ensemble tax into the loop genre.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Triangle 7.9 and Source Code 7.9 versus Predestination 9.1 (the Snook showcase) and Coherence 8.9 (Em in the room).",
+   "taught_by": "triangle"
   },
   {
    "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
+   "taught_by": "source-code"
   },
   {
    "rule": "Dread-marination pacing (slow zooms, held silences, refusing to cut, withholding) taxes Dixon even when he acknowledges it works. Anxiety and excitement are different currencies and his board only pays in excitement/momentum. Films that also demand rewatch homework to assemble their lore cap out in the high 6s regardless of craft or back-half payoff.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Hereditary certified 6.7 (2026-08-14): \"it did its job\" AND \"thought I was gonna puke, JUST SHOW ME\"; back half \"wowww\" could not buy back the idle; zero rewatch appetite for the Paimon lore. Consistent with prior mid-6s pattern for ambient/slow builds vs 9s for machines that move.",
+   "taught_by": null
   },
   {
    "rule": "His villain currency is theatrical relish, not menace. A villain who is having fun and knows what movie he is in (sassy, campy, quotable) outranks dread-based villains on his board. Camp spectacle is a live pick lane, not just counterprogramming filler.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "Masters of the Universe (2026) solo pick: \"Skeletor is my new favorite villain of all time... so fucking fun. I loved every minute.\" Two nights after The Departed 9.9, Goodfellas got 20 seconds; the camp reboot got total joy.",
+   "taught_by": "masters-of-the-universe-2026"
   },
   {
    "rule": "LANE SATURATION: a 9.5+ score closes its lane for roughly a week. Do not pitch the same lane's other masterpiece as the very next card, even a same-director continuation with a rotated key. The meal is finished; counterprogram instead and let him raise the lane himself.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "The Departed 9.9 Monday; Goodfellas pitched Wednesday as the Scorsese continuation lasted twenty seconds: \"really not into getting into this another gangster story.\"",
+   "taught_by": null
   },
   {
    "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine (the score) runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos, and the hand closes around the whole film at once.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "One Battle After Another 9.8 (Aug 25), The Big Short 9.7 (Aug 26). He named the kinship unprompted both directions.",
+   "taught_by": "the-big-short"
   },
   {
    "rule": "A predictable villain is not a tax when the pleasure is located in the unfolding rather than the reveal. This is the antibodies doctrine applied to villain identity, not just twist endings: he will call the bad guy early, say so out loud, and still score the film in the 9s, because what he is buying is the walk toward the visible thing.",
-   "weight": 3
+   "weight": 3,
+   "evidence": "L.A. Confidential 9.6 despite \"the bad guy was low key predictable but was also nice to watch unfold.\" Consistent with The Sting 9.6 and against The Game 6.8.",
+   "taught_by": "la-confidential"
   }
  ]
 }
