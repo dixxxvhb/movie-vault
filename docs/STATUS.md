@@ -30,6 +30,13 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 | FRAGMENTS | `bfa5831` | The take is printed on the room's own props, not a card. Auto-split, verified lossless across all 47 takes. The floating card stands down |
 | THE LAWS | `5e55bc0` | `visits.js`, the first persistence. The Mirror fills in behind you: walk the films a law cites and it writes itself |
 | House lights in the bespoke 16 | `9ccb970` | Rig moved up to FilmWorld. Every room has the switch now, zero lines changed in any bespoke file. Blend applied after the room's own grade override, so it composes with Stby's swerve instead of fighting it |
+| Options panel + real pause | `d2746d8` | 14 switches, 11 radio groups, 4 presets, in every world. `frameloop="never"` actually stops the loop |
+| Settings that do things | `c2f1201` | cut-instead-of-fly, head bob, cold open, dust, high contrast. Edge luminance 42.0 to 55.8 in high contrast |
+| Flash budget + Threshold | `9e3df53` | One shared 700ms floor across all full-view events. A content warning that names the specific hazards, before any WebGL runs |
+
+**Final QA, all green:** 41 rooms in both house states, zero console errors.
+The loop with real visits. `?text` at 47 films with zero canvas. The gate on a
+clean profile. 60fps in every room in both states. Bundle 420 KB gzipped.
 
 **The slice is proven.** Stand in Malignant for seven seconds, stand in Sorry
 to Bother You for seven seconds, walk to the Mirror, and the doctrine those two
