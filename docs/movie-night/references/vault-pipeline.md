@@ -18,6 +18,8 @@ Chat (Leonard) owns all content: `film_log`, hot takes, panels, `film_links`, le
 4. Commit and `git push origin master`. That is the deploy; the GitHub Action publishes Pages.
 5. Verify live, then write the marker: `insert into film_mailbox (id, note) values (gen_random_uuid(), 'published through <newest slug> <date>')`. This is what `film_night_debt.wall_behind` reads.
 
+Not built yet: `emit_vault_data.py` should eventually emit a `calibration.json` from `film_calibration` so the room can show how well the predictions track. Noted so it is not re-derived; do not build it until it is briefed.
+
 Invariants:
 - `film_ledger_panels` is the panel source of truth. Every new or changed panel is stored there in the session it is scored.
 - Drift guard: a Ledger title must not also appear in Archive or Hazy data. The v3 `film_status` precedence makes this structural, but keep the build-time guard.

@@ -26,6 +26,14 @@ His reframe, do not lose it: **a live score is trustworthy because a reaction wa
 
 Rewatching an archive-scored film produces a paired measurement (memory vs live). The v3 trigger appends it to `vault_model.paired_measurements` automatically. When there are enough to state a real number, tell him the number and touch nothing. A Hazy Wing exit produces no pair; there was never a memory score to compare.
 
+### Calibration, part two: predictions
+
+Every pitch carries `predicted_score` and `predicted_on`. When the film gets logged, the same trigger that closes the rec appends `{title, predicted, live, date}` to `content -> calibration -> predictions[]`, and `film_calibration` reports it: n, mean signed error, mean absolute error, and the error broken out by emotional key and by tag.
+
+Reported, never applied. Exactly like paired measurements, and for the same reason: rule 6. The number says where Leonard's ear is off, not where Dixon's scores should move. Nothing in the code reads it to adjust anything, and nothing ever should.
+
+The prediction is Leonard's bet. When the live score lands 1.0 or more away, say so out loud before he does, then write nothing. The trigger already has it.
+
 ## CERTIFY blocks
 
 He pastes:
