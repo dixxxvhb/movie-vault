@@ -62,7 +62,7 @@ live to Supabase `swjqlfcqvcrnydpyjyog` through the MCP, never `db push`.
 | Retro grows | `977b224` | Calibration report, certify shelf, law audit (active weight 5 against the cap of 10) |
 | SKILL.md to v4 plus four references | `ea7e4c4` | Session open writes the session row, pick gate gets Mode and Pool first, predictions on every pitch, the rank line out loud, weight 4 vs weight 5 semantics, `film_recall` before memory |
 
-### Open, this pass deliberately did not do it
+### Open after pass 1, all closed by pass 2 below
 
 - **The retro pass.** Chat and Dixon demote the 31 active weight-5 laws to 10.
   Until that lands, the brief carries first sentences instead of verbatim law
@@ -132,6 +132,33 @@ the ending.
   Before and after: `_shots/sweep-mobile.png` and `_shots/frame-phone.png`.
   Still true that the wall sits small in portrait with dead ceiling and floor
   above and below it; the arrival composition is Phase 4 work.
+
+## Movie Night v4, pass 2
+
+Brief: `docs/plans/2026-09-13-movie-night-v4.md`, order of operations step 3.
+Database side only, applied live to Supabase `swjqlfcqvcrnydpyjyog` through
+the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
+
+| What | Notes |
+|---|---|
+| Law-cap trigger | `film_lessons`, before insert or update. An eleventh active weight-5 row raises `law cap 10: supersede or demote a weight-5 first`. Updating a law in place passes, because the row does not count itself. Proved in a rolled-back DO block with the count sitting at exactly 10 |
+| Digest verbatim again | No code change needed. Pass 1's `law_n <= 10` test flipped on its own once the retro demoted 31 laws to 10. `law_verbatim` true, brief 7,213 chars, acceptance was under 8,000 |
+| Registry enrichment | `film_titles` gains `original_language`, `origin_country text[]`, `keywords text[]`, `tmdb_fetched_at`. All 231 rows with a `tmdb_id` backfilled, zero failures. Idempotent: a second run fetched 0 and skipped 231 |
+| `film-enrich` edge function | New, `verify_jwt` off at the gateway, cron secret or Dixon's JWT checked in-function, same pattern as `film-tmdb`. The TMDB key stays a Supabase secret and never touches the PC |
+| `scripts/enrich_titles.py` | Calls the function and prints fetched, skipped, failed. Needs `FILM_ENRICH_TOKEN` in the environment, nothing else |
+| Subtitled signal | `film_taste_signals` gains the `subtitled` dim: `yes` when `original_language` is not `en`, `no` when it is, `?` when unknown. `taste_summary` picked it up with no change because it reads every dim |
+| Pitch pool reads keywords | `film_pitch_pool` matches the night's key against TMDB keywords as well as genres, and the taste `why[]` includes keyword tag signals |
+| Skill repackaged | `docs/movie-night/movie-night.skill` rebuilt from the v4 SKILL.md plus the four references. The installed skill is v4 now, not v3 |
+| `references/schema.md` | The four title columns and the law-cap trigger are documented as live. Nothing is marked "pass 2, not live" any more |
+
+### Open after this pass
+
+- Subtitled has no `yes` row yet: 49 scored films are English, 2 are unknown.
+  The dim is live and will fill itself the first time he logs a subtitled film.
+- `film_key_tags` is still empty, so the pitch pool's keyword matching does
+  nothing until Chat seeds the key-to-tag map.
+- Enrichment is a manual run. Nothing schedules `film-enrich` yet; the 90 day
+  staleness window is there for when it does.
 
 ## Standing hazards
 

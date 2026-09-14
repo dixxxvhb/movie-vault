@@ -131,13 +131,13 @@ On receipt: write `certified_on`, `certified_score`, `certified_line` to the tit
 
 **`film_session_notes` is the color.** One per session, unasked, written when the beat closes rather than only at the end. His verbatim gems, his theories credited as his, queue plans, callbacks. Do not duplicate what `film_log` holds. Notes are color, not canon; if a note conflicts with live data, the database wins.
 
-**`film_lessons` is the canon.** A lesson is worth a row when it would change a future pick, a future build, or a future sentence. Scope `taste | protocol | design | ritual | address | care`. Weight 5 is law and the law is capped at 10; weight 4 is a standing rule, loaded on demand rather than carried in every brief; 3 is a working heuristic, 1 a weak signal. Weight 4 and below do not ride in the digest. Before writing a 5, name which existing 5 it replaces, or why it is the tenth. Supersede with `active = false` plus a new row, never delete. **Tell him when you write one.** He wants to see the thing learn.
+**`film_lessons` is the canon.** A lesson is worth a row when it would change a future pick, a future build, or a future sentence. Scope `taste | protocol | design | ritual | address | care`. Weight 5 is law and the law is capped at 10, enforced by a database trigger that refuses an eleventh with `law cap 10: supersede or demote a weight-5 first`; weight 4 is a standing rule, loaded on demand rather than carried in every brief; 3 is a working heuristic, 1 a weak signal. Weight 4 and below do not ride in the digest. Before writing a 5, name which existing 5 it replaces, or why it is the tenth. Supersede with `active = false` plus a new row, never delete. **Tell him when you write one.** He wants to see the thing learn.
 
 **When he asks what he said about something, run `film_recall` before answering from memory.** It searches hot takes, long form, session notes, lesson rules and evidence, and titles, in one call.
 
 If a weight-5 protocol rule gets violated anyway, the lesson is not "say it louder." Write a brief for Code that turns it into a constraint.
 
-**Retro** roughly every 15 logged films or on request: `select * from film_retro()`. Parity, stale recs, profile drift, lessons that should graduate into this file, plus three v4 additions: the calibration report (mean signed error, mean absolute error, the worst dimension), the certify shelf, and the law audit (how many active weight-5 rows, how far over the cap of 10). The database learns nightly; the file learns at retros.
+**Retro** roughly every 15 logged films or on request: `select * from film_retro()`. Parity, stale recs, profile drift, lessons that should graduate into this file, plus three v4 additions: the calibration report (mean signed error, mean absolute error, the worst dimension), the certify shelf, and the law audit (how many active weight-5 rows against the cap of 10, now enforced). The database learns nightly; the file learns at retros.
 
 # Standing rules (the reminder, not the source; `film_lessons` is the queryable copy)
 

@@ -95,3 +95,27 @@ references/:
 8. `git log --oneline -5`, committed and pushed to master with explicit paths.
 
 Report format: a checks JSON `{applied, expired_backfilled, open_suggested_now, brief_chars_before, brief_chars_after, recall_fincher_n, rank_top5_matches_wall, cap_trigger_fires}` then at most 15 lines of notes and anything you deviated from.
+
+## Pass 2, done 2026-09-13 (order of operations step 3)
+
+Everything item 20 and 21 above held back is live. Migrations `20260914015644`
+(law cap plus the four title columns) and `20260914015720` (subtitled signal,
+keyword-aware pitch pool), applied through the MCP.
+
+- **Law-cap trigger.** Live on `film_lessons`, before insert or update. An
+  eleventh active weight-5 row raises `law cap 10: supersede or demote a
+  weight-5 first`; updating an existing law in place does not, because the row
+  does not count itself. Verified in a rolled-back DO block at exactly 10 laws.
+- **Digest back to verbatim.** Pass 1's `law_n <= 10` test does this on its own
+  now that the retro landed. `law_verbatim` is true, brief 7,213 chars.
+- **Registry enrichment.** `original_language`, `origin_country`, `keywords`,
+  `tmdb_fetched_at` on `film_titles`, backfilled for all 231 rows with a
+  `tmdb_id`, zero failures. The `film-enrich` edge function holds the TMDB key
+  as a Supabase secret; `scripts/enrich_titles.py` only calls the function.
+- **Subtitled signal.** `film_taste_signals` gains the `subtitled` dim, and
+  `taste_summary` picks it up with no change, because it reads every dim.
+- **Pitch pool.** Key matching and the taste `why[]` now read TMDB keywords as
+  well as genres and director.
+- **Skill repackaged.** `docs/movie-night/movie-night.skill` rebuilt from the
+  v4 SKILL.md and the four references. `references/schema.md` no longer marks
+  anything "pass 2, not live".

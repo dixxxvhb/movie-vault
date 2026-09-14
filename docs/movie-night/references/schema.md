@@ -6,7 +6,7 @@ Project `swjqlfcqvcrnydpyjyog`. RLS is on across `film_*`, restricted to authent
 
 | Table | Holds | Notes |
 |---|---|---|
-| `film_titles` | The registry. One row per title. | **Never `select *`**; it blows the context. Columns you usually want: `id, title, year, media_type, runtime_minutes, seen_before, seen_note, memory_score, seen_bucket, abandoned_on, certified_on, certified_score`. |
+| `film_titles` | The registry. One row per title. | **Never `select *`**; it blows the context. Columns you usually want: `id, title, year, media_type, runtime_minutes, seen_before, seen_note, memory_score, seen_bucket, abandoned_on, certified_on, certified_score`. Enrichment columns (v4 pass 2): `original_language, origin_country, keywords, tmdb_fetched_at`. |
 | `film_log` | Everything watched together, scored live. | `watched_at` NOT NULL date. `rating numeric(3,1)` 0 to 10. `rating_estimated` boolean NOT NULL. `emotional_key` text (v3). `context` nullable. `is_rewatch` boolean. |
 | `film_watchlist` | The queue. | `status` in queued / watching / watched. `added_by` ('me' or 'claude-chat'), `added_reason` (provenance, keep it real), `queue_rank`, `priority_note`. One row per title (unique). |
 | `film_recommendations` | Every pitch, ever. | `title_id` NOT NULL (v3). `suggested_title`, `reasoning` (not reason), `source` ('claude-chat' or 'in-app-ai'), `status` suggested / accepted / dismissed / **expired** (v4). `predicted_score numeric(3,1)` and `predicted_on date` (v4) go on every pitched row. One open row per title (unique partial index). A suggested row older than 21 days is expired by `film_expire_recs()`, which the brief calls on the way in. A 16th open suggested row is refused with `open rec cap 15, dismiss or expire first`. |
@@ -41,14 +41,16 @@ Every `film_*` insert needs an explicit `gen_random_uuid()` for `id`. There are 
 | Object | Use |
 |---|---|
 | `film_expire_recs()` | Flips `suggested` rows older than 21 days to `expired` and returns how many. Idempotent. `film_session_brief()` calls it before assembling, which is why the brief is volatile now, not stable. |
-| `film_taste_signals` (view) | Report-only. Films only, scored log rows only. Dims: `tag` (n>=3), `emotional_key`, `runtime_band` (short <100, mid <130, long <160, epic), `decade`, `director` (n>=2), `genre` (n>=3). Columns `dim, key, n, avg_score`. Rule 6 stands: nothing reads this to move a score. |
+| `film_taste_signals` (view) | Report-only. Films only, scored log rows only. Dims: `tag` (n>=3), `emotional_key`, `runtime_band` (short <100, mid <130, long <160, epic), `decade`, `director` (n>=2), `genre` (n>=3), `subtitled` (`yes` when `original_language` is not `en`, `no` when it is, `?` when the language is unknown). Columns `dim, key, n, avg_score`. Rule 6 stands: nothing reads this to move a score. |
 | `film_calibration` (view) | Report-only, one row: `n`, `mean_signed_error`, `mean_abs_error`, `by_emotional_key` and `by_tag` (top 5 each). Source is `film_taste_profile.content -> calibration -> predictions[]`, appended by the log trigger. |
 | `film_certify_shelf` (view) | Archive titles with `memory_score >= 9` and no `certified_on`, top 3 by memory score. In `film_retro()` always; in the brief only when there are no `film_sessions` rows in the last 7 days. |
 | `film_rank(p_title_id uuid)` | `rank, total, above_title, above_score, below_title, below_score` over the definitive list (ledger live scores plus certified). Ordered score desc then title, which is the wall's own hang order in `scripts/emit_vault_data.py`. |
 | `film_recall(q text)` | One call over hot takes and long form, session notes, lesson rules and evidence, plus a trigram match on titles. Returns `kind, dated, title, snippet, rank`, limit 20. Run it before answering "what did I say about X" from memory. |
-| `film_pitch_pool(p_key text, p_budget int, p_n int default 12)` | Candidates before cards: fresh or expired titles on an active service, runtime within budget (a null budget means no limit), ranked by key-tag match, then the taste-signal average for the title's genres and director, then never-pitched first. Returns `title_id, title, year, runtime_minutes, providers, why[]`. |
+| `film_pitch_pool(p_key text, p_budget int, p_n int default 12)` | Candidates before cards: fresh or expired titles on an active service, runtime within budget (a null budget means no limit), ranked by key-tag match (genres and TMDB keywords), then the taste-signal average for the title's genres, director and keywords, then never-pitched first. Returns `title_id, title, year, runtime_minutes, providers, why[]`. |
 
-Not live yet, pass 2: the weight-5 law-cap trigger (the cap of 10 is documented and audited here, not enforced in the database) and the four TMDB enrichment columns on `film_titles`. Do not write code against either.
+Live as of pass 2 (2026-09-13): the weight-5 law-cap trigger enforces the cap of 10 in the database, and
+`film_titles` carries `original_language`, `origin_country text[]`, `keywords text[]` and `tmdb_fetched_at`,
+backfilled from TMDB by the `film-enrich` edge function (driven by `scripts/enrich_titles.py`).
 
 ## Triggers (v3, what happens on its own)
 
@@ -57,6 +59,7 @@ Not live yet, pass 2: the weight-5 law-cap trigger (the cap of 10 is documented 
 - `film_log` insert, v4 addition: if a matching open rec carried a `predicted_score`, `{title, predicted, live, date}` is appended to `film_taste_profile.content -> calibration -> predictions[]`. Recorded, never applied, same as paired_measurements.
 - `film_recommendations` insert, v4 addition: a 16th open `suggested` row raises `open rec cap 15, dismiss or expire first`.
 - `film_titles` update setting `certified_on`: `certified_score` and `certified_line` required together.
+- `film_lessons` insert or update, v4 pass 2: a weight-5 row that would be the eleventh active law raises `law cap 10: supersede or demote a weight-5 first`. Updating a law in place is fine; the row does not count itself.
 
 ## Taste profile shape (v3, doctrine only)
 
