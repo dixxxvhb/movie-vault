@@ -180,3 +180,5 @@ the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
   keyboard turn, travel, head bob, cold open, dust, high contrast, room
   events. Not yet: text size, captions, mono, plain language, hold-to-toggle,
   invert Y, per-room content skip.
+
+| Weekly enrich cron `film-enrich-weekly`, Sundays 09:00 UTC | see git | Same cron-secret pattern as provider refresh. Proved live: 200, fetched 0 / skipped_fresh 231. Open: Dixon re-saves `movie-night.skill` in Chat |
