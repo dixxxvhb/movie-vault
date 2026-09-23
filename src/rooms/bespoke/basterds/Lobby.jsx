@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
 import { Bevel } from '../../detail.jsx'
@@ -71,6 +71,63 @@ function LobbyCard({ n, pos, ry, cast }) {
   )
 }
 
+// A picture-palace chandelier: three brass rings stepped down like a wedding
+// cake, candle bulbs on each, glass drops under the lowest. It hangs where
+// the lobby's one light already is, so it costs no light.
+function Chandelier({ brass }) {
+  const bulbs = useRef(), drops = useRef()
+  const rings = [[0.95, 3.55, 16], [0.62, 3.35, 12], [0.32, 3.15, 8]]
+  const pts = useMemo(() => rings.flatMap(([r, y, n]) =>
+    Array.from({ length: n }, (_, k) => [Math.cos((k / n) * Math.PI * 2) * r, y + 0.1, Math.sin((k / n) * Math.PI * 2) * r])), []) // eslint-disable-line react-hooks/exhaustive-deps
+  // drops hang in short strands from each ring, between the bulbs
+  const dropPts = useMemo(() => rings.flatMap(([r, y, n]) => Array.from({ length: n * 2 }, (_, k) => {
+    const a = ((Math.floor(k / 2) + 0.5) / n) * Math.PI * 2
+    return [Math.cos(a) * r, y - 0.06 - (k % 2) * 0.06, Math.sin(a) * r]
+  })), []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const m = new THREE.Matrix4()
+    pts.forEach((p, i) => { m.makeTranslation(...p); bulbs.current.setMatrixAt(i, m) })
+    dropPts.forEach((p, i) => { m.makeTranslation(...p); drops.current.setMatrixAt(i, m) })
+    bulbs.current.instanceMatrix.needsUpdate = true
+    drops.current.instanceMatrix.needsUpdate = true
+  }, [pts, dropPts])
+  return (
+    <group position={[0, 0, -5]}>
+      <mesh position={[0, 3.9, 0]} material={brass}><cylinderGeometry args={[0.012, 0.012, 0.6, 6]} /></mesh>
+      <mesh position={[0, 3.2, 0]} material={brass}><cylinderGeometry args={[0.035, 0.07, 1.0, 12]} /></mesh>
+      {rings.map(([r, y]) => (
+        <mesh key={r} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]} material={brass}><torusGeometry args={[r, 0.018, 8, 48]} /></mesh>
+      ))}
+      <instancedMesh ref={bulbs} args={[null, null, pts.length]} frustumCulled={false}>
+        <sphereGeometry args={[0.03, 10, 8]} />
+        <meshStandardMaterial color="#fff2d6" emissive="#ffcf8a" emissiveIntensity={2.6} />
+      </instancedMesh>
+      <instancedMesh ref={drops} args={[null, null, dropPts.length]} frustumCulled={false}>
+        <octahedronGeometry args={[0.02, 0]} />
+        <meshStandardMaterial color="#fff8ee" emissive="#ffd9a0" emissiveIntensity={0.6} metalness={0.3} roughness={0.05} />
+      </instancedMesh>
+    </group>
+  )
+}
+
+// Deco pilasters between the cards: fluted, with a stepped brass capital.
+const PILASTERS = [[-1, -1.3], [-1, -3.9], [-1, -6.5], [-1, -9.1], [1, -0.6], [1, -6.7], [1, -9.3]]
+function Pilasters({ brass }) {
+  const shaft = useMemo(() => standardMat({ kind: 'plaster', tint: '#c9b48e', wear: 0.2, seed: 'ib-pilaster' }), [])
+  const flute = useMemo(() => new THREE.MeshStandardMaterial({ color: '#8a7552', roughness: 0.8 }), [])
+  return (
+    <group>
+      {PILASTERS.map(([s, z]) => (
+        <group key={s + ':' + z} position={[s * 6.72, 0, z]} rotation={[0, s > 0 ? -Math.PI / 2 : Math.PI / 2, 0]}>
+          <mesh position={[0, 2.1, 0.03]} material={shaft}><boxGeometry args={[0.38, 4.2, 0.08]} /></mesh>
+          {[-0.1, 0, 0.1].map((x) => <mesh key={x} position={[x, 2.3, 0.072]} material={flute}><boxGeometry args={[0.03, 2.6, 0.01]} /></mesh>)}
+          {[0, 1, 2].map((k) => <mesh key={k} position={[0, 3.72 + k * 0.1, 0.05 + k * 0.02]} material={brass}><boxGeometry args={[0.42 + k * 0.1, 0.08, 0.1 + k * 0.04]} /></mesh>)}
+        </group>
+      ))}
+    </group>
+  )
+}
+
 export default function Lobby() {
   const data = useVaultData()
   const cast = data?.cast?.['inglourious-basterds'] || null
@@ -105,6 +162,8 @@ export default function Lobby() {
         </mesh>
       ))}
       <LobbyProps />
+      <Chandelier brass={brass} />
+      <Pilasters brass={brass} />
 
       {/* the carpet runner, street door to the auditorium */}
       <mesh position={[-1.6, 0.006, -5.0]} rotation={[-Math.PI / 2, 0, 0]}>

@@ -6,6 +6,7 @@ import { standardMat } from '../../materials.js'
 import { get as getSetting } from '../../../settings.js'
 import { claimFlash, strobe, flashGain } from '../../../flashPolicy.js'
 import { houseTarget, subscribeHouse } from '../../houseLights.js'
+import { HazeCone } from '../../atmosphere.jsx'
 import { makePaintedTexture } from './basterdsTextures.js'
 import { paintSeatCard, paintScreen } from './theatreTextures.js'
 import { CHARACTERS, FRAGMENTS, HOUSE_NOTES } from './content.js'
@@ -217,7 +218,20 @@ function ReelLabel({ text, hand }) {
   )
 }
 
-// The beam, projector to screen, through the porthole.
+// The beam, projector to screen, through the port: the repo's HazeCone (a
+// gradient-mapped additive cone), aimed down the throw. Brighter with a reel on.
+const BEAM_FROM = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.75)
+const BEAM_TO = new THREE.Vector3(0, APRON_Y + 2.6, -31.4)
+const BEAM_ROT = (() => {
+  const dir = BEAM_TO.clone().sub(BEAM_FROM).normalize()
+  const e = new THREE.Euler().setFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir))
+  return [e.x, e.y, e.z]
+})()
+function ProjectorBeam({ on }) {
+  return <HazeCone pos={BEAM_FROM.toArray()} rot={BEAM_ROT} length={BEAM_FROM.distanceTo(BEAM_TO) * 0.96} radius={1.9}
+    color="#fff0d8" opacity={on ? 0.035 : 0.015} />
+}
+
 function Beam({ on }) {
   const from = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.8)
   const to = new THREE.Vector3(0, APRON_Y + 2.6, -30.2)
@@ -366,7 +380,7 @@ export default function Theatre() {
       {boxFragment && <Scrap text={boxFragment.text} pos={[6.18, 3.05, -23.2]} ry={-Math.PI / 2} w={1.3} rot={-0.05} size={70} />}
       <HouseNote text={HOUSE_NOTES.box} pos={[6.17, 3.5, -19.65]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
       <Screen state={screenState} cast={cast} />
-      {/* <Beam /> parked: renders as a solid slab under this post stack; Session 4 polish */}
+      <ProjectorBeam on={!!reel && !house} />
       <Booth reel={reel} setReel={setReel} burning={burning} />
       <Behind armed={reel === 'her'} onIgnite={ignite} burning={burning} cast={cast} />
     </group>
