@@ -175,4 +175,6 @@ export const SPOTS = {
   cellar:     { pos: at(-9.8, -1.8), look: [-16, -2.2, -6] },
   table:      { pos: at(-12.5, -4.8), look: [-15, -2.4, -6.2] },
   stair:      { pos: at(4.6, -1.6), look: [8, 1.8, -6] },
+  cards:      { pos: at(-4.2, -5.2), look: [-6.7, 1.75, -5.2] },
+  'cards-east': { pos: at(4.2, -6.7), look: [6.7, 1.75, -6.7] },
 }

@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { registerColliders, setBounds, registerFloor, clearOwner } from '../../colliders.js'
 import { standardMat } from '../../materials.js'
+import Lobby from './Lobby.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
   BOOTH_Y, CELLAR_Y, APRON_Y, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, SEAT_BLOCKS, FURNITURE,
@@ -30,7 +31,7 @@ const WALL_T = 0.12
 
 // Greybox tints, one per space, so the preview reads which room is which.
 const TINT = {
-  rue: '#3a3a40', lobby: '#6b5a44', stairE: '#5a4c3c', gallery: '#4a3e34', booth: '#5c4636',
+  rue: '#3a3a40', lobby: '#b9a585', stairE: '#5a4c3c', gallery: '#4a3e34', booth: '#5c4636',
   vestibule: '#5a4a3a', auditorium: '#4a1c1c', behind: '#2e2a26', stairW: '#443a30', cellar: '#4a3a2a',
 }
 
@@ -259,6 +260,7 @@ export default function Basterds({ film, config, goToStation }) {
 
 
       <Seats />
+      <Lobby />
 
       {/* the nitrate, behind the screen */}
       <mesh position={[-3, APRON_Y + 1.1, -34.1]} material={mats.behind.floor}><boxGeometry args={[8, 2.2, 0.8]} /></mesh>

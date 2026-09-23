@@ -504,6 +504,30 @@ def fetch_headshot(pid, path):
     return rel
 
 
+# Stills (rules opened 2026-09-22): hand-picked TMDB backdrops per room, listed
+# in data/stills.json as {slug: [{key, path, png?}]}. Vendored once into
+# public/stills/<slug>/<key>.jpg (w780) or .png (logos, w500). Rooms load them
+# by key; nothing hotlinks.
+STILLS_IN = load("stills.json") if os.path.exists(os.path.join(BASE, "data", "stills.json")) else {}
+for _slug, _list in STILLS_IN.items():
+    _dir = os.path.join(OUT_DIR, "stills", _slug)
+    for _s in _list:
+        _ext = ".png" if _s.get("png") else ".jpg"
+        _dest = os.path.join(_dir, _s["key"] + _ext)
+        if os.path.exists(_dest) and os.path.getsize(_dest) > 1024:
+            continue
+        _size = "w500" if _s.get("png") else "w780"
+        try:
+            _blob = urlopen(Request("https://image.tmdb.org/t/p/" + _size + _s["path"],
+                                    headers={"User-Agent": "movie-vault/1.0"}), timeout=30).read()
+        except Exception as e:                  # noqa: BLE001
+            sys.stderr.write("still FAILED %s/%s: %s\n" % (_slug, _s["key"], e))
+            continue
+        os.makedirs(_dir, exist_ok=True)
+        with open(_dest, "wb") as f:
+            f.write(_blob)
+        print("  fetched stills/%s/%s%s %d KB" % (_slug, _s["key"], _ext, len(_blob) // 1024))
+
 _where_title = {s: META[s][2] for s in META}
 _where_title.update({a["slug"]: a["title"] for a in archive})
 _score = {s: META[s][1] for s in META}
