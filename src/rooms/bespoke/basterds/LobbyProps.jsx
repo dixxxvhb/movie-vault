@@ -72,7 +72,7 @@ export function HouseNote({ text, pos, ry = 0, w = 0.5, rot = 0 }) {
 // A loose board in front of the first card. Lift it: glass set into the floor,
 // and under the glass, the LaPadite kitchen at 1:6 from above, with the
 // Dreyfus family hidden in the crawlspace under its floorboards.
-function Floorboard() {
+export function Floorboard() {
   const [open, setOpen] = useState(false)
   const board = useRef()
   const t = useRef(0)

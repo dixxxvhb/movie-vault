@@ -7,13 +7,15 @@ import Touchable from '../../Touchable.jsx'
 import Rue from './Rue.jsx'
 import Hall from './Hall.jsx'
 import Ornament from './Ornament.jsx'
+import Cases from './Cases.jsx'
+import { Floorboard } from './LobbyProps.jsx'
 import Theatre from './Theatre.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import { useRoomAudio } from '../../audio/engine.js'
 import { start as basterdsAudio } from '../../audio/recipes/basterds.js'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS, ROOM_ENTRY, STREET_RETURN, ROOM_DOORS,
-  BOOTH_Y, BAR_Y, SEAT_BLOCKS, FURNITURE,
+  BOOTH_Y, BAR_Y, SEAT_BLOCKS, FURNITURE, HATCH,
 } from './zones.js'
 
 // LE GAMAAR, built to the Two-Scene Standard (docs/VAULT-TWO-SCENE-STANDARD.md,
@@ -171,9 +173,19 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -6.2]} intensity={10} distance={7} color="#ffc27a" />
       <pointLight position={[12.4, BAR_Y + 1.9, -21]} intensity={12} distance={10} color="#ffb060" />
 
-      {FOOTPRINTS.filter((f) => f.id !== 'rue').map((f) => (
-        <Floor key={f.id} room={f} mat={f.id === 'stalls' || f.id === 'crossing' ? mats.stalls : mats.wood} />
+      {FOOTPRINTS.filter((f) => f.id !== 'rue' && f.id !== 'crossing').map((f) => (
+        <Floor key={f.id} room={f} mat={f.id === 'stalls' ? mats.stalls : mats.wood} />
       ))}
+      {/* the crossing floor, with the hole for the glass over chapter 1 */}
+      {[
+        [-8.8, HATCH.x0, -13.2, -11.0], [HATCH.x1, 9.8, -13.2, -11.0],
+        [HATCH.x0, HATCH.x1, -13.2, HATCH.z0], [HATCH.x0, HATCH.x1, HATCH.z1, -11.0],
+      ].map(([a, b2, c, d]) => (
+        <mesh key={a + ':' + c} position={[(a + b2) / 2, 0, (c + d) / 2]} rotation={[-Math.PI / 2, 0, 0]} material={mats.stalls}>
+          <planeGeometry args={[b2 - a, d - c]} />
+        </mesh>
+      ))}
+      <Floorboard />
 
       {/* THE ARRIVAL */}
       <Rue onDoor={onDoor} />
@@ -183,6 +195,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       {/* THE ROOM */}
       <Hall />
       <Ornament />
+      <Cases />
       <DoubleDoors pos={[ROOM_DOORS.x, 0, ROOM_DOORS.z + 0.08]} ry={Math.PI} w={ROOM_DOORS.w} h={2.5}
         open={houseOpen} onUse={leave} mat={mats.door} />
 
