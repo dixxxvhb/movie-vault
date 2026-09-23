@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { registerColliders, setBounds, registerFloor, clearOwner } from '../../colliders.js'
 import { standardMat } from '../../materials.js'
-import Touchable from '../../Touchable.jsx'
+import { cutTo, DoubleDoors } from '../../kit/threshold.jsx'
 import Rue from './Rue.jsx'
 import Hall from './Hall.jsx'
 import Ornament from './Ornament.jsx'
@@ -11,7 +11,7 @@ import Cases from './Cases.jsx'
 import UpperWalls from './UpperWalls.jsx'
 import Backstage from './Backstage.jsx'
 import Cellar from './Cellar.jsx'
-import { Floorboard } from './LobbyProps.jsx'
+import { Floorboard } from './ChapterOne.jsx'
 import Theatre from './Theatre.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import { useRoomAudio } from '../../audio/engine.js'
@@ -50,50 +50,6 @@ function Floor({ room, mat }) {
   }, [room])
   useEffect(() => () => geo.dispose(), [geo])
   return <mesh geometry={geo} material={mat} receiveShadow />
-}
-
-// ---------------------------------------------------------------- the threshold
-// A cut through black, timed so the rig's flight happens while you can't see it.
-function cutTo(go) {
-  const el = document.createElement('div')
-  el.style.cssText = 'position:fixed;inset:0;z-index:1900;background:#000;opacity:0;transition:opacity 380ms ease;pointer-events:none'
-  document.body.appendChild(el)
-  requestAnimationFrame(() => { el.style.opacity = '1' })
-  setTimeout(go, 420)
-  setTimeout(() => { el.style.transition = 'opacity 700ms ease'; el.style.opacity = '0' }, 1250)
-  setTimeout(() => el.remove(), 2100)
-}
-
-// A pair of doors that swing away from you when used.
-function DoubleDoors({ pos, ry = 0, w = 2.2, h = 2.5, glass = true, open, onUse, mat }) {
-  const L = useRef(), R = useRef()
-  const t = useRef(0)
-  useFrame((_, dt) => {
-    t.current = THREE.MathUtils.damp(t.current, open ? 1 : 0, 7, dt)
-    if (L.current) L.current.rotation.y = t.current * 1.35
-    if (R.current) R.current.rotation.y = -t.current * 1.35
-  })
-  const leaf = (sign) => (
-    <group>
-      <mesh position={[sign * w / 4, h / 2, 0]} material={mat}><boxGeometry args={[w / 2 - 0.02, h, 0.06]} /></mesh>
-      {glass && (
-        <mesh position={[sign * w / 4, h * 0.58, 0.035]}>
-          <planeGeometry args={[w / 2 - 0.3, h * 0.55]} />
-          <meshStandardMaterial color="#0d0907" emissive="#ffb35e" emissiveIntensity={0.35} roughness={0.08} metalness={0.6} />
-        </mesh>
-      )}
-      <mesh position={[sign * 0.08, h * 0.48, 0.05]}><boxGeometry args={[0.03, 0.36, 0.03]} /><meshStandardMaterial color="#b89045" metalness={0.9} roughness={0.25} /></mesh>
-    </group>
-  )
-  return (
-    <group position={pos} rotation={[0, ry, 0]}>
-      <Touchable reach={2.6} foley="creak" anchor={[0, 1.3, 0]} onUse={onUse}>
-        {/* each leaf hinges on its outer edge */}
-        <group position={[-w / 2, 0, 0]} ref={L}><group position={[w / 2, 0, 0]}>{leaf(-1)}</group></group>
-        <group position={[w / 2, 0, 0]} ref={R}><group position={[-w / 2, 0, 0]}>{leaf(1)}</group></group>
-      </Touchable>
-    </group>
-  )
 }
 
 // ---------------------------------------------------------------- the room

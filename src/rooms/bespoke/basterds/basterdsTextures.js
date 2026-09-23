@@ -1,5 +1,8 @@
-import * as THREE from 'three'
 import { CHAPTERS, CHARACTERS } from './content.js'
+import { loadImage, wrap, makePaintedTexture } from '../../kit/paint.js'
+
+// the shared painters live in the kit; re-exported so the room's files keep one import
+export { loadImage, wrap, makePaintedTexture }
 
 // LE GAMAAR's printed matter: lobby cards, the marquee, tent cards.
 // Canvas textures, painted once the period fonts and the images have loaded
@@ -27,32 +30,6 @@ export function whenFonts() {
   return fontsReady
 }
 
-const imgCache = new Map()
-export function loadImage(url) {
-  if (!url) return Promise.resolve(null)
-  if (!imgCache.has(url)) {
-    imgCache.set(url, new Promise((res) => {
-      const im = new Image()
-      im.onload = () => res(im)
-      im.onerror = () => res(null)
-      im.src = url
-    }))
-  }
-  return imgCache.get(url)
-}
-
-// Word wrap that returns the lines, so a caller can measure before drawing.
-export function wrap(ctx, text, maxW) {
-  const words = String(text).split(/\s+/)
-  const lines = []
-  let line = ''
-  for (const w of words) {
-    const t = line ? line + ' ' + w : w
-    if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w } else line = t
-  }
-  if (line) lines.push(line)
-  return lines
-}
 
 // Paper with a little tooth and a darker edge, the way old card stock reads.
 function paper(ctx, w, h, seed = 1) {
@@ -169,14 +146,3 @@ export async function paintLobbyCard(canvas, n, cast) {
   }
 }
 
-// One CanvasTexture per painter, repainted when its inputs arrive.
-export function makePaintedTexture(w, h, paint) {
-  const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
-  const tex = new THREE.CanvasTexture(canvas)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.anisotropy = 8
-  Promise.resolve(paint(canvas)).then(() => { tex.needsUpdate = true })
-  return tex
-}

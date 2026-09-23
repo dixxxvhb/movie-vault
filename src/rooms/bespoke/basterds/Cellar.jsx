@@ -7,8 +7,8 @@ import { makePaintedTexture } from './basterdsTextures.js'
 import { paintSeatCard } from './theatreTextures.js'
 import { paintWhoAmI, paintAnswer, paintCardBack, paintBanner, paintClock, paintNapkin } from './cellarTextures.js'
 import { CHARACTERS, BONUS, GUEST, WILHELM } from './content.js'
-import { useVaultData } from './Lobby.jsx'
-import { TentCard } from './Rue.jsx'
+import { useVaultData } from './data.js'
+import { TentCard } from '../../kit/notes.jsx'
 import { CELLAR_Y, BAR_Y } from './zones.js'
 
 // LA LOUISIANE: the basement tavern, chapter 4. Plan §4.6.
@@ -180,7 +180,12 @@ function Hand({ german, wood }) {
 
 function ThreeFingers() {
   const [german, setGerman] = useState(false)
-  const wood = useMemo(() => standardMat({ kind: 'wood', tint: '#8a5a32', wear: 0.2, seed: 'ib-hand', roughness: 0.55 }), [])
+  const wood = useMemo(() => {
+    // lit a little from within so the count reads from across the bar
+    const w = standardMat({ kind: 'wood', tint: '#9a6a3a', wear: 0.2, seed: 'ib-hand', roughness: 0.55 }).clone()
+    w.emissive = new THREE.Color('#6a3a18'); w.emissiveIntensity = 0.6
+    return w
+  }, [])
   useEffect(() => {
     window.__basterdsHand = (v) => setGerman(v == null ? (g) => !g : !!v)
     return () => { delete window.__basterdsHand }

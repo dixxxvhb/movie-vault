@@ -151,11 +151,18 @@ Pieces that every room reuses, so the second film is faster than the first. They
 - Tooling: `?spot=`, `dailies.py --keys js:`, `peek.py --fps`, a flood-fill walk check.
 
 ### Built so far (Le Gamaar, 2026-09-23)
-`src/rooms/kit/architecture.jsx`: `Slab`, `Curtain` (pleats, tie-back, scallop), `Fan`
-(sunburst), `Sconce`, `FloorBand` (a band that follows a sloped floor: dados, rails),
-`FloorRunner` (carpet on a rake), `useGlow`. Still living in the pilot and due for extraction:
-the threshold (`cutTo` + `DoubleDoors` in `Basterds.jsx`), `ArrivalCard`, `HouseNote`,
-`Scrap`, the zone-bus audio recipe, the walk check.
+- `src/rooms/kit/architecture.jsx`: `Slab`, `Curtain` (pleats, tie-back, scallop), `Fan`
+  (sunburst), `Sconce`, `FloorBand` (a band that follows a sloped floor: dados, rails),
+  `FloorRunner` (carpet on a rake), `useGlow`.
+- `src/rooms/kit/threshold.jsx`: `cutTo` (fade through black, fly the rig while it's black),
+  `DoubleDoors`.
+- `src/rooms/kit/ArrivalCard.jsx`: the title card (kicker, title, fonts, colours, cue, hold)
+  and `arrivalWanted()`.
+- `src/rooms/kit/notes.jsx`: `Scrap` (his words), `HouseNote` (the record), `TentCard`.
+- `src/rooms/kit/paint.js`: `makePaintedTexture`, `usePainted`, `wrap`, `fontsReady`,
+  `loadImage`.
+- Still in the pilot, to lift when the second film needs them: the zone-bus audio recipe
+  (`recipes/basterds.js`), the walk check (`scripts/check_basterds.mjs`), the Who am I? deck.
 
 ### Lessons from the pilot build (read before building the next film)
 1. **Decide the three hero frames before any geometry**, then place architecture to serve them.
@@ -178,7 +185,15 @@ the threshold (`cutTo` + `DoubleDoors` in `Basterds.jsx`), `ArrivalCard`, `House
 7. **The flood-fill proves the floor connects, not that a person can find the way.** Walk every
    route with the keys in headless Chrome (`__vaultWalk` gives the position), up and back, and
    look at the frames. Le Gamaar's stair passed the check while hidden behind a black slab.
-8. **Write source files atomically** (temp file, then rename). Vite once cached a module it
+8. **Never repaint and re-upload a big canvas texture on a timer.** The screen's film at
+   2048 wide, six times a second, halved the frame rate on a loaded GPU. Paint a handful of
+   frames once at a sensible size and swap the map.
+9. **Anything timed on the Arrival must count painted frames, not wall time.** The room builds
+   while the card is up and can freeze the main thread for seconds; a setTimeout hold showed
+   the card late and cut it to half.
+10. **Blank gamepads in every headless script** (`navigator.getGamepads = () => []`). A
+    controller plugged into the PC reaches headless Chrome and walks the camera.
+11. **Write source files atomically** (temp file, then rename). Vite once cached a module it
    read mid-write as an empty file.
 
 ---

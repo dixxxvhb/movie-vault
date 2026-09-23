@@ -7,7 +7,7 @@ import { makePaintedTexture, wrap, whenFonts, INK } from './basterdsTextures.js'
 import {
   paintMarquee, paintNameSign, paintPoster, paintBuilding, paintCobbles, paintFacePoster,
 } from './rueTextures.js'
-import { useVaultData } from './Lobby.jsx'
+import { useVaultData } from './data.js'
 import { MORRIS, LADDER } from './zones.js'
 
 // LE GAMAAR: the street. Plan §4.1. Built to the film's own facade (a curved
@@ -105,26 +105,6 @@ function Marquee() {
 }
 
 // A small folded card, the room's plain-words voice.
-export function TentCard({ pos, ry = 0, text, w = 0.34 }) {
-  const tex = usePainted(512, 300, async (c) => {
-    await whenFonts()
-    const ctx = c.getContext('2d')
-    ctx.fillStyle = '#efe4cf'; ctx.fillRect(0, 0, 512, 300)
-    ctx.fillStyle = INK
-    ctx.font = 'italic 400 30px "Bodoni Moda"'
-    let y = 58
-    for (const l of wrap(ctx, text, 452)) { ctx.fillText(l, 30, y); y += 38 }
-  }, [text])
-  return (
-    <group position={pos} rotation={[0, ry, 0]}>
-      <mesh rotation={[-0.35, 0, 0]} position={[0, 0.1, 0]}>
-        <planeGeometry args={[w, w * 300 / 512]} />
-        <meshStandardMaterial key={text} map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.35} side={THREE.DoubleSide} />
-      </mesh>
-    </group>
-  )
-}
-
 function Building({ x0, x1, z, h, seed, facing = 0 }) {
   const w = Math.abs(x1 - x0)
   const tex = usePainted(1024, 1536, (c) => paintBuilding(c, seed), [seed])

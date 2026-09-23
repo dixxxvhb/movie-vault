@@ -123,6 +123,8 @@ Bridget's shoe and its pair on her seat, banner, clock, Wilhelm's table), the so
 screen's history card, pinned notes), polish (`ec92df6` + final: beam via HazeCone, chandelier,
 pilasters, Zoller's card). 60 fps every zone at DPR 2; 7 lights. Build log §18.
 
+**Le Gamaar FINISHED (2026-09-23, ~1:40am):** every item on `docs/films/inglourious-basterds.md` built, checks JSON green, kit extracted to `src/rooms/kit/`. Only Dixon's walk is open.
+
 **Two-Scene rebuild (2026-09-23), merged to master:** the room is now the pilot for
 `docs/VAULT-TWO-SCENE-STANDARD.md` (the format for every film: Arrival, Threshold, ONE Room).
 The street doors cut into one picture-palace volume holding everything (chapter cases, seating

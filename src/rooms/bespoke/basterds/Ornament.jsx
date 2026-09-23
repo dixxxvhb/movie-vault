@@ -4,7 +4,7 @@ import { Slab, Curtain, Fan, Sconce, FloorBand, FloorRunner, useGlow } from '../
 import { makePaintedTexture } from './basterdsTextures.js'
 import { APRON_Y, BOOTH_Y, rakeAt } from './zones.js'
 import { CEIL_Y } from './Hall.jsx'
-import { Scrap } from './LobbyProps.jsx'
+import { Scrap } from '../../kit/notes.jsx'
 import { FRAGMENTS } from './content.js'
 
 // LE GAMAAR: the picture palace. Hero frame 1 (docs/films/inglourious-basterds.md):
@@ -170,7 +170,7 @@ export default function Ornament() {
       {Array.from({ length: 13 }, (_, k) => -8.4 + k * 1.5).filter((x) => x < -3.3 || x > 2.2).map((x) => (
         <group key={x}>
           <Slab x0={x - 0.03} x1={x + 0.03} y0={BOOTH_Y - 0.35} y1={BOOTH_Y + 0.95} z0={-11.18} z1={-11.12} mat={m.gold} />
-          <mesh position={[x + 0.75, BOOTH_Y + 1.1, -11.03]} material={lamp}><sphereGeometry args={[0.045, 10, 8]} /></mesh>
+          <mesh position={[x + 0.75, BOOTH_Y + 1.08, -11.03]} material={lamp}><sphereGeometry args={[0.028, 10, 8]} /></mesh>
         </group>
       ))}
 

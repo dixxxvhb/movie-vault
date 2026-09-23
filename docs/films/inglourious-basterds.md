@@ -83,28 +83,54 @@ cards and the vitrine card are retired.
 The lobby, the east stair, the gallery, the vestibule, the west stair, the cellar as separate
 spaces. Their contents move into the Room as listed above.
 
-## Build status (2026-09-23, branch two-scene, merged to master)
+## Build status: FINISHED (2026-09-23, live on master)
 
-Done: the threshold both ways; one volume (stalls, crossing, balcony, stair, booth at the
-balcony front with the round port, wings, the bar arch); architecture pass 1 (proscenium bands,
-sunburst, curtains and valance, organ grilles, pilasters and fan sconces, cornice cove, ceiling
-rosette, opera box, carpet); the five chapter cases with objects; chapter 1 under the crossing
-floor; La Louisiane in the arch; the house switch by the doors; Stolz der Nation playing.
-Hero frames: from the doors (`?spot=house`), through the port (`?spot=porthole`), the screen.
-60 fps in every zone; walk check PASS.
+Everything on this sheet is built:
+- **Arrival:** Chapter Six (the kit's ArrivalCard, now holding its full 3.4 s even while the
+  room builds), the rue in the rain, the facade, the marquee, the Morris column, the ladder
+  easter egg with no card.
+- **Threshold:** the front doors, touch or walk in; out again by the house doors, facing the
+  Morris column.
+- **Room:** one volume. Proscenium, sunburst, curtains, organ grilles, pilasters and sconces,
+  upper-wall panels and frieze, cornice cove, ceiling rosette, opera box, carpet; the five
+  chapter cases with objects; chapter 1 under the crossing floor; the seating chart; the booth
+  at the balcony front with the round port; the signed, lit, walkable stair; La Louisiane in
+  the arch under the Box (the deck and its last card, the three fingers, the shoe and its pair
+  upstairs, Wilhelm's table); Stolz der Nation playing; backstage as a stage house (screen back,
+  fly rail, nitrate, BURN THAT FUCKER, Marcel, the cigarette); the fire.
+- **His words:** all six placed (arch, Box, Landa's seat, case 2, the nitrate, the history
+  screen). **The record:** the switch by the doors, the history screen, pinned notes on every
+  case and the Box. **Sound:** zone buses (street, house, balcony, behind, bar).
 
-Still to do, in order:
-1. Upper walls: panels or a painted frieze above the cases and on the east wall (they read as
-   bare plaster). The back wall of the balcony, the stair's wall.
-2. His words: "such a fun movie..." still has no place in the Room (it was over the lobby
-   arch). Pin it on the balcony front or over the doors.
-3. Retire tent cards against the text budget: the floorboard card, the street ladder card.
-4. Behind the screen: dress the wings (ropes, sandbags, a fly rail) so the nitrate sits in a
-   stage house, not a box.
-5. Extract `cutTo`/`DoubleDoors`, `ArrivalCard`, `HouseNote`, `Scrap` into `src/rooms/kit/`.
-6. Delete what the rebuild orphaned: `Lobby.jsx`'s room component, `LobbyProps.jsx`'s Vitrine
-   and Concession, zones' `VITRINE`/`COUNTER`.
-7. Dixon walks it.
+Checks (2026-09-23, 1:40am, headless Chrome, gamepads blanked):
+```json
+{
+  "film_sheet_checked": true,
+  "arrival_matches_reference_three_passes": true,
+  "arrival_has_no_info_cards": true,
+  "threshold_transition_under_2s_no_wait": true,
+  "room_is_one_space": true,
+  "no_greybox_walls": true,
+  "room_matches_reference_three_passes": true,
+  "all_eight_slots_filled": true,
+  "text_surfaces_12_or_fewer": true,
+  "hero_frames_desktop_and_390": true,
+  "fps_min_55_both_scenes": true,
+  "house_lights_both_scenes": true,
+  "event_flash_safe_and_resets": true,
+  "no_recorded_film_audio": true,
+  "every_route_walked_with_keys": true,
+  "console_errors": 0,
+  "build_passes_dailies_not_in_dist": true,
+  "max_7_lights": true,
+  "no_em_or_en_dashes": true,
+  "dixon_walked_it": false
+}
+```
+Text surfaces in the Room (cast cards and the case posters aside): the reel rack card, the
+cigarette card, the deck card, the hand card, the shoe card, three way-signs. Eight.
+
+The one open item is Dixon's walk.
 
 ## Facts to check before copy ships
 All copy is carried over from content.js (checked 2026-09-22). New copy in this rebuild: the

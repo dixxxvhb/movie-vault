@@ -143,6 +143,8 @@ export default function Hall() {
       ))}
       <WaySign pos={[-9.97, 2.05, -12.55]} ry={Math.PI / 2} w={1.0} lines={['BALCON', 'CABINE DE PROJECTION']} />
       <WaySign pos={[-6.6, BY + 0.3, -11.17]} ry={Math.PI} w={1.3} lines={['BALCON', 'PAR L’ESCALIER, AU FOND À GAUCHE']} />
+      {/* on the west wall by the crossing, where you first look left: the stair is behind you */}
+      <WaySign pos={[-8.78, 2.25, -13.62]} ry={Math.PI / 2} w={0.74} lines={['BALCON', 'L’ESCALIER']} arrow={-1} />
       {/* at the top of the stair: the balcony is to your left */}
       <WaySign pos={[-9.2, BY + 1.75, -5.03]} ry={Math.PI} w={1.0} lines={['CABINE', 'DE PROJECTION']} arrow={-1} />
       {[-7.2, -4.4, 4.2, 7.2].map((x) => (

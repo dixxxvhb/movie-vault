@@ -10,9 +10,8 @@ import { HazeCone } from '../../atmosphere.jsx'
 import { makePaintedTexture } from './basterdsTextures.js'
 import { paintSeatCard, paintScreen } from './theatreTextures.js'
 import { CHARACTERS, FRAGMENTS, HOUSE_NOTES } from './content.js'
-import { useVaultData } from './Lobby.jsx'
-import { TentCard } from './Rue.jsx'
-import { Scrap, HouseNote } from './LobbyProps.jsx'
+import { useVaultData } from './data.js'
+import { TentCard, Scrap, HouseNote } from '../../kit/notes.jsx'
 import { Shoe } from './Cellar.jsx'
 import { floorAt, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, BOOTH_Y, APRON_Y } from './zones.js'
 
@@ -141,25 +140,36 @@ function Screen({ state, cast }) {
     paintScreen(canvas, { ...state, cast }).then(() => { if (live) tex.needsUpdate = true })
     return () => { live = false }
   }, [key, cast]) // eslint-disable-line react-hooks/exhaustive-deps
-  // The film plays: while idle, repaint the frame about six times a second
-  // (grain, weave, drifting smoke). No React state, so the room doesn't re-render.
+  // The film plays while idle: six frames of Stolz der Nation (grain, weave,
+  // drifting smoke) are painted ONCE at 1024 wide and cycled about six times a
+  // second by swapping the map. Repainting and re-uploading a 2048 canvas six
+  // times a second halved the frame rate on a loaded GPU (2026-09-23).
+  const idle = useMemo(() => Array.from({ length: 6 }, (_, k) => {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 430
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace
+    paintScreen(c, { mode: 'idle', t: k * 3 + 1 }).then(() => { t.needsUpdate = true })
+    return t
+  }), [])
+  useEffect(() => () => idle.forEach((t) => t.dispose()), [idle])
+  const front = useRef(), back = useRef()
   const clock = useRef({ acc: 0, f: 0 })
   useFrame((_, dt) => {
-    if (state.mode !== 'idle') return
+    const map = state.mode === 'idle' ? null : tex
     const c = clock.current
-    c.acc += dt
-    if (c.acc < 0.16) return
-    c.acc = 0; c.f += 1
-    paintScreen(canvas, { mode: 'idle', t: c.f }).then(() => { tex.needsUpdate = true })
+    if (!map) { c.acc += dt; if (c.acc >= 0.16) { c.acc = 0; c.f = (c.f + 1) % idle.length } }
+    const want = map || idle[c.f]
+    for (const m of [front.current, back.current]) {
+      if (m && m.map !== want) { m.map = want; m.emissiveMap = want }
+    }
   })
   return (
     <mesh position={[0, APRON_Y + 2.6, -31.52]}>
       <planeGeometry args={[10, 4.2]} />
-      <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.95} roughness={1} />
+      <meshStandardMaterial ref={front} map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.95} roughness={1} />
       {/* the back of the canvas: from behind, the film shows through faintly, mirrored */}
       <mesh position={[0, 0, -0.01]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[10, 4.2]} />
-        <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.22} color="#6a6458" roughness={1} />
+        <meshStandardMaterial ref={back} map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.22} color="#6a6458" roughness={1} />
       </mesh>
     </mesh>
   )
@@ -247,21 +257,6 @@ const BEAM_ROT = (() => {
 function ProjectorBeam({ on }) {
   return <HazeCone pos={BEAM_FROM.toArray()} rot={BEAM_ROT} length={BEAM_FROM.distanceTo(BEAM_TO) * 0.96} radius={1.9}
     color="#fff0d8" opacity={on ? 0.011 : 0} />
-}
-
-function Beam({ on }) {
-  const from = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.8)
-  const to = new THREE.Vector3(0, APRON_Y + 2.6, -30.2)
-  const dir = to.clone().sub(from)
-  const len = dir.length()
-  const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, -1, 0), dir.clone().normalize())
-  const mid = from.clone().add(to).multiplyScalar(0.5)
-  return (
-    <mesh position={mid} quaternion={q}>
-      <cylinderGeometry args={[0.05, 2.6, len, 24, 1, true]} />
-      <meshBasicMaterial color="#fff2d8" transparent opacity={on ? 0.04 : 0.016} blending={THREE.AdditiveBlending} depthWrite={false} fog={false} toneMapped={false} />
-    </mesh>
-  )
 }
 
 // ---------------------------------------------------------------- behind

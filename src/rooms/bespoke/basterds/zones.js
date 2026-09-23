@@ -98,8 +98,6 @@ export const LADDER = { pos: [3.9, 0, 1.05], ry: 0, crate: [5.1, 0, 1.3] }
 
 // The lobby's pieces (LobbyProps.jsx reads these).
 export const HATCH = { x0: -6.4, x1: -5.2, z0: -12.9, z1: -12.1 }   // glass in the crossing floor, chapter 1
-export const VITRINE = { x: -6.22, z: -5.2, w: 0.55, d: 1.0, h: 1.0 }  // the ravine case, chapter 2
-export const COUNTER = { x: 6.3, z0: -4.3, z1: -2.5, h: 1.0 }         // milk and strudel
 
 const BAL_RAIL = 0.14
 export const FURNITURE = [
@@ -206,7 +204,7 @@ export const SPOTS = {
   stairfoot:  { pos: at(-9.4, -12.9), look: [-9.4, 3.2, -6.0] },
   stairdown:  { pos: at(-9.4, -6.1), look: [-9.4, 0.6, -13.5] },
   stairtop:   { pos: at(-9.4, -6.1), look: [-9.2, 4.9, -5.0] },
-  rail:       { pos: at(4.2, -10.4), look: [0, -1.4, -26] },
+  rail:       { pos: at(3.6, -10.4), look: [0, -1.4, -26] },
   porthole:   { pos: at(-0.25, -10.1), look: [-0.25, -0.6, -30] },
   booth:      { pos: at(1.2, -9.3), look: [-2.6, 4.0, -10.0] },
   boothdoor:  { pos: at(2.2, -6.6), look: [0.9, 4.5, -8.6] },
@@ -223,4 +221,4 @@ export const SPOTS = {
 
 // Where the threshold lands you, and where leaving puts you back.
 export const ROOM_ENTRY = SPOTS.house
-export const STREET_RETURN = { pos: at(0, 2.2), look: [0, 1.6, 9] }
+export const STREET_RETURN = { pos: at(0, 2.2), look: [-5.5, 2.0, 9] }
