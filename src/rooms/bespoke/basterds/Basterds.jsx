@@ -219,7 +219,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <fogExp2 attach="fog" args={[g.fogColor || '#0b0a0c', g.fogDensity ?? 0.012]} />
 
       {/* greybox lights: one per space, warm tungsten except the street */}
-      <pointLight position={[0, 3.8, -5]} intensity={30} distance={14} color="#ffcf8a" />
+      <pointLight position={[0, 3.7, -5]} intensity={55} distance={18} color="#ffcf8a" />
       <pointLight position={[0, 6.8, -20]} intensity={40} distance={26} color="#ffb070" />
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -11.6]} intensity={10} distance={7} color="#ffc27a" />
       <pointLight position={[-14, CELLAR_Y + 2.1, -6]} intensity={16} distance={12} color="#ffb060" />
@@ -229,7 +229,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
         const t = mats[f.id] || mats.lobby
         return (
           <group key={f.id}>
-            {f.id !== 'rue' && <Floor room={f} mat={t.floor} />}
+            {f.id !== 'rue' && f.id !== 'lobby' && <Floor room={f} mat={t.floor} />}
             {f.id !== 'rue' && <Walls room={f} top={CEIL[f.id] ?? 4} mat={t.wall} />}
             {f.id !== 'rue' && <Ceiling room={f} y={CEIL[f.id] ?? 4} mat={t.ceil} />}
           </group>

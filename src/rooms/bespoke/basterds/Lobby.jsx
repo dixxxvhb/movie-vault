@@ -3,6 +3,8 @@ import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
 import { Bevel } from '../../detail.jsx'
 import { makePaintedTexture, paintLobbyCard } from './basterdsTextures.js'
+import LobbyProps from './LobbyProps.jsx'
+import { HATCH } from './zones.js'
 
 // LE GAMAAR: the lobby. Plan §4.2.
 //
@@ -72,6 +74,7 @@ export default function Lobby() {
   const data = useVaultData()
   const cast = data?.cast?.['inglourious-basterds'] || null
   const wood = standardMat({ kind: 'wood', tint: '#3a2416', wear: 0.25, seed: 'ib-dado', roughness: 0.55 })
+  const parquet = standardMat({ kind: 'wood', tint: '#5a3a24', wear: 0.35, seed: 'ib-parquet', roughness: 0.45, repeat: [6, 4] })
   const brass = useMemo(() => new THREE.MeshStandardMaterial({ color: '#9a7a40', metalness: 0.85, roughness: 0.3 }), [])
   return (
     <group>
@@ -84,6 +87,17 @@ export default function Lobby() {
           <mesh position={[s * 6.72, 1.12, -5.0]} material={brass}><boxGeometry args={[0.03, 0.03, 9.6]} /></mesh>
         </group>
       ))}
+
+      {/* the parquet, with the hatch cut out of it (chapter 1 is under the glass) */}
+      {[
+        [-6.8, HATCH.x0, -9.8, -0.2], [HATCH.x1, 6.8, -9.8, -0.2],
+        [HATCH.x0, HATCH.x1, -9.8, HATCH.z0], [HATCH.x0, HATCH.x1, HATCH.z1, -0.2],
+      ].map(([a, b, c, d]) => (
+        <mesh key={a + ':' + c} position={[(a + b) / 2, 0, (c + d) / 2]} rotation={[-Math.PI / 2, 0, 0]} material={parquet}>
+          <planeGeometry args={[b - a, d - c]} />
+        </mesh>
+      ))}
+      <LobbyProps />
 
       {/* the carpet runner, street door to the auditorium */}
       <mesh position={[-1.6, 0.006, -5.0]} rotation={[-Math.PI / 2, 0, 0]}>

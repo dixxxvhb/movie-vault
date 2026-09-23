@@ -99,7 +99,14 @@ export const SEAT_BLOCKS = BLOCKS.map(([a, b]) => ({
 export const MORRIS = { pos: [-7.4, 0, 7.4] }
 export const LADDER = { pos: [3.9, 0, 1.05], ry: 0, crate: [5.1, 0, 1.3] }
 
+// The lobby's pieces (LobbyProps.jsx reads these).
+export const HATCH = { x0: -6.2, x1: -5.0, z0: -3.0, z1: -2.2 }      // glass in the floor, chapter 1
+export const VITRINE = { x: -6.22, z: -5.2, w: 0.55, d: 1.0, h: 1.0 }  // the ravine case, chapter 2
+export const COUNTER = { x: 6.3, z0: -4.3, z1: -2.5, h: 1.0 }         // milk and strudel
+
 export const FURNITURE = [
+  { minX: -6.8, maxX: -5.9, minZ: -5.75, maxZ: -4.65 },   // the vitrine
+  { minX: 5.85, maxX: 6.8, minZ: -4.35, maxZ: -2.45 },    // the concession counter
   { minX: -8.25, maxX: -6.55, minZ: 6.55, maxZ: 8.25 },    // the Morris column
   { minX: 5.7, maxX: 6.1, minZ: 3.2, maxZ: 3.6 },          // the street lamp
   { minX: -8.95, maxX: -4.85, minZ: 3.45, maxZ: 5.15 },    // the staff car
@@ -187,5 +194,7 @@ export const SPOTS = {
   table:      { pos: at(-12.5, -4.8), look: [-15, -2.4, -6.2] },
   stair:      { pos: at(4.6, -1.6), look: [8, 1.8, -6] },
   cards:      { pos: at(-4.2, -5.2), look: [-6.7, 1.75, -5.2] },
+  hatch:      { pos: at(-4.4, -2.6, 0.1), look: [-5.6, -0.6, -2.6] },
+  counter:    { pos: at(4.6, -3.4), look: [6.3, 1.0, -3.4] },
   'cards-east': { pos: at(4.2, -6.7), look: [6.7, 1.75, -6.7] },
 }

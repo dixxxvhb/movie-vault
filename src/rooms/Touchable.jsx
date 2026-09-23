@@ -158,6 +158,13 @@ export default function Touchable({
   const self = useRef(null)
   self.current = {
     group, reach, disabled,
+    // world position of the anchor, the same point the click reach gate uses
+    where: (out) => {
+      const g = group.current
+      g.updateWorldMatrix(true, false)
+      out.set(anchor[0] ?? 0, anchor[1] ?? 0, anchor[2] ?? 0)
+      return g.localToWorld(out)
+    },
     fire: () => {
       triggerDip()
       if (foley) playOneShot(foley)
@@ -177,7 +184,7 @@ export default function Touchable({
     for (const t of LIVE) {
       const c = t.current
       if (!c || c.disabled || !c.group.current) continue
-      c.group.current.getWorldPosition(_to)
+      c.where(_to)
       const p = walkPos()
       const d = Math.hypot(_to.x - p.x, _to.z - p.z)
       if (d > c.reach) continue
