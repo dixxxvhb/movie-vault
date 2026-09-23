@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { registerColliders, setBounds, registerFloor, clearOwner } from '../../colliders.js'
 import { standardMat } from '../../materials.js'
 import Lobby from './Lobby.jsx'
+import Rue from './Rue.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
   BOOTH_Y, CELLAR_Y, APRON_Y, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, SEAT_BLOCKS, FURNITURE,
@@ -169,7 +170,7 @@ function Seats() {
 }
 
 // ---------------------------------------------------------------- the room
-export default function Basterds({ film, config, goToStation }) {
+export default function Basterds({ film, config, goToStation, onDoor }) {
   const mats = useMemo(() => {
     const m = {}
     for (const [k, tint] of Object.entries(TINT)) {
@@ -218,7 +219,6 @@ export default function Basterds({ film, config, goToStation }) {
       <fogExp2 attach="fog" args={[g.fogColor || '#0b0a0c', g.fogDensity ?? 0.012]} />
 
       {/* greybox lights: one per space, warm tungsten except the street */}
-      <pointLight position={[0, 5.5, 5]} intensity={40} distance={18} color="#9fb4d8" />
       <pointLight position={[0, 3.8, -5]} intensity={30} distance={14} color="#ffcf8a" />
       <pointLight position={[0, 6.8, -20]} intensity={40} distance={26} color="#ffb070" />
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -11.6]} intensity={10} distance={7} color="#ffc27a" />
@@ -229,7 +229,7 @@ export default function Basterds({ film, config, goToStation }) {
         const t = mats[f.id] || mats.lobby
         return (
           <group key={f.id}>
-            <Floor room={f} mat={t.floor} />
+            {f.id !== 'rue' && <Floor room={f} mat={t.floor} />}
             {f.id !== 'rue' && <Walls room={f} top={CEIL[f.id] ?? 4} mat={t.wall} />}
             {f.id !== 'rue' && <Ceiling room={f} y={CEIL[f.id] ?? 4} mat={t.ceil} />}
           </group>
@@ -239,14 +239,7 @@ export default function Basterds({ film, config, goToStation }) {
         <Floor key={f.id} room={f} mat={mats.lobby.floor} />
       ))}
 
-      {/* the facade, with the marquee block over the doors */}
-      <mesh position={[-5.7, 4.5, 0]} material={mats.rue.wall}><boxGeometry args={[8.6, 9, 0.4]} /></mesh>
-      <mesh position={[5.7, 4.5, 0]} material={mats.rue.wall}><boxGeometry args={[8.6, 9, 0.4]} /></mesh>
-      <mesh position={[0, 6.15, 0]} material={mats.rue.wall}><boxGeometry args={[2.8, 5.7, 0.4]} /></mesh>
-      <mesh position={[0, 4.1, 1.2]}>
-        <boxGeometry args={[9, 1.4, 2]} />
-        <meshStandardMaterial color="#1c1a18" emissive="#ffd9a0" emissiveIntensity={0.35} />
-      </mesh>
+      <Rue onDoor={onDoor} />
 
       {/* the screen, on the auditorium's south wall */}
       <mesh position={[0, APRON_Y + 2.6, -31.52]}>

@@ -95,7 +95,16 @@ export const BLOCKS = [[-6.6, -1.0], [1.0, 6.6]]
 export const SEAT_BLOCKS = BLOCKS.map(([a, b]) => ({
   minX: a, maxX: b, minZ: ROW_Z0 - (ROWS - 1) * ROW_PITCH - 0.35, maxZ: ROW_Z0 + 0.35,
 }))
+// The street's fixtures (Rue.jsx reads these so a moved prop moves its collider).
+export const MORRIS = { pos: [-7.4, 0, 7.4] }
+export const LADDER = { pos: [3.9, 0, 1.05], ry: 0, crate: [5.1, 0, 1.3] }
+
 export const FURNITURE = [
+  { minX: -8.25, maxX: -6.55, minZ: 6.55, maxZ: 8.25 },    // the Morris column
+  { minX: 5.7, maxX: 6.1, minZ: 3.2, maxZ: 3.6 },          // the street lamp
+  { minX: -8.95, maxX: -4.85, minZ: 3.45, maxZ: 5.15 },    // the staff car
+  { minX: 3.55, maxX: 4.25, minZ: 0.2, maxZ: 1.6 },        // the ladder foot
+  { minX: 4.7, maxX: 5.5, minZ: 1.0, maxZ: 1.6 },          // the letter crate
   { minX: -15.7, maxX: -14.3, minZ: -8.2, maxZ: -3.8 },   // La Louisiane table
   { minX: -18.9, maxX: -17.9, minZ: -9.6, maxZ: -2.4 },   // the bar
   { minX: -7.1, maxX: 1.1, minZ: -34.6, maxZ: -33.6 },    // the nitrate stack
@@ -163,7 +172,9 @@ export function blockingRects(extra = []) {
 // Dailies aim at these. pos is the camera (eye already added), look a target.
 const at = (x, z, dy = 0) => [x, floorAt(x, z) + EYE + dy, z]
 export const SPOTS = {
-  rue:        { pos: at(0, 7.5), look: [0, 3.2, 0] },
+  rue:        { pos: at(0, 9.2), look: [0, 5.2, 0] },
+  morris:     { pos: at(-5.6, 5.9), look: [-7.4, 1.7, 7.4] },
+  ladder:     { pos: at(3.6, 3.4), look: [4.4, 1.6, 0.6] },
   lobby:      { pos: at(0, -1.2), look: [0, 1.6, -9] },
   floorboard: { pos: at(-4.4, -1.4), look: [-5.6, 0, -2.2] },
   vitrine:    { pos: at(-4.6, -4.2), look: [-6.6, 1.2, -4.8] },

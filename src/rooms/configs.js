@@ -324,7 +324,7 @@ export const CONFIGS = {
     family: 'intimate-tension',
     grade: { key: '#ffcf8a', fill: '#1c2230', ambient: 0.2, bg: '#0b0a0c', fogColor: '#0b0a0c', fogDensity: 0.01,
              sat: 0.02, grain: 0.06, vignette: 0.55, bloomIntensity: 0.24 },
-    camera: { pos: [0, 1.55, 7.5], look: [0, 3.2, 0], fov: 55, far: 90 },
+    camera: { pos: [0, 1.55, 9.2], look: [0, 5.2, 0], fov: 55, far: 90 },
     place: { shell: 'open' },
   },
 
