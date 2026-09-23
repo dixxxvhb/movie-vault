@@ -1058,4 +1058,25 @@ session number and why.
   films and would not go away.
 - **S2, owed to S3/S4:** the house switch still sits on a pole (config `place.shell: 'open'`);
   the lobby wants a chandelier and deco pilasters; the in-room header wrap at 390 (shared chrome).
+- **S3, done:** the seating chart (every character seat with a card, lamps for the living,
+  folded seats for the dead, Landa's "queen behavior" pinned over his card), the Box (Hitler
+  and Goebbels on the parapet, "those god damn NAAAAZZZIIIIISSS."), the screen (the film
+  playing, five chapter reels, her reel), the booth (projector, reel rack, the red dress, the
+  mirror), behind the screen ("BURN THAT FUCKER." on the nitrate, Marcel's card, the
+  cigarette), and the fire (burn-through, painted flames, orange light, smoke, the reel
+  rewinds). `window.__basterdsReel(n|'her')` and `__basterdsIgnite()` are the test hooks;
+  `scripts/theatre_shot.py` drives them for the Dailies.
+- **S3, deviation: two ports, not one porthole.** The projector sat in the only window. Real
+  booths have a projection port and a viewing port, so there are two; you look through the
+  one on the right.
+- **S3, deviation: the flames are painted on the screen, not particles.** The nitrate is behind
+  the screen, so the fire shows through it; painting at 10 fps reads better and costs nothing.
+- **S3, deviation: the behind-the-screen light is the fire light.** One light, two jobs, so the
+  room stays at 7.
+- **S3, parked: the projector beam.** An additive cone rendered as a solid slab under this post
+  stack. The porthole reads without it; Session 4 polish can try the repo's `HazeCone`.
+- **S3, not done yet: signature lines on seat-card backs** (need a source for each exact line),
+  the walkable Box (stretch), Zoller's card on the booth door.
+- **S3, the unasked-for moment:** the fire keeps her face on the screen while it burns, and
+  the house cards stay lit through it: every face in the room watches it happen.
 

@@ -5,6 +5,7 @@ import { registerColliders, setBounds, registerFloor, clearOwner } from '../../c
 import { standardMat } from '../../materials.js'
 import Lobby from './Lobby.jsx'
 import Rue from './Rue.jsx'
+import Theatre from './Theatre.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
@@ -42,8 +43,12 @@ const isDoor = (f) => f.id.startsWith('door-') || f.id.startsWith('gap-')
 // Windows: openings you can see through but not walk through. The porthole
 // cuts both the booth's south wall and the auditorium's north wall.
 const WINDOWS = [
-  { room: 'booth', side: 's', a: -1.3, b: 0.1, y0: BOOTH_Y + 1.05, y1: BOOTH_Y + 1.95 },
-  { room: 'auditorium', side: 'n', a: -1.3, b: 0.1, y0: BOOTH_Y + 1.05, y1: BOOTH_Y + 1.95 },
+  // the projection port (the lens looks through this one)
+  { room: 'booth', side: 's', a: -1.2, b: -0.5, y0: BOOTH_Y + 1.15, y1: BOOTH_Y + 1.7 },
+  { room: 'auditorium', side: 'n', a: -1.2, b: -0.5, y0: BOOTH_Y + 1.15, y1: BOOTH_Y + 1.7 },
+  // the viewing port (you look through this one)
+  { room: 'booth', side: 's', a: 0.25, b: 1.45, y0: BOOTH_Y + 1.0, y1: BOOTH_Y + 1.95 },
+  { room: 'auditorium', side: 'n', a: 0.25, b: 1.45, y0: BOOTH_Y + 1.0, y1: BOOTH_Y + 1.95 },
 ]
 
 
@@ -135,41 +140,6 @@ function Ceiling({ room, y, mat }) {
   )
 }
 
-// ---------------------------------------------------------------- the seats
-// The seating chart, greybox: rows are chapters (back = 1, front = 5), the
-// centre aisle splits the sides. Instanced, one draw call.
-
-function Seats() {
-  const ref = useRef()
-  const seats = useMemo(() => {
-    const out = []
-    for (let row = 0; row < ROWS; row++) {
-      const z = ROW_Z0 - row * ROW_PITCH
-      for (const [a, b] of BLOCKS) {
-        const n = Math.floor((b - a) / SEAT_W)
-        for (let k = 0; k < n; k++) out.push([a + SEAT_W * (k + 0.5), z])
-      }
-    }
-    return out
-  }, [])
-  useEffect(() => {
-    const m = new THREE.Matrix4()
-    seats.forEach(([x, z], i) => {
-      m.makeTranslation(x, floorAt(x, z) + 0.45, z)
-      ref.current.setMatrixAt(i, m)
-    })
-    ref.current.instanceMatrix.needsUpdate = true
-  }, [seats])
-  return (
-    // frustumCulled off: the instance bounds sit at the origin, behind every
-    // camera in the auditorium, so three would cull all 280 seats.
-    <instancedMesh ref={ref} args={[null, null, seats.length]} frustumCulled={false}>
-      <boxGeometry args={[SEAT_W * 0.86, 0.9, 0.6]} />
-      <meshStandardMaterial color="#6e1f1f" roughness={0.9} />
-    </instancedMesh>
-  )
-}
-
 // ---------------------------------------------------------------- the room
 export default function Basterds({ film, config, goToStation, onDoor }) {
   const mats = useMemo(() => {
@@ -225,10 +195,8 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
 
       {/* greybox lights: one per space, warm tungsten except the street */}
       <pointLight position={[0, 3.7, -5]} intensity={55} distance={18} color="#ffcf8a" />
-      <pointLight position={[0, 6.8, -20]} intensity={40} distance={26} color="#ffb070" />
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -11.6]} intensity={10} distance={7} color="#ffc27a" />
       <pointLight position={[-14, CELLAR_Y + 2.1, -6]} intensity={16} distance={12} color="#ffb060" />
-      <pointLight position={[0, 3, -33.6]} intensity={8} distance={12} color="#ff9a50" />
 
       {FOOTPRINTS.filter((f) => !isDoor(f)).map((f) => {
         const t = mats[f.id] || mats.lobby
@@ -247,22 +215,14 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <Rue onDoor={onDoor} />
       {arriving && <ArrivalCard onDone={push} />}
 
-      {/* the screen, on the auditorium's south wall */}
-      <mesh position={[0, APRON_Y + 2.6, -31.52]}>
-        <planeGeometry args={[10, 4.2]} />
-        <meshStandardMaterial color="#f4ecdc" emissive="#f4ecdc" emissiveIntensity={0.55} />
-      </mesh>
-
       {/* the Box, over the east side aisle (view-only in v1) */}
       <mesh position={[7.1, 2.9, -21.5]} material={mats.booth.wall}><boxGeometry args={[1.8, 0.2, 5]} /></mesh>
       <mesh position={[6.25, 3.45, -21.5]} material={mats.booth.wall}><boxGeometry args={[0.1, 0.9, 5]} /></mesh>
 
 
-      <Seats />
+      <Theatre />
       <Lobby />
 
-      {/* the nitrate, behind the screen */}
-      <mesh position={[-3, APRON_Y + 1.1, -34.1]} material={mats.behind.floor}><boxGeometry args={[8, 2.2, 0.8]} /></mesh>
 
       {/* La Louisiane: the long table and the bar */}
       <mesh position={[-15, CELLAR_Y + 0.4, -6]} material={mats.cellar.floor}><boxGeometry args={[1.2, 0.8, 4.2]} /></mesh>

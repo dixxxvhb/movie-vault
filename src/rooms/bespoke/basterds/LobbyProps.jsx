@@ -16,7 +16,7 @@ const figureMat = new THREE.MeshStandardMaterial({ color: '#c9b79a', roughness: 
 const hiddenMat = new THREE.MeshStandardMaterial({ color: '#140d08', roughness: 1 })
 
 // Dixon's handwriting, near enough: his words on a torn scrap of paper.
-function Scrap({ text, pos, ry = 0, w = 1.4, rot = 0, size = 56 }) {
+export function Scrap({ text, pos, ry = 0, w = 1.4, rot = 0, size = 56 }) {
   const tex = useMemo(() => makePaintedTexture(1024, 360, async (c) => {
     await whenFonts()
     const ctx = c.getContext('2d')

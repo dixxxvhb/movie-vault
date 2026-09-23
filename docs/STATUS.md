@@ -114,7 +114,10 @@ Plan: `docs/plans/2026-09-22-le-gamaar-basterds-room.md` (build log §18). Watch
 rain, Morris column doors), the five lobby cards with stills, the floorboard (chapter 1 under
 glass), the vitrine, the counter, Chapter Six arrival. Build log §18.
 
-**Next: Session 3, auditorium, booth, ending** (plan §15). Open for Dixon: merge the duplicate Sinners
+**Session 3 done (2026-09-22):** the seating chart, the Box, the screen and its reels, the
+booth, behind the screen, the fire. Build log §18.
+
+**Next: Session 4, cellar, sound, history, polish** (plan §15). Open for Dixon: merge the duplicate Sinners
 row in `film_titles`; Valkyrie (logged 09-22) needs its panel before the wall shows it.
 
 ## Agreed, not started
