@@ -2,7 +2,7 @@
 **For: Claude Code session, repo `~/Code/movie-vault`**
 **From: Leonard (chat), drafted with Dixon, 2026-08-21. Supersedes v1 same night.**
 **Magnitude: 5.0+. Redesign-class addition, not a reskin.**
-**Fidelity ruling (Dixon, this session): MAXIMUM-FIDELITY HOMAGE, ZERO IMPORTED ASSETS.**
+**Fidelity ruling (Dixon, this session): MAXIMUM-FIDELITY HOMAGE, ZERO IMPORTED ASSETS.** *Opened up 2026-09-22: see §1. Stills, faces, logos, fonts and dialogue-as-text are in; recorded film audio is the one line.*
 
 *(Filed to repo by Code 2026-08-21. Kickoff rulings, decided by Dixon in-session: bloodline doors YES; audio = generative per-room; Tier 1 list = the split below as the working list, promotions at review.)*
 
@@ -12,31 +12,34 @@
 
 The Vault is Leonard's external memory system: a wall of polaroids. Today, clicking a photo flips it to read the back. The upgrade: clicking a photo transports you INTO it. Every logged film gets an immersive 3D recreation of the scene or place that defined it for Dixon, and the film's record (rating, date, hot take verbatim, vibe tags, bloodlines) lives inside that world as diegetic objects. Back out and the world collapses into a photo on the wall. Memory is no longer just external. It is enterable.
 
-## 1. The fidelity contract (read this twice)
+## 1. The fidelity contract (rewritten 2026-09-22, Dixon: "lets open them up a bit")
 
-**Build the scene, import nothing.** Every room is a hand-built 3D recreation made entirely of our own geometry, materials, shaders, particles, and generative audio. Within that rule, go as close as craft allows:
+**The job of a room is to make him remember the film: what it looked like, who was in it, what happened, how it felt.** Use whatever does that best. Hand-built 3D is still the backbone, and the film's real material is now allowed in.
 
-**ALLOWED, ENCOURAGED, THE WHOLE POINT:**
-- Recreating the staging, layout, and blocking of specific scenes (the elevator, the basement, the bar, the pit). You should be able to stand where the camera stood.
-- Film-accurate color grading. Match the palette, the LUT feel, the light temperature of the actual film per room.
-- Composition homage: recreate iconic framings in 3D space (camera height, lens feel via FOV, key light angle).
-- Sound-alike generative audio: original Web Audio synthesis tuned to evoke the score's register and rhythm (the BWAAAM shape, the groove pocket, the strings register). Familiar nerve, original signal.
-- Actor likenesses (amended by Dixon, 2026-09-22: "you can do actor likenesses"). Real actor headshots from TMDB, fetched by the data pipeline the same way posters are, and figures modelled on the real performers. The rooms exist so he can remember who was in the film and who they played; faces are the fastest route to that.
-- Original text everywhere. Dixon's hot takes are the script of this world.
+**ALLOWED. Use it when it helps him remember:**
+- **The staging:** recreate the staging, layout and blocking of specific scenes. You should be able to stand where the camera stood.
+- **The look:** film-accurate color grading and composition homage (camera height, lens feel, key light angle).
+- **The faces:** actor likenesses. That covers TMDB headshots and figures modelled on the real performers (amended 2026-09-22).
+- **The images:** stills, frames, backdrops, posters, key art and the film's own logo or title treatment, sourced from TMDB through the data pipeline wherever possible. Stills are the fastest route to "what happens".
+- **The words:** dialogue as text. Signature lines, short and exact, attributed to the character who says them. Check each one against a source; never misquote.
+- **The sound:** generative audio in the score's register and rhythm, and short melodic quotes (a motif, a hook) played by our own synths.
+- **Type and design:** real typefaces (web fonts, period faces) and the film's own graphic language where it helps. The Matrix code rain can use the real glyph look.
+- **His voice:** Dixon's hot takes, verbatim. They are still the script of this world.
 
-**EXCLUDED, NON-NEGOTIABLE (the short list):**
-- No embedded stills, frames, posters, key art, or screenshots.
-- No studio/franchise logos, wordmarks, or title treatments.
-- No soundtrack audio files or sampled dialogue. Zero exceptions, this is the DMCA takedown vector for a public repo + public Pages site.
-- No direct copies of protected graphic designs (the Matrix glyph set specifically; design our own falling-code alphabet).
-- Nothing copied into the repo from the internet, with two exceptions the data pipeline owns: TMDB posters (`public/posters/`, the wall) and TMDB actor headshots (`public/cast/`, amended 2026-09-22). If any other file didn't originate in this project, it doesn't ship.
+**ONE LEGAL LINE (the only hard exclusion):**
+- **No recorded audio from films.** That means no soundtrack files and no dialogue clips. Music rights holders are the ones who actually scan and file takedowns. A takedown notice to GitHub disables the whole public repo and the Pages site, not just one file. Lines as TEXT are fine; the recording is the risk.
 
-If any spec below can be built closer to the film within these rules, build it closer. Ambiguity resolves toward fidelity, not away from it.
+**Hygiene, not bans:**
+- Every imported file has a source. Pipeline-fetched assets (`public/posters/`, `public/cast/`, `public/stills/`) are vendored at build time, the way `fetch_poster` already works, so the live site never hotlinks.
+- Anything hand-added outside the pipeline gets its source URL in a comment or a sidecar `.source` file.
+- Keep assets reasonable in size: stills at TMDB `w780` or smaller, headshots at `w185`.
 
-## 2. Standing laws (unchanged, weight-5, do not relitigate)
+If a room can be built closer to the film, build it closer. Ambiguity resolves toward memory and fidelity.
 
-1. Banned drawer stays banned as a DEFAULT COSTUME: noir, evidence board, typewriter, VHS, marquee, neon. A film's own world may contain these things when the film actually contains them; no room reaches for them as decoration, and no red string/corkboard anywhere including Under the Silver Lake.
-2. No DWD branding: no #0c1f17, #f8d7c8, terracotta, ivory; no Cormorant/Outfit/Bebas.
+## 2. House style (defaults with reasons; Dixon can reopen any of them)
+
+1. Don't reach for noir, evidence boards, typewriters, VHS, marquees or neon as **generic decoration**, because they make every room look the same. When the film itself has them, use them freely.
+2. No DWD branding in the Vault (it's a personal project): no #0c1f17, #f8d7c8, terracotta, ivory; no Cormorant/Outfit/Bebas.
 3. No emojis in UI. Small unicode glyphs welcome.
 4. No em dashes in any Dixon-facing copy.
 5. Hot takes render VERBATIM, profanity and typos intact.

@@ -4,9 +4,9 @@ Codebase facts referenced below were verified against the current source; line n
 
 ## Non-negotiables (from the brief + repo law)
 - Plain JS/JSX. No TypeScript. No new deps without architect sign-off.
-- Zero imported assets: no images, fonts, audio files from anywhere. All textures are procedural CanvasTexture (repo pattern), all text via canvas 2D (system fonts: Georgia serif is house style).
+- *(Superseded 2026-09-22: imported images, fonts and dialogue-as-text are now allowed; only recorded film audio is out. See the brief §1.)* ~~Zero imported assets: no images, fonts, audio files from anywhere.~~ All textures are procedural CanvasTexture (repo pattern), all text via canvas 2D (system fonts: Georgia serif is house style).
 - No em dashes in any UI copy we author. Hot takes render VERBATIM (they may contain anything; never edit them).
-- No emojis in UI. No DWD colors/fonts. Banned default costume: noir/evidence-board/typewriter/VHS/marquee/neon (a film's own world may contain them when the film does).
+- No emojis in UI. No DWD colors/fonts. Avoid noir/evidence-board/typewriter/VHS/marquee/neon as generic decoration (a film's own world uses them freely).
 - StrictMode is ON: every effect double-fires in dev. All mounts idempotent, all timers cleaned up.
 - Verification loop: `npm run dev` (already running on 5173) + `python scripts/peek.py --url "http://localhost:5173/?..." --out <name>` then READ the PNG. Full gate: `npm run shot`. NEVER run `playwright install`. Never verify at DPR 1 only (peek/shot already handle DPR 2).
 

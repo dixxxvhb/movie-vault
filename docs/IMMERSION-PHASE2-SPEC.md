@@ -17,7 +17,7 @@ Architect: Fable session 2026-08-21. Prereq: Waves A+B landed. Order: audio engi
   - `chime(freqs)` bell partials with long decay
   - `beatKit(bpm)` synthesized kick (sine drop + click), snare (noise burst + bandpass), hat (short hp noise), bass (osc w/ glide), quantized to clock
   - `swellReverse(freq)` attack-swell-hard-cut envelope (reversed-tape feel)
-- Rules: pure synthesis only, no samples, no melodies quoted from any score. Register and rhythm homage only. Total output limited (compressor on master) so nothing clips.
+- Rules (opened up 2026-09-22: short melodic quotes played by our synths are now fine; recorded audio is still out): pure synthesis only, no samples. Register and rhythm homage only. Total output limited (compressor on master) so nothing clips.
 
 ## MEMENTO (bespoke/Memento.jsx) — the crown, 10.0
 The brief paragraph is law; implementation notes:

@@ -48,30 +48,34 @@ Memento (already the best room; more of it is diminishing returns).
 
 ## 2. Rules for this room
 
-### Amended today (Dixon, 2026-09-22)
+### Opened up today (Dixon, 2026-09-22)
 
-**Actor likenesses are allowed.** TMDB actor headshots come in through the data pipeline the
-same way posters already do, vendored at build time into `public/cast/`. Amended in
-`docs/VAULT-IMMERSION-BRIEF-v2.md` §1 and `docs/plans/2026-09-04-no-vacancy-plan.md` §3 rule 7.
+The Vault's rules were rewritten this session (`docs/VAULT-IMMERSION-BRIEF-v2.md` §1). For
+this room that means:
 
-### Still standing
+- **Faces:** TMDB headshots, vendored into `public/cast/`.
+- **Stills:** TMDB backdrops, vendored into `public/stills/inglourious-basterds/`. One per
+  lobby card, and on the screen cards.
+- **Logos:** the film's own logo (TMDB `logos`) on the Programme cover.
+- **Real type:** a period deco face for the marquee and lobby cards (web font, e.g. from
+  Google Fonts), Georgia for body.
+- **Dialogue as text:** one signature line per character, short and exact, checked against a
+  source.
+- **Melody quotes:** a short motif in the whistle register played by our synths is fine.
 
-- **No stills or frames from the film.** See §17, decision 1: I'm recommending we lift this for
-  the lobby cards.
-- **No soundtrack audio and no sampled dialogue.** Music is original synthesis in the register
-  of a spaghetti-Western whistle and a 1940s newsreel, never a quoted melody.
-- **No logos or title treatments.** The chapter titles are set in our own type. They are facts,
-  so the words are fine; the film's title-card design is not.
+### The one line that stays
+
+**No recorded film audio.** No soundtrack files, no dialogue clips.
 
 ### Specific to this room
 
 - **Zero swastika geometry, anywhere.** That includes banners, armbands, the Box parapet, and
   Landa's forehead at the end. Premiere drapes are plain red. The forehead carving is described
   in text once, on Landa's card, and never drawn.
-- **No lines of dialogue.** Every sentence in the room is ours or Dixon's. Paraphrase only.
-- **The marquee is allowed** despite the banned-drawer law (immersion brief §2 rule 1). It's a
-  plot object here: Shosanna is up a ladder changing its letters when Zoller first talks to
-  her.
+- **Quotes are exact or absent.** A signature line is only used after it's checked against
+  a source. Recaps and tent cards stay in our words.
+- **The marquee** is a plot object here: Shosanna is up a ladder changing its letters when
+  Zoller first talks to her.
 - **Dixon's words are verbatim**, profanity and caps intact (§8).
 - **Narrator voice:** the Vault says "he" about Dixon and "you" about the visitor. Plain words,
   about an 8th-grade reading level, contractions. No em or en dashes in any room copy. No
@@ -207,7 +211,9 @@ The lobby is where the plot lives.
   3. the place and year;
   4. a three-to-four-sentence recap (§7);
   5. a strip of 3 to 6 headshots for the characters who **enter** in that chapter, each with
-     a name label.
+     a name label;
+  6. **one still** from that chapter, the card's picture. The builder picks it from the TMDB
+     backdrops, checks by eye which chapter it's from, and skips any it can't place.
 - A card is readable from 1.5 m. The canvas is 1024 × 1365.
 
 **The hidden pieces:**
@@ -434,10 +440,12 @@ Notes on the table:
 
 - **Lobby cards:** 3 to 4 sentences, about 70 words max.
 - **Screen cards:** one sentence in huge type plus two sentences.
-- **Seat cards:** two lines, under 12 words each.
+- **Seat cards:** two lines, under 12 words each, plus the character's **one signature line**
+  on the card's back face (touch to flip), exact and attributed. No line is better than a
+  wrong line.
 - **Tent cards:** under 30 words.
-- **No dialogue, ever**, not even the famous lines. The film's best lines are the reason to
-  rewatch it; the room's job is to make him want to.
+- **Recaps and tent cards stay in our words.** Real dialogue lives only on the seat-card
+  backs and, at most, one line per screen card. Keep it a flavour, not a transcript.
 
 ---
 
@@ -614,7 +622,12 @@ access.
      keep `vault-data.json` small.
    - `faces[slug]` is computed: for each cast member of a cast-aware film, the other ledger
      and archive films they appear in, with character names.
-6. **Drift guard:** add a check that every seat in `content.js` resolves to a `cast.json`
+6. **Stills and logo:** a one-off fetch through `film-enrich` (new `action: "images"`, same
+   auth) returns the TMDB `/movie/16869/images` list of backdrops and logos. It returns the
+   list only; emit vendors the chosen files. The chosen backdrop paths are hand-listed in
+   `content.js` per chapter, and emit vendors them at `w780` into
+   `public/stills/inglourious-basterds/`.
+7. **Drift guard:** add a check that every seat in `content.js` resolves to a `cast.json`
    person id with a vendored headshot. A missing one fails loudly.
 
 ### Phase 0d: the ?text path
@@ -777,7 +790,8 @@ Final checks JSON (every value true before the room is called done):
   "house_lights_both_states_every_zone": true,
   "interact_key_works_here_memento_sicario": true,
   "no_swastika_geometry": true,
-  "no_film_dialogue_in_copy": true,
+  "every_quote_checked_against_a_source": true,
+  "no_recorded_film_audio": true,
   "no_em_or_en_dashes_in_room_copy": true,
   "fact_sheet_all_checked": true,
   "shots_desktop_and_390_reviewed": true
@@ -830,14 +844,11 @@ Nothing ⚑ ships unverified. Anything that can't be verified gets cut, not gues
 
 ## 17. Decisions owed to Dixon
 
-1. **Film stills on the lobby cards?** The likeness rule is gone, but the stills rule still
-   stands. One real still per lobby card would do more for "what happens" than any sentence I
-   can write. **Recommendation: yes, lobby cards only** (they were literally stills in real
-   cinemas), vendored from TMDB backdrops like posters. Say the word and the brief gets a
-   second amendment.
-2. **3D figures modelled on the actors?** Now allowed, but expensive: modelling twenty
-   people is a project of its own. **Recommendation: not this build.** Headshots on seat cards
-   carry the memory; figures can come later for one hero moment (Landa at the farm table in
-   the chapter 1 diorama is the obvious one).
+1. ~~Film stills on the lobby cards?~~ **Settled 2026-09-22:** the rules were opened up, and
+   stills are in (§2).
+2. **3D figures modelled on the actors?** Allowed now, but expensive: modelling twenty people
+   is a project of its own. **Recommendation: not this build.** Headshots and stills carry the
+   memory; figures can come later for one hero moment (Landa at the farm table in the
+   chapter 1 diorama is the obvious one).
 
 Everything else in this plan is decided. The builder doesn't reopen it.
