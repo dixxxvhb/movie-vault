@@ -42,6 +42,21 @@ clean profile. 60fps in every room in both states. Bundle 420 KB gzipped.
 to Bother You for seven seconds, walk to the Mirror, and the doctrine those two
 films taught him has written itself on the wall. Real visits, no test hook.
 
+## Movie Night v5, the friend and the clerk (2026-09-22)
+
+Plan: `docs/plans/2026-09-22-movie-night-v5.md`. Leonard moves into a claude.ai Project
+(`docs/movie-night-project/INSTRUCTIONS.md`); the skill becomes a silent clerk; panels, links
+and publishing become a weekly Code wall pass.
+
+| What | Where | Notes |
+|---|---|---|
+| Project instructions | `docs/movie-night-project/` | Personality, taste doctrine, picking, debrief, games, care. README has the setup steps |
+| SKILL.md v5 + `references/clerk.sql` | `docs/movie-night/` | `session-open.sql` removed. Packaged to `~/Desktop/movie-night.skill` |
+| Lessons | Supabase | 10 v4-night rows set inactive, 3 v5 rows at weight 4; law still 10 |
+| `film-debrief` skill | `~/.claude/_archive/` | Stale 0-5 scale twin, retired |
+
+**Owed to Dixon:** create the Movie Night project, paste the instructions, Supabase connector on, re-save the skill.
+
 ## Movie Night v4, pass 1
 
 Brief: `docs/plans/2026-09-13-movie-night-v4.md`. Database side only. Applied

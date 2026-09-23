@@ -1,6 +1,8 @@
 # Schema reference (read before any write)
 
-Project `swjqlfcqvcrnydpyjyog`. RLS is on across `film_*`, restricted to authenticated plus `is_dixon()`. Nothing in a sandbox reaches this database directly; all reads and writes go through the Supabase MCP tools. When unsure about a column, check `information_schema.columns` before guessing. A failed query costs more than the check.
+Project `swjqlfcqvcrnydpyjyog`.
+
+**v5 (2026-09-22):** a chat night only touches `film_check`, `film_recommendations` (the pick), `film_log`, `film_rank`, `film_titles` (seen, abandoned, certified), `film_session_notes`, `film_watchlist`, `film_recall`, and the queue from `film_session_brief()`. `film_sessions`, `film_pitch_pool`, `film_ledger_panels`, `film_links`, `film_mailbox`, `film_night_debt` and `film_retro()` are Code-side tools now (the weekly wall pass). RLS is on across `film_*`, restricted to authenticated plus `is_dixon()`. Nothing in a sandbox reaches this database directly; all reads and writes go through the Supabase MCP tools. When unsure about a column, check `information_schema.columns` before guessing. A failed query costs more than the check.
 
 ## Tables
 
