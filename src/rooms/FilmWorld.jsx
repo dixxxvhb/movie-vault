@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 import CameraRig from '../CameraRig.jsx'
 import { getRoomComponent } from './registry.js'
@@ -109,14 +109,17 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
           rooms with a sloped floor override it via a bespoke registerFloor
           call in a later wave; GenericRoom's auto-colliders are flat. */}
       <CameraRig station={cam.station} stationKey={cam.key} walkable={{ eye: config.camera.pos[1] ?? 1.55 }} />
-      <Family
-        film={film}
-        config={lit}
-        infoVisible={infoOn}
-        goToStation={goToStation}
-        doors={doors}
-        onDoor={onDoor}
-      />
+      {/* Suspense for lazily loaded rooms (registry.js); a static room never suspends. */}
+      <Suspense fallback={null}>
+        <Family
+          film={film}
+          config={lit}
+          infoVisible={infoOn}
+          goToStation={goToStation}
+          doors={doors}
+          onDoor={onDoor}
+        />
+      </Suspense>
     </>
   )
 }

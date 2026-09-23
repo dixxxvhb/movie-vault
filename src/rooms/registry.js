@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { defaultConfigFor, CONFIGS } from './configs.js'
 import { PRESETS } from './presets.js'
 import Default from './families/Default.jsx'
@@ -43,6 +44,10 @@ const BESPOKE = {
   barbarian: Barbarian,
   'masters-of-the-universe-2026': Motu,
   'disclosure-day': DisclosureDay,
+  // The first lazily loaded room (Le Gamaar plan §13): a whole building of
+  // code, so it ships as its own chunk and loads only when someone walks in.
+  // FilmWorld wraps every room in <Suspense>, so this needs nothing else.
+  'inglourious-basterds': lazy(() => import('./bespoke/basterds/Basterds.jsx')),
 }
 
 // Wave B: "family" is a PRESET, not a component — the six families named in

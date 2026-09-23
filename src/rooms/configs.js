@@ -315,6 +315,19 @@ export const CONFIGS = {
   // below match the bespoke room's own living-room entry station (index -1;
   // the descent below it moves via goToStation). `place` (Wave B's
   // GenericRoom stand-in) stripped Phase 3 — see the file header.
+  // --------------------------------------------------- inglourious-basterds
+  // Bespoke (src/rooms/bespoke/basterds/): LE GAMAAR, a walkable cinema. Plan:
+  // docs/plans/2026-09-22-le-gamaar-basterds-room.md. Spawn is the street,
+  // facing the doors (zones.js SPOTS.rue). place.shell 'open' puts the house
+  // switch on a pole by the spawn until Session 4 gives it a real wall.
+  'inglourious-basterds': {
+    family: 'intimate-tension',
+    grade: { key: '#ffcf8a', fill: '#1c2230', ambient: 0.2, bg: '#0b0a0c', fogColor: '#0b0a0c', fogDensity: 0.01,
+             sat: 0.02, grain: 0.06, vignette: 0.55, bloomIntensity: 0.24 },
+    camera: { pos: [0, 1.55, 7.5], look: [0, 3.2, 0], fov: 55, far: 90 },
+    place: { shell: 'open' },
+  },
+
   barbarian: {
     family: 'dread',
     grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416', grain: 0.08, vignette: 0.62, bloomIntensity: 0.2 },
