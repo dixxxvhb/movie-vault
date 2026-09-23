@@ -1079,4 +1079,27 @@ session number and why.
   the walkable Box (stretch), Zoller's card on the booth door.
 - **S3, the unasked-for moment:** the fire keeps her face on the screen while it burns, and
   the house cards stay lit through it: every face in the room watches it happen.
-
+- **S4, done:** La Louisiane (the Who am I? deck, the three fingers, Bridget's shoe with its
+  pair on her premiere seat, the banner, the clock, Wilhelm's table and card), the sound recipe,
+  house lights as the history layer, the projector beam, the chandelier and pilasters, Zoller's
+  card by the booth door. `peek.py --fps`: 60 in all eight zone spots.
+- **S4, deviation: the bonus round is a deck section, not a separate mode.** Twenty characters,
+  then the five forehead names (`BONUS`, clues in our words), then the last card. One gesture,
+  no mode switch, still no score.
+- **S4, deviation: the hand's folded fingers curl behind the palm,** not toward you. Curled
+  toward the camera they read as dangling; behind the palm the count reads from the bar.
+- **S4, deviation: the shoes are red satin,** not black. Black patent disappeared in both rooms;
+  the pair has to be findable to be a thread.
+- **S4, deviation: the switch stays shell 'open' with `shellParams.switch` naming a wall.**
+  `motelAnchorsFor` gained that one override, for bespoke rooms whose spawn is not indoors.
+- **S4, the beam:** HazeCone at 0.015 idle and 0.035 with a reel on. From the port it's a faint
+  haze; from the aisle it reads as a real beam. Brighter than that, it slabs over the screen.
+- **S4, deviation: the house-lights notes are pinned paper,** fading in with the switch, one per
+  lobby card and one on the Box parapet. The seat 11/14 second lines were folded into the Box
+  note (Hitler and Goebbels sit in the Box, not in seats).
+- **S4, the unasked-for moment:** the deck's last card is you. Play all twenty-five and the
+  twenty-sixth is "Who am I? Chapter six. Side: not chosen yet. On my seat: nothing." Turn it:
+  *A Guest in Paris. You. The film's missing chapter. The reel rewinds, and you come back.*
+  It closes the loop Chapter Six opened on the street and the fire closes in the theatre.
+- **S4, tooling:** `dailies.py --keys` takes `js:<statement>` steps, so any Dailies frame can
+  drive the room's hooks (`__basterdsDeal(n)`, `__basterdsTurn()`, `__basterdsHand(v)`, `__house(v)`).

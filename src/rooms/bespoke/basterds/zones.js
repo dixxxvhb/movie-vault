@@ -196,6 +196,7 @@ export const SPOTS = {
   deck:       { pos: at(-13.75, -5.9, -0.15), look: [-14.75, -1.95, -5.95] },
   hand:       { pos: at(-16.3, -2.6), look: [-18.2, -1.7, -3.3] },
   boxview:    { pos: at(3.2, -18.0), look: [6.2, 3.3, -21.2] },
+  boothdoor:  { pos: at(4.4, -11.6), look: [3.1, 4.6, -10.67] },
   switch:     { pos: at(0.9, -1.9), look: [1.9, 1.2, -0.28] },
   bridget:    { pos: at(-0.35, -23.0), look: [-1.84, -0.35, -23.55] },
   shoe:       { pos: at(-13.2, -3.6), look: [-14.55, -2.9, -4.2] },

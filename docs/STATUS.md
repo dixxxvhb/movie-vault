@@ -117,8 +117,16 @@ glass), the vitrine, the counter, Chapter Six arrival. Build log §18.
 **Session 3 done (2026-09-22):** the seating chart, the Box, the screen and its reels, the
 booth, behind the screen, the fire. Build log §18.
 
-**Next: Session 4, cellar, sound, history, polish** (plan §15). Open for Dixon: merge the duplicate Sinners
-row in `film_titles`; Valkyrie (logged 09-22) needs its panel before the wall shows it.
+**Session 4 done (2026-09-23):** La Louisiane (`dabfdc7`: Who am I? deck, three fingers,
+Bridget's shoe and its pair on her seat, banner, clock, Wilhelm's table), the sound recipe
+(`f877036`, six zone buses), house lights = history (`d47f34e`: switch on the lobby wall, the
+screen's history card, pinned notes), polish (`ec92df6` + final: beam via HazeCone, chandelier,
+pilasters, Zoller's card). 60 fps every zone at DPR 2; 7 lights. Build log §18.
+
+**Left (optional, plan §15.5):** signature lines on seat-card backs (need a checked source per
+line), the walkable Box. **Dixon's gate:** walk it himself in about a week and run the §0 test.
+Open for Dixon: merge the duplicate Sinners row in `film_titles`; Valkyrie (logged 09-22) needs
+its panel before the wall shows it; the in-room header wraps badly at 390 (shared chrome).
 
 ## Agreed, not started
 

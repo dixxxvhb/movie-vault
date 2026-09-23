@@ -382,6 +382,9 @@ export default function Theatre() {
       <Screen state={screenState} cast={cast} />
       <ProjectorBeam on={!!reel && !house} />
       <Booth reel={reel} setReel={setReel} burning={burning} />
+      {/* Zoller's card, pinned by the booth door: the one who would not go away */}
+      <StandingCard ch={{ ...CHARACTERS.find((c) => c.id === 'zoller'), tag: 'HE KNOCKS' }} cast={cast}
+        pos={[3.1, BOOTH_Y + 1.5, -10.67]} ry={Math.PI} scale={1.3} />
       <Behind armed={reel === 'her'} onIgnite={ignite} burning={burning} cast={cast} />
     </group>
   )
