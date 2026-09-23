@@ -5,12 +5,13 @@ import Touchable from '../../Touchable.jsx'
 import { standardMat } from '../../materials.js'
 import { get as getSetting } from '../../../settings.js'
 import { claimFlash, strobe, flashGain } from '../../../flashPolicy.js'
+import { houseTarget, subscribeHouse } from '../../houseLights.js'
 import { makePaintedTexture } from './basterdsTextures.js'
 import { paintSeatCard, paintScreen } from './theatreTextures.js'
-import { CHARACTERS, FRAGMENTS } from './content.js'
+import { CHARACTERS, FRAGMENTS, HOUSE_NOTES } from './content.js'
 import { useVaultData } from './Lobby.jsx'
 import { TentCard } from './Rue.jsx'
-import { Scrap } from './LobbyProps.jsx'
+import { Scrap, HouseNote } from './LobbyProps.jsx'
 import { Shoe } from './Cellar.jsx'
 import { floorAt, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, BOOTH_Y, APRON_Y } from './zones.js'
 
@@ -284,6 +285,8 @@ export default function Theatre() {
   const [reel, setReel] = useState(null)                    // null | 1..5 | 'her'
   const [fire, setFire] = useState(null)                    // null | {t0} | 'rewind' | 'burnt'
   const [p, setP] = useState(0)
+  const [house, setHouse] = useState(() => houseTarget() > 0.5)
+  useEffect(() => subscribeHouse((t) => setHouse(t > 0.5)), [])
   const [ft, setFt] = useState(0)
   const keyLight = useRef()
   const fireLight = useRef()
@@ -340,7 +343,7 @@ export default function Theatre() {
 
   const burning = fire && typeof fire === 'object'
   const screenState = fire === 'rewind' ? { mode: 'rewind' } : fire === 'burnt' ? { mode: 'burnt' }
-    : burning ? { mode: 'burn', p, t: ft } : reel === 'her' ? { mode: 'her' } : reel ? { mode: 'reel', n: reel } : { mode: 'idle' }
+    : burning ? { mode: 'burn', p, t: ft } : house ? { mode: 'history' } : reel === 'her' ? { mode: 'her' } : reel ? { mode: 'reel', n: reel } : { mode: 'idle' }
 
   const boxFragment = FRAGMENTS.find((f) => f.where.includes('box'))
   const landa = FRAGMENTS.find((f) => f.where.includes('Landa'))
@@ -361,6 +364,7 @@ export default function Theatre() {
           pos={[6.19, 3.5, -20.7 - i * 1.6]} ry={-Math.PI / 2} scale={1.4} />
       ))}
       {boxFragment && <Scrap text={boxFragment.text} pos={[6.18, 3.05, -23.2]} ry={-Math.PI / 2} w={1.3} rot={-0.05} size={70} />}
+      <HouseNote text={HOUSE_NOTES.box} pos={[6.17, 3.5, -19.65]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
       <Screen state={screenState} cast={cast} />
       {/* <Beam /> parked: renders as a solid slab under this post stack; Session 4 polish */}
       <Booth reel={reel} setReel={setReel} burning={burning} />

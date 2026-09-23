@@ -1,4 +1,4 @@
-import { CHAPTERS, CHARACTERS } from './content.js'
+import { CHAPTERS, CHARACTERS, HISTORY, FRAGMENTS } from './content.js'
 import { whenFonts, loadImage, wrap, stillUrl, castUrl, INK, RED, PAPER } from './basterdsTextures.js'
 
 // The auditorium's printed matter: the seat cards (the cast, one per seat) and
@@ -84,6 +84,33 @@ export async function paintScreen(canvas, { mode, n, p = 0, t = 0, cast }) {
   const ctx = canvas.getContext('2d')
   const W = canvas.width, H = canvas.height
   ctx.textAlign = 'center'
+
+  if (mode === 'history') {
+    // House lights up: the projector is off and the screen is just a wall.
+    // His line goes on it, then what actually happened.
+    ctx.fillStyle = '#d9d2c4'; ctx.fillRect(0, 0, W, H)
+    grain(ctx, W, H, 0.05, 9)
+    const line = FRAGMENTS.find((f) => f.state === 'motel')
+    ctx.fillStyle = '#1f1a26'
+    ctx.font = `italic 400 ${H * 0.085}px Georgia, serif`
+    ctx.fillText('"' + line.text + '"', W / 2, H * 0.17)
+    ctx.fillStyle = 'rgba(31,26,38,0.55)'
+    ctx.font = `600 ${H * 0.03}px "Josefin Sans"`
+    ctx.fillText('WHAT ACTUALLY HAPPENED', W / 2, H * 0.28)
+    ctx.textAlign = 'left'
+    ctx.fillStyle = '#1b1612'
+    const fs = H * 0.04
+    ctx.font = `400 ${fs}px Georgia, serif`
+    let y = H * 0.37
+    for (const h of HISTORY) {
+      const ls = wrap(ctx, h, W * 0.78)
+      ctx.fillRect(W * 0.1, y - fs * 0.35, fs * 0.25, fs * 0.25)
+      for (const l of ls) { ctx.fillText(l, W * 0.12, y); y += fs * 1.3 }
+      y += fs * 0.55
+    }
+    ctx.textAlign = 'center'
+    return
+  }
 
   if (mode === 'idle') {
     // Nation's Pride is playing: a grey, grainy picture of a bell tower

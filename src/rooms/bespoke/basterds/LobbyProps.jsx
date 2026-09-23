@@ -6,7 +6,8 @@ import { standardMat } from '../../materials.js'
 import { TentCard } from './Rue.jsx'
 import { makePaintedTexture, whenFonts, wrap } from './basterdsTextures.js'
 import { HATCH, VITRINE, COUNTER } from './zones.js'
-import { FRAGMENTS } from './content.js'
+import { FRAGMENTS, HOUSE_NOTES } from './content.js'
+import { houseLevel } from '../../houseLights.js'
 
 // LE GAMAAR: the lobby's hidden pieces. Plan §4.2.
 
@@ -34,6 +35,35 @@ export function Scrap({ text, pos, ry = 0, w = 1.4, rot = 0, size = 56 }) {
     <mesh position={pos} rotation={[0, ry, rot]}>
       <planeGeometry args={[w, w * 360 / 1024]} />
       <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.3} transparent alphaTest={0.2} roughness={0.9} />
+    </mesh>
+  )
+}
+
+// A pinned note that is only there with the house lights up: the record
+// against the film. Fades with the switch, so it arrives with the work lights.
+export function HouseNote({ text, pos, ry = 0, w = 0.5, rot = 0 }) {
+  const tex = useMemo(() => makePaintedTexture(768, 360, async (c) => {
+    await whenFonts()
+    const ctx = c.getContext('2d')
+    ctx.fillStyle = '#fbf6c8'; ctx.fillRect(0, 0, 768, 360)
+    ctx.fillStyle = '#b3261e'; ctx.beginPath(); ctx.arc(384, 26, 12, 0, Math.PI * 2); ctx.fill()
+    ctx.fillStyle = 'rgba(179,38,30,0.8)'; ctx.font = '600 26px "Josefin Sans"'
+    ctx.fillText('HOUSE LIGHTS', 36, 80)
+    ctx.fillStyle = '#1b1612'; ctx.font = '400 36px Georgia, serif'
+    let y = 132
+    for (const l of wrap(ctx, text, 690)) { ctx.fillText(l, 36, y); y += 46 }
+  }), [text])
+  const mat = useRef()
+  const mesh = useRef()
+  useFrame(() => {
+    const t = houseLevel()
+    if (mat.current) mat.current.opacity = t
+    if (mesh.current) mesh.current.visible = t > 0.01
+  })
+  return (
+    <mesh ref={mesh} position={pos} rotation={[0, ry, rot]} visible={false}>
+      <planeGeometry args={[w, w * 360 / 768]} />
+      <meshStandardMaterial ref={mat} map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.35} transparent opacity={0} depthWrite={false} />
     </mesh>
   )
 }

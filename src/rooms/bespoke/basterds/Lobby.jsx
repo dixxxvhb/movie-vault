@@ -3,7 +3,8 @@ import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
 import { Bevel } from '../../detail.jsx'
 import { makePaintedTexture, paintLobbyCard } from './basterdsTextures.js'
-import LobbyProps from './LobbyProps.jsx'
+import LobbyProps, { HouseNote } from './LobbyProps.jsx'
+import { HOUSE_NOTES } from './content.js'
 import { HATCH } from './zones.js'
 
 // LE GAMAAR: the lobby. Plan §4.2.
@@ -79,6 +80,12 @@ export default function Lobby() {
   return (
     <group>
       {CARDS.map((c) => <LobbyCard key={c.n} {...c} cast={cast} />)}
+      {/* house lights up: what each chapter made up, pinned to its card */}
+      {CARDS.map((c) => {
+        const inward = c.ry > 0 ? 1 : -1
+        return <HouseNote key={'h' + c.n} text={HOUSE_NOTES[c.n]} ry={c.ry} w={0.44} rot={0.05 * inward}
+          pos={[c.pos[0] + inward * 0.09, c.pos[1] - 0.45, c.pos[2] - inward * 0.32]} />
+      })}
 
       {/* dado panelling, both long walls, with a brass cap rail */}
       {[-1, 1].map((s) => (

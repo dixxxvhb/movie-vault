@@ -201,10 +201,23 @@ export const FRAGMENTS = [
   { text: 'fun to know it was all fuckin bullshit hahaha', where: 'the screen, house lights up', state: 'motel' },
 ]
 
+// House lights up: a pinned note on each lobby card where the film invented
+// something, and one on the Box.
+export const HOUSE_NOTES = {
+  1: 'Invented: the LaPadite farm and Landa. The hunt was real. Thousands of Jewish families hid in France, and many were given up.',
+  2: 'Invented: the Basterds. Real Jewish soldiers did fight: the Jewish Brigade, and the Ritchie Boys.',
+  3: "Invented: Le Gamaar, Zoller's film, and the premiere.",
+  4: 'Invented: Operation Kino and La Louisiane.',
+  5: 'Invented: the ending. Hitler and Goebbels both died in the Berlin bunker in 1945.',
+  box: 'Neither of them was ever here. Both died by their own hand in Berlin, spring 1945.',
+}
+
 // House lights up: what really happened. Each line checked against Wikipedia.
 export const HISTORY = [
   'Hitler killed himself in his Berlin bunker on April 30, 1945. Goebbels killed himself there the next day. Neither went to a cinema in Paris that summer.',
   'Le Gamaar, Operation Kino and the Basterds are invented. The title comes from a 1978 Italian war film, The Inglorious Bastards, spelled correctly.',
   "Nation's Pride is invented too. Eli Roth, who plays Donowitz, directed it for the film.",
+  'Real Jewish soldiers did fight back: the Jewish Brigade in the British Army, and the Ritchie Boys, German-speaking refugees trained by US Army intelligence.',
+  'Nitrate film really does burn like that. Projection booths were built fireproof because of it.',
   'Christoph Waltz won the Oscar for Landa.',
 ]

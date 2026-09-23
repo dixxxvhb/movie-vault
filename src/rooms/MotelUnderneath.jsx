@@ -38,6 +38,11 @@ export function motelAnchorsFor(shell, params, camera) {
   const w = params.w ?? 4.2
   const d = params.d ?? 4.2
 
+  // A bespoke room with real walls somewhere other than the spawn names its
+  // own wall: [x, z, ry]. Le Gamaar spawns on a street, so the switch is on
+  // the lobby side of the front doors, where a hand goes coming in.
+  if (params.switch) return { switch: params.switch }
+
   if (shell === 'open' || shell === 'deck') {
     // No walls to put a switch on, so it stands on a conduit stub near the
     // spawn: a light switch on a pole in an open field, which is exactly the
