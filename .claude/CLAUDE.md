@@ -27,6 +27,9 @@ npm run shot     # python scripts/shot.py — screenshot the room
 - Repo docs use forward-slash paths (`C:/Users/bowle/...`) — backslashes break Tailwind globs.
 - Commit with explicit paths; this repo has had parallel agent worktrees under
   `.claude/worktrees/`.
+- **Every film room is built to `docs/VAULT-TWO-SCENE-STANDARD.md`** (2026-09-23): an Arrival
+  scene, a Threshold, and ONE Room that holds everything. Fill `docs/films/<slug>.md` before any
+  code. Pilot: `docs/films/inglourious-basterds.md`.
 - Content rules for rooms: `docs/VAULT-IMMERSION-BRIEF-v2.md` §1, opened up 2026-09-22.
   Stills, actor faces, logos, real fonts and dialogue as text are allowed; the one hard line is
   no recorded film audio (soundtrack or dialogue files). Vendor imported images through the
