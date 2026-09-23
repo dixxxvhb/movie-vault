@@ -3,7 +3,7 @@
 // rect, and fail on (a) any spot that cannot be reached, (b) any floor step
 // between neighbouring reachable cells bigger than a stair tread.
 //   node scripts/check_basterds.mjs
-import { footprintAt, floorAt, SPOTS, EXTENT, SEAT_BLOCKS, FURNITURE } from '../src/rooms/bespoke/basterds/zones.js'
+import { footprintAt, floorAt, SPOTS, EXTENT, SEAT_BLOCKS, FURNITURE, ROOM_ENTRY } from '../src/rooms/bespoke/basterds/zones.js'
 
 const STEP = 0.1, R = 0.28, MAX_JUMP = 0.12
 const blocks = [...SEAT_BLOCKS, ...FURNITURE]
@@ -19,8 +19,11 @@ const nx = Math.ceil((EXTENT.maxX - EXTENT.minX) / STEP), nz = Math.ceil((EXTENT
 const idx = (i, j) => j * nx + i
 const X = (i) => EXTENT.minX + (i + 0.5) * STEP, Z = (j) => EXTENT.minZ + (j + 0.5) * STEP
 const seen = new Uint8Array(nx * nz)
-const start = [Math.round((0 - EXTENT.minX) / STEP), Math.round((7.5 - EXTENT.minZ) / STEP)]
-const q = [start]; seen[idx(...start)] = 1
+// Two seeds: the street (the Arrival) and the house doors (the Room). The
+// threshold between them is a cut, not a walkway.
+const cell = (x, z) => [Math.round((x - EXTENT.minX) / STEP), Math.round((z - EXTENT.minZ) / STEP)]
+const q = [cell(0, 7.5), cell(ROOM_ENTRY.pos[0], ROOM_ENTRY.pos[2])]
+for (const c of q) seen[idx(...c)] = 1
 let jumps = [], reached = 0
 while (q.length) {
   const [i, j] = q.pop(); reached++

@@ -220,7 +220,8 @@ function ReelLabel({ text, hand }) {
 
 // The beam, projector to screen, through the port: the repo's HazeCone (a
 // gradient-mapped additive cone), aimed down the throw. Brighter with a reel on.
-const BEAM_FROM = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.75)
+const BOOTH_DZ = 5.4
+const BEAM_FROM = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.75 + BOOTH_DZ)
 const BEAM_TO = new THREE.Vector3(0, APRON_Y + 2.6, -31.4)
 const BEAM_ROT = (() => {
   const dir = BEAM_TO.clone().sub(BEAM_FROM).normalize()
@@ -381,10 +382,11 @@ export default function Theatre() {
       <HouseNote text={HOUSE_NOTES.box} pos={[6.17, 3.5, -19.65]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
       <Screen state={screenState} cast={cast} />
       <ProjectorBeam on={!!reel && !house} />
-      <Booth reel={reel} setReel={setReel} burning={burning} />
+      {/* the booth moved into the balcony (Two-Scene rebuild): same props, 5.4 m nearer the doors */}
+      <group position={[0, 0, BOOTH_DZ]}><Booth reel={reel} setReel={setReel} burning={burning} /></group>
       {/* Zoller's card, pinned by the booth door: the one who would not go away */}
       <StandingCard ch={{ ...CHARACTERS.find((c) => c.id === 'zoller'), tag: 'HE KNOCKS' }} cast={cast}
-        pos={[3.1, BOOTH_Y + 1.5, -10.67]} ry={Math.PI} scale={1.3} />
+        pos={[1.35, BOOTH_Y + 1.45, -7.49]} ry={Math.PI} scale={1.3} />
       <Behind armed={reel === 'her'} onIgnite={ignite} burning={burning} cast={cast} />
     </group>
   )

@@ -10,7 +10,7 @@
 //   basterds:hush  {seconds}       the three fingers flipped (Cellar.jsx)
 import { noiseWash, drone, pluck, chime, noiseBuffer, safeStopAll, safeDisconnectAll } from './kit.js'
 
-const ZONES = ['rue', 'lobby', 'auditorium', 'booth', 'behind', 'cellar']
+const ZONES = ['rue', 'house', 'balcony', 'behind', 'bar']
 const XFADE = 1.2 / 3   // setTargetAtTime constant: ~95% there in 1.2 s
 
 // A crowd: band-passed noise with a slow swell, the murmur of a full house.
@@ -93,21 +93,18 @@ export function start(ctx, master) {
 
   // rue: night air, and a bell somewhere across Paris
   beds.push(noiseWash(ctx, bus.rue, { color: 'brown', gain: 0.03, cutoff: 700, lfoRate: 0.05 }))
-  // lobby: room tone, a muffled house through the wall, the projector faintly
-  beds.push(noiseWash(ctx, bus.lobby, { color: 'brown', gain: 0.018, cutoff: 500 }))
-  beds.push(crowd(ctx, bus.lobby, { gain: 0.025, centre: 380 }))
-  beds.push(projector(ctx, bus.lobby, { gain: 0.006, cutoff: 700 }))
-  // auditorium: the full house and the clatter from the booth
-  beds.push(crowd(ctx, bus.auditorium, { gain: 0.05, centre: 560, rate: 0.11 }))
-  beds.push(projector(ctx, bus.auditorium, { gain: 0.012, cutoff: 1800 }))
-  // booth: loud, the motor and the shutter right beside you
-  beds.push(projector(ctx, bus.booth, { gain: 0.05, cutoff: 3200, hum: 0.05 }))
+  // the house: the full crowd and the clatter from the booth
+  beds.push(crowd(ctx, bus.house, { gain: 0.05, centre: 560, rate: 0.11 }))
+  beds.push(projector(ctx, bus.house, { gain: 0.012, cutoff: 1800 }))
+  // the balcony and the booth in it: the motor and the shutter right beside you
+  beds.push(crowd(ctx, bus.balcony, { gain: 0.03, centre: 460, rate: 0.11 }))
+  beds.push(projector(ctx, bus.balcony, { gain: 0.04, cutoff: 3200, hum: 0.04 }))
   // behind the screen: the projector through canvas
   beds.push(projector(ctx, bus.behind, { gain: 0.02, cutoff: 420 }))
   beds.push(crowd(ctx, bus.behind, { gain: 0.02, centre: 300 }))
-  // cellar: low chatter
-  beds.push(crowd(ctx, bus.cellar, { gain: 0.045, centre: 440, rate: 0.19 }))
-  beds.push(noiseWash(ctx, bus.cellar, { color: 'brown', gain: 0.015, cutoff: 400 }))
+  // La Louisiane: low chatter under the Box, the house faint through the arch
+  beds.push(crowd(ctx, bus.bar, { gain: 0.045, centre: 440, rate: 0.19 }))
+  beds.push(crowd(ctx, bus.bar, { gain: 0.015, centre: 560, rate: 0.11 }))
 
   let zone = window.__basterdsZone || 'rue'
   bus[zone].gain.setTargetAtTime(1, ctx.currentTime, 0.3)
@@ -120,7 +117,7 @@ export function start(ctx, master) {
     bus[zone].gain.setTargetAtTime(0, ctx.currentTime, XFADE)
     zone = z
     if (!firing && performance.now() > hushedUntil) bus[zone].gain.setTargetAtTime(1, ctx.currentTime, XFADE)
-    if (z === 'booth' && !knocked) { knocked = true; knock(ctx, bus.booth) }
+    if (z === 'balcony' && !knocked) { knocked = true; knock(ctx, bus.balcony) }
   }
 
   // accents on timers, each only heard on its own bus
@@ -131,8 +128,8 @@ export function start(ctx, master) {
     timers.push(setTimeout(go, lo * 0.3 + Math.random() * lo))
   }
   every(40000, 90000, () => chime(ctx, bus.rue, { freqs: [196, 392, 588], gain: 0.05, decay: 6 }))
-  every(2500, 7000, () => chime(ctx, bus.cellar, { freqs: [2400 + Math.random() * 600, 4100], gain: 0.02, decay: 0.6 }))
-  every(1000, 1000, () => pluck(ctx, bus.cellar, { freq: 1800, gain: 0.018, decay: 0.05 }))  // the clock
+  every(2500, 7000, () => chime(ctx, bus.bar, { freqs: [2400 + Math.random() * 600, 4100], gain: 0.02, decay: 0.6 }))
+  every(1000, 1000, () => pluck(ctx, bus.bar, { freq: 1800, gain: 0.018, decay: 0.05 }))  // the clock
   every(3000, 9000, () => pluck(ctx, bus.behind, { freq: 3000 + Math.random() * 1500, gain: 0.02, decay: 0.08 }))  // cans cooling
 
   // the fire: a rising wash, crackle, then a hard cut to nothing
@@ -158,13 +155,13 @@ export function start(ctx, master) {
       setTimeout(() => { fire?.stop(); fire = null; if (!stopped) bus[zone].gain.setTargetAtTime(1, ctx.currentTime, 1.2) }, 3500)
     }
   }
-  const onReel = (e) => { if (e.detail?.reel && zone !== 'rue') whistle(ctx, zone === 'auditorium' || zone === 'booth' ? bus[zone] : bus.auditorium) }
+  const onReel = (e) => { if (e.detail?.reel && zone !== 'rue') whistle(ctx, zone === 'house' || zone === 'balcony' ? bus[zone] : bus.house) }
   const onHush = (e) => {
     const s = e.detail?.seconds ?? 2
     hushedUntil = performance.now() + s * 1000
     const t = ctx.currentTime
-    bus.cellar.gain.cancelScheduledValues(t); bus.cellar.gain.setTargetAtTime(0, t, 0.03)
-    timers.push(setTimeout(() => { if (!stopped && zone === 'cellar' && !firing) bus.cellar.gain.setTargetAtTime(1, ctx.currentTime, 0.4) }, s * 1000))
+    bus.bar.gain.cancelScheduledValues(t); bus.bar.gain.setTargetAtTime(0, t, 0.03)
+    timers.push(setTimeout(() => { if (!stopped && zone === 'bar' && !firing) bus.bar.gain.setTargetAtTime(1, ctx.currentTime, 0.4) }, s * 1000))
   }
   const onZone = (e) => setZone(e.detail?.zone)
   window.addEventListener('basterds:zone', onZone)
