@@ -11,6 +11,8 @@ update film_titles set seen_before = true, seen_note = '<his words, date>', memo
 where id = '<uuid>';
 
 -- 2. The pick: one rec row for the chosen film only, carrying the sealed envelope.
+select film_expire_recs();   -- no cron runs this; without it the open-rec cap (15) eventually refuses the insert
+select provider_name from film_services where active;   -- compare with providers on the film_check row
 insert into film_recommendations (id, title_id, suggested_title, reasoning, source, status, predicted_score, predicted_on)
 values (gen_random_uuid(), '<uuid or null>', '<Title (year)>', '<why, one line>', 'claude-chat', 'suggested', <8.4>, current_date);
 -- If film_check said OPEN REC, update that row instead:
@@ -18,13 +20,16 @@ update film_recommendations set predicted_score = <8.4>, predicted_on = current_
 where title_id = '<uuid>' and status = 'suggested';
 
 -- 3. His number: the log, then the wall line, then the envelope.
+-- Not in the registry? Thin row first; the weekly Code pass hydrates it.
+insert into film_titles (id, title, year, media_type) values (gen_random_uuid(), '<Title>', <year>, 'movie');
 select distinct tag from film_log, unnest(vibe_tags) tag order by 1;   -- reuse existing tags
 insert into film_log (id, title_id, watched_at, rating, rating_estimated, hot_take, vibe_tags, emotional_key, context, is_rewatch)
 values (gen_random_uuid(), '<uuid>', '<his date, America/New_York>', <9.3>, false, '<his words verbatim>',
         array['<tag>', '<tag>'], '<tense|dread|fun|cozy|awe|sad|camp>', '<solo, rental, etc>', false);
 select rank, total, above_title, above_score, below_title, below_score from film_rank('<uuid>');
 select predicted_score from film_recommendations
-where title_id = '<uuid>' and predicted_score is not null order by created_at desc limit 1;
+where title_id = '<uuid>' and predicted_score is not null and predicted_on >= current_date - 14
+order by created_at desc limit 1;   -- no row = self-found, no envelope
 
 -- Abandoned instead of finished: no log row.
 update film_titles set abandoned_on = current_date, abandon_note = '<his reason>' where id = '<uuid>';

@@ -35,6 +35,7 @@ Run when Dixon asks, or weekly. Brief for the session:
 3. Links: `film_links` only for bloodlines a night note actually names.
 4. Pull, emit, build, shot, push (see `docs/movie-night/references/vault-pipeline.md`). GitHub Pages deploys on push.
 5. Write the publish marker to `film_mailbox`.
+5b. Hydrate thin titles the clerk created (`tmdb_id is null`) through the existing TMDB function so they get runtime, providers and enrichment.
 6. Every ~15 logged films, `select film_retro();` and report.
 
 ## Dixon's setup (one time)
