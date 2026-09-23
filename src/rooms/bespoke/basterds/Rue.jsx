@@ -93,10 +93,8 @@ function Marquee() {
           ))}
         </group>
       </Touchable>
-      <TentCard pos={[LADDER.crate[0], 0.52, LADDER.crate[2] + 0.28]} ry={LADDER.ry}
-        text={state === 'premiere'
-          ? 'Chapter 3. She was up this ladder changing the letters when a German soldier started talking to her. Touch the ladder.'
-          : 'That afternoon the marquee said Piz Palu, the mountain film with Leni Riefenstahl. He loved those films. He would not go away.'} />
+      {/* no card: the Arrival tells you nothing (docs/VAULT-TWO-SCENE-STANDARD.md). Touch the
+          ladder and the marquee goes back to the afternoon Zoller first talked to her. */}
       {/* the crate of spare letters */}
       <mesh position={[LADDER.crate[0], 0.22, LADDER.crate[2]]}>
         <boxGeometry args={[0.7, 0.44, 0.5]} />

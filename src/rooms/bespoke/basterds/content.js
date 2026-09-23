@@ -194,7 +194,7 @@ export const GUEST = {
 // Dixon's words, verbatim, and where each one lives (plan §8).
 export const FRAGMENTS = [
   { text: 'those god damn NAAAAZZZIIIIISSS.', where: 'the box parapet', state: 'film' },
-  { text: 'such a fun movie. such wonderfully interwoven plots.', where: 'the lobby, above the five cards', state: 'film' },
+  { text: 'such a fun movie. such wonderfully interwoven plots.', where: 'the proscenium arch, pinned beside the sunburst', state: 'film' },
   { text: 'BURN THAT FUCKER.', where: 'the nitrate, behind the screen', state: 'film' },
   { text: 'landa was insane!!! also kinda iconic and giving queen behavior.', where: "Landa's seat card", state: 'film' },
   { text: 'brad pitt was incredible, his opening speech is kinda FIERCE.', where: 'the chapter 2 vitrine', state: 'film' },

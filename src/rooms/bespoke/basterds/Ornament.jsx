@@ -4,6 +4,8 @@ import { Slab, Curtain, Fan, Sconce, FloorBand, FloorRunner, useGlow } from '../
 import { makePaintedTexture } from './basterdsTextures.js'
 import { APRON_Y, BOOTH_Y, rakeAt } from './zones.js'
 import { CEIL_Y } from './Hall.jsx'
+import { Scrap } from './LobbyProps.jsx'
+import { FRAGMENTS } from './content.js'
 
 // LE GAMAAR: the picture palace. Hero frame 1 (docs/films/inglourious-basterds.md):
 // from the doors, the screen inside a gold proscenium, velvet swagged back, the
@@ -100,6 +102,8 @@ export default function Ornament() {
       ))}
       {/* the sunburst over the arch */}
       <Fan pos={[0, ARCH.top + 0.74, Z + 0.06]} r={2.3} rays={17} mat={m.gold} glowMat={glow} />
+      {/* his line, pinned to the arch beside the sunburst */}
+      <Scrap text={'"' + FRAGMENTS.find((f) => f.where.includes('proscenium')).text + '"'} pos={[-4.15, ARCH.top + 1.15, Z + 0.24]} w={1.7} rot={0.04} size={60} />
       {/* the screen's black masking */}
       <Slab x0={-ARCH.x} x1={-5.0} y0={APRON_Y} y1={ARCH.top} z0={Z - 0.02} z1={Z} mat={m.black} />
       <Slab x0={5.0} x1={ARCH.x} y0={APRON_Y} y1={ARCH.top} z0={Z - 0.02} z1={Z} mat={m.black} />

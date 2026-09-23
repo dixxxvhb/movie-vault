@@ -8,6 +8,7 @@ import Rue from './Rue.jsx'
 import Hall from './Hall.jsx'
 import Ornament from './Ornament.jsx'
 import Cases from './Cases.jsx'
+import UpperWalls from './UpperWalls.jsx'
 import Cellar from './Cellar.jsx'
 import { Floorboard } from './LobbyProps.jsx'
 import Theatre from './Theatre.jsx'
@@ -200,6 +201,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <Hall />
       <Ornament />
       <Cases />
+      <UpperWalls />
       <Cellar />
       <DoubleDoors pos={[ROOM_DOORS.x, 0, ROOM_DOORS.z + 0.08]} ry={Math.PI} w={ROOM_DOORS.w} h={2.5}
         open={houseOpen} onUse={leave} mat={mats.door} />

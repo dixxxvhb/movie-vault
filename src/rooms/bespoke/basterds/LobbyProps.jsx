@@ -122,10 +122,6 @@ export function Floorboard() {
           </group>
         </group>
       </Touchable>
-      <TentCard pos={[x1 + 0.35, 0.02, cz + 0.2]} ry={-Math.PI / 2 - 0.3} w={0.3}
-        text={open
-          ? 'Chapter 1. The Dreyfus family under the farmhouse floor, and the table above where Landa drank his milk.'
-          : 'One of these boards is loose.'} />
     </group>
   )
 }
