@@ -6,6 +6,7 @@ import { standardMat } from '../../materials.js'
 import Touchable from '../../Touchable.jsx'
 import Rue from './Rue.jsx'
 import Hall from './Hall.jsx'
+import Ornament from './Ornament.jsx'
 import Theatre from './Theatre.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import { useRoomAudio } from '../../audio/engine.js'
@@ -181,12 +182,10 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
 
       {/* THE ROOM */}
       <Hall />
+      <Ornament />
       <DoubleDoors pos={[ROOM_DOORS.x, 0, ROOM_DOORS.z + 0.08]} ry={Math.PI} w={ROOM_DOORS.w} h={2.5}
         open={houseOpen} onUse={leave} mat={mats.door} />
 
-      {/* the Box, over the east side aisle */}
-      <mesh position={[7.1, 2.9, -21.5]} material={mats.door}><boxGeometry args={[1.8, 0.2, 5]} /></mesh>
-      <mesh position={[6.25, 3.45, -21.5]} material={mats.door}><boxGeometry args={[0.1, 0.9, 5]} /></mesh>
 
       <Theatre />
     </>

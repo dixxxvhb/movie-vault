@@ -230,7 +230,7 @@ const BEAM_ROT = (() => {
 })()
 function ProjectorBeam({ on }) {
   return <HazeCone pos={BEAM_FROM.toArray()} rot={BEAM_ROT} length={BEAM_FROM.distanceTo(BEAM_TO) * 0.96} radius={1.9}
-    color="#fff0d8" opacity={on ? 0.035 : 0.015} />
+    color="#fff0d8" opacity={on ? 0.022 : 0} />
 }
 
 function Beam({ on }) {
@@ -376,10 +376,10 @@ export default function Theatre() {
       {/* the Box: Hitler and Goebbels on the parapet, and his line */}
       {['hitler', 'goebbels'].map((id, i) => (
         <StandingCard key={id} ch={CHARACTERS.find((c) => c.id === id)} cast={cast}
-          pos={[6.19, 3.5, -20.7 - i * 1.6]} ry={-Math.PI / 2} scale={1.4} />
+          pos={[5.84, 3.5, -20.7 - i * 1.6]} ry={-Math.PI / 2} scale={1.4} />
       ))}
-      {boxFragment && <Scrap text={boxFragment.text} pos={[6.18, 3.05, -23.2]} ry={-Math.PI / 2} w={1.3} rot={-0.05} size={70} />}
-      <HouseNote text={HOUSE_NOTES.box} pos={[6.17, 3.5, -19.65]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
+      {boxFragment && <Scrap text={boxFragment.text} pos={[5.96, 3.3, -23.3]} ry={-Math.PI / 2} w={1.1} rot={-0.05} size={70} />}
+      <HouseNote text={HOUSE_NOTES.box} pos={[5.98, 3.55, -19.6]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
       <Screen state={screenState} cast={cast} />
       <ProjectorBeam on={!!reel && !house} />
       {/* the booth moved into the balcony (Two-Scene rebuild): same props, 5.4 m nearer the doors */}
