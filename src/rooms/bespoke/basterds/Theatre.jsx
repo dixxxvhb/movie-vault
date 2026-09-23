@@ -292,6 +292,7 @@ export default function Theatre() {
   const ignite = () => {
     if (getSetting('content.roomEvents') === false) { setFire('burnt'); setTimeout(() => { setFire(null); setReel(null) }, 6000); return }
     claimFlash('basterds-fire', 1)
+    window.dispatchEvent(new CustomEvent('basterds:fire', { detail: { phase: 'start' } }))
     setFire({ t0: performance.now() })
   }
 
@@ -301,6 +302,10 @@ export default function Theatre() {
     window.__basterdsIgnite = () => ignite()
     return () => { delete window.__basterdsReel; delete window.__basterdsIgnite }
   })
+
+  useEffect(() => {
+    if (reel) window.dispatchEvent(new CustomEvent('basterds:reel', { detail: { reel } }))
+  }, [reel])
 
   const DURATION = 18
   useFrame(() => {
@@ -327,6 +332,7 @@ export default function Theatre() {
     }
     if (t > DURATION) {
       if (scene.fog && baseFog.current != null) scene.fog.density = baseFog.current
+      window.dispatchEvent(new CustomEvent('basterds:fire', { detail: { phase: 'end' } }))
       setFire('rewind'); setP(0)
       setTimeout(() => { setFire(null); setReel(null) }, 3500)
     }

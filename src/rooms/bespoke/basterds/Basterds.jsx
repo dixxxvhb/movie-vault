@@ -7,6 +7,8 @@ import Lobby from './Lobby.jsx'
 import Rue from './Rue.jsx'
 import Theatre from './Theatre.jsx'
 import Cellar from './Cellar.jsx'
+import { useRoomAudio } from '../../audio/engine.js'
+import { start as basterdsAudio } from '../../audio/recipes/basterds.js'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
@@ -182,11 +184,16 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
   const [arriving] = useState(() => arrivalWanted())
   const push = () => goToStation({ pos: [0, 1.55, 6.4], look: [0, 4.4, 0], fov: config.camera?.fov ?? 55 }, 'arrival-push')
 
+  useRoomAudio(basterdsAudio)
+
   // Which space the walker is in, published for the preview and the Dailies.
   const zoneRef = useRef('')
   useFrame(({ camera }) => {
     const z = zoneAt(camera.position.x, camera.position.z)
-    if (z !== zoneRef.current) { zoneRef.current = z; window.__basterdsZone = z }
+    if (z !== zoneRef.current) {
+      zoneRef.current = z; window.__basterdsZone = z
+      window.dispatchEvent(new CustomEvent('basterds:zone', { detail: { zone: z } }))
+    }
   })
 
   const g = config.grade || {}
