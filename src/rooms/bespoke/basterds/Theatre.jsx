@@ -156,6 +156,11 @@ function Screen({ state, cast }) {
     <mesh position={[0, APRON_Y + 2.6, -31.52]}>
       <planeGeometry args={[10, 4.2]} />
       <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.95} roughness={1} />
+      {/* the back of the canvas: from behind, the film shows through faintly, mirrored */}
+      <mesh position={[0, 0, -0.01]} rotation={[0, Math.PI, 0]}>
+        <planeGeometry args={[10, 4.2]} />
+        <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.22} color="#6a6458" roughness={1} />
+      </mesh>
     </mesh>
   )
 }

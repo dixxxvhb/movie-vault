@@ -9,7 +9,9 @@ a = ap.parse_args()
 with sync_playwright() as p:
     b = p.chromium.launch(channel="chrome", args=["--use-angle=d3d11"])
     vp = {"width": 390, "height": 844} if a.phone else {"width": 1440, "height": 900}
-    pg = b.new_context(viewport=vp, device_scale_factor=2).new_page()
+    ctx = b.new_context(viewport=vp, device_scale_factor=2)
+    ctx.add_init_script("navigator.getGamepads = () => []")  # a real pad on this PC would walk the camera
+    pg = ctx.new_page()
     errs = []; pg.on("pageerror", lambda e: errs.append(str(e)[:200]))
     pg.goto("http://localhost:5191/?nocold&noguide&room=inglourious-basterds&spot=" + a.spot, wait_until="networkidle")
     pg.wait_for_function("typeof window.__basterdsReel === 'function'", timeout=30000)

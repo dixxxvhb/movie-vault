@@ -211,6 +211,7 @@ export const SPOTS = {
   booth:      { pos: at(1.2, -9.3), look: [-2.6, 4.0, -10.0] },
   boothdoor:  { pos: at(2.2, -6.6), look: [0.9, 4.5, -8.6] },
   behind:     { pos: at(-1.2, -32.75), look: [-2.4, -1.2, -34.3] },
+  backstage:  { pos: at(-6.5, -33.0), look: [4.0, 0.2, -32.4] },
   cigarette:  { pos: at(2.6, -32.8), look: [3.2, -1.3, -34.1] },
   bar:        { pos: at(9.2, -21.0), look: [14, -0.6, -21] },
   deck:       { pos: at(9.75, -21.1, -0.15), look: [10.75, BAR_Y + 1.05, -21.05] },

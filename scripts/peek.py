@@ -33,8 +33,9 @@ def main():
 
     with sync_playwright() as p:
         b = p.chromium.launch(channel="chrome", headless=True)
-        page = b.new_context(viewport={"width": 1280, "height": 800},
-                             device_scale_factor=2).new_page()
+        ctx = b.new_context(viewport={"width": 1280, "height": 800}, device_scale_factor=2)
+        ctx.add_init_script("navigator.getGamepads = () => []")  # a real pad on this PC would walk the camera
+        page = ctx.new_page()
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
 

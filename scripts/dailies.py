@@ -63,6 +63,9 @@ def shoot(url, path, phone, settle, keys):
         b = p.chromium.launch(channel="chrome", args=["--use-angle=d3d11", "--enable-gpu"])
         vp = {"width": 390, "height": 844} if phone else {"width": 1440, "height": 900}
         ctx = b.new_context(viewport=vp, device_scale_factor=2, has_touch=phone, is_mobile=phone)
+        # A controller plugged into this PC reaches headless Chrome too, and its
+        # stick walks the camera between the spot flight and the shot. Blank it.
+        ctx.add_init_script("navigator.getGamepads = () => []")
         page = ctx.new_page()
         errors = []
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
