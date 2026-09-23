@@ -6,6 +6,7 @@ import { standardMat } from '../../materials.js'
 import Lobby from './Lobby.jsx'
 import Rue from './Rue.jsx'
 import Theatre from './Theatre.jsx'
+import Cellar from './Cellar.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
@@ -196,7 +197,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       {/* greybox lights: one per space, warm tungsten except the street */}
       <pointLight position={[0, 3.7, -5]} intensity={55} distance={18} color="#ffcf8a" />
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -11.6]} intensity={10} distance={7} color="#ffc27a" />
-      <pointLight position={[-14, CELLAR_Y + 2.1, -6]} intensity={16} distance={12} color="#ffb060" />
+      <pointLight position={[-15.8, CELLAR_Y + 1.75, -5.4]} intensity={13} distance={13} color="#ffb060" />
 
       {FOOTPRINTS.filter((f) => !isDoor(f)).map((f) => {
         const t = mats[f.id] || mats.lobby
@@ -224,9 +225,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <Lobby />
 
 
-      {/* La Louisiane: the long table and the bar */}
-      <mesh position={[-15, CELLAR_Y + 0.4, -6]} material={mats.cellar.floor}><boxGeometry args={[1.2, 0.8, 4.2]} /></mesh>
-      <mesh position={[-18.4, CELLAR_Y + 0.55, -6]} material={mats.cellar.wall}><boxGeometry args={[0.8, 1.1, 7]} /></mesh>
+      <Cellar />
     </>
   )
 }

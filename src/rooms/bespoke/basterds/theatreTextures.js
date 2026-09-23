@@ -37,7 +37,7 @@ export async function paintSeatCard(canvas, ch, castList) {
   ctx.fillStyle = ch.premiere ? RED : 'rgba(27,22,18,0.55)'
   ctx.font = '600 20px "Josefin Sans"'
   ctx.textAlign = 'center'
-  ctx.fillText(ch.premiere ? 'HERE TONIGHT' : 'RÉSERVÉ · NEVER CAME', W / 2, 52)
+  ctx.fillText(ch.tag || (ch.premiere ? 'HERE TONIGHT' : 'RÉSERVÉ · NEVER CAME'), W / 2, 52)
 
   const R = 92, cx = W / 2, cy = 72 + R + 8
   ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip()

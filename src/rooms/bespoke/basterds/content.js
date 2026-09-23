@@ -167,6 +167,30 @@ export const WILHELM = {
 // The forehead cards in La Louisiane, from the TMDB credits.
 export const FOREHEADS = ['Pola Negri', 'Winnetou', 'Beethoven', 'Edgar Wallace', 'Mata Hari']
 
+// The cellar deck's bonus round: the forehead names, as the table would have
+// guessed them. Real people (and one novel's hero), facts kept to what any
+// encyclopedia says.
+export const BONUS = [
+  { name: 'Pola Negri', clues: [['WHERE I WORKED', 'Berlin first, then Hollywood'], ['WHEN', 'the silent era'], ['WHAT I DID', 'Played vamps and tragic queens, and made both cities pay for it']],
+    answer: 'Polish-born silent film star. A German screen idol before Hollywood bought her.' },
+  { name: 'Winnetou', clues: [['WHERE I LIVE', 'The pages of a German novel'], ['WHO I AM', 'An Apache chief'], ['WHO LOVES ME', 'Every German schoolboy for fifty years']],
+    answer: "The noble Apache hero of Karl May's Westerns. An Apache, at a table in a Nazi bar, a chapter after Aldo the Apache." },
+  { name: 'Beethoven', clues: [['WHERE I WAS BORN', 'Bonn'], ['WHAT I MADE', 'Nine symphonies'], ['WHAT I LOST', 'My hearing']],
+    answer: 'Ludwig van Beethoven. Composer. Wrote the Ninth while he was deaf.' },
+  { name: 'Edgar Wallace', clues: [['WHERE I WAS BORN', 'London'], ['WHAT I WROTE', 'Crime novels, by the hundred'], ['WHAT I STARTED', 'A giant ape, before I died']],
+    answer: 'English thriller writer. Worked on King Kong before he died. The Germans filmed his books for decades.' },
+  { name: 'Mata Hari', clues: [['WHERE I DANCED', 'Paris'], ['WHAT THEY SAID', 'That I spied for Germany'], ['HOW IT ENDED', 'A French firing squad, 1917']],
+    answer: 'Dutch dancer, shot by France as a German spy. The other film star at this table who was a spy.' },
+]
+
+// The last card in the deck, after the characters and the bonus round.
+export const GUEST = {
+  name: 'A Guest in Paris',
+  clues: [['CHAPTER', 'SIX'], ['SIDE', 'Not chosen yet'], ['ON MY SEAT', 'Nothing. It was never reserved.'], ['WHAT I DO', 'Came in off the rue in the rain and walked into every room tonight']],
+  answer: "You. The film's missing chapter.",
+  fate: 'The reel rewinds, and you come back.',
+}
+
 // Dixon's words, verbatim, and where each one lives (plan §8).
 export const FRAGMENTS = [
   { text: 'those god damn NAAAAZZZIIIIISSS.', where: 'the box parapet', state: 'film' },

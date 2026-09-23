@@ -11,6 +11,7 @@ import { CHARACTERS, FRAGMENTS } from './content.js'
 import { useVaultData } from './Lobby.jsx'
 import { TentCard } from './Rue.jsx'
 import { Scrap } from './LobbyProps.jsx'
+import { Shoe } from './Cellar.jsx'
 import { floorAt, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, BOOTH_Y, APRON_Y } from './zones.js'
 
 // LE GAMAAR: the auditorium, the booth, behind the screen, and the fire.
@@ -105,6 +106,8 @@ function CharacterSeat({ s, cast }) {
       </mesh>
       {/* a brass holder rim */}
       <mesh position={[0, 0.998, 0.262]} material={frame}><boxGeometry args={[0.32, 0.02, 0.01]} /></mesh>
+      {/* the other shoe: its pair is under the tavern table downstairs */}
+      {s.id === 'bridget' && <Shoe pos={[0.02, 1.07, 0.2]} ry={0.3} />}
       {s.premiere && <mesh position={[0, 1.1, 0.22]} material={lampMat}><sphereGeometry args={[0.018, 12, 10]} /></mesh>}
     </group>
   )

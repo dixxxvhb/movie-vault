@@ -72,6 +72,8 @@ def shoot(url, path, phone, settle, keys):
         for k in keys:
             if k.startswith("wait:"):
                 page.wait_for_timeout(int(k[5:]))
+            elif k.startswith("js:"):
+                page.evaluate("() => { " + k[3:] + " }")
             else:
                 page.keyboard.press(k)
         page.screenshot(path=path)
@@ -88,7 +90,7 @@ def main():
     ap.add_argument("--url", help="path+query on the dev server, e.g. /?nocold&noguide")
     ap.add_argument("--phone", action="store_true")
     ap.add_argument("--settle", type=int, default=3500)
-    ap.add_argument("--keys", default="", help="comma list of keys to press before the shot, wait:ms allowed")
+    ap.add_argument("--keys", default="", help="comma list of keys to press before the shot; wait:ms and js:<statement> allowed (use ; not , inside js)")
     ap.add_argument("--session", default=os.environ.get("DAILIES_SESSION", "1"))
     ap.add_argument("--ref", default="")
     ap.add_argument("--done")
