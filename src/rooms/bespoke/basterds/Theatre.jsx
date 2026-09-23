@@ -241,7 +241,7 @@ const BEAM_ROT = (() => {
 })()
 function ProjectorBeam({ on }) {
   return <HazeCone pos={BEAM_FROM.toArray()} rot={BEAM_ROT} length={BEAM_FROM.distanceTo(BEAM_TO) * 0.96} radius={1.9}
-    color="#fff0d8" opacity={on ? 0.022 : 0} />
+    color="#fff0d8" opacity={on ? 0.011 : 0} />
 }
 
 function Beam({ on }) {

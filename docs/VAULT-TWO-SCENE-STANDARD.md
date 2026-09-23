@@ -150,6 +150,34 @@ Pieces that every room reuses, so the second film is faster than the first. They
   hard cut, reset, flash claims, roomEvents off).
 - Tooling: `?spot=`, `dailies.py --keys js:`, `peek.py --fps`, a flood-fill walk check.
 
+### Built so far (Le Gamaar, 2026-09-23)
+`src/rooms/kit/architecture.jsx`: `Slab`, `Curtain` (pleats, tie-back, scallop), `Fan`
+(sunburst), `Sconce`, `FloorBand` (a band that follows a sloped floor: dados, rails),
+`FloorRunner` (carpet on a rake), `useGlow`. Still living in the pilot and due for extraction:
+the threshold (`cutTo` + `DoubleDoors` in `Basterds.jsx`), `ArrivalCard`, `HouseNote`,
+`Scrap`, the zone-bus audio recipe, the walk check.
+
+### Lessons from the pilot build (read before building the next film)
+1. **Decide the three hero frames before any geometry**, then place architecture to serve them.
+   The booth first sat 3.6 m behind the balcony rail and its port saw only balcony floor; moved
+   to the rail, it became the best frame in the room.
+2. **One volume means hand-authored walls.** Footprint-derived walls assume rooms joined by
+   doorways and wall off an open volume. Keep footprints for where you can stand; author the
+   architecture separately (`Hall.jsx`).
+3. **The engine's collision is 2D with one floor per point.** A balcony can never sit over a
+   walkable floor. Put upper levels over space nobody walks (behind a wall line), reach them by
+   a stair lane, and fence the edges with furniture rects.
+4. **The Threshold is a cut, not a walkway**, so the Arrival and the Room share no footprint.
+   Guard the walk-in trigger while the camera rig is flying, or every `?spot=` flight that
+   passes the doorway will trip it.
+5. **Glow does the lighting.** Seven lights is enough when sconces, coves, organ grilles and
+   picture lights are emissive and bloom carries them. Soften any glass (roughness 0.35) or it
+   throws specular hotspots onto the art behind it.
+6. **A projector beam seen from behind the projector is a grey slab.** Show it only while
+   something is projecting, at about 0.01 opacity.
+7. **Write source files atomically** (temp file, then rename). Vite once cached a module it
+   read mid-write as an empty file.
+
 ---
 
 ## 5. Rollout

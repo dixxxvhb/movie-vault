@@ -83,6 +83,29 @@ cards and the vitrine card are retired.
 The lobby, the east stair, the gallery, the vestibule, the west stair, the cellar as separate
 spaces. Their contents move into the Room as listed above.
 
+## Build status (2026-09-23, branch two-scene, merged to master)
+
+Done: the threshold both ways; one volume (stalls, crossing, balcony, stair, booth at the
+balcony front with the round port, wings, the bar arch); architecture pass 1 (proscenium bands,
+sunburst, curtains and valance, organ grilles, pilasters and fan sconces, cornice cove, ceiling
+rosette, opera box, carpet); the five chapter cases with objects; chapter 1 under the crossing
+floor; La Louisiane in the arch; the house switch by the doors; Stolz der Nation playing.
+Hero frames: from the doors (`?spot=house`), through the port (`?spot=porthole`), the screen.
+60 fps in every zone; walk check PASS.
+
+Still to do, in order:
+1. Upper walls: panels or a painted frieze above the cases and on the east wall (they read as
+   bare plaster). The back wall of the balcony, the stair's wall.
+2. His words: "such a fun movie..." still has no place in the Room (it was over the lobby
+   arch). Pin it on the balcony front or over the doors.
+3. Retire tent cards against the text budget: the floorboard card, the street ladder card.
+4. Behind the screen: dress the wings (ropes, sandbags, a fly rail) so the nitrate sits in a
+   stage house, not a box.
+5. Extract `cutTo`/`DoubleDoors`, `ArrivalCard`, `HouseNote`, `Scrap` into `src/rooms/kit/`.
+6. Delete what the rebuild orphaned: `Lobby.jsx`'s room component, `LobbyProps.jsx`'s Vitrine
+   and Concession, zones' `VITRINE`/`COUNTER`.
+7. Dixon walks it.
+
 ## Facts to check before copy ships
 All copy is carried over from content.js (checked 2026-09-22). New copy in this rebuild: the
 case labels only, written from CHAPTERS.
