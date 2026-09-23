@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
-import { BOOTH_Y, BOOTH, BAR_Y, APRON_Y, rakeAt, ROOM_DOORS } from './zones.js'
+import { BOOTH_Y, BOOTH, BOOTH_DOOR, BAR_Y, APRON_Y, rakeAt, ROOM_DOORS } from './zones.js'
 
 // LE GAMAAR: THE ROOM. One volume, the auditorium on premiere night
 // (docs/films/inglourious-basterds.md). Stalls on the rake, the back crossing
@@ -78,9 +78,13 @@ export default function Hall() {
       <Slab x0={ROOM_DOORS.x + ROOM_DOORS.w / 2} x1={9.8} y0={-0.05} y1={BY - 0.25} z0={-11.0} z1={-11.0 + T} mat={m.plaster} />
       <Slab x0={ROOM_DOORS.x - ROOM_DOORS.w / 2} x1={ROOM_DOORS.x + ROOM_DOORS.w / 2} y0={2.5} y1={BY - 0.25} z0={-11.0} z1={-11.0 + T} mat={m.plaster} />
       <Slab x0={-8.8} x1={9.8} y0={BY - 0.25} y1={BY} z0={-11.0} z1={-5} mat={m.upper} />
-      {/* the balcony front: velvet panel, gold cap rail */}
-      <Slab x0={-8.8} x1={9.8} y0={BY - 0.35} y1={BY + 0.95} z0={-11.12} z1={-10.94} mat={m.velvet} />
-      <Slab x0={-8.8} x1={9.8} y0={BY + 0.95} y1={BY + 1.03} z0={-11.16} z1={-10.9} mat={m.gold} />
+      {/* the balcony front either side of the booth: velvet panel, gold cap rail */}
+      {[[-8.8, B.minX - T], [B.maxX + T, 9.8]].map(([a, b]) => (
+        <group key={a}>
+          <Slab x0={a} x1={b} y0={BY - 0.35} y1={BY + 0.95} z0={-11.12} z1={-10.94} mat={m.velvet} />
+          <Slab x0={a} x1={b} y0={BY + 0.95} y1={BY + 1.03} z0={-11.16} z1={-10.9} mat={m.gold} />
+        </group>
+      ))}
       <Slab x0={-8.8} x1={9.8} y0={BY - 0.42} y1={BY - 0.35} z0={-11.16} z1={-10.9} mat={m.gold} />
 
       {/* --- the stair up the north-west corner -------------------------- */}
@@ -92,11 +96,14 @@ export default function Hall() {
       <Slab x0={-8.84} x1={-8.76} y0={0} y1={BY + 1.0} z0={-12.3} z1={-6.4} mat={m.lacquer} />
 
       {/* --- the booth, in the balcony, with the round port ---------------- */}
-      <HoledWall x0={B.minX} x1={B.maxX} y0={BY} y1={BY + 2.6} z={B.minZ}
+      <HoledWall x0={B.minX - T} x1={B.maxX + T} y0={BY - 0.42} y1={BY + 2.6} z={B.minZ}
         hole={{ r: 0.72, x: -0.3, y: BY + 1.45 }} mat={m.lacquer} />
       <Slab x0={B.minX - T} x1={B.minX} y0={BY} y1={BY + 2.6} z0={B.minZ} z1={B.maxZ} mat={m.lacquer} />
-      <Slab x0={B.maxX} x1={B.maxX + T} y0={BY} y1={BY + 2.6} z0={B.minZ} z1={-6.9} mat={m.lacquer} />
-      <Slab x0={B.maxX} x1={B.maxX + T} y0={BY + 2.35} y1={BY + 2.6} z0={-6.9} z1={B.maxZ} mat={m.lacquer} />
+      <Slab x0={B.maxX} x1={B.maxX + T} y0={BY} y1={BY + 2.6} z0={B.minZ} z1={B.maxZ} mat={m.lacquer} />
+      {/* the back wall, with the door Zoller comes through */}
+      <Slab x0={B.minX - T} x1={BOOTH_DOOR.x0} y0={BY} y1={BY + 2.6} z0={B.maxZ} z1={B.maxZ + T} mat={m.lacquer} />
+      <Slab x0={BOOTH_DOOR.x1} x1={B.maxX + T} y0={BY} y1={BY + 2.6} z0={B.maxZ} z1={B.maxZ + T} mat={m.lacquer} />
+      <Slab x0={BOOTH_DOOR.x0} x1={BOOTH_DOOR.x1} y0={BY + 2.2} y1={BY + 2.6} z0={B.maxZ} z1={B.maxZ + T} mat={m.lacquer} />
       <Slab x0={B.minX - T} x1={B.maxX + T} y0={BY + 2.6} y1={BY + 2.7} z0={B.minZ} z1={B.maxZ} mat={m.lacquer} />
       {/* the port's brass ring */}
       <mesh position={[-0.3, BY + 1.45, B.minZ - T / 2 - 0.01]} material={m.gold}><torusGeometry args={[0.74, 0.05, 12, 48]} /></mesh>

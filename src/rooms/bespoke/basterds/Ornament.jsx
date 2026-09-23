@@ -163,7 +163,7 @@ export default function Ornament() {
       </group>
 
       {/* --- the balcony front: gold panel dividers, little lamps on the rail */}
-      {Array.from({ length: 13 }, (_, k) => -8.4 + k * 1.5).map((x) => (
+      {Array.from({ length: 13 }, (_, k) => -8.4 + k * 1.5).filter((x) => x < -3.3 || x > 2.2).map((x) => (
         <group key={x}>
           <Slab x0={x - 0.03} x1={x + 0.03} y0={BOOTH_Y - 0.35} y1={BOOTH_Y + 0.95} z0={-11.18} z1={-11.12} mat={m.gold} />
           <mesh position={[x + 0.75, BOOTH_Y + 1.1, -11.03]} material={lamp}><sphereGeometry args={[0.045, 10, 8]} /></mesh>

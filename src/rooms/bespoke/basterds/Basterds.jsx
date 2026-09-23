@@ -112,7 +112,10 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
   }, [film?.slug])
 
   const fov = config.camera?.fov ?? 55
-  const fly = (s, key) => goToStation({ pos: s.pos, look: s.look, fov }, key + ':' + Date.now())
+  // A rig flight can pass through the street doors on its way somewhere else;
+  // for a moment after any flight, walking into the doors doesn't count.
+  const flewAt = useRef(0)
+  const fly = (s, key) => { flewAt.current = performance.now(); goToStation({ pos: s.pos, look: s.look, fov }, key + ':' + Date.now()) }
 
   // ?spot= on arrival, and a live re-aim hook for the preview pane.
   useEffect(() => {
@@ -161,7 +164,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       zoneRef.current = zone; window.__basterdsZone = zone
       window.dispatchEvent(new CustomEvent('basterds:zone', { detail: { zone } }))
     }
-    if (zone === 'rue' && z < 0.95 && Math.abs(x) < 1.1 && !busy.current) enter()
+    if (zone === 'rue' && z < 0.95 && Math.abs(x) < 1.1 && !busy.current && performance.now() - flewAt.current > 3000) enter()
   })
 
   const g = config.grade || {}

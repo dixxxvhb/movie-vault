@@ -55,7 +55,6 @@ export const FOOTPRINTS = [
   { id: 'door-bar', zone: 'bar', rect: { minX: 7.6, maxX: 8.6, minZ: -21.6, maxZ: -20.4 }, floor: flat(rake(0, -21)) },
   { id: 'gap-behindE', zone: 'behind', rect: { minX: 7.0, maxX: 7.9, minZ: -32.8, maxZ: -31.2 }, floor: flat(APRON_Y) },
   { id: 'gap-behindW', zone: 'behind', rect: { minX: -8.0, maxX: -7.1, minZ: -32.8, maxZ: -31.2 }, floor: flat(APRON_Y) },
-  { id: 'door-booth', zone: 'booth', rect: { minX: 1.6, maxX: 2.4, minZ: -6.9, maxZ: -5.5 }, floor: flat(BOOTH_Y) },
 
   // --- the Arrival: the street ----------------------------------------
   { id: 'rue', zone: 'rue', rect: { minX: -10, maxX: 10, minZ: 0.6, maxZ: 10 }, floor: flat(0) },
@@ -76,8 +75,10 @@ export const FOOTPRINTS = [
   { id: 'bar', zone: 'bar', rect: { minX: 8.6, maxX: 15.0, minZ: -26.0, maxZ: -16.0 }, floor: flat(rake(0, -21)) },
 ]
 
-// The booth, inside the balcony's back: its walls block, its door is the gap.
-export const BOOTH = { minX: -3.0, maxX: 2.0, minZ: -7.4, maxZ: -5.0 }
+// The booth hangs at the middle of the balcony front, so its round port looks
+// straight down on the house. Its walls block; its door is in the back wall.
+export const BOOTH = { minX: -3.0, maxX: 2.0, minZ: -11.0, maxZ: -8.6 }
+export const BOOTH_DOOR = { x0: 0.8, x1: 1.7 }
 export const ROOM_DOORS = { x: 0, z: -11.0, w: 2.2 }      // the double doors under the balcony front
 
 // The seating chart: rows are chapters (back = 1, front = 5), the centre
@@ -111,7 +112,9 @@ export const FURNITURE = [
   // the booth's walls, all but its door
   { minX: BOOTH.minX, maxX: BOOTH.maxX, minZ: BOOTH.minZ - 0.08, maxZ: BOOTH.minZ + 0.08 },
   { minX: BOOTH.minX - 0.08, maxX: BOOTH.minX + 0.08, minZ: BOOTH.minZ, maxZ: BOOTH.maxZ },
-  { minX: BOOTH.maxX - 0.08, maxX: BOOTH.maxX + 0.08, minZ: BOOTH.minZ, maxZ: -6.9 },
+  { minX: BOOTH.maxX - 0.08, maxX: BOOTH.maxX + 0.08, minZ: BOOTH.minZ, maxZ: BOOTH.maxZ },
+  { minX: BOOTH.minX, maxX: 0.8, minZ: BOOTH.maxZ - 0.08, maxZ: BOOTH.maxZ + 0.08 },
+  { minX: 1.7, maxX: BOOTH.maxX, minZ: BOOTH.maxZ - 0.08, maxZ: BOOTH.maxZ + 0.08 },
   { minX: -7.1, maxX: 1.1, minZ: -34.6, maxZ: -33.6 },    // the nitrate stack
   { minX: 7.9, maxX: 8.14, minZ: -24.5, maxZ: -21.6 },    // the rail across the bar arch
   { minX: 7.9, maxX: 8.14, minZ: -20.4, maxZ: -17.5 },
@@ -199,10 +202,10 @@ export const SPOTS = {
   box:        { pos: at(0.4, -17.4), look: [6.2, 3.3, -21.4] },
   bridget:    { pos: at(-0.35, -23.0), look: [-1.84, -0.35, -23.55] },
   stair:      { pos: at(-7.6, -12.4), look: [-9.4, 2.4, -7] },
-  rail:       { pos: at(0.4, -10.4), look: [0, -1.4, -26] },
-  porthole:   { pos: at(0.85, -7.0), look: [0.2, -0.9, -30] },
-  booth:      { pos: at(1.2, -6.0), look: [-2.4, 3.8, -6.8] },
-  boothdoor:  { pos: at(3.6, -7.8), look: [2.0, 4.6, -6.2] },
+  rail:       { pos: at(4.2, -10.4), look: [0, -1.4, -26] },
+  porthole:   { pos: at(-0.25, -10.1), look: [-0.25, -0.6, -30] },
+  booth:      { pos: at(1.2, -9.3), look: [-2.6, 4.0, -10.0] },
+  boothdoor:  { pos: at(2.2, -6.6), look: [0.9, 4.5, -8.6] },
   behind:     { pos: at(-1.2, -32.75), look: [-2.4, -1.2, -34.3] },
   cigarette:  { pos: at(2.6, -32.8), look: [3.2, -1.3, -34.1] },
   bar:        { pos: at(9.2, -21.0), look: [14, -0.6, -21] },
