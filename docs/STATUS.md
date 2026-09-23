@@ -55,7 +55,7 @@ and publishing become a weekly Code wall pass.
 | Lessons | Supabase | 10 v4-night rows set inactive, 3 v5 rows at weight 4; law still 10 |
 | `film-debrief` skill | `~/.claude/_archive/` | Stale 0-5 scale twin, retired |
 
-**Owed to Dixon:** create the Movie Night project, paste the instructions, Supabase connector on, re-save the skill.
+**Setup done by Dixon 2026-09-22:** Movie Night project created with the instructions, skill re-saved. Next: after about a week of nights, re-check pick acceptance and note length (see the plan's Why section).
 
 ## Movie Night v4, pass 1
 
