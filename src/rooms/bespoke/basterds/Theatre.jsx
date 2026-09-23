@@ -141,6 +141,17 @@ function Screen({ state, cast }) {
     paintScreen(canvas, { ...state, cast }).then(() => { if (live) tex.needsUpdate = true })
     return () => { live = false }
   }, [key, cast]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The film plays: while idle, repaint the frame about six times a second
+  // (grain, weave, drifting smoke). No React state, so the room doesn't re-render.
+  const clock = useRef({ acc: 0, f: 0 })
+  useFrame((_, dt) => {
+    if (state.mode !== 'idle') return
+    const c = clock.current
+    c.acc += dt
+    if (c.acc < 0.16) return
+    c.acc = 0; c.f += 1
+    paintScreen(canvas, { mode: 'idle', t: c.f }).then(() => { tex.needsUpdate = true })
+  })
   return (
     <mesh position={[0, APRON_Y + 2.6, -31.52]}>
       <planeGeometry args={[10, 4.2]} />

@@ -113,17 +113,69 @@ export async function paintScreen(canvas, { mode, n, p = 0, t = 0, cast }) {
   }
 
   if (mode === 'idle') {
-    // Nation's Pride is playing: a grey, grainy picture of a bell tower
-    const g = ctx.createLinearGradient(0, 0, 0, H)
-    g.addColorStop(0, '#8a8680'); g.addColorStop(1, '#3c3a36')
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
-    ctx.fillStyle = '#1c1a18'
-    ctx.fillRect(W * 0.62, H * 0.18, W * 0.06, H * 0.82)
-    ctx.beginPath(); ctx.moveTo(W * 0.6, H * 0.2); ctx.lineTo(W * 0.65, H * 0.04); ctx.lineTo(W * 0.7, H * 0.2); ctx.fill()
-    ctx.fillStyle = 'rgba(240,236,228,0.85)'
-    ctx.font = `700 ${H * 0.09}px Oswald`
-    ctx.fillText('STOLZ DER NATION', W * 0.32, H * 0.86)
-    grain(ctx, W, H, 0.12, 3)
+    // STOLZ DER NATION is playing: Zoller in the bell tower over the town,
+    // rifle out of the belfry, smoke drifting across the roofs. Black and
+    // white, a projected look: grain, weave, a scratch now and then. `t`
+    // advances a few times a second (Screen's own ticker), so it plays.
+    const f = t || 0
+    let s = 1000 + (f % 97) * 131
+    const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280)
+    const weave = Math.sin(f * 1.7) * 3
+    ctx.save(); ctx.translate(0, weave)
+    const sky = ctx.createLinearGradient(0, 0, 0, H)
+    sky.addColorStop(0, '#b9b5ad'); sky.addColorStop(0.62, '#8c8881'); sky.addColorStop(1, '#4a4743')
+    ctx.fillStyle = sky; ctx.fillRect(0, -10, W, H + 20)
+    // far roofs, then near roofs
+    const roofs = (y0, amp, col, seed) => {
+      let r = seed; const rr = () => ((r = (r * 9301 + 49297) % 233280) / 233280)
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, H)
+      for (let x = 0; x <= W; x += 60 + rr() * 90) {
+        const h = y0 - rr() * amp
+        ctx.lineTo(x, h); if (rr() < 0.4) ctx.lineTo(x + 30, h - 30 - rr() * 40); ctx.lineTo(x + 60, h)
+      }
+      ctx.lineTo(W, H); ctx.closePath(); ctx.fill()
+    }
+    roofs(H * 0.7, H * 0.08, '#6b6863', 7)
+    // smoke from the square, drifting left
+    for (let k = 0; k < 5; k++) {
+      const cx = ((W * 0.35 + k * 190 - f * 6) % (W * 0.7) + W * 0.7) % (W * 0.7), cy = H * 0.62 - k * 30
+      const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, 220)
+      g.addColorStop(0, 'rgba(210,206,198,0.35)'); g.addColorStop(1, 'rgba(210,206,198,0)')
+      ctx.fillStyle = g; ctx.fillRect(cx - 220, cy - 220, 440, 440)
+    }
+    roofs(H * 0.86, H * 0.1, '#2e2c29', 19)
+    // the tower: stone shaft, belfry arch, the roof spike
+    const tx = W * 0.64, tw = W * 0.085
+    ctx.fillStyle = '#26241f'
+    ctx.fillRect(tx - tw / 2, H * 0.24, tw, H)
+    ctx.beginPath(); ctx.moveTo(tx - tw * 0.62, H * 0.25); ctx.lineTo(tx, H * 0.02); ctx.lineTo(tx + tw * 0.62, H * 0.25); ctx.fill()
+    ctx.fillStyle = '#3a3731'
+    for (let y = H * 0.3; y < H; y += 26) ctx.fillRect(tx - tw / 2, y, tw, 2)
+    // the belfry, lit from behind, and the man in it
+    ctx.fillStyle = '#d8d3c8'
+    ctx.beginPath(); ctx.moveTo(tx - tw * 0.3, H * 0.44); ctx.lineTo(tx - tw * 0.3, H * 0.33)
+    ctx.arc(tx, H * 0.33, tw * 0.3, Math.PI, 0); ctx.lineTo(tx + tw * 0.3, H * 0.44); ctx.closePath(); ctx.fill()
+    ctx.fillStyle = '#141311'
+    ctx.beginPath(); ctx.arc(tx + tw * 0.02, H * 0.345, tw * 0.07, 0, Math.PI * 2); ctx.fill()
+    ctx.fillRect(tx - tw * 0.08, H * 0.365, tw * 0.17, H * 0.08)
+    ctx.save(); ctx.translate(tx - tw * 0.05, H * 0.385); ctx.rotate(0.32)
+    ctx.fillRect(-tw * 0.75, -3, tw * 0.75, 7)
+    ctx.restore()
+    ctx.restore()
+    // the title, as the film-within-the-film cards it
+    ctx.fillStyle = 'rgba(244,240,232,0.92)'
+    ctx.font = `700 ${H * 0.085}px Oswald`
+    ctx.fillText('STOLZ DER NATION', W * 0.3, H * 0.9)
+    // projection: vignette, grain, a scratch
+    const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.62)
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)')
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H)
+    for (let i = 0; i < 2200; i++) {
+      const v = rnd() < 0.5 ? 0 : 255
+      ctx.fillStyle = `rgba(${v},${v},${v},${rnd() * 0.1})`
+      ctx.fillRect(rnd() * W, rnd() * H, 2, 2)
+    }
+    if (rnd() < 0.35) { ctx.fillStyle = 'rgba(240,240,240,0.35)'; ctx.fillRect(rnd() * W, 0, 2, H) }
     return
   }
 
