@@ -21,16 +21,15 @@ The Vault is Leonard's external memory system: a wall of polaroids. Today, click
 - Film-accurate color grading. Match the palette, the LUT feel, the light temperature of the actual film per room.
 - Composition homage: recreate iconic framings in 3D space (camera height, lens feel via FOV, key light angle).
 - Sound-alike generative audio: original Web Audio synthesis tuned to evoke the score's register and rhythm (the BWAAAM shape, the groove pocket, the strings register). Familiar nerve, original signal.
-- Silhouettes and figures as abstracted forms (no facial likeness, no actor recreation). A figure can hold a pose; it cannot be a person.
+- Actor likenesses (amended by Dixon, 2026-09-22: "you can do actor likenesses"). Real actor headshots from TMDB, fetched by the data pipeline the same way posters are, and figures modelled on the real performers. The rooms exist so he can remember who was in the film and who they played; faces are the fastest route to that.
 - Original text everywhere. Dixon's hot takes are the script of this world.
 
 **EXCLUDED, NON-NEGOTIABLE (the short list):**
 - No embedded stills, frames, posters, key art, or screenshots.
 - No studio/franchise logos, wordmarks, or title treatments.
 - No soundtrack audio files or sampled dialogue. Zero exceptions, this is the DMCA takedown vector for a public repo + public Pages site.
-- No actor likenesses (face geometry/textures).
 - No direct copies of protected graphic designs (the Matrix glyph set specifically; design our own falling-code alphabet).
-- Nothing copied into the repo from the internet. If a file didn't originate in this project, it doesn't ship.
+- Nothing copied into the repo from the internet, with two exceptions the data pipeline owns: TMDB posters (`public/posters/`, the wall) and TMDB actor headshots (`public/cast/`, amended 2026-09-22). If any other file didn't originate in this project, it doesn't ship.
 
 If any spec below can be built closer to the film within these rules, build it closer. Ambiguity resolves toward fidelity, not away from it.
 

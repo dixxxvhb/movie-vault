@@ -97,6 +97,15 @@ refuse a pitch mid-session. The error text says what to do; it is not a bug.
 
 ## Agreed, not started
 
+**LE GAMAAR, the Inglourious Basterds room (planned 2026-09-22).** Plan:
+`docs/plans/2026-09-22-le-gamaar-basterds-room.md`. A walkable cinema (street, lobby with five
+chapter cards, auditorium seating chart of the whole cast, projection booth with chapter
+reels, behind-the-screen fire, La Louisiane cellar card game), plus the Morris column
+(Familiar Faces, cross-film doors by shared actor). Four build sessions. Session 1 starts
+with the owed wall pass (47 to 53 films) and the PULL.sql emotional_key fix. Rule amended
+same day: actor likenesses allowed (TMDB headshots via the pipeline). Owed to Dixon: stills on
+lobby cards (recommended yes), 3D actor figures (recommended not yet).
+
 **Phase 1, the pipeline.** Half done. Remaining, and still blocking:
 - [ ] Emit the 78 `pitched` titles with their reasons (the far wing)
 - [ ] Emit the 154 recommendations with reasoning (every proposed ending needs them)

@@ -336,9 +336,10 @@ a single wall gets modelled.**
    tube on a pole with one floodlight on it, which is the better motel anyway.
 6. **The north wall survives intact** as Room 4's contents and as the index.
    It is now a scale model of where you are standing.
-7. **Zero imported assets, zero sampled audio, no actor likenesses, no logos.**
-   Unchanged from the immersion brief and non-negotiable: this is the DMCA
-   vector for a public repo recreating film scenes.
+7. **Zero sampled audio, no logos, no stills.** Unchanged from the immersion
+   brief: this is the DMCA vector for a public repo recreating film scenes.
+   **Amended 2026-09-22 (Dixon): actor likenesses are allowed.** TMDB actor
+   headshots come in through the data pipeline exactly like posters do.
 8. **Content about the world is an object in the room. Controls that operate
    the machine are plain DOM.** Settings, pause and options are deliberately
    boring and deliberately not diegetic.
