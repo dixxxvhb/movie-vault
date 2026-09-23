@@ -173,8 +173,8 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <fogExp2 attach="fog" args={[g.fogColor || '#0b0a0c', g.fogDensity ?? 0.012]} />
 
       {/* the Room's own lights: the back crossing, the booth, La Louisiane (the house key and the fire are Theatre's) */}
-      <pointLight position={[0, 2.4, -12.2]} intensity={14} distance={10} color="#ffc78a" />
-      <pointLight position={[-0.6, BOOTH_Y + 2.2, -6.2]} intensity={10} distance={7} color="#ffc27a" />
+      <pointLight position={[-6.8, 2.7, -12.1]} intensity={16} distance={11} color="#ffc78a" />
+      <pointLight position={[0.4, BOOTH_Y + 2.3, -8.3]} intensity={12} distance={8} color="#ffc27a" />
       <pointLight position={[11.4, BAR_Y + 1.75, -21.6]} intensity={11} distance={10} color="#ffb060" />
 
       {FOOTPRINTS.filter((f) => f.id !== 'rue' && f.id !== 'crossing').map((f) => (

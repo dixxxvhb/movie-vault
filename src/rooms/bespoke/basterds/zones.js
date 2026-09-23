@@ -64,9 +64,10 @@ export const FOOTPRINTS = [
   { id: 'crossing', zone: 'house', rect: { minX: -8.8, maxX: 9.8, minZ: -13.2, maxZ: -11.0 }, floor: flat(0) },
   // the stalls on their rake, down to the apron
   { id: 'stalls', zone: 'house', rect: { minX: -8.8, maxX: 8, minZ: -31.6, maxZ: -13.2 }, floor: rake },
-  // the stair up the north-west corner to the balcony (0 at z -12.4, BOOTH_Y at z -6.2)
-  { id: 'stair', zone: 'house', rect: { minX: -10, maxX: -8.8, minZ: -13.2, maxZ: -5.0 },
-    floor: rampZ(-12.4, 0, -6.2, BOOTH_Y) },
+  // the stair up the north-west corner to the balcony (0 at z -12.4, BOOTH_Y at z -6.6);
+  // it stops a metre short of the back wall, and you step off it to your left
+  { id: 'stair', zone: 'house', rect: { minX: -10, maxX: -8.8, minZ: -13.2, maxZ: -5.7 },
+    floor: rampZ(-12.4, 0, -6.6, BOOTH_Y) },
   // the balcony across the back, with the booth in it
   { id: 'balcony', zone: 'balcony', rect: { minX: -8.8, maxX: 9.8, minZ: -11.0, maxZ: -5.0 }, floor: flat(BOOTH_Y) },
   // behind the screen: the wings and the nitrate
@@ -108,7 +109,7 @@ export const FURNITURE = [
   { minX: 3.55, maxX: 4.25, minZ: 0.6, maxZ: 1.6 },        // the ladder foot
   { minX: 4.7, maxX: 5.5, minZ: 1.0, maxZ: 1.6 },          // the letter crate
   { minX: -8.8, maxX: 9.8, minZ: -11.0 - BAL_RAIL, maxZ: -11.0 + BAL_RAIL },  // the balcony front (and the wall under it)
-  { minX: -8.8 - BAL_RAIL / 2, maxX: -8.8 + BAL_RAIL / 2, minZ: -12.3, maxZ: -6.4 },  // the stair's balustrade
+  { minX: -8.8 - BAL_RAIL / 2, maxX: -8.8 + BAL_RAIL / 2, minZ: -12.3, maxZ: -6.7 },  // the stair's balustrade
   // the booth's walls, all but its door
   { minX: BOOTH.minX, maxX: BOOTH.maxX, minZ: BOOTH.minZ - 0.08, maxZ: BOOTH.minZ + 0.08 },
   { minX: BOOTH.minX - 0.08, maxX: BOOTH.minX + 0.08, minZ: BOOTH.minZ, maxZ: BOOTH.maxZ },
@@ -201,7 +202,10 @@ export const SPOTS = {
   screen:     { pos: at(0, -24), look: [0, -0.2, -31.5] },
   box:        { pos: at(0.4, -17.4), look: [6.2, 3.3, -21.4] },
   bridget:    { pos: at(-0.35, -23.0), look: [-1.84, -0.35, -23.55] },
-  stair:      { pos: at(-7.6, -12.4), look: [-9.4, 2.4, -7] },
+  stair:      { pos: at(-6.4, -12.6), look: [-10, 1.6, -11.6] },
+  stairfoot:  { pos: at(-9.4, -12.9), look: [-9.4, 3.2, -6.0] },
+  stairdown:  { pos: at(-9.4, -6.1), look: [-9.4, 0.6, -13.5] },
+  stairtop:   { pos: at(-9.4, -6.1), look: [-9.2, 4.9, -5.0] },
   rail:       { pos: at(4.2, -10.4), look: [0, -1.4, -26] },
   porthole:   { pos: at(-0.25, -10.1), look: [-0.25, -0.6, -30] },
   booth:      { pos: at(1.2, -9.3), look: [-2.6, 4.0, -10.0] },

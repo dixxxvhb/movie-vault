@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react'
 import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
+import { FloorBand, Sconce, useGlow } from '../../kit/architecture.jsx'
+import { makePaintedTexture, whenFonts } from './basterdsTextures.js'
 import { BOOTH_Y, BOOTH, BOOTH_DOOR, BAR_Y, APRON_Y, rakeAt, ROOM_DOORS } from './zones.js'
 
 // LE GAMAAR: THE ROOM. One volume, the auditorium on premiere night
@@ -13,6 +15,35 @@ import { BOOTH_Y, BOOTH, BOOTH_DOOR, BAR_Y, APRON_Y, rakeAt, ROOM_DOORS } from '
 // the footprints (zones.js) only decide where you can stand.
 
 export const CEIL_Y = 8.6
+
+// the stair's own floor line (matches zones.js: 0 at z -12.4, BOOTH_Y at z -6.6)
+const stairY = (z) => Math.min(BOOTH_Y, Math.max(0, (z + 12.4) / 5.8 * BOOTH_Y))
+
+// A lit enamel sign in the house's own lettering: where the balcony is.
+function WaySign({ pos, ry = 0, w = 1.1, lines, arrow = 0 }) {
+  const tex = useMemo(() => makePaintedTexture(512, 200, async (c) => {
+    await whenFonts()
+    const ctx = c.getContext('2d')
+    ctx.fillStyle = '#5a1210'; ctx.fillRect(0, 0, 512, 200)
+    ctx.strokeStyle = '#c9a25a'; ctx.lineWidth = 6; ctx.strokeRect(10, 10, 492, 180)
+    ctx.fillStyle = '#f3e7cf'; ctx.textAlign = 'center'
+    ctx.font = '600 64px "Josefin Sans"'; ctx.fillText(lines[0], 256, 104)
+    if (lines[1]) { ctx.font = '600 26px "Josefin Sans"'; ctx.fillStyle = '#e2c58a'; ctx.fillText(lines[1], 256, 154) }
+    if (arrow) {
+      // a drawn arrow (-1 points left, +1 right, as you read the sign)
+      const x = arrow < 0 ? 64 : 448
+      ctx.fillStyle = '#e2c58a'; ctx.beginPath()
+      ctx.moveTo(x + arrow * 30, 84); ctx.lineTo(x - arrow * 12, 58); ctx.lineTo(x - arrow * 12, 110); ctx.closePath(); ctx.fill()
+      ctx.fillRect(Math.min(x - arrow * 12, x - arrow * 40), 78, 28, 12)
+    }
+  }), [lines[0], lines[1], arrow]) // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <mesh position={pos} rotation={[0, ry, 0]}>
+      <planeGeometry args={[w, w * 200 / 512]} />
+      <meshStandardMaterial map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.9} />
+    </mesh>
+  )
+}
 const T = 0.14        // wall thickness
 
 // An axis-aligned slab from corner to corner.
@@ -52,6 +83,7 @@ export default function Hall() {
     stage: standardMat({ kind: 'wood', tint: '#2a1a10', wear: 0.4, seed: 'ib-hall-stage' }),
   }), [])
 
+  const glow = useGlow('#ffc070', 2.6)
   const B = BOOTH, BY = BOOTH_Y
   const barTop = BAR_Y + 2.5
   return (
@@ -89,11 +121,33 @@ export default function Hall() {
 
       {/* --- the stair up the north-west corner -------------------------- */}
       {Array.from({ length: 18 }, (_, k) => {
-        const z = -12.4 + (k + 1) * (6.2 / 18)
+        const z = -12.4 + (k + 1) * (5.8 / 18)
         const y = (k + 1) * (BY / 18)
-        return <Slab key={k} x0={-10} x1={-8.8} y0={-0.1} y1={y} z0={z - 6.2 / 18} z1={z} mat={m.wood} />
+        return <Slab key={k} x0={-10} x1={-8.8} y0={-0.1} y1={y} z0={z - 5.8 / 18} z1={z} mat={m.wood} />
       })}
-      <Slab x0={-8.84} x1={-8.76} y0={0} y1={BY + 1.0} z0={-12.3} z1={-6.4} mat={m.lacquer} />
+      {/* the landing at the top, level with the balcony, up to the back wall */}
+      <Slab x0={-10} x1={-8.8} y0={-0.1} y1={BY} z0={-6.6} z1={-5} mat={m.wood} />
+      {/* the balcony side of the stair: a panelled wall under the balcony line,
+          open balusters where it meets the crossing, a handrail all the way up */}
+      <Slab x0={-8.86} x1={-8.76} y0={-0.05} y1={BY - 0.25} z0={-11.0} z1={-6.7} mat={m.plaster} />
+      <FloorBand x={-8.87} z0={-11.0} z1={-6.7} h0={0} h1={1.0} floorY={stairY} mat={m.velvet} facing={-1} />
+      {[1, -1].map((f) => (
+        <FloorBand key={f} x={-8.8 + f * 0.05} z0={-12.3} z1={-6.7} h0={0.92} h1={1.0} floorY={stairY} mat={m.gold} facing={f} />
+      ))}
+      {Array.from({ length: 6 }, (_, k) => -12.25 + k * 0.25).map((z) => (
+        <Slab key={z} x0={-8.83} x1={-8.77} y0={stairY(z)} y1={stairY(z) + 0.92} z0={z - 0.02} z1={z + 0.02} mat={m.gold} />
+      ))}
+      {/* lamps up the stair wall, and the signs that say where it goes */}
+      {[-11.6, -9.4, -7.2].map((z) => (
+        <Sconce key={z} pos={[-9.98, stairY(z) + 2.0, z]} ry={Math.PI / 2} scale={1.8} gold={m.gold} glow={glow} />
+      ))}
+      <WaySign pos={[-9.97, 2.05, -12.55]} ry={Math.PI / 2} w={1.0} lines={['BALCON', 'CABINE DE PROJECTION']} />
+      <WaySign pos={[-6.6, BY + 0.3, -11.17]} ry={Math.PI} w={1.3} lines={['BALCON', 'PAR L’ESCALIER, AU FOND À GAUCHE']} />
+      {/* at the top of the stair: the balcony is to your left */}
+      <WaySign pos={[-9.2, BY + 1.75, -5.03]} ry={Math.PI} w={1.0} lines={['CABINE', 'DE PROJECTION']} arrow={-1} />
+      {[-7.2, -4.4, 4.2, 7.2].map((x) => (
+        <Sconce key={x} pos={[x, BY + 1.9, -5.02]} ry={Math.PI} scale={1.8} gold={m.gold} glow={glow} />
+      ))}
 
       {/* --- the booth, in the balcony, with the round port ---------------- */}
       <HoledWall x0={B.minX - T} x1={B.maxX + T} y0={BY - 0.42} y1={BY + 2.6} z={B.minZ}
