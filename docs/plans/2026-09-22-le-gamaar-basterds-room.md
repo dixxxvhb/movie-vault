@@ -27,6 +27,145 @@ Every element below exists to serve one of those four. Anything that doesn't get
 (`~/.claude/design-taste.md`, prime directive). The **Build-phase gates** in §15 test all four
 directly.
 
+## 0.1 Dixon watches it get built (the preview contract)
+
+Dixon, 2026-09-22: *"i want to be sure i can watch all of this happen as i love seeing it
+come together... open a preview first and make sure to keep the preview updated so i can see
+things as they get written and applied."* This section is not optional and not a nicety. A
+build step that he couldn't watch didn't happen right.
+
+**Verified the same night:** the app's browser pane runs WebGL live, at about 42 animation
+frames a second and about 22 fps in the Vault (Memento room checked). That's slower than a
+real browser but fine for watching. Vite hot reload pushes edits into the running scene
+without a page refresh.
+
+### Before anything else, every session
+
+1. **Start the preview first**, before reading a file or writing a line:
+   `preview_start {name: "vault-dev-b"}`.
+   - That's port **5191**, from `~/.claude/launch.json`. Port 5173 is often held by a DWD
+     worktree dev server from another session. Never kill it, and never touch another
+     session's server.
+2. **Tab 1, THE ROOM:**
+   - `http://localhost:5191/?nocold&noguide&room=inglourious-basterds&spot=<zone>`.
+   - Until the room exists (the start of Session 1), point it at the wall instead
+     (`?nocold&noguide`), so he watches the wall grow from 47 to 53 during the wall pass.
+3. **Tab 2, THE DAILIES:** `http://localhost:5191/dailies.html` (see below).
+4. **Front THE ROOM** and tell Dixon in one line what's about to appear first.
+
+### While building
+
+- **Aim the camera at what's being built.** When work moves to a new space or prop, navigate
+  THE ROOM to that `?spot=`, so the hot reload lands where he's looking. After any full reload,
+  re-aim.
+- **Build in an order that shows up in the preview.**
+  - Greybox shapes first, then materials, then light, then text, then interactions, then sound.
+  - Every sub-step should change what's on screen.
+  - Long invisible stretches (pipeline work, refactors) get announced in one line and kept
+    short.
+- **The preview is never left broken.** Check `read_console_messages` after every save that
+  touches the room. A red console or a black canvas gets fixed before the next step, not
+  batched. If a fix will take more than a few minutes, revert the step so he isn't staring at a
+  crash.
+- **One Dailies entry per visible step.** Take a pane screenshot of THE ROOM and write the
+  entry (below). Front THE DAILIES briefly only at milestones (a space finished, the first
+  fire), then back to THE ROOM.
+- **Phone:** at the end of each space, open a third tab at the same URL with
+  `resize_window {preset: "mobile"}`, take the shot, add it to the Dailies, then reset the tab
+  to desktop.
+- **Away from the desk:** at each space's milestone, send the hero shot with `SendUserFile`
+  (status `proactive`), so it reaches his phone if he stepped away.
+- **The pane is for watching, not for measuring.** Its fps is not the truth. `peek.py --fps`
+  at DPR 2 in a real headless Chrome is the performance gate, same as §14.
+
+### THE DAILIES (`dailies.html`, dev only)
+
+On a film set the dailies are the day's footage, screened that night. This is the build's
+version: a live contact sheet of the room coming together.
+
+- **Files:**
+  - `dailies.html` at the repo root, plus `src/dailies/` for its script and styles if needed.
+  - `_dailies/dailies.json`, gitignored like `_shots/`.
+  - Vite serves root HTML in dev only; the build input is `index.html` alone, so this never
+    ships to Pages. Verify with `npm run build` and `dist/` having no `dailies.html`.
+- **Layout, top to bottom:**
+  1. The newest frame, large, with a one-line caption and a timestamp.
+  2. A progress strip: the plan's spaces (Rue, Lobby, Auditorium, Booth, Behind, Cellar,
+     Sound, History, Fire) as a filmstrip, each frame lit when its space is done.
+  3. The contact sheet: every frame so far, newest first, captioned, grouped by session.
+  4. The last five commits.
+- **Look:** the film's palette (`#12100E` ground, `#F1E8DA` type, `#C4322B` for the one lit
+  thing), Georgia, sprocket-hole edges on the filmstrip. It should look like it belongs to the
+  film, not like a dashboard. No cards inside cards, no emojis.
+- **Updates:** it polls `_dailies/dailies.json` every 3 seconds, and new frames slide in.
+  Honour `prefers-reduced-motion`.
+- **Entry shape:**
+  `{t, session, space, caption, shot: "/_shots/dailies/<n>-<slug>.png", phone?: bool, plan_ref: "§4.3"}`.
+  - Screenshots go to `_shots/dailies/`, numbered in order.
+  - Captions are one plain line in Dixon-facing voice, no em dashes: *"The seats are in. Left
+    of the aisle is everyone Landa hunted."*
+- **When it's built:** first thing in Session 1, before the wall pass, so the very first
+  entry is the wall at 47 and the second is the wall at 53.
+
+### `?spot=` (engine, Session 1)
+
+A URL param that spawns the walker at a named station and faces its look target:
+`rue | lobby | floorboard | vitrine | auditorium | box | porthole | booth | behind | cellar | table`.
+
+- It's the preview's aim point and also the peek scripts' target.
+- It's added to `CONFIGS` stations for the room and read in `Basterds.jsx`.
+- It does nothing for other rooms.
+
+---
+
+## 0.2 Full creative control (the Opus 5.5 test)
+
+Dixon, 2026-09-22: *"remember that this is a full creative control test for opus 5.5. i want
+you to wow me."*
+
+What that means for whoever builds this:
+
+- **The whole build runs on Opus 5.5 in the main thread.** No handing creative work to
+  builder agents.
+  - Subagents are allowed only for read-only recon (Explore) and mechanical checks.
+  - Every visual, copy and design call is made by the session that's showing Dixon the
+    preview.
+- **The plan is a floor, not a ceiling.** When a better idea shows up mid-build, build it,
+  show it in the preview, and log it in §18 (the build log) with one line of why.
+  - The limits that stay: §0's four-point test, §2's rules, the flash safety, and the §14
+    budgets.
+  - Everything else, including the floor plan's details, is open to a better idea.
+- **Every session lands at least one moment he didn't ask for**, and names it in the Dailies
+  caption. The fresh ideas already in the plan (the Morris column, the seating chart as a cast
+  map, the house lights as the history) don't count toward later sessions. Find new ones.
+- **Judge every frame against the film.** Would a person who loves this movie gasp, grin, or
+  go "oh, right, THAT"? If a frame is merely correct, it isn't done.
+  - Run `~/.claude/design-taste.md`'s squint and deletion tests on the hero frames.
+  - Review the fire at its ugliest frame (worst-case frame rule).
+
+### The wow targets (named up front so they get the most love)
+
+1. **Chapter Six: the arrival.**
+   - Entering the room doesn't fade in. It plays like the film.
+   - Black, a projector clatter, then a full-screen title card in the film's chapter-card
+     style (period type, allowed now): **CHAPTER SIX: A GUEST IN PARIS**.
+   - The visitor is the film's missing chapter.
+   - Hard cut to the street in the rain, the marquee bulbs chasing, a slow push toward the
+     doors.
+   - Honour `motion.coldOpen` (off = straight to the street) and the flash budget (the cut is
+     a luminance event).
+   - About 6 seconds, skippable with any key or tap.
+2. **The porthole.** The first time he steps up to the booth porthole, the whole seating
+   chart is lit below him, both sides of the war, the folded seats of the dead. The build
+   should make that view composed, not incidental: seat lamp brightness, the beam, the dust in
+   the beam.
+3. **The fire.** The showpiece. Nitrate catching, the screen burning through, her face still
+   playing inside the burn, smoke rolling over the seats, the roar, the cut to silence, *The
+   reel rewinds.*
+   - It must be beautiful at full flash and still good at `none`.
+   - This is the frame that goes in the Dailies as the session's hero.
+4. **Something nobody planned.** Reserved. Session 4 decides it with the whole room standing.
+
 ---
 
 ## 1. Why this film, why this shape
@@ -650,6 +789,9 @@ bundle stays small.
 | Threshold line | `Threshold.jsx` | §10 | Copy only |
 | `?text` section | `TextMode.jsx` | §12d | Additive |
 | Cast pipeline | `PULL.sql`, `emit_vault_data.py`, `public/cast/` | §12c | Additive; the drift guard gains one check |
+| `?spot=` spawn | `Basterds.jsx`, its `CONFIGS` stations | §0.1 | This room only |
+| THE DAILIES | `dailies.html`, `_dailies/` (gitignored), `.gitignore` | §0.1 | Dev only; never in `dist/` |
+| Chapter Six arrival | `Basterds.jsx` (or a small `ArrivalCard.jsx`), routed through `claimFlash` | §0.2 | This room only |
 
 The room's own files, all new:
 
@@ -720,9 +862,13 @@ the ?text section.
 Four build sessions, each ending committed and pushed (GitHub Pages is free and
 auto-deploys; no Netlify here). Commit with explicit paths.
 
+**Every session starts the same way:** open the preview (§0.1), point THE ROOM, open THE
+DAILIES, say in one line what's first.
+
 **Session 1: data and bones**
 
-1. Phase 0a to 0d (§12).
+0. Open the preview and build THE DAILIES first (§0.1). Entry 1 is the wall at 47.
+1. Phase 0a to 0d (§12). Dixon watches the wall catch up to 53 live.
 2. Engine prep: lazy load, interact key, Threshold line.
 3. **Greybox:** all six footprints as untextured shells, the floor function (ramps, rake),
    colliders, bounds, `zoneAt`, stations, and a debug zone label behind `?peekZone`.
@@ -794,7 +940,11 @@ Final checks JSON (every value true before the room is called done):
   "no_recorded_film_audio": true,
   "no_em_or_en_dashes_in_room_copy": true,
   "fact_sheet_all_checked": true,
-  "shots_desktop_and_390_reviewed": true
+  "shots_desktop_and_390_reviewed": true,
+  "preview_open_whole_session": true,
+  "dailies_entry_per_visible_step": true,
+  "dailies_not_in_dist": true,
+  "one_unasked_for_moment_this_session": true
 }
 ```
 
@@ -852,3 +1002,10 @@ Nothing ⚑ ships unverified. Anything that can't be verified gets cut, not gues
    chapter 1 diorama is the obvious one).
 
 Everything else in this plan is decided. The builder doesn't reopen it.
+
+---
+
+## 18. Build log (the builder appends here)
+
+One line per deviation from this plan, and one line per unasked-for moment, each with the
+session number and why. Empty until Session 1.
