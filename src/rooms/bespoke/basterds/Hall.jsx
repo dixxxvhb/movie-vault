@@ -121,7 +121,6 @@ export default function Hall() {
       <Slab x0={15} x1={15 + T} y0={BAR_Y} y1={barTop} z0={-26} z1={-16} mat={m.upper} />
       <Slab x0={8} x1={15} y0={BAR_Y} y1={barTop} z0={-26 - T} z1={-26} mat={m.upper} />
       <Slab x0={8} x1={15} y0={BAR_Y} y1={barTop} z0={-16} z1={-16 + T} mat={m.upper} />
-      <Slab x0={8} x1={15} y0={BAR_Y} y1={BAR_Y + 0.02} z0={-26} z1={-16} mat={m.wood} />
       <Slab x0={8} x1={15} y0={barTop} y1={barTop + 0.08} z0={-26} z1={-16} mat={m.ceil} />
       {/* a low rail across the arch, with the way in at the middle */}
       <Slab x0={7.96} x1={8.08} y0={BAR_Y} y1={BAR_Y + 0.95} z0={-24.5} z1={-21.6} mat={m.lacquer} />

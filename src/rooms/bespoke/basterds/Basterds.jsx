@@ -8,6 +8,7 @@ import Rue from './Rue.jsx'
 import Hall from './Hall.jsx'
 import Ornament from './Ornament.jsx'
 import Cases from './Cases.jsx'
+import Cellar from './Cellar.jsx'
 import { Floorboard } from './LobbyProps.jsx'
 import Theatre from './Theatre.jsx'
 import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
@@ -171,7 +172,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       {/* the Room's own lights: the back crossing, the booth, La Louisiane (the house key and the fire are Theatre's) */}
       <pointLight position={[0, 2.4, -12.2]} intensity={14} distance={10} color="#ffc78a" />
       <pointLight position={[-0.6, BOOTH_Y + 2.2, -6.2]} intensity={10} distance={7} color="#ffc27a" />
-      <pointLight position={[12.4, BAR_Y + 1.9, -21]} intensity={12} distance={10} color="#ffb060" />
+      <pointLight position={[11.4, BAR_Y + 1.75, -21.6]} intensity={11} distance={10} color="#ffb060" />
 
       {FOOTPRINTS.filter((f) => f.id !== 'rue' && f.id !== 'crossing').map((f) => (
         <Floor key={f.id} room={f} mat={f.id === 'stalls' ? mats.stalls : mats.wood} />
@@ -196,6 +197,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       <Hall />
       <Ornament />
       <Cases />
+      <Cellar />
       <DoubleDoors pos={[ROOM_DOORS.x, 0, ROOM_DOORS.z + 0.08]} ry={Math.PI} w={ROOM_DOORS.w} h={2.5}
         open={houseOpen} onUse={leave} mat={mats.door} />
 

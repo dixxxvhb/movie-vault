@@ -115,8 +115,9 @@ export const FURNITURE = [
   { minX: -7.1, maxX: 1.1, minZ: -34.6, maxZ: -33.6 },    // the nitrate stack
   { minX: 7.9, maxX: 8.14, minZ: -24.5, maxZ: -21.6 },    // the rail across the bar arch
   { minX: 7.9, maxX: 8.14, minZ: -20.4, maxZ: -17.5 },
-  { minX: 12.4, maxX: 13.8, minZ: -23.0, maxZ: -19.0 },   // La Louisiane's table
-  { minX: 14.1, maxX: 15.0, minZ: -25.6, maxZ: -16.4 },   // its bar
+  { minX: 10.4, maxX: 11.6, minZ: -23.1, maxZ: -18.9 },   // La Louisiane's table
+  { minX: 14.0, maxX: 15.0, minZ: -24.6, maxZ: -17.4 },   // its bar
+  { minX: 8.7, maxX: 9.9, minZ: -25.3, maxZ: -24.1 },     // Wilhelm's table
 ]
 
 const inRect = (r, x, z) => x >= r.minX && x <= r.maxX && z >= r.minZ && z <= r.maxZ
@@ -205,9 +206,10 @@ export const SPOTS = {
   behind:     { pos: at(-1.2, -32.75), look: [-2.4, -1.2, -34.3] },
   cigarette:  { pos: at(2.6, -32.8), look: [3.2, -1.3, -34.1] },
   bar:        { pos: at(9.2, -21.0), look: [14, -0.6, -21] },
-  deck:       { pos: at(11.4, -21.0, -0.15), look: [12.8, -1.3, -21.0] },
-  hand:       { pos: at(13.0, -24.4), look: [14.6, -0.4, -24.0] },
-  shoe:       { pos: at(11.6, -18.8), look: [12.6, -1.9, -19.2] },
+  deck:       { pos: at(9.75, -21.1, -0.15), look: [10.75, BAR_Y + 1.05, -21.05] },
+  hand:       { pos: at(12.3, -24.4), look: [14.2, BAR_Y + 1.3, -23.7] },
+  shoe:       { pos: at(9.2, -23.4), look: [10.55, BAR_Y + 0.1, -22.8] },
+  table:      { pos: at(9.2, -19.0), look: [12.6, BAR_Y + 0.7, -22.4] },
   boxview:    { pos: at(0.4, -17.4), look: [6.2, 3.3, -21.4] },
 }
 
