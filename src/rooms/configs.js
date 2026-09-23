@@ -319,13 +319,13 @@ export const CONFIGS = {
   // Bespoke (src/rooms/bespoke/basterds/): LE GAMAAR, a walkable cinema. Plan:
   // docs/plans/2026-09-22-le-gamaar-basterds-room.md. Spawn is the street,
   // facing the doors (zones.js SPOTS.rue). place.shellParams.switch puts the
-  // house switch on the lobby side of the front doors (Session 4).
+  // house switch inside the Room, right of the doors as you face them from the house.
   'inglourious-basterds': {
     family: 'intimate-tension',
     grade: { key: '#ffcf8a', fill: '#1c2230', ambient: 0.2, bg: '#0b0a0c', fogColor: '#0b0a0c', fogDensity: 0.01,
              sat: 0.02, grain: 0.06, vignette: 0.55, bloomIntensity: 0.24 },
     camera: { pos: [0, 1.55, 9.2], look: [0, 5.2, 0], fov: 55, far: 90 },
-    place: { shell: 'open', shellParams: { switch: [1.9, -0.28, Math.PI] } },
+    place: { shell: 'open', shellParams: { switch: [1.75, -11.06, Math.PI] } },
   },
 
   barbarian: {

@@ -123,6 +123,13 @@ Bridget's shoe and its pair on her seat, banner, clock, Wilhelm's table), the so
 screen's history card, pinned notes), polish (`ec92df6` + final: beam via HazeCone, chandelier,
 pilasters, Zoller's card). 60 fps every zone at DPR 2; 7 lights. Build log §18.
 
+**Two-Scene rebuild (2026-09-23), merged to master:** the room is now the pilot for
+`docs/VAULT-TWO-SCENE-STANDARD.md` (the format for every film: Arrival, Threshold, ONE Room).
+The street doors cut into one picture-palace volume holding everything (chapter cases, seating
+chart, booth at the balcony front with the round port, opera box, La Louisiane in the arch,
+Stolz der Nation playing, the fire). First kit pieces in `src/rooms/kit/architecture.jsx`.
+Film sheet and what's left: `docs/films/inglourious-basterds.md`.
+
 **Left (optional, plan §15.5):** signature lines on seat-card backs (need a checked source per
 line), the walkable Box. **Dixon's gate:** walk it himself in about a week and run the §0 test.
 Open for Dixon: merge the duplicate Sinners row in `film_titles`; Valkyrie (logged 09-22) needs

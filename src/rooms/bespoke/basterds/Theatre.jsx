@@ -141,6 +141,17 @@ function Screen({ state, cast }) {
     paintScreen(canvas, { ...state, cast }).then(() => { if (live) tex.needsUpdate = true })
     return () => { live = false }
   }, [key, cast]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The film plays: while idle, repaint the frame about six times a second
+  // (grain, weave, drifting smoke). No React state, so the room doesn't re-render.
+  const clock = useRef({ acc: 0, f: 0 })
+  useFrame((_, dt) => {
+    if (state.mode !== 'idle') return
+    const c = clock.current
+    c.acc += dt
+    if (c.acc < 0.16) return
+    c.acc = 0; c.f += 1
+    paintScreen(canvas, { mode: 'idle', t: c.f }).then(() => { tex.needsUpdate = true })
+  })
   return (
     <mesh position={[0, APRON_Y + 2.6, -31.52]}>
       <planeGeometry args={[10, 4.2]} />
@@ -220,7 +231,8 @@ function ReelLabel({ text, hand }) {
 
 // The beam, projector to screen, through the port: the repo's HazeCone (a
 // gradient-mapped additive cone), aimed down the throw. Brighter with a reel on.
-const BEAM_FROM = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.75)
+const BOOTH_DZ = 1.8
+const BEAM_FROM = new THREE.Vector3(-0.85, BOOTH_Y + 1.42, -12.75 + BOOTH_DZ)
 const BEAM_TO = new THREE.Vector3(0, APRON_Y + 2.6, -31.4)
 const BEAM_ROT = (() => {
   const dir = BEAM_TO.clone().sub(BEAM_FROM).normalize()
@@ -229,7 +241,7 @@ const BEAM_ROT = (() => {
 })()
 function ProjectorBeam({ on }) {
   return <HazeCone pos={BEAM_FROM.toArray()} rot={BEAM_ROT} length={BEAM_FROM.distanceTo(BEAM_TO) * 0.96} radius={1.9}
-    color="#fff0d8" opacity={on ? 0.035 : 0.015} />
+    color="#fff0d8" opacity={on ? 0.011 : 0} />
 }
 
 function Beam({ on }) {
@@ -375,16 +387,17 @@ export default function Theatre() {
       {/* the Box: Hitler and Goebbels on the parapet, and his line */}
       {['hitler', 'goebbels'].map((id, i) => (
         <StandingCard key={id} ch={CHARACTERS.find((c) => c.id === id)} cast={cast}
-          pos={[6.19, 3.5, -20.7 - i * 1.6]} ry={-Math.PI / 2} scale={1.4} />
+          pos={[5.84, 3.5, -20.7 - i * 1.6]} ry={-Math.PI / 2} scale={1.4} />
       ))}
-      {boxFragment && <Scrap text={boxFragment.text} pos={[6.18, 3.05, -23.2]} ry={-Math.PI / 2} w={1.3} rot={-0.05} size={70} />}
-      <HouseNote text={HOUSE_NOTES.box} pos={[6.17, 3.5, -19.65]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
+      {boxFragment && <Scrap text={boxFragment.text} pos={[5.96, 3.3, -23.3]} ry={-Math.PI / 2} w={1.1} rot={-0.05} size={70} />}
+      <HouseNote text={HOUSE_NOTES.box} pos={[5.98, 3.55, -19.6]} ry={-Math.PI / 2} w={0.7} rot={0.04} />
       <Screen state={screenState} cast={cast} />
       <ProjectorBeam on={!!reel && !house} />
-      <Booth reel={reel} setReel={setReel} burning={burning} />
+      {/* the booth at the middle of the balcony front (Two-Scene rebuild): same props, moved 1.8 m */}
+      <group position={[0, 0, BOOTH_DZ]}><Booth reel={reel} setReel={setReel} burning={burning} /></group>
       {/* Zoller's card, pinned by the booth door: the one who would not go away */}
       <StandingCard ch={{ ...CHARACTERS.find((c) => c.id === 'zoller'), tag: 'HE KNOCKS' }} cast={cast}
-        pos={[3.1, BOOTH_Y + 1.5, -10.67]} ry={Math.PI} scale={1.3} />
+        pos={[0.3, BOOTH_Y + 1.45, -8.45]} ry={0} scale={1.3} />
       <Behind armed={reel === 'her'} onIgnite={ignite} burning={burning} cast={cast} />
     </group>
   )

@@ -9,7 +9,7 @@ import { paintWhoAmI, paintAnswer, paintCardBack, paintBanner, paintClock, paint
 import { CHARACTERS, BONUS, GUEST, WILHELM } from './content.js'
 import { useVaultData } from './Lobby.jsx'
 import { TentCard } from './Rue.jsx'
-import { CELLAR_Y } from './zones.js'
+import { CELLAR_Y, BAR_Y } from './zones.js'
 
 // LA LOUISIANE: the basement tavern, chapter 4. Plan §4.6.
 //
@@ -290,7 +290,7 @@ function Clock() {
     if (hour.current) hour.current.rotation.z = -m * Math.PI * 2 / 12 - 5.4
   })
   return (
-    <group position={[-12.6, Y + 1.95, -10.9]}>
+    <group position={[-15.8, Y + 1.95, -10.9]}>
       <mesh rotation={[Math.PI / 2, 0, 0]}><cylinderGeometry args={[0.24, 0.24, 0.05, 32]} /><meshStandardMaterial color="#2a1a10" roughness={0.5} /></mesh>
       <mesh position={[0, 0, 0.027]}>
         <circleGeometry args={[0.21, 32]} />
@@ -319,7 +319,7 @@ function WilhelmsTable({ cast, wood }) {
     ...WILHELM, id: 'wilhelm', chapter: 4, tag: 'THE NEXT TABLE', object: 'a napkin for his son',
   }, cast), [cast])
   return (
-    <group position={[-12.4, Y, -9.4]}>
+    <group position={[-13.3, Y, -2.3]}>
       <mesh position={[0, 0.74, 0]} material={wood}><cylinderGeometry args={[0.5, 0.5, 0.05, 28]} /></mesh>
       <mesh position={[0, 0.37, 0]} material={wood}><cylinderGeometry args={[0.06, 0.2, 0.74, 12]} /></mesh>
       {/* a round, drunk: beer steins */}
@@ -339,6 +339,11 @@ function WilhelmsTable({ cast, wood }) {
 }
 
 // ---------------------------------------------------------------- the room
+// The alcove under the Box. The cellar was authored in its own frame (bar on
+// the far west wall, the way in from the east); turned half round and moved,
+// it sits in the arch with the bar on the alcove's back wall, facing the house.
+export const CELLAR_FRAME = { x: -4, z: -27 }
+
 export default function Cellar() {
   const data = useVaultData()
   const cast = data?.cast?.['inglourious-basterds'] || null
@@ -346,7 +351,7 @@ export default function Cellar() {
   const dark = useMemo(() => standardMat({ kind: 'wood', tint: '#24160e', wear: 0.3, seed: 'ib-cellar-bar', roughness: 0.45 }), [])
   const plaster = useMemo(() => standardMat({ kind: 'plaster', tint: '#6a4a30', wear: 0.5, seed: 'ib-cellar-vault' }), [])
   return (
-    <group>
+    <group position={[CELLAR_FRAME.x, BAR_Y - CELLAR_Y, CELLAR_FRAME.z]} rotation={[0, Math.PI, 0]}>
       {/* the long table, the one in the corner where the game was played */}
       <mesh position={[TABLE.x, TOP - 0.03, TABLE.z]} material={wood}><boxGeometry args={[TABLE.w, 0.06, TABLE.d]} /></mesh>
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([a, b], k) => (
@@ -365,7 +370,7 @@ export default function Cellar() {
       <Bottles />
       {/* the vaulted ceiling's beams */}
       {[-1.6, -3.6, -5.6, -7.6, -9.6].map((z) => (
-        <mesh key={z} position={[-14, Y + 2.36, z]} material={plaster}><boxGeometry args={[10, 0.26, 0.24]} /></mesh>
+        <mesh key={z} position={[-15.8, Y + 2.36, z]} material={plaster}><boxGeometry args={[6.4, 0.26, 0.24]} /></mesh>
       ))}
       {/* the lamp over the table */}
       <mesh position={[TABLE.x, Y + 2.1, TABLE.z]} material={brass}><cylinderGeometry args={[0.02, 0.24, 0.18, 20, 1, true]} /></mesh>
