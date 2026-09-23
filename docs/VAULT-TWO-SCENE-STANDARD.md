@@ -175,7 +175,10 @@ the threshold (`cutTo` + `DoubleDoors` in `Basterds.jsx`), `ArrivalCard`, `House
    throws specular hotspots onto the art behind it.
 6. **A projector beam seen from behind the projector is a grey slab.** Show it only while
    something is projecting, at about 0.01 opacity.
-7. **Write source files atomically** (temp file, then rename). Vite once cached a module it
+7. **The flood-fill proves the floor connects, not that a person can find the way.** Walk every
+   route with the keys in headless Chrome (`__vaultWalk` gives the position), up and back, and
+   look at the frames. Le Gamaar's stair passed the check while hidden behind a black slab.
+8. **Write source files atomically** (temp file, then rename). Vite once cached a module it
    read mid-write as an empty file.
 
 ---
