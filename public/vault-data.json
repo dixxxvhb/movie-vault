@@ -1,5 +1,277 @@
 {
- "generated_from": "ledger_meta + ledger_panels + photos + titles + log_extra + links + queue + providers + lessons + archive + archive_extra + quotes",
+ "generated_from": "ledger_meta + ledger_panels + photos + titles + log_extra + links + queue + providers + lessons + archive + archive_extra + quotes + cast",
+ "cast": {
+  "inglourious-basterds": [
+   {
+    "id": 287,
+    "name": "Brad Pitt",
+    "character": "LT. Aldo Raine",
+    "order": 0,
+    "photo": "cast/287.jpg"
+   },
+   {
+    "id": 19119,
+    "name": "Mélanie Laurent",
+    "character": "Shosanna",
+    "order": 1,
+    "photo": "cast/19119.jpg"
+   },
+   {
+    "id": 27319,
+    "name": "Christoph Waltz",
+    "character": "COL. Hans Landa",
+    "order": 2,
+    "photo": "cast/27319.jpg"
+   },
+   {
+    "id": 16847,
+    "name": "Eli Roth",
+    "character": "SGT. Donny Donowitz",
+    "order": 3,
+    "photo": "cast/16847.jpg"
+   },
+   {
+    "id": 17288,
+    "name": "Michael Fassbender",
+    "character": "LT. Archie Hicox",
+    "order": 4,
+    "photo": "cast/17288.jpg"
+   },
+   {
+    "id": 9824,
+    "name": "Diane Kruger",
+    "character": "Bridget von Hammersmark",
+    "order": 5,
+    "photo": "cast/9824.jpg"
+   },
+   {
+    "id": 3872,
+    "name": "Daniel Brühl",
+    "character": "Fredrick Zoller",
+    "order": 6,
+    "photo": "cast/3872.jpg"
+   },
+   {
+    "id": 1844,
+    "name": "Til Schweiger",
+    "character": "SGT. Hugo Stiglitz",
+    "order": 7,
+    "photo": "cast/1844.jpg"
+   },
+   {
+    "id": 32823,
+    "name": "Gedeon Burkhard",
+    "character": "CPL. Wilhelm Wicki",
+    "order": 8,
+    "photo": "cast/32823.jpg"
+   },
+   {
+    "id": 51636,
+    "name": "Jacky Ido",
+    "character": "Marcel",
+    "order": 9,
+    "photo": "cast/51636.jpg"
+   },
+   {
+    "id": 107770,
+    "name": "B.J. Novak",
+    "character": "PFC. Smithson Utivich",
+    "order": 10,
+    "photo": "cast/107770.jpg"
+   },
+   {
+    "id": 23286,
+    "name": "Omar Doom",
+    "character": "PFC. Omar Ulmer",
+    "order": 11,
+    "photo": "cast/23286.jpg"
+   },
+   {
+    "id": 6091,
+    "name": "August Diehl",
+    "character": "Major Hellstrom",
+    "order": 12,
+    "photo": "cast/6091.jpg"
+   },
+   {
+    "id": 81125,
+    "name": "Denis Ménochet",
+    "character": "Perrier LaPadite",
+    "order": 13,
+    "photo": "cast/81125.jpg"
+   },
+   {
+    "id": 41965,
+    "name": "Sylvester Groth",
+    "character": "Joseph Goebbels",
+    "order": 14,
+    "photo": "cast/41965.jpg"
+   },
+   {
+    "id": 49056,
+    "name": "Martin Wuttke",
+    "character": "Hitler",
+    "order": 15,
+    "photo": "cast/49056.jpg"
+   },
+   {
+    "id": 12073,
+    "name": "Mike Myers",
+    "character": "General Ed Fenech",
+    "order": 16,
+    "photo": "cast/12073.jpg"
+   },
+   {
+    "id": 2539,
+    "name": "Julie Dreyfus",
+    "character": "Francesca Mondino",
+    "order": 17,
+    "photo": "cast/2539.jpg"
+   },
+   {
+    "id": 49487,
+    "name": "Richard Sammel",
+    "character": "SGT. Rachtman",
+    "order": 18,
+    "photo": "cast/49487.jpg"
+   },
+   {
+    "id": 31663,
+    "name": "Alexander Fehling",
+    "character": "Master SGT. Wilhelm / Pola Negri",
+    "order": 19,
+    "photo": "cast/31663.jpg"
+   },
+   {
+    "id": 8229,
+    "name": "Rod Taylor",
+    "character": "Winston Churchill",
+    "order": 20,
+    "photo": "cast/8229.jpg"
+   },
+   {
+    "id": 147446,
+    "name": "Sönke Möhring",
+    "character": "PVT. Butz / Walter Frazer",
+    "order": 21,
+    "photo": "cast/147446.jpg"
+   },
+   {
+    "id": 58507,
+    "name": "Samm Levine",
+    "character": "PFC. Hirschberg",
+    "order": 22,
+    "photo": "cast/58507.jpg"
+   },
+   {
+    "id": 85236,
+    "name": "Paul Rust",
+    "character": "PFC. Andy Kagan",
+    "order": 23,
+    "photo": "cast/85236.jpg"
+   },
+   {
+    "id": 58744,
+    "name": "Michael Bacall",
+    "character": "PFC. Michael Zimmerman",
+    "order": 24,
+    "photo": "cast/58744.jpg"
+   },
+   {
+    "id": 36463,
+    "name": "Arndt Schwering-Sohnrey",
+    "character": "German Soldier / Winnetou",
+    "order": 25,
+    "photo": "cast/36463.jpg"
+   },
+   {
+    "id": 24061,
+    "name": "Petra Hartung",
+    "character": "German Female Soldier / Beethoven",
+    "order": 26,
+    "photo": "cast/24061.jpg"
+   },
+   {
+    "id": 1052284,
+    "name": "Volker Michalowski",
+    "character": "German Soldier / Edgar Wallace",
+    "order": 27,
+    "photo": "cast/1052284.jpg"
+   },
+   {
+    "id": 44651,
+    "name": "Ken Duken",
+    "character": "German Soldier / Mata Hari",
+    "order": 28,
+    "photo": "cast/44651.jpg"
+   },
+   {
+    "id": 7803,
+    "name": "Christian Berkel",
+    "character": "Proprietor Eric",
+    "order": 29,
+    "photo": "cast/7803.jpg"
+   }
+  ]
+ },
+ "faces": {
+  "inglourious-basterds": [
+   {
+    "id": 287,
+    "name": "Brad Pitt",
+    "films": [
+     {
+      "slug": "the-big-short",
+      "kind": "ledger",
+      "title": "The Big Short",
+      "score": 9.7,
+      "character": "Ben Rickert"
+     },
+     {
+      "slug": "se7en",
+      "kind": "ledger",
+      "title": "Se7en",
+      "score": 9.6,
+      "character": "Mills"
+     },
+     {
+      "slug": "bullettrain",
+      "kind": "ledger",
+      "title": "Bullet Train",
+      "score": 9.1,
+      "character": "Ladybug"
+     },
+     {
+      "slug": "burn-after-reading",
+      "kind": "archive",
+      "title": "Burn After Reading",
+      "score": null,
+      "character": "Chad Feldheimer"
+     }
+    ]
+   },
+   {
+    "id": 19119,
+    "name": "Mélanie Laurent",
+    "films": [
+     {
+      "slug": "enemy",
+      "kind": "ledger",
+      "title": "Enemy",
+      "score": 9.6,
+      "character": "Mary"
+     },
+     {
+      "slug": "operation-finale",
+      "kind": "ledger",
+      "title": "Operation Finale",
+      "score": 9.3,
+      "character": "Hanna Elian"
+     }
+    ]
+   }
+  ]
+ },
  "queue": [
   {
    "note": "needs weekend emotional budget",

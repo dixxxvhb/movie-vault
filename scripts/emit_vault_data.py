@@ -466,9 +466,80 @@ for _lesson in LESSONS:
     if not _claimed:
         _uncited += 1
 
+# ---------------------------------------------------------------- the cast
+#
+# Le Gamaar plan §12c. cast.json holds the top-billed cast for every ledger and
+# archive film with a TMDB link. Only rooms that use faces get their cast
+# emitted (vault-data.json stays small), and only those people's headshots are
+# vendored, the same way posters are: downloaded once at build time into
+# public/cast/<tmdb person id>.jpg, never hotlinked.
+#
+# faces[slug] is Familiar Faces: for each cast member of a face-using room, the
+# OTHER ledger and archive films they are in, with who they played there.
+CAST_ROOMS = {"inglourious-basterds"}
+CAST_IN = load("cast.json") if os.path.exists(os.path.join(BASE, "data", "cast.json")) else {}
+CAST_DIR = os.path.join(OUT_DIR, "cast")
+HEADSHOT = "https://image.tmdb.org/t/p/w185"
+
+
+def fetch_headshot(pid, path):
+    if not path:
+        return None
+    dest = os.path.join(CAST_DIR, "%d.jpg" % pid)
+    rel = "cast/%d.jpg" % pid
+    if os.path.exists(dest) and os.path.getsize(dest) > 1024:
+        return rel
+    try:
+        req = Request(HEADSHOT + path, headers={"User-Agent": "movie-vault/1.0"})
+        blob = urlopen(req, timeout=30).read()
+    except Exception as e:                      # noqa: BLE001 - report and carry on
+        sys.stderr.write("headshot FAILED %d: %s\n" % (pid, e))
+        return None
+    if len(blob) < 1024:
+        return None
+    os.makedirs(CAST_DIR, exist_ok=True)
+    with open(dest, "wb") as f:
+        f.write(blob)
+    print("  fetched %s %d KB" % (rel, len(blob) // 1024))
+    return rel
+
+
+_where_title = {s: META[s][2] for s in META}
+_where_title.update({a["slug"]: a["title"] for a in archive})
+_score = {s: META[s][1] for s in META}
+_kind = {s: "ledger" for s in META}
+_kind.update({a["slug"]: "archive" for a in archive})
+
+cast_out = {}
+faces_out = {}
+for _slug in sorted(CAST_ROOMS):
+    people = CAST_IN.get(_slug) or []
+    if not people:
+        sys.stderr.write("cast MISSING for face room %s\n" % _slug)
+        continue
+    cast_out[_slug] = [{"id": p["id"], "name": p["name"], "character": p.get("character"),
+                        "order": p.get("order"), "photo": fetch_headshot(p["id"], p.get("profile"))}
+                       for p in people]
+    ids = {p["id"] for p in people}
+    hits = {}
+    for other, crew in CAST_IN.items():
+        if other == _slug or other not in _kind:
+            continue
+        for p in crew:
+            if p["id"] in ids:
+                hits.setdefault(p["id"], []).append({
+                    "slug": other, "kind": _kind[other], "title": _where_title.get(other, other),
+                    "score": _score.get(other), "character": p.get("character")})
+    faces_out[_slug] = [
+        {"id": pid, "name": next(p["name"] for p in people if p["id"] == pid),
+         "films": sorted(v, key=lambda x: (x["kind"] != "ledger", -(x["score"] or 0)))}
+        for pid, v in sorted(hits.items(), key=lambda kv: next(p["order"] for p in people if p["id"] == kv[0]))]
+
 data = {
     "generated_from": ("ledger_meta + ledger_panels + photos + titles + log_extra + links + "
-                       "queue + providers + lessons + archive + archive_extra + quotes"),
+                       "queue + providers + lessons + archive + archive_extra + quotes + cast"),
+    "cast": cast_out,
+    "faces": faces_out,
     "queue": QUEUE,
     "lessons": LESSONS,
     "count": len(films),
