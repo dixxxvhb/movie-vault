@@ -86,6 +86,7 @@ export default function Threshold({ onDone }) {
           <li>cut hard to full brightness with no warning (Barbarian, Sorry to Bother You)</li>
           <li>flash to white on a repeating timer (Coherence, Source Code)</li>
           <li>are horror, with dread and one or two shocks (Hereditary, Barbarian, Se7en)</li>
+          <li>fill the screen with fire and flickering orange light, if you start it (Inglourious Basterds)</li>
         </ul>
 
         <button type="button" style={BTN} onClick={() => { applyPreset('calm-room'); leave() }}>

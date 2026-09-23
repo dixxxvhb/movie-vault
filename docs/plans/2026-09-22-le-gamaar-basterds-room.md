@@ -1008,4 +1008,34 @@ Everything else in this plan is decided. The builder doesn't reopen it.
 ## 18. Build log (the builder appends here)
 
 One line per deviation from this plan, and one line per unasked-for moment, each with the
-session number and why. Empty until Session 1.
+session number and why.
+
+- **S1, deviation: the pull is a function now, not a chore.** There was no local database
+  credential, so the 13 `PULL.sql` queries would have meant hand-copying about 150 KB of JSON
+  through chat. Built `vault_pull()` + the `vault-pull` edge function + `scripts/pull.py` instead:
+  the weekly wall pass is one command. It caught three silent drifts that were waiting in the
+  old SQL: the emotional keys (query 3), the lesson evidence the citation graph reads (query 8,
+  20 of 21 laws would have gone uncited), and watch providers read one level too deep
+  (query 13, every queue slip would have said "nowhere to watch").
+- **S1, deviation: 39 thin titles linked to TMDB.** Three of the six new wall films had no
+  poster because chat logged them without a TMDB id. `film-enrich` gained a strict `link`
+  action (exactly one title+year match or it is skipped). 39 linked, 7 skipped honestly
+  (franchise rows, no match, and a duplicate Sinners row for Dixon to merge).
+- **S1, deviation: the building is a raster, not hand-placed walls.** `zones.js` lists
+  footprints with floor functions; walls, openings and colliders all derive from them, and the
+  blocking set is the rasterised complement of the walkable union. Moving a doorway is one line.
+  `scripts/check_basterds.mjs` flood-fills it (528 m2 reachable, every spot, no floor jumps).
+- **S1, deviation: the rake is 2.2 m, not 1.2 m.** At 1.2 m the seat blocks sat at eye level
+  from the door. Stadium rake reads like a picture palace and gives the porthole its view.
+- **S1, deviation: the Box spot moved to the east aisle** (it had been placed inside a seat
+  block; the flood-fill caught it).
+- **S1, found: the TMDB credits carry the tavern card names** (Pola Negri, Winnetou,
+  Beethoven, Edgar Wallace, Mata Hari). They are in `content.js` as `FOREHEADS` and become the
+  cellar deck's bonus round in Session 4.
+- **S1, found: Mélanie Laurent is also in Operation Finale**, which he watched a week after
+  Basterds. Familiar Faces surfaces it on its own; the Morris column gets it in Session 2.
+- **S1, noticed, not ours:** the in-room header wraps badly at 390 ("I TO HIDE THE RECORD"
+  runs into the score). It is the shared room chrome, every room has it. Worth a small fix in
+  its own change.
+- **S1, the pane:** the app's browser pane ticks animation frames only while the app window
+  has focus. Headless Chrome (`scripts/dailies.py`) is the source of every Dailies frame.

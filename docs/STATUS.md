@@ -95,7 +95,26 @@ The open rec cap is live at 15 while the table is still being drained. Open
 suggested was 13 at the end of this pass, so there is room, but the cap can
 refuse a pitch mid-session. The error text says what to do; it is not a bug.
 
+## LE GAMAAR, Session 1 done (2026-09-22)
+
+Plan: `docs/plans/2026-09-22-le-gamaar-basterds-room.md` (build log §18). Watch it:
+`preview_start vault-dev-b` (port 5191), then `/dailies.html`.
+
+| What | Commit | Notes |
+|---|---|---|
+| Wall to 53 films | `f4ce63c` | avg 8.6, all 53 posters; mailbox marker written |
+| One-command pull | `f4ce63c` | `python scripts/pull.py` then `npm run data`. `vault_pull()` + `vault-pull` fn. Token: `~/.vault-cron-token` (the cron secret) |
+| film-enrich v4 | `f4ce63c` | keeps cast (`cast_top`), `images` action, strict `link` action. Source now in `supabase/functions/` |
+| Cast + Familiar Faces | `add1b54` | `data/cast.json` (119 slugs), headshots in `public/cast/`, `faces` in vault-data |
+| Greybox, whole building | `47067ad` | `src/rooms/bespoke/basterds/` zones.js + Basterds.jsx; lazy chunk 3.9 KB gz |
+| content.js, ?text, Threshold, interact key | this commit | `?text` has "Inside the room"; F/Enter/Space/pad A now use touchables in every room |
+| THE DAILIES | `f4ce63c` | `dailies.html` (dev only) + `scripts/dailies.py` |
+
+**Next: Session 2, street and lobby** (plan §15). Open for Dixon: merge the duplicate Sinners
+row in `film_titles`; Valkyrie (logged 09-22) needs its panel before the wall shows it.
+
 ## Agreed, not started
+
 
 **LE GAMAAR, the Inglourious Basterds room (planned 2026-09-22).** Plan:
 `docs/plans/2026-09-22-le-gamaar-basterds-room.md`. A walkable cinema (street, lobby with five

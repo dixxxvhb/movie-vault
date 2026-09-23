@@ -28,10 +28,11 @@ const rampZ = (z0, y0, z1, y1) => (x, z) => {
 }
 
 // The auditorium rake: the back row is at the entrance level, the floor falls
-// 1.2 m toward the screen, then flattens for the apron.
+// 2.2 m toward the screen (stadium rake, so every row clears the one in
+// front), then flattens for the apron.
 export const RAKE_BACK_Z = -13
 export const RAKE_FRONT_Z = -30
-export const APRON_Y = -1.2
+export const APRON_Y = -2.2
 const rake = rampZ(RAKE_BACK_Z, 0, RAKE_FRONT_Z, APRON_Y)
 
 // Booth / gallery level

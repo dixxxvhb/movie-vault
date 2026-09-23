@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react'
+import * as LE_GAMAAR from './rooms/bespoke/basterds/content.js'
 
 // ?text — the whole Vault as a document.
 //
@@ -46,7 +47,45 @@ const AXIS_NOTE =
   'and it was written the night he watched the film. Sideways position on the ' +
   'wall in the 3D version means nothing at all.'
 
-function Films({ films }) {
+// A bespoke room that teaches the film (Le Gamaar, plan §12d) says the same
+// things here in words: the chapters in order, then the cast with who played
+// them and what happens to them. Rooms opt in through ROOM_DOCS; the content
+// module is plain data, so this costs the ?text bundle a few KB and no 3D.
+const ROOM_DOCS = { 'inglourious-basterds': LE_GAMAAR }
+
+function RoomDoc({ doc, cast }) {
+  const actor = (id) => (cast || []).find((p) => p.id === id)?.name
+  return (
+    <details style={{ margin: '0.8rem 0 0' }}>
+      <summary style={{ cursor: 'pointer', color: '#D8B87A' }}>
+        Inside the room: {doc.FILM.place}, {doc.FILM.when}
+      </summary>
+      <h4 style={{ font: '600 1rem ui-serif, Georgia, serif', margin: '1rem 0 0.4rem' }}>The five chapters</h4>
+      <ol style={{ paddingLeft: '1.2rem' }}>
+        {doc.CHAPTERS.map((c) => (
+          <li key={c.n} style={{ margin: '0 0 0.9rem' }}>
+            <strong>{c.title}</strong> <span style={{ color: '#9A9081' }}>({c.where}, {c.when})</span>
+            <br />{c.recap}
+          </li>
+        ))}
+      </ol>
+      <h4 style={{ font: '600 1rem ui-serif, Georgia, serif', margin: '1rem 0 0.4rem' }}>Who is in it</h4>
+      <ul style={{ paddingLeft: '1.2rem' }}>
+        {doc.CHARACTERS.map((c) => (
+          <li key={c.id} style={{ margin: '0 0 0.5rem' }}>
+            <strong>{c.name}</strong>{actor(c.cast) ? ', played by ' + actor(c.cast) : ''}. {c.who} {c.fate}
+          </li>
+        ))}
+      </ul>
+      <h4 style={{ font: '600 1rem ui-serif, Georgia, serif', margin: '1rem 0 0.4rem' }}>What really happened</h4>
+      <ul style={{ paddingLeft: '1.2rem' }}>
+        {doc.HISTORY.map((h) => <li key={h} style={{ margin: '0 0 0.5rem' }}>{h}</li>)}
+      </ul>
+    </details>
+  )
+}
+
+function Films({ films, cast }) {
   const [sort, setSort] = useState('score')
   const rows = useMemo(() => {
     const r = [...films]
@@ -102,6 +141,7 @@ function Films({ films }) {
               being re-authored. The plot, the verdict and the "more from the
               chat" blocks are the reason it is here. */}
           {f.panel ? <div className="casefile" dangerouslySetInnerHTML={{ __html: f.panel }} /> : null}
+          {ROOM_DOCS[f.slug] ? <RoomDoc doc={ROOM_DOCS[f.slug]} cast={cast?.[f.slug]} /> : null}
         </article>
       ))}
     </section>
@@ -193,7 +233,7 @@ export default function TextMode({ data }) {
         </ul>
       </nav>
 
-      <Films films={films} />
+      <Films films={films} cast={data.cast} />
       <Archive shoebox={shoebox} drawer={drawer} />
 
       <section aria-labelledby="queue-h">

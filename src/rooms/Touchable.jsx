@@ -4,6 +4,17 @@ import * as THREE from 'three'
 import { wasDrag, isPointerLocked } from '../pointer.js'
 import { walkPos } from './colliders.js'
 import { playOneShot } from './audio/engine.js'
+import { consume } from '../input.js'
+
+// The interact key (F / Enter / Space / pad A). input.js has always bound it
+// and nothing read it, so every touchable was mouse-only. Every mounted
+// Touchable registers here; the first one in the set reads the edge once per
+// frame and fires the best candidate: within reach, inside a 25 degree cone
+// of where the camera looks, nearest wins. (Le Gamaar plan §13.)
+const LIVE = new Set()
+const CONE_COS = Math.cos((25 * Math.PI) / 180)
+const _fwd = new THREE.Vector3()
+const _to = new THREE.Vector3()
 
 // Wave T: the shared "you can put your hands on this" wrapper. Every
 // template touch kind (touchKinds.jsx) and every bespoke room's own hand-
@@ -141,6 +152,40 @@ export default function Touchable({
     if (hovered.current) {
       gl.domElement.style.cursor = canHover ? 'pointer' : 'default'
     }
+  })
+
+  // ---- keyboard / pad interact --------------------------------------
+  const self = useRef(null)
+  self.current = {
+    group, reach, disabled,
+    fire: () => {
+      triggerDip()
+      if (foley) playOneShot(foley)
+      onUse && onUse({ key: true })
+    },
+  }
+  useEffect(() => {
+    const me = self
+    LIVE.add(me)
+    return () => { LIVE.delete(me) }
+  }, [])
+  useFrame(() => {
+    if (LIVE.values().next().value !== self) return   // one reader per frame
+    if (!consume('interact')) return
+    camera.getWorldDirection(_fwd)
+    let best = null, bestD = Infinity
+    for (const t of LIVE) {
+      const c = t.current
+      if (!c || c.disabled || !c.group.current) continue
+      c.group.current.getWorldPosition(_to)
+      const p = walkPos()
+      const d = Math.hypot(_to.x - p.x, _to.z - p.z)
+      if (d > c.reach) continue
+      _to.sub(camera.position).normalize()
+      if (_to.dot(_fwd) < CONE_COS) continue
+      if (d < bestD) { bestD = d; best = c }
+    }
+    if (best) best.fire()
   })
 
   const handleClick = (e) => {
