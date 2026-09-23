@@ -1,5 +1,4 @@
 {
- "_source": "film_watchlist where status = 'queued', joined to film_titles, pulled 2026-08-26. Ordered by queue_rank, unranked last.",
  "queue": [
   {
    "note": "needs weekend emotional budget",
@@ -66,13 +65,6 @@
   },
   {
    "note": null,
-   "rank": 16,
-   "year": 2015,
-   "title": "Spotlight",
-   "reason": null
-  },
-  {
-   "note": null,
    "rank": 17,
    "year": 2007,
    "title": "Michael Clayton",
@@ -114,6 +106,13 @@
    "reason": "highly anticipated — Villeneuve lane, the spine"
   },
   {
+   "note": "rewatch candidate, disclose as rewatch at pick time",
+   "rank": null,
+   "year": 2014,
+   "title": "Whiplash",
+   "reason": "Buzzed SEEN during Oscar canon slate Jul 27. Dixon: needs a rewatch, memory score 8.7."
+  },
+  {
    "note": null,
    "rank": null,
    "year": 2015,
@@ -133,13 +132,7 @@
    "year": 2019,
    "title": "The Vast of Night",
    "reason": "Midnight slot Jul 17 — the \"short weird one\" pick. Free on Prime (Amazon original), Coherence-lane low-budget wonder. Started ~midnight; sleep-dependent whether it counts as a watch. — Did not happen night of Jul 17; sleep won. Back in the queue, no penalty."
-  },
-  {
-   "note": "rewatch candidate, disclose as rewatch at pick time",
-   "rank": null,
-   "year": 2014,
-   "title": "Whiplash",
-   "reason": "Buzzed SEEN during Oscar canon slate Jul 27. Dixon: needs a rewatch, memory score 8.7."
   }
- ]
+ ],
+ "_source": "film_watchlist where status = 'queued', joined to film_titles. Ordered by queue_rank, unranked last. Pulled via vault_pull()."
 }

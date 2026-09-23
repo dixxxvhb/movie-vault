@@ -1,5 +1,5 @@
 {
- "_source": "film_lessons where active and scope='taste'. rule + weight + evidence prose + taught_by slug. Pulled 2026-09-04 via scripts/PULL.sql query 8.",
+ "_source": "film_lessons where active and scope='taste'. rule + weight + evidence prose + taught_by slug. Pulled via vault_pull().",
  "lessons": [
   {
    "rule": "The antibodies doctrine. He grew up on the copies, not the originals, so pre-2000s twist classics can underperform because later media already strip-mined them. Weight recency of influence when reaching for older classics.",
@@ -44,6 +44,12 @@
    "taught_by": "minority-report"
   },
   {
+   "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos. Confirmed twice in two nights: the anesthetic-then-scalpel shape (fun and informative up front, register flip into fury or grief at the close) is a top-shelf lane for him, not a risk.",
+   "weight": 4,
+   "evidence": "One Battle After Another 9.8 (Aug 25), The Big Short 9.7 (Aug 26). He named the kinship unprompted both directions.",
+   "taught_by": "the-big-short"
+  },
+  {
    "rule": "Runtime: soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight. Night owl, asleep around 2am, awake around 10am.",
    "weight": 3,
    "evidence": "Sat through 2h44 of Blade Runner 2049 without complaint",
@@ -80,6 +86,12 @@
    "taught_by": "silverlake"
   },
   {
+   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
+   "weight": 3,
+   "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
+   "taught_by": "source-code"
+  },
+  {
    "rule": "Movement and music are amplifiers, not foundations. Choreography and score excellence add real points to films that already have brains; alone they do not close a pitch.",
    "weight": 3,
    "evidence": "The Matrix 9.9 (screamed at dodge this, movement design as language). Bullet Train 9.1. Stardust's score praised all night. The Amadeus dictation scene was everything. John Wick rejected as mindless action that may not stimulate.",
@@ -90,12 +102,6 @@
    "weight": 3,
    "evidence": "Triangle 7.9 and Source Code 7.9 versus Predestination 9.1 (the Snook showcase) and Coherence 8.9 (Em in the room).",
    "taught_by": "triangle"
-  },
-  {
-   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
-   "weight": 3,
-   "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
-   "taught_by": "source-code"
   },
   {
    "rule": "Dread-marination pacing (slow zooms, held silences, refusing to cut, withholding) taxes Dixon even when he acknowledges it works. Anxiety and excitement are different currencies and his board only pays in excitement/momentum. Films that also demand rewatch homework to assemble their lore cap out in the high 6s regardless of craft or back-half payoff.",
@@ -114,12 +120,6 @@
    "weight": 3,
    "evidence": "The Departed 9.9 Monday; Goodfellas pitched Wednesday as the Scorsese continuation lasted twenty seconds: \"really not into getting into this another gangster story.\"",
    "taught_by": null
-  },
-  {
-   "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine (the score) runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos, and the hand closes around the whole film at once.",
-   "weight": 3,
-   "evidence": "One Battle After Another 9.8 (Aug 25), The Big Short 9.7 (Aug 26). He named the kinship unprompted both directions.",
-   "taught_by": "the-big-short"
   },
   {
    "rule": "A predictable villain is not a tax when the pleasure is located in the unfolding rather than the reveal. This is the antibodies doctrine applied to villain identity, not just twist endings: he will call the bad guy early, say so out loud, and still score the film in the 9s, because what he is buying is the walk toward the visible thing.",

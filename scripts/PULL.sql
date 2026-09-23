@@ -1,5 +1,13 @@
 -- Refresh data/ from Supabase project swjqlfcqvcrnydpyjyog.
 --
+-- *** SUPERSEDED 2026-09-22: run `python scripts/pull.py` instead. ***
+-- The canonical pull is public.vault_pull()
+-- (supabase/migrations/20260923000200_vault_pull_function.sql), served by the
+-- vault-pull edge function. It fixes three drifts this file had: query 3
+-- dropped emotional_key, query 8 dropped evidence + taught_by (the citation
+-- graph), and query 13 read watch_providers->'US' when the column already is
+-- the US object. It also adds cast.json. Kept below only as history.
+--
 -- HOW TO USE: run each query below in a session that has the Supabase MCP
 -- connected. Every query returns ONE row with ONE column named `j`, holding
 -- the complete, final contents of its data/ file. Write that string to the

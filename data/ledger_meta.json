@@ -34,6 +34,11 @@
   8.3,
   "No Country for Old Men"
  ],
+ "se7en": [
+  "2026-08-24",
+  9.6,
+  "Se7en"
+ ],
  "batman": [
   "2026-07-24",
   9.5,
@@ -114,6 +119,11 @@
   8.8,
   "Ex Machina"
  ],
+ "gladiator": [
+  "2026-09-13",
+  9.7,
+  "Gladiator"
+ ],
  "malignant": [
   "2026-07-26",
   5.4,
@@ -129,6 +139,11 @@
   8.2,
   "Rogue One: A Star Wars Story"
  ],
+ "spotlight": [
+  "2026-09-13",
+  8.9,
+  "Spotlight"
+ ],
  "the-sting": [
   "2026-08-01",
   9.6,
@@ -143,6 +158,11 @@
   "2026-08-14",
   6.7,
   "Hereditary"
+ ],
+ "inside-man": [
+  "2026-08-21",
+  8.4,
+  "Inside Man"
  ],
  "poorthings": [
   "2026-07-23",
@@ -164,10 +184,25 @@
   9.1,
   "Bullet Train"
  ],
+ "frost-nixon": [
+  "2026-09-11",
+  9.1,
+  "Frost/Nixon"
+ ],
+ "in-the-grey": [
+  "2026-09-09",
+  7.2,
+  "In the Grey"
+ ],
  "source-code": [
   "2026-08-11",
   7.9,
   "Source Code"
+ ],
+ "the-amateur": [
+  "2026-08-29",
+  7.7,
+  "The Amateur"
  ],
  "annihilation": [
   "2026-07-29",
@@ -176,13 +211,18 @@
  ],
  "nightcrawler": [
   "2026-07-21",
-  9.4,
+  9.5,
   "Nightcrawler"
  ],
  "the-departed": [
   "2026-08-18",
   9.9,
   "The Departed"
+ ],
+ "the-big-short": [
+  "2026-08-26",
+  9.7,
+  "The Big Short"
  ],
  "disclosure-day": [
   "2026-07-31",
@@ -194,10 +234,25 @@
   9.1,
   "Predestination"
  ],
+ "la-confidential": [
+  "2026-08-31",
+  9.6,
+  "L.A. Confidential"
+ ],
  "minority-report": [
   "2026-08-13",
   7.5,
   "Minority Report"
+ ],
+ "operation-finale": [
+  "2026-09-14",
+  9.3,
+  "Operation Finale"
+ ],
+ "inglourious-basterds": [
+  "2026-09-07",
+  9.7,
+  "Inglourious Basterds"
  ],
  "one-battle-after-another": [
   "2026-08-25",
@@ -208,30 +263,5 @@
   "2026-08-20",
   8.5,
   "Masters of the Universe"
- ],
- "the-big-short": [
-  "2026-08-26",
-  9.7,
-  "The Big Short"
- ],
- "la-confidential": [
-  "2026-08-31",
-  9.6,
-  "L.A. Confidential"
- ],
- "se7en": [
-  "2026-08-24",
-  9.6,
-  "Se7en"
- ],
- "inside-man": [
-  "2026-08-21",
-  8.4,
-  "Inside Man"
- ],
- "the-amateur": [
-  "2026-08-29",
-  7.7,
-  "The Amateur"
  ]
 }

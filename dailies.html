@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dailies</title>
+<!-- Dev only. The build input is index.html alone, so this page never ships.
+     It screens the build of the Le Gamaar room as it happens: the newest frame,
+     a filmstrip of the spaces, and every frame so far. Data: /_dailies/dailies.json,
+     written by scripts/dailies.py. -->
+<style>
+  :root {
+    --ground: #12100E; --deep: #0b0908; --type: #F1E8DA; --sub: #8A6F5C; --red: #C4322B;
+    --line: rgba(241, 232, 218, .10);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--ground); color: var(--type); }
+  body { font: 16px/1.5 Georgia, "Times New Roman", serif; padding: 32px 24px 64px; }
+  main { max-width: 1120px; margin: 0 auto; }
+
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  h1 { margin: 0; font-weight: 400; font-size: 32px; letter-spacing: .02em; }
+  h1 i { color: var(--sub); font-size: 16px; margin-left: 12px; letter-spacing: .08em; font-style: normal; text-transform: uppercase; }
+  .live { font: 12px/1 system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--sub); }
+  .live b { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--red); margin-right: 8px; vertical-align: 1px; }
+  .live.stale b { background: var(--sub); }
+
+  /* the newest frame */
+  .hero { margin: 0 0 32px; }
+  .hero .frame { position: relative; background: var(--deep); border-radius: 2px; overflow: hidden; aspect-ratio: 16 / 10; }
+  .hero img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .hero figcaption { display: flex; justify-content: space-between; gap: 24px; margin-top: 12px; }
+  .hero .cap { font-size: 20px; }
+  .hero .meta { color: var(--sub); font-size: 14px; white-space: nowrap; }
+  .empty { display: grid; place-items: center; height: 100%; color: var(--sub); font-style: italic; }
+
+  /* the filmstrip of spaces */
+  .strip { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(104px, 1fr); gap: 8px;
+           background: var(--deep); padding: 20px 12px; margin-bottom: 40px; overflow-x: auto; scrollbar-width: none; }
+  .strip::before, .strip::after { content: ""; position: absolute; left: 0; right: 0; height: 8px;
+           background: repeating-linear-gradient(90deg, transparent 0 10px, var(--ground) 10px 20px); }
+  .strip::before { top: 6px; } .strip::after { bottom: 6px; }
+  .cell { aspect-ratio: 4 / 3; border: 1px solid var(--line); display: flex; align-items: flex-end;
+          padding: 8px; font: 11px/1.2 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase;
+          color: var(--sub); background-size: cover; background-position: center; position: relative; }
+  .cell.on { color: var(--type); border-color: rgba(241, 232, 218, .35); }
+  .cell.on::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(11, 9, 8, .85)); }
+  .cell span { position: relative; z-index: 1; }
+  .cell.now { outline: 1px solid var(--red); outline-offset: 2px; }
+
+  /* the contact sheet */
+  h2 { font-weight: 400; font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: var(--sub); margin: 0 0 16px; }
+  .session { margin-bottom: 32px; }
+  .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px 12px; }
+  .shot { margin: 0; cursor: zoom-in; }
+  .shot img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--deep); }
+  .shot.phone img { object-fit: contain; }
+  .shot figcaption { font-size: 14px; line-height: 1.4; margin-top: 8px; }
+  .shot small { display: block; color: var(--sub); font-size: 12px; margin-top: 2px; }
+  .shot.fresh { animation: arrive .6s ease-out; }
+  @keyframes arrive { from { opacity: 0; transform: translateY(8px); } }
+
+  .commits { list-style: none; margin: 0; padding: 0; font: 13px/1.6 ui-monospace, Consolas, monospace; color: var(--sub); }
+  .commits b { color: var(--type); font-weight: 400; margin-right: 12px; }
+
+  dialog { border: 0; padding: 0; background: transparent; max-width: 96vw; }
+  dialog::backdrop { background: rgba(11, 9, 8, .92); }
+  dialog img { max-width: 96vw; max-height: 90vh; display: block; }
+
+  @media (max-width: 640px) {
+    body { padding: 20px 16px 48px; }
+    .hero figcaption { flex-direction: column; gap: 4px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .shot.fresh { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Dailies <i>Le Gamaar</i></h1>
+    <div class="live" id="live"><b></b>screening</div>
+  </header>
+
+  <figure class="hero"><div class="frame" id="heroFrame"><div class="empty">Nothing in the can yet.</div></div>
+    <figcaption><span class="cap" id="heroCap"></span><span class="meta" id="heroMeta"></span></figcaption>
+  </figure>
+
+  <div class="strip" id="strip"></div>
+
+  <div id="sessions"></div>
+
+  <h2>Last commits</h2>
+  <ul class="commits" id="commits"></ul>
+</main>
+<dialog id="zoom"><img alt="" /></dialog>
+
+<script type="module">
+const SPACES = ['wall', 'rue', 'lobby', 'auditorium', 'booth', 'behind', 'cellar', 'sound', 'fire'];
+const LABEL = { wall: 'The wall', rue: 'Rue', lobby: 'Lobby', auditorium: 'Auditorium', booth: 'Booth',
+  behind: 'Behind', cellar: 'Cellar', sound: 'Sound', fire: 'Fire' };
+const $ = (id) => document.getElementById(id);
+let seen = new Set();
+let first = true;
+
+function when(t) {
+  const d = new Date(t);
+  return d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function render(data) {
+  const entries = [...(data.entries || [])].sort((a, b) => b.n - a.n);
+  const newest = entries[0];
+  if (newest) {
+    $('heroFrame').innerHTML = `<img src="${newest.shot}?v=${newest.n}" alt="">`;
+    $('heroCap').textContent = newest.caption;
+    $('heroMeta').textContent = `No. ${newest.n} · ${LABEL[newest.space] || newest.space} · ${when(newest.t)}`;
+  }
+
+  const done = new Set(data.done || []);
+  $('strip').innerHTML = SPACES.map((s) => {
+    const last = entries.find((e) => e.space === s && !e.phone);
+    const on = done.has(s) || !!last;
+    const bg = last ? `style="background-image:url('${last.shot}?v=${last.n}')"` : '';
+    const now = newest && newest.space === s ? ' now' : '';
+    return `<div class="cell${on ? ' on' : ''}${now}" ${bg}><span>${LABEL[s]}</span></div>`;
+  }).join('');
+
+  const bySession = new Map();
+  for (const e of entries) {
+    if (!bySession.has(e.session)) bySession.set(e.session, []);
+    bySession.get(e.session).push(e);
+  }
+  $('sessions').innerHTML = [...bySession.entries()].map(([sess, list]) => `
+    <section class="session"><h2>Session ${sess}</h2><div class="sheet">
+      ${list.map((e) => `<figure class="shot${e.phone ? ' phone' : ''}${!first && !seen.has(e.n) ? ' fresh' : ''}" data-src="${e.shot}?v=${e.n}">
+        <img src="${e.shot}?v=${e.n}" alt="" loading="lazy">
+        <figcaption>${e.caption}<small>No. ${e.n} · ${LABEL[e.space] || e.space}${e.phone ? ' · phone' : ''} · ${when(e.t)}</small></figcaption>
+      </figure>`).join('')}
+    </div></section>`).join('');
+  entries.forEach((e) => seen.add(e.n));
+  first = false;
+
+  $('commits').innerHTML = (data.commits || []).map((c) => `<li><b>${c.h}</b>${c.s}</li>`).join('');
+}
+
+document.addEventListener('click', (ev) => {
+  const f = ev.target.closest('.shot');
+  if (!f) return;
+  const dlg = $('zoom');
+  dlg.querySelector('img').src = f.dataset.src;
+  dlg.showModal();
+});
+$('zoom').addEventListener('click', () => $('zoom').close());
+
+let lastStamp = '';
+async function poll() {
+  try {
+    const res = await fetch('/_dailies/dailies.json?t=' + Date.now());
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    $('live').classList.remove('stale');
+    if (data.stamp !== lastStamp) { lastStamp = data.stamp; render(data); }
+  } catch {
+    $('live').classList.add('stale');
+  }
+}
+poll();
+setInterval(poll, 3000);
+</script>
+</body>
+</html>

@@ -89,6 +89,19 @@
    "Ethan Coen"
   ]
  },
+ "se7en": {
+  "year": 1995,
+  "genres": [
+   "Crime",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg",
+  "runtime": 127,
+  "director": [
+   "David Fincher"
+  ]
+ },
  "batman": {
   "year": 2005,
   "genres": [
@@ -291,6 +304,19 @@
    "Alex Garland"
   ]
  },
+ "gladiator": {
+  "year": 2000,
+  "genres": [
+   "Action",
+   "Drama",
+   "Adventure"
+  ],
+  "poster": "/wN2xWp1eIwCKOD0BHTcErTBv1Uq.jpg",
+  "runtime": 155,
+  "director": [
+   "Ridley Scott"
+  ]
+ },
  "malignant": {
   "year": 2021,
   "genres": [
@@ -327,6 +353,18 @@
   "runtime": 133,
   "director": [
    "Gareth Edwards"
+  ]
+ },
+ "spotlight": {
+  "year": 2015,
+  "genres": [
+   "Drama",
+   "History"
+  ],
+  "poster": "/8DPGG400FgaFWaqcv11n8mRd2NG.jpg",
+  "runtime": 129,
+  "director": [
+   "Tom McCarthy"
   ]
  },
  "the-sting": {
@@ -366,6 +404,19 @@
   "runtime": 128,
   "director": [
    "Ari Aster"
+  ]
+ },
+ "inside-man": {
+  "year": 2006,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/ffMUgkDZICNiyaws1Jkv8qG8uFW.jpg",
+  "runtime": 129,
+  "director": [
+   "Spike Lee"
   ]
  },
  "poorthings": {
@@ -419,6 +470,30 @@
    "David Leitch"
   ]
  },
+ "frost-nixon": {
+  "year": 2008,
+  "genres": [
+   "Drama",
+   "History"
+  ],
+  "poster": "/nLrRrHZQ40tWqLTY3kxgS4x7GUw.jpg",
+  "runtime": 122,
+  "director": [
+   "Ron Howard"
+  ]
+ },
+ "in-the-grey": {
+  "year": 2026,
+  "genres": [
+   "Action",
+   "Thriller"
+  ],
+  "poster": "/dQgIcW6Th08kMRf2HBoYWoFE6OD.jpg",
+  "runtime": 97,
+  "director": [
+   "Guy Ritchie"
+  ]
+ },
  "source-code": {
   "year": 2011,
   "genres": [
@@ -430,6 +505,18 @@
   "runtime": 93,
   "director": [
    "Duncan Jones"
+  ]
+ },
+ "the-amateur": {
+  "year": 2025,
+  "genres": [
+   "Thriller",
+   "Action"
+  ],
+  "poster": "/SNEoUInCa5fAgwuEBMIMBGvkkh.jpg",
+  "runtime": 123,
+  "director": [
+   "James Hawes"
   ]
  },
  "annihilation": {
@@ -470,6 +557,18 @@
    "Martin Scorsese"
   ]
  },
+ "the-big-short": {
+  "year": 2015,
+  "genres": [
+   "Comedy",
+   "Drama"
+  ],
+  "poster": "/scVEaJEwP8zUix8vgmMoJJ9Nq0w.jpg",
+  "runtime": 131,
+  "director": [
+   "Adam McKay"
+  ]
+ },
  "disclosure-day": {
   "year": 2026,
   "genres": [
@@ -495,6 +594,19 @@
    "Michael Spierig"
   ]
  },
+ "la-confidential": {
+  "year": 1997,
+  "genres": [
+   "Crime",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/lWCgf5sD5FpMljjpkRhcC8pXcch.jpg",
+  "runtime": 138,
+  "director": [
+   "Curtis Hanson"
+  ]
+ },
  "minority-report": {
   "year": 2002,
   "genres": [
@@ -506,6 +618,32 @@
   "runtime": 145,
   "director": [
    "Steven Spielberg"
+  ]
+ },
+ "operation-finale": {
+  "year": 2018,
+  "genres": [
+   "Drama",
+   "History",
+   "Thriller"
+  ],
+  "poster": "/oj60k0DMZrCN6Taad4XOjFivyrW.jpg",
+  "runtime": 124,
+  "director": [
+   "Chris Weitz"
+  ]
+ },
+ "inglourious-basterds": {
+  "year": 2009,
+  "genres": [
+   "Drama",
+   "Thriller",
+   "War"
+  ],
+  "poster": "/aupnPtagH9JVBuMrGEanf4iqXEQ.jpg",
+  "runtime": 153,
+  "director": [
+   "Quentin Tarantino"
   ]
  },
  "one-battle-after-another": {
@@ -532,70 +670,6 @@
   "runtime": 141,
   "director": [
    "Travis Knight"
-  ]
- },
- "_source": "film_titles joined to film_ledger_panels on title_id, pulled 2026-08-26. poster = TMDB poster_path, served from image.tmdb.org (no API key) and vendored into public/posters/ at build time.",
- "the-big-short": {
-  "year": 2015,
-  "genres": [
-   "Comedy",
-   "Drama"
-  ],
-  "poster": "/scVEaJEwP8zUix8vgmMoJJ9Nq0w.jpg",
-  "runtime": 131,
-  "director": [
-   "Adam McKay"
-  ]
- },
- "la-confidential": {
-  "year": 1997,
-  "genres": [
-   "Crime",
-   "Mystery",
-   "Thriller"
-  ],
-  "poster": "/lWCgf5sD5FpMljjpkRhcC8pXcch.jpg",
-  "runtime": 138,
-  "director": [
-   "Curtis Hanson"
-  ]
- },
- "se7en": {
-  "year": 1995,
-  "genres": [
-   "Crime",
-   "Mystery",
-   "Thriller"
-  ],
-  "poster": "/191nKfP0ehp3uIvWqgPbFmI4lv9.jpg",
-  "runtime": 127,
-  "director": [
-   "David Fincher"
-  ]
- },
- "inside-man": {
-  "year": 2006,
-  "genres": [
-   "Crime",
-   "Drama",
-   "Thriller"
-  ],
-  "poster": "/ffMUgkDZICNiyaws1Jkv8qG8uFW.jpg",
-  "runtime": 129,
-  "director": [
-   "Spike Lee"
-  ]
- },
- "the-amateur": {
-  "year": 2025,
-  "genres": [
-   "Thriller",
-   "Action"
-  ],
-  "poster": "/SNEoUInCa5fAgwuEBMIMBGvkkh.jpg",
-  "runtime": 123,
-  "director": [
-   "James Hawes"
   ]
  }
 }

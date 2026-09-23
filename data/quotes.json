@@ -1,5 +1,4 @@
 {
- "_source": "film_quotes joined to film_titles -- pulled 2026-08-26 from swjqlfcqvcrnydpyjyog. `film` is the TITLE string; emit_vault_data.py resolves it to a ledger or archive slug.",
  "quotes": [
   {
    "film": "Arrival",
@@ -226,5 +225,6 @@
    "quote": "You are the worst thing that has happened to this country since food in buckets and maybe slavery!",
    "said_by": "Amy Brookheimer"
   }
- ]
+ ],
+ "_source": "film_quotes joined to film_titles. `film` is the TITLE string; emit_vault_data.py resolves it. Pulled via vault_pull()."
 }

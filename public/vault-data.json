@@ -7,7 +7,7 @@
    "year": 2013,
    "title": "Prisoners",
    "reason": "Villeneuve, heavy, excellent — REWATCH, I've seen it before and remember the sledgehammer; flag is_rewatch when logged",
-   "where": "rent"
+   "where": "free on YouTube"
   },
   {
    "note": null,
@@ -15,7 +15,7 @@
    "year": 2013,
    "title": "Her",
    "reason": "completes the AI-feelings trilogy",
-   "where": "rent"
+   "where": "needs Apple TV"
   },
   {
    "note": null,
@@ -31,7 +31,7 @@
    "year": 2022,
    "title": "The Menu",
    "reason": null,
-   "where": "on YouTube"
+   "where": "on Peacock"
   },
   {
    "note": null,
@@ -39,7 +39,7 @@
    "year": 2017,
    "title": "Atomic Blonde",
    "reason": null,
-   "where": "needs Cinemax"
+   "where": "on Prime"
   },
   {
    "note": null,
@@ -47,7 +47,7 @@
    "year": 2011,
    "title": "Tinker Tailor Soldier Spy",
    "reason": null,
-   "where": "rent"
+   "where": "free on The Roku Channel"
   },
   {
    "note": null,
@@ -55,7 +55,7 @@
    "year": 2014,
    "title": "John Wick",
    "reason": null,
-   "where": "on YouTube"
+   "where": "free on Pluto TV"
   },
   {
    "note": null,
@@ -72,14 +72,6 @@
    "title": "The Accountant",
    "reason": null,
    "where": "on YouTube"
-  },
-  {
-   "note": null,
-   "rank": 16,
-   "year": 2015,
-   "title": "Spotlight",
-   "reason": null,
-   "where": "free on YouTube"
   },
   {
    "note": null,
@@ -103,7 +95,7 @@
    "year": 2005,
    "title": "Munich",
    "reason": null,
-   "where": "rent"
+   "where": "on Prime"
   },
   {
    "note": null,
@@ -111,7 +103,7 @@
    "year": 2018,
    "title": "Sicario: Day of the Soldado",
    "reason": "sequel, decent but lesser — no Villeneuve, no Kate; expectations pre-lowered",
-   "where": "needs Philo"
+   "where": "free on Tubi"
   },
   {
    "note": null,
@@ -130,12 +122,20 @@
    "where": null
   },
   {
+   "note": "rewatch candidate, disclose as rewatch at pick time",
+   "rank": null,
+   "year": 2014,
+   "title": "Whiplash",
+   "reason": "Buzzed SEEN during Oscar canon slate Jul 27. Dixon: needs a rewatch, memory score 8.7.",
+   "where": "rent"
+  },
+  {
    "note": null,
    "rank": null,
    "year": 2015,
    "title": "Kingsman: The Secret Service",
    "reason": "SEEN buzzed Jul 21, 2026 — flagged by him as deserving a rewatch at some point. Competent-operator lane turned gonzo.",
-   "where": "rent"
+   "where": "needs fuboTV"
   },
   {
    "note": "tabled — his to raise, fresh start only",
@@ -152,14 +152,6 @@
    "title": "The Vast of Night",
    "reason": "Midnight slot Jul 17 — the \"short weird one\" pick. Free on Prime (Amazon original), Coherence-lane low-budget wonder. Started ~midnight; sleep-dependent whether it counts as a watch. — Did not happen night of Jul 17; sleep won. Back in the queue, no penalty.",
    "where": null
-  },
-  {
-   "note": "rewatch candidate, disclose as rewatch at pick time",
-   "rank": null,
-   "year": 2014,
-   "title": "Whiplash",
-   "reason": "Buzzed SEEN during Oscar canon slate Jul 27. Dixon: needs a rewatch, memory score 8.7.",
-   "where": "needs fuboTV"
   }
  ],
  "lessons": [
@@ -230,6 +222,16 @@
    ]
   },
   {
+   "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos. Confirmed twice in two nights: the anesthetic-then-scalpel shape (fun and informative up front, register flip into fury or grief at the close) is a top-shelf lane for him, not a risk.",
+   "weight": 4,
+   "evidence": "One Battle After Another 9.8 (Aug 25), The Big Short 9.7 (Aug 26). He named the kinship unprompted both directions.",
+   "taught_by": "the-big-short",
+   "cites": [
+    "the-big-short",
+    "one-battle-after-another"
+   ]
+  },
+  {
    "rule": "Runtime: soft two hour ceiling on weeknights, broken happily for the right film. Prime window 7pm to midnight. Night owl, asleep around 2am, awake around 10am.",
    "weight": 3,
    "evidence": "Sat through 2h44 of Blade Runner 2049 without complaint",
@@ -284,6 +286,18 @@
    ]
   },
   {
+   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
+   "weight": 3,
+   "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
+   "taught_by": "source-code",
+   "cites": [
+    "source-code",
+    "cmiyc",
+    "stardust",
+    "maverick"
+   ]
+  },
+  {
    "rule": "Movement and music are amplifiers, not foundations. Choreography and score excellence add real points to films that already have brains; alone they do not close a pitch.",
    "weight": 3,
    "evidence": "The Matrix 9.9 (screamed at dodge this, movement design as language). Bullet Train 9.1. Stardust's score praised all night. The Amadeus dictation scene was everything. John Wick rejected as mindless action that may not stimulate.",
@@ -305,18 +319,6 @@
     "predestination",
     "source-code",
     "coherence"
-   ]
-  },
-  {
-   "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
-   "weight": 3,
-   "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
-   "taught_by": "source-code",
-   "cites": [
-    "source-code",
-    "cmiyc",
-    "stardust",
-    "maverick"
    ]
   },
   {
@@ -348,16 +350,6 @@
    ]
   },
   {
-   "rule": "Tonal whiplash is not a tax when tone functions as characterization: each register belongs to a character, one spine (the score) runs under all of them, and the ending reconciles the registers retroactively. Then the morphing reads as control, not chaos, and the hand closes around the whole film at once.",
-   "weight": 3,
-   "evidence": "One Battle After Another 9.8 (Aug 25), The Big Short 9.7 (Aug 26). He named the kinship unprompted both directions.",
-   "taught_by": "the-big-short",
-   "cites": [
-    "the-big-short",
-    "one-battle-after-another"
-   ]
-  },
-  {
    "rule": "A predictable villain is not a tax when the pleasure is located in the unfolding rather than the reveal. This is the antibodies doctrine applied to villain identity, not just twist endings: he will call the bad guy early, say so out loud, and still score the film in the 9s, because what he is buying is the walk toward the visible thing.",
    "weight": 3,
    "evidence": "L.A. Confidential 9.6 despite \"the bad guy was low key predictable but was also nice to watch unfold.\" Consistent with The Sting 9.6 and against The Game 6.8.",
@@ -369,8 +361,8 @@
    ]
   }
  ],
- "count": 47,
- "avg": 8.55,
+ "count": 53,
+ "avg": 8.6,
  "films": [
   {
    "slug": "memento",
@@ -636,6 +628,88 @@
    "key": "awe",
    "hot_take": "HOWWWW have i never seen that movie before?! Screamed out loud at \"dodge this.\"",
    "context": "evening banger, solo, Peacock"
+  },
+  {
+   "slug": "gladiator",
+   "title": "Gladiator",
+   "score": 9.7,
+   "watched": "2026-09-13",
+   "state": "ledger",
+   "palette": {
+    "bg": "#2A1A10",
+    "fg": "#F1E3C8",
+    "sub": "#A88A5E",
+    "acc": "#C0392B",
+    "glyph": "IV"
+   },
+   "front": null,
+   "poster": "posters/gladiator.jpg",
+   "year": 2000,
+   "runtime": 155,
+   "genres": [
+    "Action",
+    "Drama",
+    "Adventure"
+   ],
+   "director": [
+    "Ridley Scott"
+   ],
+   "panel": "<section class=\"panel gladiator\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Gladiator<span>2000</span></div><div class=\"score\">9.7<small> /10</small></div></div>\n  <div class=\"meta\">Sep 13 &middot; solo &middot; Paramount+ &middot; 155 min &middot; Leonard lead, his own narrow</div>\n  <p class=\"plot\">Rome&rsquo;s favorite general is betrayed by the emperor&rsquo;s son, loses everything, and comes back through the arena with one name to say out loud and one man to say it to. Ridley Scott builds the Colosseum and then keeps cutting away from it to a whiny little murdering baby in purple.</p>\n  <p class=\"verdict\">&ldquo;finally getting to hear and see the context of ARE YOU NOT ENTERTAINED was iconic.&rdquo; Picked on Wednesday, lost to a Gyllenhaal rental, pitched again Sunday as the lead of an all-epic slate and finally watched. Commodus is the engine: cruel, jealous, unloved, and the most human motive in the film. Villain relish with a bruise underneath. 9.7, tied with The Big Short and Inglourious Basterds.</p>\n</section>",
+   "vibes": [
+    "awe",
+    "epic",
+    "villain-forward",
+    "revenge",
+    "historical",
+    "score-driven",
+    "oscar-canon",
+    "arena"
+   ],
+   "rewatch": false,
+   "key": "awe",
+   "hot_take": "ugh so many good moments but finally getting to hear and see the context of ARE YOU NOT ENTERTAINED was iconic.",
+   "context": "solo, Sunday, Paramount+. Lead of the Sep 13 epic slate (seven cards, all epic lane, after he rejected the first three). His own Sep 9 narrow finally watched."
+  },
+  {
+   "slug": "inglourious-basterds",
+   "title": "Inglourious Basterds",
+   "score": 9.7,
+   "watched": "2026-09-07",
+   "state": "ledger",
+   "palette": {
+    "bg": "#12100E",
+    "fg": "#F1E8DA",
+    "sub": "#8A6F5C",
+    "acc": "#C4322B",
+    "glyph": "✠"
+   },
+   "front": null,
+   "poster": "posters/inglourious-basterds.jpg",
+   "year": 2009,
+   "runtime": 153,
+   "genres": [
+    "Drama",
+    "Thriller",
+    "War"
+   ],
+   "director": [
+    "Quentin Tarantino"
+   ],
+   "panel": "<section class=\"panel inglourious-basterds\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Inglourious Basterds<span>2009</span></div><div class=\"score\">9.7<small> /10</small></div></div>\n  <div class=\"meta\">Sep 7 &middot; solo &middot; third slate of the night &middot; 153 min, ceiling ignored &middot; subtitles disclosed</div>\n  <p class=\"plot\">Five chapters, occupied France, and a war that ends in a movie theater because Tarantino decided it should. A dairy farm, a glass of milk, and a colonel who never raises his voice. A Jewish girl who walks out of that farmhouse into Paris and inherits a cinema. A squad of Americans whose whole strategy is fear and scalps. A German film star spying for the Allies in a basement bar where one hand gesture gets everybody killed. The threads do not so much converge as collide, and when they do the film burns down the historical record on purpose and dares you to feel bad about it.</p>\n  <p class=\"verdict\">\"those god damn NAAAAZZZIIIIISSS. such a fun movie. such wonderfully interwoven plots. BURN THAT FUCKER.\" He arrived here after two historical slates whiffed and Incendies got a clean no, which means the historical ask got answered the only way his board actually pays: as a Tarantino revenge fantasy with a chapter spine and a villain who is having the time of his life. Landa is the whole villain doctrine in one man, sassy, theatrical, giving queen behavior, and the fear he generates lives in his manners. Pitt's opening speech read as FIERCE, a choreographed monologue with a mouth full of Tennessee. The interwoven plots hit the structure-carried-by-a-person engine, and the register flip at the end, from caper to inferno, is the tonal morph he keeps rewarding. Learning afterward that none of it happened made it better, not worse, because it had felt possible. 9.7, tied with The Big Short, one step under the 9.8 shelf, and fun closed for the week.</p>\n</section>",
+   "vibes": [
+    "fun",
+    "chapter-structure",
+    "villain-forward",
+    "tonal-morph",
+    "revenge-fantasy",
+    "tarantino",
+    "historical",
+    "subtitles"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "those god damn NAAAAZZZIIIIISSS. such a fun movie. such wonderfully interwoven plots. BURN THAT FUCKER. landa was insane!!! also kinda iconic and giving queen behavior. brad pitt was incredible, his opening speech is kinda FIERCE. (on learning it was all invented:) fun to know it was all fuckin bullshit hahaha",
+   "context": "Solo Monday night. Third slate of the session after two historical/science slates whiffed and Incendies was declined (no dead mom). Historical ask answered in his real lane."
   },
   {
    "slug": "the-big-short",
@@ -910,7 +984,7 @@
   {
    "slug": "nightcrawler",
    "title": "Nightcrawler",
-   "score": 9.4,
+   "score": 9.5,
    "watched": "2026-07-21",
    "state": "ledger",
    "palette": {
@@ -1046,11 +1120,54 @@
     "Steven Spielberg"
    ],
    "panel": "<section class=\"panel cmiyc\">\n  <div class=\"no\">No. 8</div>\n  <div class=\"head\"><div class=\"film\">Catch Me If You Can<span>2002</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Aug 2 &middot; solo &middot; day one of a Sunday double feature &middot; first watch</div>\n  <p class=\"plot\">A teenage Frank Abagnale forges his way through a Pan Am uniform, a hospital badge, and a law degree, staying one step ahead of the FBI agent who will not stop chasing him. Spielberg plays it as pure pleasure, all glamour and momentum, with the con always in on its own charm.</p>\n  <p class=\"quote\">\"a classic. yearly christmas movie energy, home alone vibes at points. very clever very fun. didn't hit as hard but the enjoyment and pleasure watching was immense.\"</p>\n  <p class=\"debrief\">Con lane, back to back with The Sting the day before. He clocked the Christmas Eve phone-call structure on his own without it being pointed out to him. Scored a full point under The Sting's 9.6 by his own accounting, because pleasure and impact are different currencies for him and this one is all pleasure, warm and rewatchable rather than a gut-punch.</p>\n</section>",
-   "vibes": [],
+   "vibes": [
+    "con",
+    "fun",
+    "spielberg",
+    "classic",
+    "crowd-pleaser"
+   ],
    "rewatch": false,
    "key": "cozy",
    "hot_take": "a classic. yearly christmas movie energy, home alone vibes at points. very clever very fun. didn't hit as hard but the enjoyment and pleasure watching was immense.",
    "context": null
+  },
+  {
+   "slug": "operation-finale",
+   "title": "Operation Finale",
+   "score": 9.3,
+   "watched": "2026-09-14",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1A1714",
+    "fg": "#EDE7DC",
+    "sub": "#9A8F80",
+    "acc": "#B5482E",
+    "glyph": "OF"
+   },
+   "front": null,
+   "poster": "posters/operation-finale.jpg",
+   "year": 2018,
+   "runtime": 124,
+   "genres": [
+    "Drama",
+    "History",
+    "Thriller"
+   ],
+   "director": [
+    "Chris Weitz"
+   ],
+   "panel": "<section class=\"panel operation-finale\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Operation Finale<span>2018</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Sep 14 &middot; solo &middot; 9pm Monday &middot; picked over Ronin and The Kingdom, the Munich lane at a watchable length</div>\n  <p class=\"plot\">Buenos Aires, 1960. A Mossad team finds Eichmann living as a factory clerk and has to keep him alive in a safe house long enough to get a signature. The plane is the plot. The house is the movie.</p>\n  <p class=\"verdict\">&ldquo;OOOOOOF the fucking house was nuts. brutal and insane. loved it.&rdquo; The release was being right: &ldquo;we always knew that's who he was and it was nice to finally get it in full force.&rdquo; Isaac over Kingsley, which Leonard bet against. Predicted 8.1, landed 9.3. #21 of 53, tied at 9.3 between Catch Me If You Can and Poor Things.</p>\n</section>",
+   "vibes": [
+    "two-face",
+    "true-story",
+    "procedural",
+    "chamber-piece"
+   ],
+   "rewatch": false,
+   "key": "tense",
+   "hot_take": "OOOOOOF the fucking house was nuts. brutal and insane. loved it. we always knew that's who he was and it was nice to finally get it in full force. isaac all the way",
+   "context": "Mon 9pm solo, picked off slate three after two whiffed slates and a Munich detour"
   },
   {
    "slug": "poorthings",
@@ -1129,6 +1246,46 @@
    "context": "solo double feature night, rental"
   },
   {
+   "slug": "frost-nixon",
+   "title": "Frost/Nixon",
+   "score": 9.1,
+   "watched": "2026-09-11",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1A1612",
+    "fg": "#EDE4D3",
+    "sub": "#8A7D68",
+    "acc": "#C9A24A",
+    "glyph": "//"
+   },
+   "front": null,
+   "poster": "posters/frost-nixon.jpg",
+   "year": 2008,
+   "runtime": 122,
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Ron Howard"
+   ],
+   "panel": "<section class=\"panel frost-nixon\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Frost/Nixon<span>2008</span></div><div class=\"score\">9.1<small> /10</small></div></div>\n  <div class=\"meta\">Sep 11 &middot; solo &middot; his rental &middot; 122 min &middot; Leonard re-pitch</div>\n  <p class=\"plot\">Three years after resigning, Richard Nixon agrees to four televised interviews with David Frost, a British talk show host nobody in Washington takes seriously. Nixon wants a comeback and a payday. Frost wants a career. Ron Howard shoots Peter Morgan&rsquo;s play like a title fight: corner men, rounds, and one late punch.</p>\n  <p class=\"verdict\">&ldquo;very clever. very smart. very intense.&rdquo; Pitched Sep 10 as the rental he probably would not pay for; he paid for it. Two men in chairs, and Frank Langella&rsquo;s Nixon is a villain enjoying himself right up until the one question he cannot outtalk. Talky-tense, the lane he lit up for the night before, delivered on. 9.1, three-way tie with Bullet Train and Predestination.</p>\n</section>",
+   "vibes": [
+    "tense",
+    "talky-tense",
+    "two-hander",
+    "true-story",
+    "villain-forward",
+    "oscar-canon",
+    "based-on-a-play",
+    "rental"
+   ],
+   "rewatch": false,
+   "key": "tense",
+   "hot_take": "enjoyed very muich. very clever. very smart. very intense. good watch overall!",
+   "context": "solo, Friday, his rental. Picked off the Sep 10 re-pitch slate (Valkyrie was Leonard's lead; he took the talky one)."
+  },
+  {
    "slug": "predestination",
    "title": "Predestination",
    "score": 9.1,
@@ -1193,7 +1350,13 @@
     "Matthew Vaughn"
    ],
    "panel": "<section class=\"panel stardust\">\n  <div class=\"no\">No. 10</div>\n  <div class=\"head\"><div class=\"film\">Stardust<span>2007</span></div><div class=\"score\">9.0<small> /10</small></div></div>\n  <div class=\"meta\">Aug 2 &middot; solo &middot; movie two of the Sunday double feature &middot; rewatch, ~19-year gap, sole prior memory was the Pfeiffer gravity scene</div>\n  <p class=\"plot\">A fallen star turns out to be a woman named Yvaine, and the boy who crosses the wall to fetch her for his beloved instead falls for her himself, while a dying witch-queen and a pack of murderous princes race to cut her heart out first. Vaughn plays the fairy tale completely straight and lets the wit come from the cast instead.</p>\n  <p class=\"quote\">\"just lovely!! another classic for the evening. the fucking score was just stunning throughout. de niro served all night. fabulous movie. 9.0 solid\"</p>\n  <p class=\"debrief\">A long-gap rewatch that played like a first watch, his bad memory doing its usual work of making old films new again. De Niro's Captain Shakespeare and the Eshkeri score were the two things singled out. Capped a certified great Sunday alongside Catch Me If You Can, and opened the Matthew Vaughn thread that led straight into a Kingsman rewatch conversation.</p>\n</section>",
-   "vibes": [],
+   "vibes": [
+    "storybook",
+    "fable",
+    "score-driven",
+    "camp",
+    "rewatch"
+   ],
    "rewatch": true,
    "key": "cozy",
    "hot_take": "just lovely!! another classic for the evening. the fucking score was just stunning throughout. de niro served all night. fabulous movie. 9.0 solid",
@@ -1234,6 +1397,45 @@
    "key": "tense",
    "hot_take": "it wasn't just 2 houses. or 3. its fucking infinite bitch",
    "context": "Streamed on Prime/Peacock. Ending theory: we did NOT end with the same Em."
+  },
+  {
+   "slug": "spotlight",
+   "title": "Spotlight",
+   "score": 8.9,
+   "watched": "2026-09-13",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1C2128",
+    "fg": "#E8E6E1",
+    "sub": "#8A9099",
+    "acc": "#C9A227",
+    "glyph": "SP"
+   },
+   "front": null,
+   "poster": "posters/spotlight.jpg",
+   "year": 2015,
+   "runtime": 129,
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Tom McCarthy"
+   ],
+   "panel": "<section class=\"panel spotlight\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Spotlight<span>2015</span></div><div class=\"score\">8.9<small> /10</small></div></div>\n  <div class=\"meta\">Sep 13 &middot; solo &middot; YouTube free &middot; 129 min &middot; his own queue, back half of a double</div>\n  <p class=\"plot\">A four-person investigative desk at the Boston Globe pulls one thread on one priest and ends up with a list of ninety, and a city that already knew. No gunfire, no speeches, one raised voice, and the film treats that one as a mistake.</p>\n  <p class=\"verdict\">&ldquo;spotlight was soooo good. what a fucking story man.&rdquo; Chased Gladiator the same night, chosen over The Report and Margin Call. The tension is all tables and phone calls. 8.9, beside Coherence, a hair under Stardust.</p>\n</section>",
+   "vibes": [
+    "tense",
+    "true-story",
+    "procedural",
+    "newsroom",
+    "ensemble",
+    "talky",
+    "institution-vs-individual"
+   ],
+   "rewatch": false,
+   "key": "tense",
+   "hot_take": "spotlight was soooo good. what a fucking story man.",
+   "context": "solo, Sunday, YouTube free. Back half of a double after Gladiator (9.7). His own queue, pitched as lead of the true-story slate, ranked \"closest\", then chosen over The Report and Margin Call."
   },
   {
    "slug": "exmachina",
@@ -1488,7 +1690,13 @@
     "Gareth Edwards"
    ],
    "panel": "<section class=\"panel rogue-one\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Rogue One: A Star Wars Story<span>2016</span></div><div class=\"score\">8.2<small> /10</small></div></div>\n  <div class=\"meta\">Aug 17 &middot; his first Star Wars EVER &middot; the accidental perfect prologue</div>\n  <p class=\"plot\">A war movie wearing a space opera's clothes. The daughter of the man who built the planet-killer gets recruited to find him, and the mission curdles into the only kind of heroism this galaxy actually runs on: unglamorous, uncredited, terminal. A blind believer, a tired assassin, a rude droid, a defected pilot, a beach, a transmission tower. Everyone dies delivering a file. Then the file enters a dark corridor, and the thing pursuing it is the reason the next movie gets to exist.</p>\n  <p class=\"verdict\">A historic panel: the first Star Wars entry in the entire Vault, watched by a man encountering this universe for the first time through its bleakest side door. Opening position: a star wars movie without jedis, what are we even doing here. Closing position: full concession, because the hallway certified absolutely badass precisely BECAUSE nobody has magic to answer it. Watching ordinary soldiers meet an unstoppable red blade taught him what a Jedi means before he has ever properly met one, the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holding his purge question, Andor waiting. Really good and fun. 8.2.</p>\n</section>",
-   "vibes": [],
+   "vibes": [
+    "sci-fi",
+    "spectacle",
+    "ensemble",
+    "tragic",
+    "fun"
+   ],
    "rewatch": false,
    "key": "fun",
    "hot_take": "Really good and fun. \"A star wars movie without jedis....? what are we even doing here?\" — then immediately conceded the thesis: hallway scene certified absolutely badass, lands BECAUSE nobody has magic to answer it. First-ever Star Wars entry point, watched as the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holds his purge question, Andor waiting.",
@@ -1949,6 +2157,44 @@
    "context": null
   },
   {
+   "slug": "in-the-grey",
+   "title": "In the Grey",
+   "score": 7.2,
+   "watched": "2026-09-09",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1C1E21",
+    "fg": "#E6E6E3",
+    "sub": "#7C8086",
+    "acc": "#B8B9BC",
+    "glyph": "$"
+   },
+   "front": null,
+   "poster": "posters/in-the-grey.jpg",
+   "year": 2026,
+   "runtime": 97,
+   "genres": [
+    "Action",
+    "Thriller"
+   ],
+   "director": [
+    "Guy Ritchie"
+   ],
+   "panel": "<section class=\"panel in-the-grey\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">In the Grey<span>2026</span></div><div class=\"score\">7.2<small> /10</small></div></div>\n  <div class=\"meta\">Sep 9 &middot; solo &middot; his own rental &middot; 97 min &middot; not a Leonard pick</div>\n  <p class=\"plot\">A lawyer who collects impossible debts for rich clients takes on a billion-dollar one, and hires two fixers to go get it back from the criminal who took it. Guy Ritchie in fast-cut, split-screen, title-card mode. Henry Cavill and Jake Gyllenhaal do the shooting, the fighting, and the escaping. Eiza Gonz&aacute;lez is the person everyone is risking their lives for.</p>\n  <p class=\"verdict\">\"it was alright. daddies jake and henry were really the whole point.\" He went to Prime for Valkyrie and got, in his words, bamboozled by his lover and husband Jake Gyllenhaal, which is the first time the wall has recorded a rental made on thirst alone. The read is his usual read: two men carrying the film are the engine, the script and plot felt like a rough draft, and a lead he did not believe in made him wonder why anyone was trying to save her. Entertaining and daddylicious, structure not carried by the person it was built around. He reopened the fun lane himself two days after Basterds closed it, and he would recommend it to a certain type of people without shame. 7.2, the \"I know exactly who this is for\" score.</p>\n</section>",
+   "vibes": [
+    "fun",
+    "daddies",
+    "rough-draft-script",
+    "weak-lead",
+    "guy-ritchie",
+    "his-own-rental"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "it was alright. daddies jake and henry were really the whole point. fun shooting and fighting and escaping etc but the script and plot felt very rough draft. entertaining and daddylicious but honestly the main character was the worst actress of them all and realy made you wonder why anyone was trying to save her hahaha",
+   "context": "solo, weeknight, his own Prime rental. Set out for Valkyrie, got \"bamboozled\" by Gyllenhaal on the way. Not a Leonard pick. Reopened the fun lane himself. \"I would recommend this to a certain type of people without shame.\""
+  },
+  {
    "slug": "game",
    "title": "The Game",
    "score": 6.8,
@@ -2139,14 +2385,14 @@
  ],
  "links": [
   {
-   "from": "amadeus",
-   "to": "darkknight",
+   "from": "annihilation",
+   "to": "coherence",
    "fromState": "wall",
    "toState": "wall",
-   "relation": "obsession-with-a-rival",
-   "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
-   "weight": 1,
-   "directional": false
+   "relation": "thin-ensemble",
+   "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
+   "weight": 3,
+   "directional": true
   },
   {
    "from": "annihilation",
@@ -2157,26 +2403,6 @@
    "note": "Neighbors in The Sevens. Idea-forward, visually lovely, ensemble kept deliberately thin, and he docks for it every time.",
    "weight": 3,
    "directional": false
-  },
-  {
-   "from": "annihilation",
-   "to": "stby",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "thin-ensemble",
-   "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
-   "weight": 2,
-   "directional": true
-  },
-  {
-   "from": "annihilation",
-   "to": "coherence",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "thin-ensemble",
-   "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
-   "weight": 3,
-   "directional": true
   },
   {
    "from": "batman",
@@ -2199,16 +2425,6 @@
    "directional": false
   },
   {
-   "from": "coherence",
-   "to": "The Vast of Night",
-   "fromState": "wall",
-   "toState": "queued",
-   "relation": "low-budget-wonder",
-   "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.",
-   "weight": 2,
-   "directional": true
-  },
-  {
    "from": "disclosure-day",
    "to": "malignant",
    "fromState": "wall",
@@ -2216,6 +2432,176 @@
    "relation": "reveal-as-event",
    "note": "A Malignant-rule double violation: decoy hour plus exposition dump. Not a reveal, a zoom. Took the floor at 5.2.",
    "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "exmachina",
+   "to": "annihilation",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "garland",
+   "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "inside-man",
+   "to": "se7en",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "The guessing-night weekend bracket: fun con Friday, abyss Monday. Both detectives, both designs, opposite exits. The con he half-guessed and docked for it (8.4) against the sermon he partially decoded and it flattened him anyway (9.6). The bracket settled the doctrine: a twist dies when you see it coming, a design gets worse.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "la-confidential",
+   "to": "the-departed",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "institutional-rot",
+   "note": "Named in the debrief. Same lane as The Departed at 9.9: a department rotten from the top, cops who cannot tell which side they are performing. Different verdict on the exit. Scorsese lets nobody out. Hanson lets the animal drive to Arizona and keeps the honest one inside with a medal.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "malignant",
+   "to": "stby",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "reveal-as-event",
+   "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "one-battle-after-another",
+   "to": "the-departed",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bloodline",
+   "note": "The Departed formula in fresh skin. Momentum, paranoia, dark humor, a human anchor driving the machine. Pitched to chase the 9.9 and landed one tenth under it.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "sicario",
+   "to": "ncfom",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "execution-meritocracy",
+   "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
+   "weight": 3,
+   "directional": false
+  },
+  {
+   "from": "source-code",
+   "to": "moon",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "moon2",
+   "note": "He asked Moon for a moon2 with more explaining. Duncan Jones delivered it two years early: faster, flashier, bigger swerve, and a heart Moon kept thin. It landed two tenths under the original.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-big-short",
+   "to": "one-battle-after-another",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "tonal-morph kin",
+   "note": "He named the kinship unprompted, mid-debrief, one night apart: the same anesthetic-then-scalpel trick, quirky and cute and informative until the register flips and the joke becomes the accusation. OBAA runs it on a family, The Big Short runs it on the entire economy. One tenth apart on the wall.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "darkknight",
+   "to": "tdkr",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "nolan-arc",
+   "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "tdkr",
+   "to": "batman",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "nolan-arc",
+   "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-departed",
+   "to": "memento",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "calibration duel",
+   "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-departed",
+   "to": "matrix",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "displaced by decree",
+   "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "game",
+   "to": "memento",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "antibodies",
+   "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
+   "to": "game",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "antibodies",
+   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
+   "to": "stby",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "reveal-as-event",
+   "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "annihilation",
+   "to": "stby",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "thin-ensemble",
+   "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "coherence",
+   "to": "The Vast of Night",
+   "fromState": "wall",
+   "toState": "queued",
+   "relation": "low-budget-wonder",
+   "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.",
+   "weight": 2,
    "directional": true
   },
   {
@@ -2230,16 +2616,6 @@
   },
   {
    "from": "exmachina",
-   "to": "annihilation",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "garland",
-   "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
-   "weight": 3,
-   "directional": false
-  },
-  {
-   "from": "exmachina",
    "to": "Her",
    "fromState": "wall",
    "toState": "queued",
@@ -2247,16 +2623,6 @@
    "note": "Her completes the AI-feelings trilogy in the queue. The cold half and the warm half of the same question.",
    "weight": 2,
    "directional": true
-  },
-  {
-   "from": "malignant",
-   "to": "stby",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "reveal-as-event",
-   "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
-   "weight": 3,
-   "directional": false
   },
   {
    "from": "memento",
@@ -2289,16 +2655,6 @@
    "directional": true
   },
   {
-   "from": "obsession",
-   "to": "niceguys",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "guest-context",
-   "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
-   "weight": 1,
-   "directional": true
-  },
-  {
    "from": "poorthings",
    "to": "stby",
    "fromState": "wall",
@@ -2306,16 +2662,6 @@
    "relation": "audacity",
    "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.",
    "weight": 2,
-   "directional": false
-  },
-  {
-   "from": "sicario",
-   "to": "ncfom",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "execution-meritocracy",
-   "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
-   "weight": 3,
    "directional": false
   },
   {
@@ -2329,23 +2675,13 @@
    "directional": true
   },
   {
-   "from": "darkknight",
-   "to": "tdkr",
+   "from": "source-code",
+   "to": "predestination",
    "fromState": "wall",
    "toState": "wall",
-   "relation": "nolan-arc",
-   "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "tdkr",
-   "to": "batman",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "nolan-arc",
-   "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
-   "weight": 3,
+   "relation": "loop-bracket",
+   "note": "The sci-fi puzzle box bracket, one night apart. Predestination closes its loop into itself at 9.1; Source Code breaks its loop open into a new universe at 7.9. Same machine, opposite exits.",
+   "weight": 2,
    "directional": true
   },
   {
@@ -2356,16 +2692,6 @@
    "relation": "bad-memory-asset",
    "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
    "weight": 2,
-   "directional": true
-  },
-  {
-   "from": "game",
-   "to": "memento",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "antibodies",
-   "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
-   "weight": 3,
    "directional": true
   },
   {
@@ -2390,16 +2716,6 @@
   },
   {
    "from": "the-sting",
-   "to": "stby",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "reveal-as-event",
-   "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "the-sting",
    "to": "sicario",
    "fromState": "wall",
    "toState": "wall",
@@ -2407,26 +2723,6 @@
    "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
    "weight": 2,
    "directional": true
-  },
-  {
-   "from": "the-sting",
-   "to": "game",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "antibodies",
-   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "maverick",
-   "to": "bullettrain",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "craft-blockbuster",
-   "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
-   "weight": 1,
-   "directional": false
   },
   {
    "from": "silverlake",
@@ -2449,84 +2745,34 @@
    "directional": true
   },
   {
-   "from": "source-code",
-   "to": "predestination",
+   "from": "amadeus",
+   "to": "darkknight",
    "fromState": "wall",
    "toState": "wall",
-   "relation": "loop-bracket",
-   "note": "The sci-fi puzzle box bracket, one night apart. Predestination closes its loop into itself at 9.1; Source Code breaks its loop open into a new universe at 7.9. Same machine, opposite exits.",
-   "weight": 2,
+   "relation": "obsession-with-a-rival",
+   "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
+   "weight": 1,
+   "directional": false
+  },
+  {
+   "from": "obsession",
+   "to": "niceguys",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "guest-context",
+   "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
+   "weight": 1,
    "directional": true
   },
   {
-   "from": "source-code",
-   "to": "moon",
+   "from": "maverick",
+   "to": "bullettrain",
    "fromState": "wall",
    "toState": "wall",
-   "relation": "moon2",
-   "note": "He asked Moon for a moon2 with more explaining. Duncan Jones delivered it two years early: faster, flashier, bigger swerve, and a heart Moon kept thin. It landed two tenths under the original.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "the-departed",
-   "to": "memento",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "calibration duel",
-   "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "the-departed",
-   "to": "matrix",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "displaced by decree",
-   "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "one-battle-after-another",
-   "to": "the-departed",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "bloodline",
-   "note": "The Departed formula in fresh skin. Momentum, paranoia, dark humor, a human anchor driving the machine. Pitched to chase the 9.9 and landed one tenth under it.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "inside-man",
-   "to": "se7en",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "bracket",
-   "note": "The guessing-night weekend bracket: fun con Friday, abyss Monday. Both detectives, both designs, opposite exits. The con he half-guessed and docked for it (8.4) against the sermon he partially decoded and it flattened him anyway (9.6). The bracket settled the doctrine: a twist dies when you see it coming, a design gets worse.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "la-confidential",
-   "to": "the-departed",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "institutional-rot",
-   "note": "Named in the debrief. Same lane as The Departed at 9.9: a department rotten from the top, cops who cannot tell which side they are performing. Different verdict on the exit. Scorsese lets nobody out. Hanson lets the animal drive to Arizona and keeps the honest one inside with a medal.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "the-big-short",
-   "to": "one-battle-after-another",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "tonal-morph kin",
-   "note": "He named the kinship unprompted, mid-debrief, one night apart: the same anesthetic-then-scalpel trick, quirky and cute and informative until the register flips and the joke becomes the accusation. OBAA runs it on a family, The Big Short runs it on the entire economy. One tenth apart on the wall.",
-   "weight": 3,
-   "directional": true
+   "relation": "craft-blockbuster",
+   "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
+   "weight": 1,
+   "directional": false
   }
  ],
  "shoebox": [
@@ -2628,6 +2874,25 @@
    "runtime": 181,
    "snap": "the man who built the bomb spends three hours realizing what he did.",
    "affinity": "favorite"
+  },
+  {
+   "slug": "argo",
+   "title": "Argo",
+   "year": 2012,
+   "kind": "shoebox",
+   "memory": 9.9,
+   "note": "registry gap caught at pitch, 2026-08-28: \"i LOVE LOVE LOVE argo.\" no memory score given yet -- 2026-09-09, second time: \"i LOVEEEEE argo!! ARGOFUCKYOURSELF\". Still no number. -- 2026-09-09: memory score 9.9, \"for sure.\"",
+   "poster": "posters/argo.jpg",
+   "genres": [
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Ben Affleck"
+   ],
+   "runtime": 120,
+   "snap": null,
+   "affinity": null
   },
   {
    "slug": "dune-part-two",
@@ -3273,6 +3538,26 @@
    "affinity": null
   },
   {
+   "slug": "burn-after-reading",
+   "title": "Burn After Reading",
+   "year": 2008,
+   "kind": "drawer",
+   "memory": null,
+   "note": "Sep 22 2026: \"ive only ever seen burn after reading but it was a LONG time ago but i remember enjoying.\"",
+   "poster": "posters/burn-after-reading.jpg",
+   "genres": [
+    "Comedy",
+    "Drama"
+   ],
+   "director": [
+    "Ethan Coen",
+    "Joel Coen"
+   ],
+   "runtime": 96,
+   "snap": null,
+   "affinity": null
+  },
+  {
    "slug": "cosmos",
    "title": "Cosmos",
    "year": 2019,
@@ -3366,6 +3651,25 @@
     "James Gunn"
    ],
    "runtime": 121,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "hidden-figures",
+   "title": "Hidden Figures",
+   "year": 2016,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen, buzzed on Sep 7 2026 pitch, no score given",
+   "poster": "posters/hidden-figures.jpg",
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Theodore Melfi"
+   ],
+   "runtime": 127,
    "snap": null,
    "affinity": null
   },
@@ -3706,6 +4010,27 @@
    "affinity": null
   },
   {
+   "slug": "the-imitation-game",
+   "title": "The Imitation Game",
+   "year": 2014,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen, buzzed on Sep 7 2026 pitch, no score given",
+   "poster": "posters/the-imitation-game.jpg",
+   "genres": [
+    "History",
+    "Drama",
+    "Thriller",
+    "War"
+   ],
+   "director": [
+    "Morten Tyldum"
+   ],
+   "runtime": 113,
+   "snap": null,
+   "affinity": null
+  },
+  {
    "slug": "the-martian",
    "title": "The Martian",
    "year": 2015,
@@ -3766,6 +4091,25 @@
    "affinity": null
   },
   {
+   "slug": "weapons",
+   "title": "Weapons",
+   "year": 2025,
+   "kind": "drawer",
+   "memory": null,
+   "note": "seen it, said Sep 14 2026 when pitched",
+   "poster": "posters/weapons.jpg",
+   "genres": [
+    "Horror",
+    "Mystery"
+   ],
+   "director": [
+    "Zach Cregger"
+   ],
+   "runtime": 129,
+   "snap": null,
+   "affinity": null
+  },
+  {
    "slug": "west-side-story",
    "title": "West Side Story",
    "year": 1961,
@@ -3783,6 +4127,25 @@
     "Robert Wise"
    ],
    "runtime": 153,
+   "snap": null,
+   "affinity": null
+  },
+  {
+   "slug": "zero-dark-thirty",
+   "title": "Zero Dark Thirty",
+   "year": 2012,
+   "kind": "drawer",
+   "memory": null,
+   "note": "Sep 13 2026: \"i have seen and really fucking love!! top notch big fan.\" No memory score given yet.",
+   "poster": "posters/zero-dark-thirty.jpg",
+   "genres": [
+    "Thriller",
+    "Drama"
+   ],
+   "director": [
+    "Kathryn Bigelow"
+   ],
+   "runtime": 157,
    "snap": null,
    "affinity": null
   }

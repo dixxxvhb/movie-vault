@@ -1,5 +1,4 @@
 {
- "_source": "film_titles.watch_providers (TMDB, US) for film_watchlist status='queued', plus film_services where active. Pulled 2026-08-26.",
  "mine": [
   "Amazon Prime Video",
   "Paramount+",
@@ -8,7 +7,10 @@
  ],
  "titles": {
   "Her": {
-   "flat": [],
+   "flat": [
+    "Apple TV",
+    "Apple TV Amazon Channel"
+   ],
    "free": [],
    "rent": true
   },
@@ -20,34 +22,33 @@
    "rent": false
   },
   "Munich": {
-   "flat": [],
+   "flat": [
+    "Amazon Prime Video",
+    "Amazon Prime Video with Ads"
+   ],
    "free": [],
    "rent": true
   },
   "The Menu": {
    "flat": [
     "fuboTV",
+    "Peacock Premium",
+    "YouTube TV",
     "FXNow",
-    "YouTube TV"
+    "Peacock Premium Plus"
    ],
    "free": [],
    "rent": true
   },
   "Whiplash": {
-   "flat": [
-    "fuboTV",
-    "MGM Plus",
-    "MGM Plus Roku Premium Channel",
-    "MGM+ Amazon Channel",
-    "Philo",
-    "Sony Pictures Core Amazon Channel"
-   ],
+   "flat": [],
    "free": [],
    "rent": true
   },
   "Apollo 13": {
    "flat": [
     "Netflix",
+    "MGM Plus",
     "Netflix Standard with Ads"
    ],
    "free": [],
@@ -55,60 +56,47 @@
   },
   "John Wick": {
    "flat": [
-    "AMC",
-    "AMC Plus Apple TV channel",
-    "AMC+",
-    "AMC+ Amazon Channel",
-    "AMC+ Roku Premium Channel",
-    "Lionsgate+ Amazon Channels",
-    "Philo",
-    "YouTube TV"
+    "YouTube TV",
+    "Lionsgate+ Amazon Channels"
    ],
-   "free": [],
+   "free": [
+    "Pluto TV"
+   ],
    "rent": true
   },
   "Prisoners": {
    "flat": [],
-   "free": [],
-   "rent": true
-  },
-  "Spotlight": {
-   "flat": [
-    "fuboTV"
-   ],
    "free": [
-    "Kanopy",
-    "Plex",
-    "Plex Channel",
-    "Shout! Factory TV",
-    "Tubi TV",
     "YouTube Free"
    ],
    "rent": true
   },
   "Jack Reacher": {
    "flat": [
-    "Paramount Plus Essential",
+    "Amazon Prime Video",
     "Paramount Plus Premium",
-    "Paramount+ Amazon Channel",
-    "Paramount+ Roku Premium Channel",
+    "Paramount Plus Essential",
     "Philo",
-    "Starz",
-    "Starz Amazon Channel",
-    "Starz Apple TV channel",
-    "YouTube TV"
+    "AMC Plus Apple TV channel",
+    "Paramount+ Amazon Channel",
+    "AMC+ Amazon Channel",
+    "AMC+",
+    "YouTube TV",
+    "Paramount+ Roku Premium Channel",
+    "Amazon Prime Video with Ads",
+    "Starz Apple TV channel"
    ],
    "free": [
+    "Kanopy",
     "YouTube Free"
    ],
    "rent": true
   },
   "Run Lola Run": {
    "flat": [
-    "Howdy Amazon Channel",
     "Hulu",
-    "Sony Pictures Core Amazon Channel",
-    "Sundance Now"
+    "Sundance Now",
+    "Sony Pictures Core Amazon Channel"
    ],
    "free": [
     "YouTube Free"
@@ -117,19 +105,18 @@
   },
   "Atomic Blonde": {
    "flat": [
+    "Amazon Prime Video",
+    "HBO Max Amazon Channel",
     "Cinemax Amazon Channel",
-    "Cinemax Apple TV channel",
     "HBO Max",
-    "HBO Max Amazon Channel"
+    "Cinemax Apple TV channel",
+    "Amazon Prime Video with Ads"
    ],
    "free": [],
    "rent": true
   },
   "The Accountant": {
    "flat": [
-    "TBS",
-    "TNT",
-    "tru TV",
     "YouTube TV"
    ],
    "free": [],
@@ -157,24 +144,28 @@
   },
   "Tinker Tailor Soldier Spy": {
    "flat": [],
-   "free": [],
+   "free": [
+    "The Roku Channel"
+   ],
    "rent": true
   },
   "Sicario: Day of the Soldado": {
    "flat": [
-    "Philo",
-    "Starz",
-    "Starz Amazon Channel",
-    "Starz Apple TV channel",
-    "Starz Roku Premium Channel"
+    "Starz Apple TV channel"
    ],
-   "free": [],
+   "free": [
+    "Tubi TV"
+   ],
    "rent": true
   },
   "Kingsman: The Secret Service": {
-   "flat": [],
+   "flat": [
+    "fuboTV",
+    "FXNow"
+   ],
    "free": [],
    "rent": true
   }
- }
+ },
+ "_source": "film_titles.watch_providers (TMDB, US) for film_watchlist status='queued', plus film_services where active. Pulled via vault_pull()."
 }

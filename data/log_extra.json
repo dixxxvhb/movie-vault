@@ -1,16 +1,16 @@
 {
- "_source": "film_log joined to film_ledger_panels on title_id, pulled 2026-08-26. vibe_tags verbatim; rewatch = film_log.is_rewatch. emotional_key added 2026-09-04 (seven values: tense/dread/fun/cozy/awe/sad/camp).",
  "films": {
   "game": {
+   "key": "tense",
    "vibes": [
     "twisty",
     "well-made",
     "predictable"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
   },
   "moon": {
+   "key": "sad",
    "vibes": [
     "one-man-show",
     "sci-fi",
@@ -19,10 +19,10 @@
     "staged-not-explained",
     "gorgeous"
    ],
-   "rewatch": false,
-   "key": "sad"
+   "rewatch": false
   },
   "stby": {
+   "key": "camp",
    "vibes": [
     "unguessable",
     "third-act-swerve",
@@ -30,10 +30,10 @@
     "gonzo",
     "magical-realism"
    ],
-   "rewatch": false,
-   "key": "camp"
+   "rewatch": false
   },
   "tdkr": {
+   "key": "awe",
    "vibes": [
     "nolan",
     "epic",
@@ -42,15 +42,21 @@
     "villain",
     "well-made"
    ],
-   "rewatch": true,
-   "key": "awe"
+   "rewatch": true
   },
   "cmiyc": {
-   "vibes": [],
-   "rewatch": false,
-   "key": "cozy"
+   "key": "cozy",
+   "vibes": [
+    "con",
+    "fun",
+    "spielberg",
+    "classic",
+    "crowd-pleaser"
+   ],
+   "rewatch": false
   },
   "enemy": {
+   "key": "dread",
    "vibes": [
     "mind-bendy",
     "unguessable",
@@ -58,10 +64,10 @@
     "dread",
     "one-man-show"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
   },
   "ncfom": {
+   "key": "dread",
    "vibes": [
     "dread",
     "anti-crowd-pleaser",
@@ -69,10 +75,22 @@
     "split-watch",
     "masterful"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
+  },
+  "se7en": {
+   "key": "dread",
+   "vibes": [
+    "crime",
+    "dread",
+    "reveal-as-event",
+    "procedural",
+    "neo-noir",
+    "fincher"
+   ],
+   "rewatch": false
   },
   "batman": {
+   "key": "fun",
    "vibes": [
     "nolan",
     "epic",
@@ -81,19 +99,19 @@
     "fear",
     "crime"
    ],
-   "rewatch": true,
-   "key": "fun"
+   "rewatch": true
   },
   "br2049": {
+   "key": "sad",
    "vibes": [
     "slow burn",
     "gorgeous",
     "heartbreaking"
    ],
-   "rewatch": false,
-   "key": "sad"
+   "rewatch": false
   },
   "matrix": {
+   "key": "awe",
    "vibes": [
     "mind-blowing",
     "fun",
@@ -101,10 +119,10 @@
     "sci-fi",
     "first-watch-of-a-classic"
    ],
-   "rewatch": false,
-   "key": "awe"
+   "rewatch": false
   },
   "amadeus": {
+   "key": "sad",
    "vibes": [
     "oscar-canon",
     "music",
@@ -112,40 +130,40 @@
     "epic",
     "period"
    ],
-   "rewatch": false,
-   "key": "sad"
+   "rewatch": false
   },
   "memento": {
+   "key": "awe",
    "vibes": [
     "mind-bendy",
     "twisty",
     "structure-as-twist",
     "tragic"
    ],
-   "rewatch": false,
-   "key": "awe"
+   "rewatch": false
   },
   "sicario": {
+   "key": "tense",
    "vibes": [
     "tense",
     "brutal",
     "morally gray",
     "slow burn"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
   },
   "maverick": {
+   "key": "fun",
    "vibes": [
     "immersive",
     "action",
     "crowd-pleaser",
     "over-the-top"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "niceguys": {
+   "key": "fun",
    "vibes": [
     "comedy",
     "crime",
@@ -153,10 +171,10 @@
     "buddy",
     "daytime"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "oblivion": {
+   "key": "fun",
    "vibes": [
     "space",
     "high-tech",
@@ -165,10 +183,10 @@
     "kosinski",
     "momentum"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "pressure": {
+   "key": "tense",
    "vibes": [
     "historical-drama",
     "wwii",
@@ -176,15 +194,21 @@
     "one-room-tension",
     "accidental-watch"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
   },
   "stardust": {
-   "vibes": [],
-   "rewatch": true,
-   "key": "cozy"
+   "key": "cozy",
+   "vibes": [
+    "storybook",
+    "fable",
+    "score-driven",
+    "camp",
+    "rewatch"
+   ],
+   "rewatch": true
   },
   "sunshine": {
+   "key": "fun",
    "vibes": [
     "space-thriller",
     "sciencey",
@@ -192,20 +216,20 @@
     "third-act-swerve",
     "dying-sun"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "triangle": {
+   "key": "dread",
    "vibes": [
     "time-loop",
     "structural",
     "midday-watch",
     "wtf-delivered"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
   },
   "barbarian": {
+   "key": "tense",
    "vibes": [
     "horror",
     "structure-swing",
@@ -215,29 +239,43 @@
     "guessing-machine",
     "ronettes-funeral"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
   },
   "coherence": {
+   "key": "tense",
    "vibes": [
     "mind-bendy",
     "unguessable",
     "paranoid",
     "low-budget-miracle"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
   },
   "exmachina": {
+   "key": "tense",
    "vibes": [
     "mind-bendy",
     "tense",
     "three-hander"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
+  },
+  "gladiator": {
+   "key": "awe",
+   "vibes": [
+    "awe",
+    "epic",
+    "villain-forward",
+    "revenge",
+    "historical",
+    "score-driven",
+    "oscar-canon",
+    "arena"
+   ],
+   "rewatch": false
   },
   "malignant": {
+   "key": "camp",
    "vibes": [
     "twisty",
     "predictable",
@@ -246,10 +284,10 @@
     "over-the-top",
     "villain"
    ],
-   "rewatch": false,
-   "key": "camp"
+   "rewatch": false
   },
   "obsession": {
+   "key": "camp",
    "vibes": [
     "horror-comedy",
     "crowd-pleaser",
@@ -257,15 +295,34 @@
     "monkeys-paw",
     "low-budget"
    ],
-   "rewatch": false,
-   "key": "camp"
+   "rewatch": false
   },
   "rogue-one": {
-   "vibes": [],
-   "rewatch": false,
-   "key": "fun"
+   "key": "fun",
+   "vibes": [
+    "sci-fi",
+    "spectacle",
+    "ensemble",
+    "tragic",
+    "fun"
+   ],
+   "rewatch": false
+  },
+  "spotlight": {
+   "key": "tense",
+   "vibes": [
+    "tense",
+    "true-story",
+    "procedural",
+    "newsroom",
+    "ensemble",
+    "talky",
+    "institution-vs-individual"
+   ],
+   "rewatch": false
   },
   "the-sting": {
+   "key": "fun",
    "vibes": [
     "con",
     "crackling",
@@ -273,10 +330,10 @@
     "classic",
     "staged-not-explained"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "darkknight": {
+   "key": "awe",
    "vibes": [
     "nolan",
     "epic",
@@ -285,10 +342,10 @@
     "villain",
     "chaos"
    ],
-   "rewatch": true,
-   "key": "awe"
+   "rewatch": true
   },
   "hereditary": {
+   "key": "dread",
    "vibes": [
     "dread",
     "slow-burn",
@@ -297,10 +354,22 @@
     "coronation",
     "endurance-event"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
+  },
+  "inside-man": {
+   "key": "fun",
+   "vibes": [
+    "heist",
+    "con",
+    "twisty",
+    "fun",
+    "villain-forward",
+    "slick"
+   ],
+   "rewatch": false
   },
   "poorthings": {
+   "key": "awe",
    "vibes": [
     "weird",
     "audacious",
@@ -308,10 +377,10 @@
     "fable",
     "pre-social"
    ],
-   "rewatch": false,
-   "key": "awe"
+   "rewatch": false
   },
   "silverlake": {
+   "key": "dread",
    "vibes": [
     "weird",
     "conspiracy",
@@ -319,10 +388,10 @@
     "la",
     "surreal"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
   },
   "baby-driver": {
+   "key": "fun",
    "vibes": [
     "music-sync",
     "choreographed",
@@ -331,10 +400,10 @@
     "iconic-soundtrack",
     "fun"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "bullettrain": {
+   "key": "fun",
    "vibes": [
     "action-comedy",
     "assassins",
@@ -342,10 +411,36 @@
     "choreography",
     "fun-deck"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
+  },
+  "frost-nixon": {
+   "key": "tense",
+   "vibes": [
+    "tense",
+    "talky-tense",
+    "two-hander",
+    "true-story",
+    "villain-forward",
+    "oscar-canon",
+    "based-on-a-play",
+    "rental"
+   ],
+   "rewatch": false
+  },
+  "in-the-grey": {
+   "key": "fun",
+   "vibes": [
+    "fun",
+    "daddies",
+    "rough-draft-script",
+    "weak-lead",
+    "guy-ritchie",
+    "his-own-rental"
+   ],
+   "rewatch": false
   },
   "source-code": {
+   "key": "fun",
    "vibes": [
     "sci-fi",
     "time-loop",
@@ -354,10 +449,21 @@
     "solo night",
     "structure-as-twist"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
+  },
+  "the-amateur": {
+   "key": "fun",
+   "vibes": [
+    "fun",
+    "well-made",
+    "one-man-show",
+    "spy",
+    "revenge"
+   ],
+   "rewatch": false
   },
   "annihilation": {
+   "key": "dread",
    "vibes": [
     "gorgeous",
     "weird",
@@ -365,10 +471,10 @@
     "mind-bendy",
     "cosmic-horror"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
   },
   "nightcrawler": {
+   "key": "dread",
    "vibes": [
     "dread",
     "morally gray",
@@ -376,10 +482,10 @@
     "neo-noir",
     "satire"
    ],
-   "rewatch": false,
-   "key": "dread"
+   "rewatch": false
   },
   "the-departed": {
+   "key": "tense",
    "vibes": [
     "momentum",
     "paranoia",
@@ -388,10 +494,21 @@
     "crime",
     "scorsese"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
+  },
+  "the-big-short": {
+   "key": "fun",
+   "vibes": [
+    "satire",
+    "tonal-morph",
+    "ensemble",
+    "fun",
+    "true-story"
+   ],
+   "rewatch": false
   },
   "disclosure-day": {
+   "key": "camp",
    "vibes": [
     "first contact",
     "exposition dump",
@@ -399,10 +516,10 @@
     "daytime watch",
     "spielberg"
    ],
-   "rewatch": false,
-   "key": "camp"
+   "rewatch": false
   },
   "predestination": {
+   "key": "awe",
    "vibes": [
     "mind-bender",
     "circular",
@@ -410,10 +527,23 @@
     "solo night",
     "Snook showcase"
    ],
-   "rewatch": false,
-   "key": "awe"
+   "rewatch": false
+  },
+  "la-confidential": {
+   "key": "tense",
+   "vibes": [
+    "crime",
+    "ensemble",
+    "twisty",
+    "noir",
+    "morally gray",
+    "la",
+    "oscar-canon"
+   ],
+   "rewatch": false
   },
   "minority-report": {
+   "key": "tense",
    "vibes": [
     "sci-fi",
     "noir",
@@ -422,10 +552,34 @@
     "big-swing",
     "epic"
    ],
-   "rewatch": false,
-   "key": "tense"
+   "rewatch": false
+  },
+  "operation-finale": {
+   "key": "tense",
+   "vibes": [
+    "two-face",
+    "true-story",
+    "procedural",
+    "chamber-piece"
+   ],
+   "rewatch": false
+  },
+  "inglourious-basterds": {
+   "key": "fun",
+   "vibes": [
+    "fun",
+    "chapter-structure",
+    "villain-forward",
+    "tonal-morph",
+    "revenge-fantasy",
+    "tarantino",
+    "historical",
+    "subtitles"
+   ],
+   "rewatch": false
   },
   "one-battle-after-another": {
+   "key": "fun",
    "vibes": [
     "momentum",
     "paranoia",
@@ -436,10 +590,10 @@
     "family-anchor",
     "pta"
    ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   },
   "masters-of-the-universe-2026": {
+   "key": "camp",
    "vibes": [
     "camp",
     "fun",
@@ -447,67 +601,8 @@
     "villain-forward",
     "queer-read"
    ],
-   "rewatch": false,
-   "key": "camp"
-  },
-  "the-big-short": {
-   "vibes": [
-    "satire",
-    "tonal-morph",
-    "ensemble",
-    "fun",
-    "true-story"
-   ],
-   "rewatch": false,
-   "key": "fun"
-  },
-  "la-confidential": {
-   "vibes": [
-    "crime",
-    "ensemble",
-    "twisty",
-    "noir",
-    "morally gray",
-    "la",
-    "oscar-canon"
-   ],
-   "rewatch": false,
-   "key": "tense"
-  },
-  "se7en": {
-   "vibes": [
-    "crime",
-    "dread",
-    "reveal-as-event",
-    "procedural",
-    "neo-noir",
-    "fincher"
-   ],
-   "rewatch": false,
-   "key": "dread"
-  },
-  "inside-man": {
-   "vibes": [
-    "heist",
-    "con",
-    "twisty",
-    "fun",
-    "villain-forward",
-    "slick"
-   ],
-   "rewatch": false,
-   "key": "fun"
-  },
-  "the-amateur": {
-   "vibes": [
-    "fun",
-    "well-made",
-    "one-man-show",
-    "spy",
-    "revenge"
-   ],
-   "rewatch": false,
-   "key": "fun"
+   "rewatch": false
   }
- }
+ },
+ "_source": "film_log joined to film_ledger_panels on title_id. vibe_tags verbatim; rewatch = film_log.is_rewatch; key = film_log.emotional_key. Pulled via vault_pull()."
 }

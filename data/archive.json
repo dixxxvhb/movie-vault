@@ -1,1195 +1,1306 @@
 {
- "_source": "film_titles where seen_before and no film_log row, pulled 2026-08-26 (v3: memory_score/seen_bucket columns are the split; seen_note prose parse retired).",
+ "_source": "film_titles where seen_before and no film_log row. memory_score/seen_bucket columns are the split. Pulled via vault_pull().",
  "archive": [
   {
    "slug": "10-cloverfield-lane",
-   "title": "10 Cloverfield Lane",
    "year": 2016,
-   "seen_note": "confirmed seen 2026-08-10 during pitch; no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/q8A39vcBDruhvoDTJd6L8a4lnTi.jpg",
+   "title": "10 Cloverfield Lane",
    "genres": [
     "Thriller",
     "Science Fiction",
     "Drama",
     "Horror"
    ],
+   "poster": "/q8A39vcBDruhvoDTJd6L8a4lnTi.jpg",
+   "runtime": 104,
    "director": [
     "Dan Trachtenberg"
    ],
-   "runtime": 104
+   "seen_note": "confirmed seen 2026-08-10 during pitch; no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "apollo-13",
-   "title": "Apollo 13",
    "year": 1995,
-   "seen_note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/tVeKscCm2fY1xDXZk8PgnZ87h9S.jpg",
+   "title": "Apollo 13",
    "genres": [
     "Drama",
     "History"
    ],
+   "poster": "/tVeKscCm2fY1xDXZk8PgnZ87h9S.jpg",
+   "runtime": 140,
    "director": [
     "Ron Howard"
    ],
-   "runtime": 140
+   "seen_note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
+   "slug": "argo",
+   "year": 2012,
+   "title": "Argo",
+   "genres": [
+    "Drama",
+    "Thriller"
+   ],
+   "poster": "/m5gPWFZFIp4UJFABgWyLkbXv8GX.jpg",
+   "runtime": 120,
+   "director": [
+    "Ben Affleck"
+   ],
+   "seen_note": "registry gap caught at pitch, 2026-08-28: \"i LOVE LOVE LOVE argo.\" no memory score given yet -- 2026-09-09, second time: \"i LOVEEEEE argo!! ARGOFUCKYOURSELF\". Still no number. -- 2026-09-09: memory score 9.9, \"for sure.\"",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.9
   },
   {
    "slug": "armageddon",
-   "title": "Armageddon",
    "year": 1998,
-   "seen_note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/eTM3qtGhDU8cvjpoa6KEt5E2auU.jpg",
+   "title": "Armageddon",
    "genres": [
     "Action",
     "Science Fiction",
     "Adventure"
    ],
+   "poster": "/eTM3qtGhDU8cvjpoa6KEt5E2auU.jpg",
+   "runtime": 151,
    "director": [
     "Michael Bay"
    ],
-   "runtime": 151
+   "seen_note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "arrival",
-   "title": "Arrival",
    "year": 2016,
-   "seen_note": "vault archive — memory 10.0, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 10,
-   "seen_bucket": "R",
-   "poster": "/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
+   "title": "Arrival",
    "genres": [
     "Drama",
     "Science Fiction",
     "Mystery"
    ],
+   "poster": "/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
+   "runtime": 116,
    "director": [
     "Denis Villeneuve"
    ],
-   "runtime": 116
+   "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 10
   },
   {
    "slug": "black-swan",
-   "title": "Black Swan",
    "year": 2010,
-   "seen_note": "hazy — seen long ago",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "L",
-   "poster": "/viWheBd44bouiLCHgNMvahLThqx.jpg",
+   "title": "Black Swan",
    "genres": [
     "Drama",
     "Thriller",
     "Horror"
    ],
+   "poster": "/viWheBd44bouiLCHgNMvahLThqx.jpg",
+   "runtime": 108,
    "director": [
     "Darren Aronofsky"
    ],
-   "runtime": 108
+   "seen_note": "hazy — seen long ago",
+   "seen_bucket": "L",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "bugonia",
-   "title": "Bugonia",
    "year": 2025,
-   "seen_note": "vault archive — memory 9.5, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.5,
-   "seen_bucket": "R",
-   "poster": "/oxgsAQDAAxA92mFGYCZllgWkH9J.jpg",
+   "title": "Bugonia",
    "genres": [
     "Science Fiction",
     "Thriller",
     "Comedy"
    ],
+   "poster": "/oxgsAQDAAxA92mFGYCZllgWkH9J.jpg",
+   "runtime": 119,
    "director": [
     "Yorgos Lanthimos"
    ],
-   "runtime": 119
+   "seen_note": "vault archive — memory 9.5, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.5
+  },
+  {
+   "slug": "burn-after-reading",
+   "year": 2008,
+   "title": "Burn After Reading",
+   "genres": [
+    "Comedy",
+    "Drama"
+   ],
+   "poster": "/jdwSkQu3XirmX18MNj8CqFWsCk.jpg",
+   "runtime": 96,
+   "director": [
+    "Ethan Coen",
+    "Joel Coen"
+   ],
+   "seen_note": "Sep 22 2026: \"ive only ever seen burn after reading but it was a LONG time ago but i remember enjoying.\"",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "center-stage",
-   "title": "Center Stage",
    "year": 2000,
-   "seen_note": "vault archive — memory 9.2",
-   "abandon_note": null,
-   "memory_score": 9.2,
-   "seen_bucket": "?",
-   "poster": "/95Et0t08Nv6S8FD593HpXyvcRt8.jpg",
+   "title": "Center Stage",
    "genres": [
     "Drama",
     "Music"
    ],
+   "poster": "/95Et0t08Nv6S8FD593HpXyvcRt8.jpg",
+   "runtime": 115,
    "director": [
     "Nicholas Hytner"
    ],
-   "runtime": 115
+   "seen_note": "vault archive — memory 9.2",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.2
   },
   {
    "slug": "chicago",
-   "title": "Chicago",
    "year": 2002,
-   "seen_note": "vault archive — memory 9.6",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "?",
-   "poster": "/3ED8cWCXY9zkx77Sd0N5qMbsdDP.jpg",
+   "title": "Chicago",
    "genres": [
     "Comedy",
     "Crime",
     "Drama"
    ],
+   "poster": "/3ED8cWCXY9zkx77Sd0N5qMbsdDP.jpg",
+   "runtime": 113,
    "director": [
     "Rob Marshall"
    ],
-   "runtime": 113
+   "seen_note": "vault archive — memory 9.6",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "conclave",
-   "title": "Conclave",
    "year": 2024,
-   "seen_note": "vault archive — memory 9.6, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "R",
-   "poster": "/m5x8D0bZ3eKqIVWZ5y7TnZ2oTVg.jpg",
+   "title": "Conclave",
    "genres": [
     "Drama",
     "Thriller"
    ],
+   "poster": "/m5x8D0bZ3eKqIVWZ5y7TnZ2oTVg.jpg",
+   "runtime": 120,
    "director": [
     "Edward Berger"
    ],
-   "runtime": 120
+   "seen_note": "vault archive — memory 9.6, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "contact",
-   "title": "Contact",
    "year": 1997,
-   "seen_note": "vault archive — memory 10.0, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 10,
-   "seen_bucket": "R",
-   "poster": "/bCpMIywuNZeWt3i5UMLEIc0VSwM.jpg",
+   "title": "Contact",
    "genres": [
     "Drama",
     "Science Fiction",
     "Mystery"
    ],
+   "poster": "/bCpMIywuNZeWt3i5UMLEIc0VSwM.jpg",
+   "runtime": 150,
    "director": [
     "Robert Zemeckis"
    ],
-   "runtime": 150
+   "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 10
   },
   {
    "slug": "cosmos",
-   "title": "Cosmos",
    "year": 2019,
-   "seen_note": null,
-   "abandon_note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/kDAr2tO1hfZKeDBunuK6hnBFSPY.jpg",
+   "title": "Cosmos",
    "genres": [
     "Science Fiction",
     "Mystery"
    ],
+   "poster": "/kDAr2tO1hfZKeDBunuK6hnBFSPY.jpg",
+   "runtime": 128,
    "director": [
     "Zander Weaver",
     "Elliot Weaver"
    ],
-   "runtime": 128
+   "seen_note": null,
+   "seen_bucket": null,
+   "abandon_note": "Abandoned Aug 19 with ~20-30 min left. \"it was not good or fun... all so stupid and no one cares.\" Never re-pitch.",
+   "memory_score": null
   },
   {
    "slug": "deep-impact",
-   "title": "Deep Impact",
    "year": 1998,
-   "seen_note": "vault archive — memory 10.0, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 10,
-   "seen_bucket": "R",
-   "poster": "/a3vQS7JKqlOb3MdVJHuTCP9s7Mg.jpg",
+   "title": "Deep Impact",
    "genres": [
     "Action",
     "Drama",
     "Science Fiction"
    ],
+   "poster": "/a3vQS7JKqlOb3MdVJHuTCP9s7Mg.jpg",
+   "runtime": 122,
    "director": [
     "Mimi Leder"
    ],
-   "runtime": 122
+   "seen_note": "vault archive — memory 10.0, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 10
   },
   {
    "slug": "district-9",
-   "title": "District 9",
    "year": 2009,
-   "seen_note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/tuGlQkqLxnodDSk6mp5c2wvxUEd.jpg",
+   "title": "District 9",
    "genres": [
     "Science Fiction"
    ],
+   "poster": "/tuGlQkqLxnodDSk6mp5c2wvxUEd.jpg",
+   "runtime": 112,
    "director": [
     "Neill Blomkamp"
    ],
-   "runtime": 112
+   "seen_note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "dont-look-up",
-   "title": "Don't Look Up",
    "year": 2021,
-   "seen_note": "vault archive — memory 9.6, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "R",
-   "poster": "/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg",
+   "title": "Don't Look Up",
    "genres": [
     "Comedy",
     "Science Fiction",
     "Drama"
    ],
+   "poster": "/th4E1yqsE8DGpAseLiUrI60Hf8V.jpg",
+   "runtime": 138,
    "director": [
     "Adam McKay"
    ],
-   "runtime": 138
+   "seen_note": "vault archive — memory 9.6, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "dune",
-   "title": "Dune",
    "year": 2021,
-   "seen_note": "vault archive — memory 9.7, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.7,
-   "seen_bucket": "R",
-   "poster": "/gDzOcq0pfeCeqMBwKIJlSmQpjkZ.jpg",
+   "title": "Dune",
    "genres": [
     "Science Fiction",
     "Adventure",
     "War"
    ],
+   "poster": "/gDzOcq0pfeCeqMBwKIJlSmQpjkZ.jpg",
+   "runtime": 155,
    "director": [
     "Denis Villeneuve"
    ],
-   "runtime": 155
+   "seen_note": "vault archive — memory 9.7, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.7
   },
   {
    "slug": "dune-part-two",
-   "title": "Dune: Part Two",
    "year": 2024,
-   "seen_note": "vault archive — memory 9.9, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.9,
-   "seen_bucket": "R",
-   "poster": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+   "title": "Dune: Part Two",
    "genres": [
     "Science Fiction",
     "Adventure"
    ],
+   "poster": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+   "runtime": 167,
    "director": [
     "Denis Villeneuve"
    ],
-   "runtime": 167
+   "seen_note": "vault archive — memory 9.9, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.9
   },
   {
    "slug": "edge-of-tomorrow",
-   "title": "Edge of Tomorrow",
    "year": 2014,
-   "seen_note": "hazy — seen a few years back, faded",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "F",
-   "poster": "/nBM9MMa2WCwvMG4IJ3eiGUdbPe6.jpg",
+   "title": "Edge of Tomorrow",
    "genres": [
     "Action",
     "Science Fiction"
    ],
+   "poster": "/nBM9MMa2WCwvMG4IJ3eiGUdbPe6.jpg",
+   "runtime": 114,
    "director": [
     "Doug Liman"
    ],
-   "runtime": 114
+   "seen_note": "hazy — seen a few years back, faded",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "eeaao",
-   "title": "Everything Everywhere All at Once",
    "year": 2022,
-   "seen_note": "vault archive — memory 9.4, seen a few years back",
-   "abandon_note": null,
-   "memory_score": 9.4,
-   "seen_bucket": "F",
-   "poster": "/u68AjlvlutfEIcpmbYpKcdi09ut.jpg",
+   "title": "Everything Everywhere All at Once",
    "genres": [
     "Action",
     "Adventure",
     "Science Fiction"
    ],
+   "poster": "/u68AjlvlutfEIcpmbYpKcdi09ut.jpg",
+   "runtime": 140,
    "director": [
     "Daniel Scheinert",
     "Daniel Kwan"
    ],
-   "runtime": 140
+   "seen_note": "vault archive — memory 9.4, seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.4
   },
   {
    "slug": "flowers-in-the-attic",
-   "title": "Flowers in the Attic",
    "year": 2014,
-   "seen_note": "vault archive — memory 4.3, the floor (John and Tori retaliation watch)",
-   "abandon_note": null,
-   "memory_score": 4.3,
-   "seen_bucket": "?",
-   "poster": "/owzDkkxL2DogC2mq1fgIvrlDcux.jpg",
+   "title": "Flowers in the Attic",
    "genres": [
     "Drama",
     "Mystery",
     "Thriller",
     "TV Movie"
    ],
+   "poster": "/owzDkkxL2DogC2mq1fgIvrlDcux.jpg",
+   "runtime": 90,
    "director": [
     "Deborah Chow"
    ],
-   "runtime": 90
+   "seen_note": "vault archive — memory 4.3, the floor (John and Tori retaliation watch)",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 4.3
   },
   {
    "slug": "get-out",
-   "title": "Get Out",
    "year": 2017,
-   "seen_note": "vault archive — memory 9.6",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "?",
-   "poster": "/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
+   "title": "Get Out",
    "genres": [
     "Mystery",
     "Thriller",
     "Horror"
    ],
+   "poster": "/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
+   "runtime": 104,
    "director": [
     "Jordan Peele"
    ],
-   "runtime": 104
+   "seen_note": "vault archive — memory 9.6",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "gone-girl",
-   "title": "Gone Girl",
    "year": 2014,
-   "seen_note": "vault archive — memory 9.6",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "?",
-   "poster": "/ts996lKsxvjkO2yiYG0ht4qAicO.jpg",
+   "title": "Gone Girl",
    "genres": [
     "Mystery",
     "Thriller",
     "Drama"
    ],
+   "poster": "/ts996lKsxvjkO2yiYG0ht4qAicO.jpg",
+   "runtime": 149,
    "director": [
     "David Fincher"
    ],
-   "runtime": 149
+   "seen_note": "vault archive — memory 9.6",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "gravity",
-   "title": "Gravity",
    "year": 2013,
-   "seen_note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/kZ2nZw8D681aphje8NJi8EfbL1U.jpg",
+   "title": "Gravity",
    "genres": [
     "Science Fiction",
     "Thriller",
     "Drama"
    ],
+   "poster": "/kZ2nZw8D681aphje8NJi8EfbL1U.jpg",
+   "runtime": 91,
    "director": [
     "Alfonso Cuarón"
    ],
-   "runtime": 91
+   "seen_note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "guardians-of-the-galaxy",
-   "title": "Guardians of the Galaxy",
    "year": 2014,
-   "seen_note": "seen — confirmed 2026-08-17 lightning round",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg",
+   "title": "Guardians of the Galaxy",
    "genres": [
     "Action",
     "Science Fiction",
     "Adventure"
    ],
+   "poster": "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg",
+   "runtime": 121,
    "director": [
     "James Gunn"
    ],
-   "runtime": 121
+   "seen_note": "seen — confirmed 2026-08-17 lightning round",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
+   "slug": "hidden-figures",
+   "year": 2016,
+   "title": "Hidden Figures",
+   "genres": [
+    "Drama",
+    "History"
+   ],
+   "poster": "/9lfz2W2uGjyow3am00rsPJ8iOyq.jpg",
+   "runtime": 127,
+   "director": [
+    "Theodore Melfi"
+   ],
+   "seen_note": "seen, buzzed on Sep 7 2026 pitch, no score given",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "inception",
-   "title": "Inception",
    "year": 2010,
-   "seen_note": "vault archive — memory 9.7, seen a few years back",
-   "abandon_note": null,
-   "memory_score": 9.7,
-   "seen_bucket": "F",
-   "poster": "/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
+   "title": "Inception",
    "genres": [
     "Action",
     "Science Fiction",
     "Adventure"
    ],
+   "poster": "/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
+   "runtime": 148,
    "director": [
     "Christopher Nolan"
    ],
-   "runtime": 148
+   "seen_note": "vault archive — memory 9.7, seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.7
   },
   {
    "slug": "interstellar",
-   "title": "Interstellar",
    "year": 2014,
-   "seen_note": "vault archive — memory 10.0",
-   "abandon_note": null,
-   "memory_score": 10,
-   "seen_bucket": "?",
-   "poster": "/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
+   "title": "Interstellar",
    "genres": [
     "Adventure",
     "Drama",
     "Science Fiction"
    ],
+   "poster": "/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
+   "runtime": 169,
    "director": [
     "Christopher Nolan"
    ],
-   "runtime": 169
+   "seen_note": "vault archive — memory 10.0",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 10
   },
   {
    "slug": "james-bond",
-   "title": "James Bond (the franchise)",
    "year": null,
-   "seen_note": "hazy — most seen and loved over decades, no number",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "?",
-   "poster": "/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg",
+   "title": "James Bond (the franchise)",
    "genres": [],
+   "poster": "/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg",
+   "runtime": null,
    "director": [],
-   "runtime": null
+   "seen_note": "hazy — most seen and loved over decades, no number",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "kingsman",
-   "title": "Kingsman: The Secret Service",
    "year": 2015,
-   "seen_note": "vault archive — memory 9.6; rewatch queued (his call)",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "F",
-   "poster": "/17i5YPTfHOjXoieArpATWGRhLj1.jpg",
+   "title": "Kingsman: The Secret Service",
    "genres": [
     "Crime",
     "Comedy",
     "Action",
     "Adventure"
    ],
+   "poster": "/17i5YPTfHOjXoieArpATWGRhLj1.jpg",
+   "runtime": 129,
    "director": [
     "Matthew Vaughn"
    ],
-   "runtime": 129
+   "seen_note": "vault archive — memory 9.6; rewatch queued (his call)",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "knives-out",
-   "title": "Knives Out",
    "year": 2019,
-   "seen_note": "hazy — seen a few years back, did not stick",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "F",
-   "poster": "/pThyQovXQrw2m0s9x82twj48Jq4.jpg",
+   "title": "Knives Out",
    "genres": [
     "Comedy",
     "Crime",
     "Mystery"
    ],
+   "poster": "/pThyQovXQrw2m0s9x82twj48Jq4.jpg",
+   "runtime": 131,
    "director": [
     "Rian Johnson"
    ],
-   "runtime": 131
+   "seen_note": "hazy — seen a few years back, did not stick",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "la-la-land",
-   "title": "La La Land",
    "year": 2016,
-   "seen_note": "hazy — seen a few years back",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "F",
-   "poster": "/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
+   "title": "La La Land",
    "genres": [
     "Comedy",
     "Drama",
     "Romance"
    ],
+   "poster": "/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
+   "runtime": 129,
    "director": [
     "Damien Chazelle"
    ],
-   "runtime": 129
+   "seen_note": "hazy — seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "life-of-pi",
-   "title": "Life of Pi",
    "year": 2012,
-   "seen_note": "hazy — seen long ago, load-bearing in his taste",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "L",
-   "poster": "/iLgRu4hhSr6V1uManX6ukDriiSc.jpg",
+   "title": "Life of Pi",
    "genres": [
     "Adventure",
     "Drama"
    ],
+   "poster": "/iLgRu4hhSr6V1uManX6ukDriiSc.jpg",
+   "runtime": 127,
    "director": [
     "Ang Lee"
    ],
-   "runtime": 127
+   "seen_note": "hazy — seen long ago, load-bearing in his taste",
+   "seen_bucket": "L",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "mad-max-fury-road",
-   "title": "Mad Max: Fury Road",
    "year": 2015,
-   "seen_note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "?",
-   "poster": "/ulcAi4dKpAjHwYGS08vNyx9H6I9.jpg",
+   "title": "Mad Max: Fury Road",
    "genres": [
     "Action",
     "Adventure",
     "Science Fiction"
    ],
+   "poster": "/ulcAi4dKpAjHwYGS08vNyx9H6I9.jpg",
+   "runtime": 121,
    "director": [
     "George Miller"
    ],
-   "runtime": 121
+   "seen_note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "midsommar",
-   "title": "Midsommar",
    "year": 2019,
-   "seen_note": "hazy — seen a few years back, faded",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "F",
-   "poster": "/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",
+   "title": "Midsommar",
    "genres": [
     "Horror",
     "Drama",
     "Mystery"
    ],
+   "poster": "/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",
+   "runtime": 147,
    "director": [
     "Ari Aster"
    ],
-   "runtime": 147
+   "seen_note": "hazy — seen a few years back, faded",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "mission-impossible",
-   "title": "Mission: Impossible",
    "year": 1996,
-   "seen_note": "vault archive — whole franchise seen and loved, memory 9.5 as a run",
-   "abandon_note": null,
-   "memory_score": 9.5,
-   "seen_bucket": "?",
-   "poster": "/l5uxY5m5OInWpcExIpKG6AR3rgL.jpg",
+   "title": "Mission: Impossible",
    "genres": [
     "Adventure",
     "Action",
     "Thriller"
    ],
+   "poster": "/l5uxY5m5OInWpcExIpKG6AR3rgL.jpg",
+   "runtime": 111,
    "director": [
     "Brian De Palma"
    ],
-   "runtime": 111
+   "seen_note": "vault archive — whole franchise seen and loved, memory 9.5 as a run",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.5
   },
   {
    "slug": "moulin-rouge",
-   "title": "Moulin Rouge!",
    "year": 2001,
-   "seen_note": "hazy — seen long ago",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "L",
-   "poster": "/2kjM5CUZRIU5yOANUowrbJcRL9L.jpg",
+   "title": "Moulin Rouge!",
    "genres": [
     "Drama",
     "Romance",
     "Music"
    ],
+   "poster": "/2kjM5CUZRIU5yOANUowrbJcRL9L.jpg",
+   "runtime": 128,
    "director": [
     "Baz Luhrmann"
    ],
-   "runtime": 128
+   "seen_note": "hazy — seen long ago",
+   "seen_bucket": "L",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "nope",
-   "title": "Nope",
    "year": 2022,
-   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/AcKVlWaNVVVFQwro3nLXqPljcYA.jpg",
+   "title": "Nope",
    "genres": [
     "Horror",
     "Science Fiction",
     "Thriller"
    ],
+   "poster": "/AcKVlWaNVVVFQwro3nLXqPljcYA.jpg",
+   "runtime": 130,
    "director": [
     "Jordan Peele"
    ],
-   "runtime": 130
+   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "old",
-   "title": "Old",
    "year": 2021,
-   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/vclShucpUmPhdAOmKgf3B3Z4POD.jpg",
+   "title": "Old",
    "genres": [
     "Thriller",
     "Mystery",
     "Horror"
    ],
+   "poster": "/vclShucpUmPhdAOmKgf3B3Z4POD.jpg",
+   "runtime": 108,
    "director": [
     "M. Night Shyamalan"
    ],
-   "runtime": 108
+   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "oppenheimer",
-   "title": "Oppenheimer",
    "year": 2023,
-   "seen_note": "vault archive — memory 10.0",
-   "abandon_note": null,
-   "memory_score": 10,
-   "seen_bucket": "?",
-   "poster": "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+   "title": "Oppenheimer",
    "genres": [
     "Drama",
     "History"
    ],
+   "poster": "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+   "runtime": 181,
    "director": [
     "Christopher Nolan"
    ],
-   "runtime": 181
+   "seen_note": "vault archive — memory 10.0",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 10
   },
   {
    "slug": "parasite",
-   "title": "Parasite",
    "year": 2019,
-   "seen_note": "vault archive — memory 9.6 (corrected from 9.7 on the spot)",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "F",
-   "poster": "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+   "title": "Parasite",
    "genres": [
     "Comedy",
     "Thriller",
     "Drama"
    ],
+   "poster": "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
+   "runtime": 133,
    "director": [
     "Bong Joon Ho"
    ],
-   "runtime": 133
+   "seen_note": "vault archive — memory 9.6 (corrected from 9.7 on the spot)",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "planet-of-the-apes",
-   "title": "Planet of the Apes (the modern trilogy)",
    "year": null,
-   "seen_note": "vault archive — memory 8.9, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 8.9,
-   "seen_bucket": "R",
-   "poster": "/oqA45qMyyo1TtrnVEBKxqmTPhbN.jpg",
+   "title": "Planet of the Apes (the modern trilogy)",
    "genres": [],
+   "poster": "/oqA45qMyyo1TtrnVEBKxqmTPhbN.jpg",
+   "runtime": null,
    "director": [],
-   "runtime": null
+   "seen_note": "vault archive — memory 8.9, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 8.9
   },
   {
    "slug": "prisoners",
-   "title": "Prisoners",
    "year": 2013,
-   "seen_note": "hazy — seen; standing rule: NEVER pitch, only Dixon raises it",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "?",
-   "poster": "/uhviyknTT5cEQXbn6vWIqfM4vGm.jpg",
+   "title": "Prisoners",
    "genres": [
     "Drama",
     "Thriller",
     "Crime"
    ],
+   "poster": "/uhviyknTT5cEQXbn6vWIqfM4vGm.jpg",
+   "runtime": 153,
    "director": [
     "Denis Villeneuve"
    ],
-   "runtime": 153
+   "seen_note": "hazy — seen; standing rule: NEVER pitch, only Dixon raises it",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "project-hail-mary",
-   "title": "Project Hail Mary",
    "year": 2026,
-   "seen_note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/yihdXomYb5kTeSivtFndMy5iDmf.jpg",
+   "title": "Project Hail Mary",
    "genres": [
     "Science Fiction",
     "Adventure"
    ],
+   "poster": "/yihdXomYb5kTeSivtFndMy5iDmf.jpg",
+   "runtime": 157,
    "director": [
     "Phil Lord",
     "Christopher Miller"
    ],
-   "runtime": 157
+   "seen_note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "saw",
-   "title": "Saw",
    "year": 2004,
-   "seen_note": "vault archive — memory 9.3",
-   "abandon_note": null,
-   "memory_score": 9.3,
-   "seen_bucket": "?",
-   "poster": "/rLNSOudrayDBo1uqXjrhxcjODIC.jpg",
+   "title": "Saw",
    "genres": [
     "Horror",
     "Mystery",
     "Crime"
    ],
+   "poster": "/rLNSOudrayDBo1uqXjrhxcjODIC.jpg",
+   "runtime": 103,
    "director": [
     "James Wan"
    ],
-   "runtime": 103
+   "seen_note": "vault archive — memory 9.3",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.3
   },
   {
    "slug": "shutter-island",
-   "title": "Shutter Island",
    "year": 2010,
-   "seen_note": "hazy — seen long ago, rewatch could be loud",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "L",
-   "poster": "/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg",
+   "title": "Shutter Island",
    "genres": [
     "Drama",
     "Thriller",
     "Mystery"
    ],
+   "poster": "/nrmXQ0zcZUL8jFLrakWc90IR8z9.jpg",
+   "runtime": 138,
    "director": [
     "Martin Scorsese"
    ],
-   "runtime": 138
+   "seen_note": "hazy — seen long ago, rewatch could be loud",
+   "seen_bucket": "L",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "sinners",
-   "title": "Sinners",
    "year": 2025,
-   "seen_note": "confirmed seen 2026-08-14 at pick time, no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
+   "title": "Sinners",
    "genres": [
     "Horror",
     "Action",
     "Thriller"
    ],
+   "poster": "/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
+   "runtime": 138,
    "director": [
     "Ryan Coogler"
    ],
-   "runtime": 138
+   "seen_note": "confirmed seen 2026-08-14 at pick time, no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "snowpiercer",
-   "title": "Snowpiercer",
    "year": 2013,
-   "seen_note": "vault archive — memory 9.4, SEEN AND LOVED buzz Jul 22",
-   "abandon_note": null,
-   "memory_score": 9.4,
-   "seen_bucket": "F",
-   "poster": "/kw6YQudA0TMcNmGUGy5XIw7zbnV.jpg",
+   "title": "Snowpiercer",
    "genres": [
     "Action",
     "Science Fiction",
     "Drama"
    ],
+   "poster": "/kw6YQudA0TMcNmGUGy5XIw7zbnV.jpg",
+   "runtime": 127,
    "director": [
     "Bong Joon Ho"
    ],
-   "runtime": 127
+   "seen_note": "vault archive — memory 9.4, SEEN AND LOVED buzz Jul 22",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.4
   },
   {
    "slug": "spider-verse",
-   "title": "Spider-Man: Into the Spider-Verse",
    "year": 2018,
-   "seen_note": "hazy — seen a few years back",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "F",
-   "poster": "/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
+   "title": "Spider-Man: Into the Spider-Verse",
    "genres": [
     "Animation",
     "Action",
     "Adventure",
     "Science Fiction"
    ],
+   "poster": "/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
+   "runtime": 117,
    "director": [
     "Bob Persichetti",
     "Peter Ramsey",
     "Rodney Rothman"
    ],
-   "runtime": 117
+   "seen_note": "hazy — seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "star-trek",
-   "title": "Star Trek",
    "year": 2009,
-   "seen_note": "seen — confirmed 2026-08-17 during pitch",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/9vaRPXj44Q2meHgt3VVfQufiHOJ.jpg",
+   "title": "Star Trek",
    "genres": [
     "Science Fiction",
     "Action",
     "Adventure"
    ],
+   "poster": "/9vaRPXj44Q2meHgt3VVfQufiHOJ.jpg",
+   "runtime": 127,
    "director": [
     "J.J. Abrams"
    ],
-   "runtime": 127
+   "seen_note": "seen — confirmed 2026-08-17 during pitch",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "step-up",
-   "title": "Step Up",
    "year": 2006,
-   "seen_note": "vault archive — memory 8.4",
-   "abandon_note": null,
-   "memory_score": 8.4,
-   "seen_bucket": "?",
-   "poster": "/fmw52kXk2kN8AQil7tgOD41gt4Q.jpg",
+   "title": "Step Up",
    "genres": [
     "Music",
     "Drama",
     "Romance",
     "Crime"
    ],
+   "poster": "/fmw52kXk2kN8AQil7tgOD41gt4Q.jpg",
+   "runtime": 104,
    "director": [
     "Anne Fletcher"
    ],
-   "runtime": 104
+   "seen_note": "vault archive — memory 8.4",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 8.4
   },
   {
    "slug": "tenet",
-   "title": "Tenet",
    "year": 2020,
-   "seen_note": "vault archive — memory 9.6, seen a few years back",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "F",
-   "poster": "/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
+   "title": "Tenet",
    "genres": [
     "Action",
     "Thriller",
     "Science Fiction"
    ],
+   "poster": "/aCIFMriQh8rvhxpN1IWGgvH0Tlg.jpg",
+   "runtime": 150,
    "director": [
     "Christopher Nolan"
    ],
-   "runtime": 150
+   "seen_note": "vault archive — memory 9.6, seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "bourne-trilogy",
-   "title": "The Bourne trilogy",
    "year": null,
-   "seen_note": "vault archive — memory 9.3, scored as a run",
-   "abandon_note": null,
-   "memory_score": 9.3,
-   "seen_bucket": "?",
-   "poster": "/aP8swke3gmowbkfZ6lmNidu0y9p.jpg",
+   "title": "The Bourne trilogy",
    "genres": [],
+   "poster": "/aP8swke3gmowbkfZ6lmNidu0y9p.jpg",
+   "runtime": null,
    "director": [],
-   "runtime": null
+   "seen_note": "vault archive — memory 9.3, scored as a run",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.3
   },
   {
    "slug": "the-cabin-in-the-woods",
-   "title": "The Cabin in the Woods",
    "year": 2012,
-   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/zZZe5wn0udlhMtdlDjN4NB72R6e.jpg",
+   "title": "The Cabin in the Woods",
    "genres": [
     "Horror",
     "Mystery",
     "Comedy"
    ],
+   "poster": "/zZZe5wn0udlhMtdlDjN4NB72R6e.jpg",
+   "runtime": 95,
    "director": [
     "Drew Goddard"
    ],
-   "runtime": 95
+   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "dragon-tattoo",
-   "title": "The Girl with the Dragon Tattoo",
    "year": 2011,
-   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/8bokS83zGdhaXgN9tjidUKmAftW.jpg",
+   "title": "The Girl with the Dragon Tattoo",
    "genres": [
     "Thriller",
     "Crime",
     "Mystery"
    ],
+   "poster": "/8bokS83zGdhaXgN9tjidUKmAftW.jpg",
+   "runtime": 158,
    "director": [
     "David Fincher"
    ],
-   "runtime": 158
+   "seen_note": "confirmed seen 2026-08-12 at pick time, no memory score yet",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
+   "slug": "the-imitation-game",
+   "year": 2014,
+   "title": "The Imitation Game",
+   "genres": [
+    "History",
+    "Drama",
+    "Thriller",
+    "War"
+   ],
+   "poster": "/zSqJ1qFq8NXFfi7JeIYMlzyR0dx.jpg",
+   "runtime": 113,
+   "director": [
+    "Morten Tyldum"
+   ],
+   "seen_note": "seen, buzzed on Sep 7 2026 pitch, no score given",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "lotr",
-   "title": "The Lord of the Rings (trilogy)",
    "year": null,
-   "seen_note": "vault archive — memory 9.8, scored as a whole",
-   "abandon_note": null,
-   "memory_score": 9.8,
-   "seen_bucket": "?",
-   "poster": "/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+   "title": "The Lord of the Rings (trilogy)",
    "genres": [],
+   "poster": "/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
+   "runtime": null,
    "director": [],
-   "runtime": null
+   "seen_note": "vault archive — memory 9.8, scored as a whole",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.8
   },
   {
    "slug": "the-martian",
-   "title": "The Martian",
    "year": 2015,
-   "seen_note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "?",
-   "poster": "/fASz8A0yFE3QB6LgGoOfwvFSseV.jpg",
+   "title": "The Martian",
    "genres": [
     "Science Fiction",
     "Drama",
     "Adventure"
    ],
+   "poster": "/fASz8A0yFE3QB6LgGoOfwvFSseV.jpg",
+   "runtime": 141,
    "director": [
     "Ridley Scott"
    ],
-   "runtime": 141
+   "seen_note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "the-prestige",
-   "title": "The Prestige",
    "year": 2006,
-   "seen_note": "vault archive — memory 9.1, seen a few years back",
-   "abandon_note": null,
-   "memory_score": 9.1,
-   "seen_bucket": "F",
-   "poster": "/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg",
+   "title": "The Prestige",
    "genres": [
     "Drama",
     "Mystery",
     "Science Fiction"
    ],
+   "poster": "/Ag2B2KHKQPukjH7WutmgnnSNurZ.jpg",
+   "runtime": 130,
    "director": [
     "Christopher Nolan"
    ],
-   "runtime": 130
+   "seen_note": "vault archive — memory 9.1, seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.1
   },
   {
    "slug": "silence-of-the-lambs",
-   "title": "The Silence of the Lambs",
    "year": 1991,
-   "seen_note": "vault archive — memory 9.6",
-   "abandon_note": null,
-   "memory_score": 9.6,
-   "seen_bucket": "?",
-   "poster": "/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
+   "title": "The Silence of the Lambs",
    "genres": [
     "Crime",
     "Thriller",
     "Drama"
    ],
+   "poster": "/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
+   "runtime": 119,
    "director": [
     "Jonathan Demme"
    ],
-   "runtime": 119
+   "seen_note": "vault archive — memory 9.6",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.6
   },
   {
    "slug": "the-substance",
-   "title": "The Substance",
    "year": 2024,
-   "seen_note": "vault archive — memory 9.7, seen in the past year",
-   "abandon_note": null,
-   "memory_score": 9.7,
-   "seen_bucket": "R",
-   "poster": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
+   "title": "The Substance",
    "genres": [
     "Horror",
     "Science Fiction",
     "Thriller"
    ],
+   "poster": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
+   "runtime": 141,
    "director": [
     "Coralie Fargeat"
    ],
-   "runtime": 141
+   "seen_note": "vault archive — memory 9.7, seen in the past year",
+   "seen_bucket": "R",
+   "abandon_note": null,
+   "memory_score": 9.7
   },
   {
    "slug": "truman-show",
-   "title": "The Truman Show",
    "year": 1998,
-   "seen_note": "vault archive — memory 9.8",
-   "abandon_note": null,
-   "memory_score": 9.8,
-   "seen_bucket": "?",
-   "poster": "/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
+   "title": "The Truman Show",
    "genres": [
     "Comedy",
     "Drama"
    ],
+   "poster": "/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
+   "runtime": 103,
    "director": [
     "Peter Weir"
    ],
-   "runtime": 103
+   "seen_note": "vault archive — memory 9.8",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.8
   },
   {
    "slug": "titanic",
-   "title": "Titanic",
    "year": 1997,
-   "seen_note": "vault archive — memory 9.8",
-   "abandon_note": null,
-   "memory_score": 9.8,
-   "seen_bucket": "?",
-   "poster": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+   "title": "Titanic",
    "genres": [
     "Drama",
     "Romance"
    ],
+   "poster": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg",
+   "runtime": 194,
    "director": [
     "James Cameron"
    ],
-   "runtime": 194
+   "seen_note": "vault archive — memory 9.8",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 9.8
   },
   {
    "slug": "us",
-   "title": "Us",
    "year": 2019,
-   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/ux2dU1jQ2ACIMShzB3yP93Udpzc.jpg",
+   "title": "Us",
    "genres": [
     "Horror",
     "Mystery",
     "Thriller"
    ],
+   "poster": "/ux2dU1jQ2ACIMShzB3yP93Udpzc.jpg",
+   "runtime": 116,
    "director": [
     "Jordan Peele"
    ],
-   "runtime": 116
+   "seen_note": "seen — confirmed 2026-08-17 during slate pitch",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "war-of-the-worlds",
-   "title": "War of the Worlds",
    "year": 2005,
-   "seen_note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": null,
-   "poster": "/6Biy7R9LfumYshur3YKhpj56MpB.jpg",
+   "title": "War of the Worlds",
    "genres": [
     "Adventure",
     "Thriller",
     "Science Fiction"
    ],
+   "poster": "/6Biy7R9LfumYshur3YKhpj56MpB.jpg",
+   "runtime": 117,
    "director": [
     "Steven Spielberg"
    ],
-   "runtime": 117
+   "seen_note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
+   "slug": "weapons",
+   "year": 2025,
+   "title": "Weapons",
+   "genres": [
+    "Horror",
+    "Mystery"
+   ],
+   "poster": "/cpf7vsRZ0MYRQcnLWteD5jK9ymT.jpg",
+   "runtime": 129,
+   "director": [
+    "Zach Cregger"
+   ],
+   "seen_note": "seen it, said Sep 14 2026 when pitched",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "west-side-story",
-   "title": "West Side Story",
    "year": 1961,
-   "seen_note": "hazy — childhood",
-   "abandon_note": null,
-   "memory_score": null,
-   "seen_bucket": "C",
-   "poster": "/nzCMu6D5q60i2bVrIQ0DxlRSgCZ.jpg",
+   "title": "West Side Story",
    "genres": [
     "Crime",
     "Drama",
     "Romance"
    ],
+   "poster": "/nzCMu6D5q60i2bVrIQ0DxlRSgCZ.jpg",
+   "runtime": 153,
    "director": [
     "Jerome Robbins",
     "Robert Wise"
    ],
-   "runtime": 153
+   "seen_note": "hazy — childhood",
+   "seen_bucket": "C",
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "whiplash",
-   "title": "Whiplash",
    "year": 2014,
-   "seen_note": "archive addition — memory 8.7, rewatch queued per Dixon",
-   "abandon_note": null,
-   "memory_score": 8.7,
-   "seen_bucket": "?",
-   "poster": "/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
+   "title": "Whiplash",
    "genres": [
     "Drama",
     "Music",
     "Thriller"
    ],
+   "poster": "/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
+   "runtime": 107,
    "director": [
     "Damien Chazelle"
    ],
-   "runtime": 107
+   "seen_note": "archive addition — memory 8.7, rewatch queued per Dixon",
+   "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": 8.7
+  },
+  {
+   "slug": "zero-dark-thirty",
+   "year": 2012,
+   "title": "Zero Dark Thirty",
+   "genres": [
+    "Thriller",
+    "Drama"
+   ],
+   "poster": "/wNSdSSxowM3WIqmPJNg3RagYbwP.jpg",
+   "runtime": 157,
+   "director": [
+    "Kathryn Bigelow"
+   ],
+   "seen_note": "Sep 13 2026: \"i have seen and really fucking love!! top notch big fan.\" No memory score given yet.",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "zodiac",
-   "title": "Zodiac",
    "year": 2007,
-   "seen_note": "vault archive — memory 9.7, seen a few years back",
-   "abandon_note": null,
-   "memory_score": 9.7,
-   "seen_bucket": "F",
-   "poster": "/6YmeO4pB7XTh8P8F960O1uA14JO.jpg",
+   "title": "Zodiac",
    "genres": [
     "Crime",
     "Mystery",
     "Thriller"
    ],
+   "poster": "/6YmeO4pB7XTh8P8F960O1uA14JO.jpg",
+   "runtime": 157,
    "director": [
     "David Fincher"
    ],
-   "runtime": 157
+   "seen_note": "vault archive — memory 9.7, seen a few years back",
+   "seen_bucket": "F",
+   "abandon_note": null,
+   "memory_score": 9.7
   }
  ]
 }

@@ -1,11 +1,11 @@
 [
  {
-  "to": "The Dark Knight",
-  "from": "Amadeus",
-  "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
-  "weight": 1,
-  "relation": "obsession-with-a-rival",
-  "directional": false
+  "to": "Coherence",
+  "from": "Annihilation",
+  "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
+  "weight": 3,
+  "relation": "thin-ensemble",
+  "directional": true
  },
  {
   "to": "Sunshine",
@@ -14,22 +14,6 @@
   "weight": 3,
   "relation": "gorgeous-and-cold",
   "directional": false
- },
- {
-  "to": "Sorry to Bother You",
-  "from": "Annihilation",
-  "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
-  "weight": 2,
-  "relation": "thin-ensemble",
-  "directional": true
- },
- {
-  "to": "Coherence",
-  "from": "Annihilation",
-  "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
-  "weight": 3,
-  "relation": "thin-ensemble",
-  "directional": true
  },
  {
   "to": "The Dark Knight",
@@ -48,19 +32,147 @@
   "directional": false
  },
  {
-  "to": "The Vast of Night",
-  "from": "Coherence",
-  "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.",
-  "weight": 2,
-  "relation": "low-budget-wonder",
-  "directional": true
- },
- {
   "to": "Malignant",
   "from": "Disclosure Day",
   "note": "A Malignant-rule double violation: decoy hour plus exposition dump. Not a reveal, a zoom. Took the floor at 5.2.",
   "weight": 3,
   "relation": "reveal-as-event",
+  "directional": true
+ },
+ {
+  "to": "Annihilation",
+  "from": "Ex Machina",
+  "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
+  "weight": 3,
+  "relation": "garland",
+  "directional": false
+ },
+ {
+  "to": "Se7en",
+  "from": "Inside Man",
+  "note": "The guessing-night weekend bracket: fun con Friday, abyss Monday. Both detectives, both designs, opposite exits. The con he half-guessed and docked for it (8.4) against the sermon he partially decoded and it flattened him anyway (9.6). The bracket settled the doctrine: a twist dies when you see it coming, a design gets worse.",
+  "weight": 3,
+  "relation": "bracket",
+  "directional": true
+ },
+ {
+  "to": "The Departed",
+  "from": "L.A. Confidential",
+  "note": "Named in the debrief. Same lane as The Departed at 9.9: a department rotten from the top, cops who cannot tell which side they are performing. Different verdict on the exit. Scorsese lets nobody out. Hanson lets the animal drive to Arizona and keeps the honest one inside with a medal.",
+  "weight": 3,
+  "relation": "institutional-rot",
+  "directional": true
+ },
+ {
+  "to": "Sorry to Bother You",
+  "from": "Malignant",
+  "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
+  "weight": 3,
+  "relation": "reveal-as-event",
+  "directional": false
+ },
+ {
+  "to": "The Departed",
+  "from": "One Battle After Another",
+  "note": "The Departed formula in fresh skin. Momentum, paranoia, dark humor, a human anchor driving the machine. Pitched to chase the 9.9 and landed one tenth under it.",
+  "weight": 3,
+  "relation": "bloodline",
+  "directional": true
+ },
+ {
+  "to": "No Country for Old Men",
+  "from": "Sicario",
+  "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
+  "weight": 3,
+  "relation": "execution-meritocracy",
+  "directional": false
+ },
+ {
+  "to": "Moon",
+  "from": "Source Code",
+  "note": "He asked Moon for a moon2 with more explaining. Duncan Jones delivered it two years early: faster, flashier, bigger swerve, and a heart Moon kept thin. It landed two tenths under the original.",
+  "weight": 3,
+  "relation": "moon2",
+  "directional": true
+ },
+ {
+  "to": "One Battle After Another",
+  "from": "The Big Short",
+  "note": "He named the kinship unprompted, mid-debrief, one night apart: the same anesthetic-then-scalpel trick, quirky and cute and informative until the register flips and the joke becomes the accusation. OBAA runs it on a family, The Big Short runs it on the entire economy. One tenth apart on the wall.",
+  "weight": 3,
+  "relation": "tonal-morph kin",
+  "directional": true
+ },
+ {
+  "to": "The Dark Knight Rises",
+  "from": "The Dark Knight",
+  "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
+  "weight": 3,
+  "relation": "nolan-arc",
+  "directional": true
+ },
+ {
+  "to": "Batman Begins",
+  "from": "The Dark Knight Rises",
+  "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
+  "weight": 3,
+  "relation": "nolan-arc",
+  "directional": true
+ },
+ {
+  "to": "Memento",
+  "from": "The Departed",
+  "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
+  "weight": 3,
+  "relation": "calibration duel",
+  "directional": true
+ },
+ {
+  "to": "The Matrix",
+  "from": "The Departed",
+  "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
+  "weight": 3,
+  "relation": "displaced by decree",
+  "directional": true
+ },
+ {
+  "to": "Memento",
+  "from": "The Game",
+  "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
+  "weight": 3,
+  "relation": "antibodies",
+  "directional": true
+ },
+ {
+  "to": "The Game",
+  "from": "The Sting",
+  "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
+  "weight": 3,
+  "relation": "antibodies",
+  "directional": true
+ },
+ {
+  "to": "Sorry to Bother You",
+  "from": "The Sting",
+  "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
+  "weight": 3,
+  "relation": "reveal-as-event",
+  "directional": true
+ },
+ {
+  "to": "Sorry to Bother You",
+  "from": "Annihilation",
+  "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
+  "weight": 2,
+  "relation": "thin-ensemble",
+  "directional": true
+ },
+ {
+  "to": "The Vast of Night",
+  "from": "Coherence",
+  "note": "The Coherence lane: no money, all brains. Vast of Night is queued in it.",
+  "weight": 2,
+  "relation": "low-budget-wonder",
   "directional": true
  },
  {
@@ -72,28 +184,12 @@
   "directional": false
  },
  {
-  "to": "Annihilation",
-  "from": "Ex Machina",
-  "note": "Garland twice. Ex Machina closes its hand in one room. Annihilation opens it and lets the meaning shimmer away.",
-  "weight": 3,
-  "relation": "garland",
-  "directional": false
- },
- {
   "to": "Her",
   "from": "Ex Machina",
   "note": "Her completes the AI-feelings trilogy in the queue. The cold half and the warm half of the same question.",
   "weight": 2,
   "relation": "ai-feelings",
   "directional": true
- },
- {
-  "to": "Sorry to Bother You",
-  "from": "Malignant",
-  "note": "Comparably insane ideas. One opened a door and made him look, one had a doctor explain a chart. 5.4 versus 9.4 is the whole doctrine.",
-  "weight": 3,
-  "relation": "reveal-as-event",
-  "directional": false
  },
  {
   "to": "Run Lola Run",
@@ -120,27 +216,11 @@
   "directional": true
  },
  {
-  "to": "The Nice Guys",
-  "from": "Obsession",
-  "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
-  "weight": 1,
-  "relation": "guest-context",
-  "directional": true
- },
- {
   "to": "Sorry to Bother You",
   "from": "Poor Things",
   "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.",
   "weight": 2,
   "relation": "audacity",
-  "directional": false
- },
- {
-  "to": "No Country for Old Men",
-  "from": "Sicario",
-  "note": "Same desert, same dread, same refusal to flinch. Sicario is what happens when every hand closes.",
-  "weight": 3,
-  "relation": "execution-meritocracy",
   "directional": false
  },
  {
@@ -152,19 +232,11 @@
   "directional": true
  },
  {
-  "to": "The Dark Knight Rises",
-  "from": "The Dark Knight",
-  "note": "The ferries were the rehearsal. Rises runs the experiment city-wide for months.",
-  "weight": 3,
-  "relation": "nolan-arc",
-  "directional": true
- },
- {
-  "to": "Batman Begins",
-  "from": "The Dark Knight Rises",
-  "note": "The trilogy closes its own loop: he sided with Ra's in Begins, and Rises is that plan actually being run.",
-  "weight": 3,
-  "relation": "nolan-arc",
+  "to": "Predestination",
+  "from": "Source Code",
+  "note": "The sci-fi puzzle box bracket, one night apart. Predestination closes its loop into itself at 9.1; Source Code breaks its loop open into a new universe at 7.9. Same machine, opposite exits.",
+  "weight": 2,
+  "relation": "loop-bracket",
   "directional": true
  },
  {
@@ -173,14 +245,6 @@
   "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
   "weight": 2,
   "relation": "bad-memory-asset",
-  "directional": true
- },
- {
-  "to": "Memento",
-  "from": "The Game",
-  "note": "He grew up on the copies, not the originals. The Game paid the antibodies tax at 6.8; Memento is the machine the copies were built from.",
-  "weight": 3,
-  "relation": "antibodies",
   "directional": true
  },
  {
@@ -200,36 +264,12 @@
   "directional": false
  },
  {
-  "to": "Sorry to Bother You",
-  "from": "The Sting",
-  "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
-  "weight": 3,
-  "relation": "reveal-as-event",
-  "directional": true
- },
- {
   "to": "Sicario",
   "from": "The Sting",
   "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
   "weight": 2,
   "relation": "execution-meritocracy",
   "directional": true
- },
- {
-  "to": "The Game",
-  "from": "The Sting",
-  "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
-  "weight": 3,
-  "relation": "antibodies",
-  "directional": true
- },
- {
-  "to": "Bullet Train",
-  "from": "Top Gun: Maverick",
-  "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
-  "weight": 1,
-  "relation": "craft-blockbuster",
-  "directional": false
  },
  {
   "to": "Annihilation",
@@ -248,67 +288,27 @@
   "directional": true
  },
  {
-  "to": "Predestination",
-  "from": "Source Code",
-  "note": "The sci-fi puzzle box bracket, one night apart. Predestination closes its loop into itself at 9.1; Source Code breaks its loop open into a new universe at 7.9. Same machine, opposite exits.",
-  "weight": 2,
-  "relation": "loop-bracket",
+  "to": "The Dark Knight",
+  "from": "Amadeus",
+  "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
+  "weight": 1,
+  "relation": "obsession-with-a-rival",
+  "directional": false
+ },
+ {
+  "to": "The Nice Guys",
+  "from": "Obsession",
+  "note": "Group watches skew crowd-pleaser. Obsession was more John and Tori's speed; his solo lane runs headier.",
+  "weight": 1,
+  "relation": "guest-context",
   "directional": true
  },
  {
-  "to": "Moon",
-  "from": "Source Code",
-  "note": "He asked Moon for a moon2 with more explaining. Duncan Jones delivered it two years early: faster, flashier, bigger swerve, and a heart Moon kept thin. It landed two tenths under the original.",
-  "weight": 3,
-  "relation": "moon2",
-  "directional": true
- },
- {
-  "to": "Memento",
-  "from": "The Departed",
-  "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
-  "weight": 3,
-  "relation": "calibration duel",
-  "directional": true
- },
- {
-  "to": "The Matrix",
-  "from": "The Departed",
-  "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
-  "weight": 3,
-  "relation": "displaced by decree",
-  "directional": true
- },
- {
-  "to": "The Departed",
-  "from": "One Battle After Another",
-  "note": "The Departed formula in fresh skin. Momentum, paranoia, dark humor, a human anchor driving the machine. Pitched to chase the 9.9 and landed one tenth under it.",
-  "weight": 3,
-  "relation": "bloodline",
-  "directional": true
- },
- {
-  "to": "Se7en",
-  "from": "Inside Man",
-  "note": "The guessing-night weekend bracket: fun con Friday, abyss Monday. Both detectives, both designs, opposite exits. The con he half-guessed and docked for it (8.4) against the sermon he partially decoded and it flattened him anyway (9.6). The bracket settled the doctrine: a twist dies when you see it coming, a design gets worse.",
-  "weight": 3,
-  "relation": "bracket",
-  "directional": true
- },
- {
-  "to": "The Departed",
-  "from": "L.A. Confidential",
-  "note": "Named in the debrief. Same lane as The Departed at 9.9: a department rotten from the top, cops who cannot tell which side they are performing. Different verdict on the exit. Scorsese lets nobody out. Hanson lets the animal drive to Arizona and keeps the honest one inside with a medal.",
-  "weight": 3,
-  "relation": "institutional-rot",
-  "directional": true
- },
- {
-  "to": "One Battle After Another",
-  "from": "The Big Short",
-  "note": "He named the kinship unprompted, mid-debrief, one night apart: the same anesthetic-then-scalpel trick, quirky and cute and informative until the register flips and the joke becomes the accusation. OBAA runs it on a family, The Big Short runs it on the entire economy. One tenth apart on the wall.",
-  "weight": 3,
-  "relation": "tonal-morph kin",
-  "directional": true
+  "to": "Bullet Train",
+  "from": "Top Gun: Maverick",
+  "note": "The blockbuster wing: engineering you can feel. One builds the machine for sincerity, one for mischief.",
+  "weight": 1,
+  "relation": "craft-blockbuster",
+  "directional": false
  }
 ]

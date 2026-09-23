@@ -1,5 +1,4 @@
 {
- "_source": "film_log joined to film_ledger_panels on title_id, latest watch per slug (distinct on slug order by watched_at desc). Pulled 2026-08-26 from swjqlfcqvcrnydpyjyog. hot_take is VERBATIM Dixon, profanity intact. Five films appended 2026-09-04 (Se7en, Inside Man, The Big Short, The Amateur, L.A. Confidential).",
  "takes": {
   "game": {
    "context": "after Sicario; free with ads on YouTube",
@@ -28,6 +27,10 @@
   "ncfom": {
    "context": null,
    "hot_take": "SPLIT WATCH ASTERISK (Jul 18 night one, Jul 19 finish) — his verdict: splitting it was the mistake, momentum broke. First-watch read: \"i don't really get what all that was about... didn't really do much for me\" — then rated it 4.1 anyway once the wrong-protagonist/elegy architecture clicked. Craft respected, meal denied by design. Also: \"the bad guy with the fucking cunt ass bob.\" Flagged for a far-future one-sitting rewatch."
+  },
+  "se7en": {
+   "context": "solo, bracket night two, first watch with the box unspoiled",
+   "hot_take": "yes a really brilliant plot and WHATS IN THE BOXXXXX is so iconic i love love. brad pitt is incredible in this. that whole scene was just a masterclass."
   },
   "batman": {
    "context": "Second film of Jul 24, after The Nice Guys. Bought the Dark Knight trilogy by accident and started it instead of any of the four epics pitched (Apocalypse Now, Princess Mononoke, Beau Is Afraid, Suspiria). Long-gap rewatch; said most of it felt new. Sided with Ra's al Ghul on the burn-it-down argument. Praised the fear toxin portrayal as fully holding up. What felt new was the how and why, the mechanics; his memory had compressed it to cave, mountain, becomes batman.",
@@ -93,6 +96,10 @@
    "context": "double feature after Blade Runner 2049; free with ads on YouTube",
    "hot_take": "GURL ARE YOU AVA?!"
   },
+  "gladiator": {
+   "context": "solo, Sunday, Paramount+. Lead of the Sep 13 epic slate (seven cards, all epic lane, after he rejected the first three). His own Sep 9 narrow finally watched.",
+   "hot_take": "ugh so many good moments but finally getting to hear and see the context of ARE YOU NOT ENTERTAINED was iconic."
+  },
   "malignant": {
    "context": "Slot two of a Sunday double feature (after The Dark Knight Rises). Picked off a bizarre-and-fucked slate he asked for. NEW FLOOR: first film to score below The Game (6.8). Produced a permanent twist-calibration rule.",
    "hot_take": "Opening reaction: \"andddddd yikes. voldemort did it first and was way more chill about it haha\" Then the diagnosis: \"nahhhh it didn't really work for me. it kinda hands you the probablity of it being her the whole time fairly early on and then by the time we get to ole voldy on the back it's not the reveal i wanted it to be. but the killing got way cooler after that haha\""
@@ -105,6 +112,10 @@
    "context": null,
    "hot_take": "Really good and fun. \"A star wars movie without jedis....? what are we even doing here?\" — then immediately conceded the thesis: hallway scene certified absolutely badass, lands BECAUSE nobody has magic to answer it. First-ever Star Wars entry point, watched as the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holds his purge question, Andor waiting."
   },
+  "spotlight": {
+   "context": "solo, Sunday, YouTube free. Back half of a double after Gladiator (9.7). His own queue, pitched as lead of the true-story slate, ranked \"closest\", then chosen over The Report and Margin Call.",
+   "hot_take": "spotlight was soooo good. what a fucking story man."
+  },
   "the-sting": {
    "context": "solo, free on YouTube w/ ads. Benched twice before finally happening. Left a voice memo at minus-35 predicting a hidden con under the con, Luther alive, and Lonnegan in on it. Zero for three, delighted anyway. Identified Robert Redford via Barbra Streisand's husband and Jeremy Jordan.",
    "hot_take": "oooo i loved it so much!!!! i had 6 million ideas about what was happening and it really was just simply happening in front of me. the audience just doesn't see the full extent and magnitude of the con! so fun! and snyder getting FUCKED in the middle of it was just awesome. i KNEW the FBI place was a fucking build as well but just was under the wrong assumption haha"
@@ -116,6 +127,10 @@
   "hereditary": {
    "context": "Friday Aug 14 spectacle/shock slate, the free-on-Tubi backup pick over Uncut Gems",
    "hot_take": "WHAT THE FUCK MAN. Anxiety is not excitement, and I am not doing the homework."
+  },
+  "inside-man": {
+   "context": "solo, weekend bracket night one, self-picked from the guessing-night slate",
+   "hot_take": "okay so he basically just built a shitty apartment in the ground in a bank and lived there for a week to steal some diamonds and out a nazi?"
   },
   "poorthings": {
    "context": "Rental, weird night Thu Jul 23, his gut pick held against Titane / Sacred Deer / Annihilation challengers. Debrief: clocked the Oz black-and-white-to-color grammar himself; read Bella as fascinating, \"enviable and a lesson of what not to do at the same time\" (refined together to PRE-social, not antisocial: the anti-Leonard, zero self-deception, rules only kept if they survive her testing); Duncan arc hate-to-pity on schedule (shame economy bankruptcy); goat man sentenced gleefully. First film scored NATIVELY in the ten-point era. 9.3: alone on her own step, above Coherence, one tenth under Nightcrawler/StBY.",
@@ -133,9 +148,21 @@
    "context": "solo double feature night, rental",
    "hot_take": "love lemon and tangerine!!!! the tank engine shit was good. brad pitt was incredible. might watch Thomas episodes tonight."
   },
+  "frost-nixon": {
+   "context": "solo, Friday, his rental. Picked off the Sep 10 re-pitch slate (Valkyrie was Leonard's lead; he took the talky one).",
+   "hot_take": "enjoyed very muich. very clever. very smart. very intense. good watch overall!"
+  },
+  "in-the-grey": {
+   "context": "solo, weeknight, his own Prime rental. Set out for Valkyrie, got \"bamboozled\" by Gyllenhaal on the way. Not a Leonard pick. Reopened the fun lane himself. \"I would recommend this to a certain type of people without shame.\"",
+   "hot_take": "it was alright. daddies jake and henry were really the whole point. fun shooting and fighting and escaping etc but the script and plot felt very rough draft. entertaining and daddylicious but honestly the main character was the worst actress of them all and realy made you wonder why anyone was trying to save her hahaha"
+  },
   "source-code": {
    "context": "Fresh pitch same night, day 2 of dwdPS Season 1. The Moon bloodline pick.",
    "hot_take": "oooo this is a great movie / oh nooo so cheeeesy / love saves the day blah blah / then lame ending / then actual ending that is actually back ti pretty trippy and fun and woahhhhhh"
+  },
+  "the-amateur": {
+   "context": "solo, Saturday, self-found (no pitch), finished",
+   "hot_take": "solid movie. mostly enjoyed. very smart stuff which was fun although the tech seemed highly unrelalistic haha"
   },
   "annihilation": {
    "context": "solo watch, wiped after 6 hours of rehearsal",
@@ -149,6 +176,10 @@
    "context": "Divorce papers signed earlier that day. Asked for mind-blowing Oscar-tier. Solo watch, rental.",
    "hot_take": "woah woah woah wow wow holy fuck ... rat on rat on rat on rat and not believing anybody on not believing anybody. and just bullshit after bullshit. jesus christ, a fucking phenomenal movie"
   },
+  "the-big-short": {
+   "context": "solo weeknight, pitched and watched same night, Paramount+",
+   "hot_take": "yessss! so so similar to one battle after another in so many ways. so quirky and fun and cute and informative which really invites you to be open and learn new complicated things but not think too much about them. then holy fuck it opens up a whole crisis scenario play out over years that feel like real time. then it gets SOOOO SATISFYING and then not two seconds later it's like holy siht well fuck these people we have been loving from the get go are actually also just fucking idiot monsters who didn't realize if they bet against the ECONOMY there would be NO ECONOMY left to pay them out!!!!! like fucking idiots!!!!"
+  },
   "disclosure-day": {
    "context": "Friday afternoon double feature, slot 1. Amazon rental. NEW BOARD FLOOR, dethroning Malignant 5.4.",
    "hot_take": "holy fucking shit that was a terrible fucking movie hahaha ... it was all speech for like the last hour. then we finally get the big alien \"reveal\" but we have been seeing what they look like for 45 min. so this was just the biggest alien??? and like why? and who? and the house building? for fucking why? and then the animals?! i was too stunned by the stupidity i ddin't even notice hte john williams. which means he probably saw what a dumb fucking script it was too and phoned it in haha 5.2 for this bitch"
@@ -157,9 +188,21 @@
    "context": "dwd Season 1 opening night; emotional day, wanted a full brain takeover",
    "hot_take": "he her them are also the baby that is her he him"
   },
+  "la-confidential": {
+   "context": "Solo, Mon Aug 31. Picked off the Oscar slate, the 138-minute one, over the weeknight ceiling on purpose.",
+   "hot_take": "good movie!! jesus christ how ANY crimes got solved before fingerprints is just a goddamn miracle haha"
+  },
   "minority-report": {
    "context": "Thursday solo pick. Beat Leonard's guessing game with the \"saxophonus interruptus\" clue (the sax kid in the jetpack tenement raid). Leonard guessed Jurassic Park, then cited the wrong sax scene. Double fault, flawless victory Dixon. Sparked the resonance-not-craft rating doctrine.",
    "hot_take": "I liked that. That was a big, huge movie. I think overall just way too long. the whole pre cog thing just really never landed. And, like, the weird pre come, dizzy milk thing that they have to sit in... then she, like, turns into eleven from stranger things, and they go on a little adventure, and she's fine. And then, really, they're just crack kids. But then the final reveal of the guy, like, using the system against itself and doing the murder in the same way. Like, that all came together really nicely, and maybe that's why it had to be six hours long is to get us to that point."
+  },
+  "operation-finale": {
+   "context": "Mon 9pm solo, picked off slate three after two whiffed slates and a Munich detour",
+   "hot_take": "OOOOOOF the fucking house was nuts. brutal and insane. loved it. we always knew that's who he was and it was nice to finally get it in full force. isaac all the way"
+  },
+  "inglourious-basterds": {
+   "context": "Solo Monday night. Third slate of the session after two historical/science slates whiffed and Incendies was declined (no dead mom). Historical ask answered in his real lane.",
+   "hot_take": "those god damn NAAAAZZZIIIIISSS. such a fun movie. such wonderfully interwoven plots. BURN THAT FUCKER. landa was insane!!! also kinda iconic and giving queen behavior. brad pitt was incredible, his opening speech is kinda FIERCE. (on learning it was all invented:) fun to know it was all fuckin bullshit hahaha"
   },
   "one-battle-after-another": {
    "context": "solo Tuesday night, first watch. Pitched as the crack-the-9s slate lead, chosen over Michael Clayton. Rental, broke the weeknight runtime ceiling happily.",
@@ -168,26 +211,7 @@
   "masters-of-the-universe-2026": {
    "context": "solo, independent-woman night, found it himself scrolling Prime after bailing on Goodfellas the night before",
    "hot_take": "oh my god. That movie was so fucking fun. I loved every minute of it. I think Skeletor is my new favorite villain of all time."
-  },
-  "the-big-short": {
-   "context": "solo weeknight, pitched and watched same night, Paramount+",
-   "hot_take": "yessss! so so similar to one battle after another in so many ways. so quirky and fun and cute and informative which really invites you to be open and learn new complicated things but not think too much about them. then holy fuck it opens up a whole crisis scenario play out over years that feel like real time. then it gets SOOOO SATISFYING and then not two seconds later it's like holy siht well fuck these people we have been loving from the get go are actually also just fucking idiot monsters who didn't realize if they bet against the ECONOMY there would be NO ECONOMY left to pay them out!!!!! like fucking idiots!!!!"
-  },
-  "la-confidential": {
-   "context": "Solo, Mon Aug 31. Picked off the Oscar slate, the 138-minute one, over the weeknight ceiling on purpose.",
-   "hot_take": "good movie!! jesus christ how ANY crimes got solved before fingerprints is just a goddamn miracle haha"
-  },
-  "se7en": {
-   "context": "solo, bracket night two, first watch with the box unspoiled",
-   "hot_take": "yes a really brilliant plot and WHATS IN THE BOXXXXX is so iconic i love love. brad pitt is incredible in this. that whole scene was just a masterclass."
-  },
-  "inside-man": {
-   "context": "solo, weekend bracket night one, self-picked from the guessing-night slate",
-   "hot_take": "okay so he basically just built a shitty apartment in the ground in a bank and lived there for a week to steal some diamonds and out a nazi?"
-  },
-  "the-amateur": {
-   "context": "solo, Saturday, self-found (no pitch), finished",
-   "hot_take": "solid movie. mostly enjoyed. very smart stuff which was fun although the tech seemed highly unrelalistic haha"
   }
- }
+ },
+ "_source": "film_log joined to film_ledger_panels on title_id, latest watch per slug. hot_take is VERBATIM Dixon, profanity intact. Pulled via vault_pull()."
 }
