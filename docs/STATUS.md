@@ -110,7 +110,11 @@ Plan: `docs/plans/2026-09-22-le-gamaar-basterds-room.md` (build log §18). Watch
 | content.js, ?text, Threshold, interact key | this commit | `?text` has "Inside the room"; F/Enter/Space/pad A now use touchables in every room |
 | THE DAILIES | `f4ce63c` | `dailies.html` (dev only) + `scripts/dailies.py` |
 
-**Next: Session 2, street and lobby** (plan §15). Open for Dixon: merge the duplicate Sinners
+**Session 2 done (2026-09-22):** the street (facade to the film's own, marquee + ladder state,
+rain, Morris column doors), the five lobby cards with stills, the floorboard (chapter 1 under
+glass), the vitrine, the counter, Chapter Six arrival. Build log §18.
+
+**Next: Session 3, auditorium, booth, ending** (plan §15). Open for Dixon: merge the duplicate Sinners
 row in `film_titles`; Valkyrie (logged 09-22) needs its panel before the wall shows it.
 
 ## Agreed, not started

@@ -5,6 +5,7 @@ import { registerColliders, setBounds, registerFloor, clearOwner } from '../../c
 import { standardMat } from '../../materials.js'
 import Lobby from './Lobby.jsx'
 import Rue from './Rue.jsx'
+import ArrivalCard, { arrivalWanted } from './ArrivalCard.jsx'
 import {
   FOOTPRINTS, EXTENT, floorAt, zoneAt, blockingRects, SPOTS,
   BOOTH_Y, CELLAR_Y, APRON_Y, ROWS, ROW_Z0, ROW_PITCH, SEAT_W, BLOCKS, SEAT_BLOCKS, FURNITURE,
@@ -206,6 +207,10 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
     return () => { delete window.__basterdsSpot }
   }, [goToStation, config.camera?.fov])
 
+  // Chapter Six: the arrival card, then a slow push toward the doors.
+  const [arriving] = useState(() => arrivalWanted())
+  const push = () => goToStation({ pos: [0, 1.55, 6.4], look: [0, 4.4, 0], fov: config.camera?.fov ?? 55 }, 'arrival-push')
+
   // Which space the walker is in, published for the preview and the Dailies.
   const zoneRef = useRef('')
   useFrame(({ camera }) => {
@@ -240,6 +245,7 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
       ))}
 
       <Rue onDoor={onDoor} />
+      {arriving && <ArrivalCard onDone={push} />}
 
       {/* the screen, on the auditorium's south wall */}
       <mesh position={[0, APRON_Y + 2.6, -31.52]}>

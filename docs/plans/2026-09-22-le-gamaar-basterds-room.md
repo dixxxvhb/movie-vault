@@ -1039,3 +1039,23 @@ session number and why.
   its own change.
 - **S1, the pane:** the app's browser pane ticks animation frames only while the app window
   has focus. Headless Chrome (`scripts/dailies.py`) is the source of every Dailies frame.
+- **S2, done:** the street to the film's own facade (reference: the TMDB still of Le Gamaar at
+  night, `public/stills/inglourious-basterds/facade.jpg`), the five lobby cards with real stills,
+  the floorboard, the vitrine, the counter, two of Dixon's lines, and Chapter Six.
+- **S2, deviation: Chapter Six is plain DOM on document.body,** not drei `Html`: inside the
+  Canvas, the DOM layer landed behind WebGL. Timers, not frames, so it plays in a pane that is
+  not ticking.
+- **S2, deviation: Morris column posters show only the lower 60% of each one-sheet** (the
+  title block). Operation Finale's real poster has a swastika in the glasses; the room draws none.
+- **S2, deviation: still picks avoid every frame with a swastika in it** (ch1 #36 farmhouse,
+  ch2 #33 Donowitz at the tunnel, ch3 #34 the strudel, ch4 #10 the tavern table, ch5 #28 her eyes).
+- **S2, cut (per §14):** the Programme booklet. The seats carry the faces; it can come back later.
+- **S2, bug fixed in shared code:** the interact key aimed at each Touchable's group origin;
+  it now aims at the anchor, the same point the click reach gate uses.
+- **S2, the unasked-for moment:** Chapter Six itself was planned, so the session's own pick is
+  the ladder. Touch it and the marquee goes back to the afternoon Zoller first talked to her:
+  Die weisse Holle vom Piz Palu, letters missing mid-change, with the card saying he loved those
+  films and would not go away.
+- **S2, owed to S3/S4:** the house switch still sits on a pole (config `place.shell: 'open'`);
+  the lobby wants a chandelier and deco pilasters; the in-room header wrap at 390 (shared chrome).
+

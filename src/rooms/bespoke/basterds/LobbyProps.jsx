@@ -164,16 +164,16 @@ function Concession() {
       <mesh position={[x, h / 2, (z0 + z1) / 2]} material={wood}><boxGeometry args={[0.8, h, d]} /></mesh>
       <mesh position={[x, h + 0.015, (z0 + z1) / 2]}><boxGeometry args={[0.86, 0.03, d + 0.06]} /><meshStandardMaterial color="#8a6a36" metalness={0.8} roughness={0.35} /></mesh>
       {/* a glass of milk */}
-      <mesh position={[x - 0.1, h + 0.09, z1 - 0.35]} material={white}><cylinderGeometry args={[0.035, 0.03, 0.14, 20]} /></mesh>
-      <TentCard pos={[x - 0.22, h + 0.03, z1 - 0.62]} ry={-Math.PI / 2} w={0.26}
+      <mesh position={[x - 0.1, h + 0.09, z0 + 0.45]} material={white}><cylinderGeometry args={[0.035, 0.03, 0.14, 20]} /></mesh>
+      <TentCard pos={[x - 0.22, h + 0.03, z0 + 0.18]} ry={-Math.PI / 2} w={0.26}
         text="Chapter 1. Landa asks the farmer for a glass of milk, then drinks it all." />
       {/* strudel, with the cream, on a plate */}
-      <group position={[x - 0.1, h + 0.03, z0 + 0.45]}>
+      <group position={[x - 0.1, h + 0.03, z1 - 0.35]}>
         <mesh><cylinderGeometry args={[0.12, 0.11, 0.015, 28]} /><meshStandardMaterial color="#f4efe6" roughness={0.4} /></mesh>
         <mesh position={[0, 0.03, 0]} rotation={[0, 0.4, 0]}><boxGeometry args={[0.12, 0.04, 0.05]} /><meshStandardMaterial color="#c08a4a" roughness={0.7} /></mesh>
         <mesh position={[0.05, 0.03, 0.04]}><sphereGeometry args={[0.028, 14, 10]} /><meshStandardMaterial color="#fbf7ee" roughness={0.5} /></mesh>
       </group>
-      <TentCard pos={[x - 0.22, h + 0.03, z0 + 0.18]} ry={-Math.PI / 2} w={0.26}
+      <TentCard pos={[x - 0.22, h + 0.03, z1 - 0.62]} ry={-Math.PI / 2} w={0.26}
         text="Chapter 3. Landa orders her the strudel, and waits for the cream. She knows exactly who he is." />
     </group>
   )
