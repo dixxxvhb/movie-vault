@@ -60,7 +60,8 @@
     "Lionsgate+ Amazon Channels"
    ],
    "free": [
-    "Pluto TV"
+    "Pluto TV",
+    "VIX "
    ],
    "rent": true
   },
@@ -144,9 +145,7 @@
   },
   "Tinker Tailor Soldier Spy": {
    "flat": [],
-   "free": [
-    "The Roku Channel"
-   ],
+   "free": [],
    "rent": true
   },
   "Sicario: Day of the Soldado": {

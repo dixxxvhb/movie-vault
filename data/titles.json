@@ -256,6 +256,19 @@
    "Danny Boyle"
   ]
  },
+ "the-town": {
+  "year": 2010,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/3NIzyXkfylsjflRKSz8Fts3lXzm.jpg",
+  "runtime": 125,
+  "director": [
+   "Ben Affleck"
+  ]
+ },
  "triangle": {
   "year": 2009,
   "genres": [
@@ -265,6 +278,19 @@
   "runtime": 99,
   "director": [
    "Christopher Smith"
+  ]
+ },
+ "valkyrie": {
+  "year": 2008,
+  "genres": [
+   "Drama",
+   "Thriller",
+   "War"
+  ],
+  "poster": "/8eoRtXswC8IQDsqW7iJWO56NhAv.jpg",
+  "runtime": 121,
+  "director": [
+   "Bryan Singer"
   ]
  },
  "barbarian": {
@@ -391,6 +417,18 @@
   "runtime": 152,
   "director": [
    "Christopher Nolan"
+  ]
+ },
+ "fight-club": {
+  "year": 1999,
+  "genres": [
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
+  "runtime": 139,
+  "director": [
+   "David Fincher"
   ]
  },
  "hereditary": {
@@ -631,6 +669,19 @@
   "runtime": 124,
   "director": [
    "Chris Weitz"
+  ]
+ },
+ "memories-of-murder": {
+  "year": 2003,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/jcgUjx1QcupGzjntTVlnQ15lHqy.jpg",
+  "runtime": 131,
+  "director": [
+   "Bong Joon Ho"
   ]
  },
  "inglourious-basterds": {

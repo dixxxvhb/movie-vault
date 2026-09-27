@@ -99,10 +99,20 @@
   7.4,
   "Sunshine"
  ],
+ "the-town": [
+  "2026-09-25",
+  8.4,
+  "The Town"
+ ],
  "triangle": [
   "2026-08-03",
   7.9,
   "Triangle"
+ ],
+ "valkyrie": [
+  "2026-09-22",
+  9.3,
+  "Valkyrie"
  ],
  "barbarian": [
   "2026-08-12",
@@ -153,6 +163,11 @@
   "2026-07-24",
   9.8,
   "The Dark Knight"
+ ],
+ "fight-club": [
+  "2026-09-26",
+  9.4,
+  "Fight Club"
  ],
  "hereditary": [
   "2026-08-14",
@@ -248,6 +263,11 @@
   "2026-09-14",
   9.3,
   "Operation Finale"
+ ],
+ "memories-of-murder": [
+  "2026-09-25",
+  9.2,
+  "Memories of Murder"
  ],
  "inglourious-basterds": [
   "2026-09-07",

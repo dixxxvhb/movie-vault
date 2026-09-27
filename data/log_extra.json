@@ -218,6 +218,15 @@
    ],
    "rewatch": false
   },
+  "the-town": {
+   "key": "fun",
+   "vibes": [
+    "heist",
+    "crime",
+    "villain-forward"
+   ],
+   "rewatch": false
+  },
   "triangle": {
    "key": "dread",
    "vibes": [
@@ -225,6 +234,16 @@
     "structural",
     "midday-watch",
     "wtf-delivered"
+   ],
+   "rewatch": false
+  },
+  "valkyrie": {
+   "key": "tense",
+   "vibes": [
+    "wwii",
+    "true-story",
+    "tense",
+    "historical"
    ],
    "rewatch": false
   },
@@ -343,6 +362,16 @@
     "chaos"
    ],
    "rewatch": true
+  },
+  "fight-club": {
+   "key": "fun",
+   "vibes": [
+    "fincher",
+    "satire",
+    "reveal-as-event",
+    "first-watch-of-a-classic"
+   ],
+   "rewatch": false
   },
   "hereditary": {
    "key": "dread",
@@ -561,6 +590,16 @@
     "true-story",
     "procedural",
     "chamber-piece"
+   ],
+   "rewatch": false
+  },
+  "memories-of-murder": {
+   "key": "dread",
+   "vibes": [
+    "procedural",
+    "tonal-morph",
+    "true-story",
+    "subtitles"
    ],
    "rewatch": false
   },

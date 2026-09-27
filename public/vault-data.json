@@ -235,6 +235,13 @@
       "character": "Mills"
      },
      {
+      "slug": "fight-club",
+      "kind": "ledger",
+      "title": "Fight Club",
+      "score": 9.4,
+      "character": "Tyler Durden"
+     },
+     {
       "slug": "bullettrain",
       "kind": "ledger",
       "title": "Bullet Train",
@@ -267,6 +274,19 @@
       "title": "Operation Finale",
       "score": 9.3,
       "character": "Hanna Elian"
+     }
+    ]
+   },
+   {
+    "id": 7803,
+    "name": "Christian Berkel",
+    "films": [
+     {
+      "slug": "valkyrie",
+      "kind": "ledger",
+      "title": "Valkyrie",
+      "score": 9.3,
+      "character": "Albrecht Ritter Mertz von Quirnheim"
      }
     ]
    }
@@ -319,7 +339,7 @@
    "year": 2011,
    "title": "Tinker Tailor Soldier Spy",
    "reason": null,
-   "where": "free on The Roku Channel"
+   "where": "rent"
   },
   {
    "note": null,
@@ -633,8 +653,8 @@
    ]
   }
  ],
- "count": 53,
- "avg": 8.6,
+ "count": 57,
+ "avg": 8.63,
  "films": [
   {
    "slug": "memento",
@@ -1292,6 +1312,42 @@
    "context": "Free w/ ads on Tubi. 5pm curtain, earliest start of the ritual era — slot one of the promised Tuesday double feature. Debrief theories, all his: suspected Lou was orchestrating the crimes for a large chunk (pre-crime — act three makes him right), found the only lie in the film instantly (the story to the detective), read Nina as targeted-from-day-one due diligence, and nailed the single-emotion count in one guess (the mirror smash). 4.6 ties Coherence on the board."
   },
   {
+   "slug": "fight-club",
+   "title": "Fight Club",
+   "score": 9.4,
+   "watched": "2026-09-26",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1A1416",
+    "fg": "#ECE3E0",
+    "sub": "#998A8C",
+    "acc": "#D2466E",
+    "glyph": "FC"
+   },
+   "front": null,
+   "poster": "posters/fight-club.jpg",
+   "year": 1999,
+   "runtime": 139,
+   "genres": [
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "David Fincher"
+   ],
+   "panel": "<section class=\"panel fight-club\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Fight Club<span>1999</span></div><div class=\"score\">9.4<small> /10</small></div></div>\n  <div class=\"meta\">Sep 26 &middot; first watch &middot; envelope 9.4, dead hit, sealed 7:19pm against a 10:16pm log</div>\n  <p class=\"plot\">An insomniac office drone meets a soap salesman on a plane. They start a fight club in a bar basement, and it grows into something with a plan.</p>\n  <p class=\"verdict\">&ldquo;never really understood it but felt i was close the whole time haha but then always ended up being slightly wrong or mistaken sligthly. FUN haha&rdquo; The tell was the thirst: &ldquo;my god no human has ever looked fucking sexier than brad pitt in that movie i swear.&rdquo; Placement: &ldquo;it feels realy good at 9.4 with sorry to bother you haha&rdquo;. #18 of 57, tied with Sorry to Bother You.</p>\n</section>",
+   "vibes": [
+    "fincher",
+    "satire",
+    "reveal-as-event",
+    "first-watch-of-a-classic"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "never really understood it but felt i was close the whole time haha but then always ended up being slightly wrong or mistaken sligthly. FUN haha",
+   "context": "solo"
+  },
+  {
    "slug": "stby",
    "title": "Sorry to Bother You",
    "score": 9.4,
@@ -1478,6 +1534,80 @@
    "key": "awe",
    "hot_take": "Raw reaction in three acts: \"my first question is why. closely followed by what. then immediately becoming the fuck.\" Then: \"why was it willy wonka wicked and wizard of oz fucking themed?!\" On the ending: \"FUCK the goat man. bye bye enjoy the grass forever.\"",
    "context": "Rental, weird night Thu Jul 23, his gut pick held against Titane / Sacred Deer / Annihilation challengers. Debrief: clocked the Oz black-and-white-to-color grammar himself; read Bella as fascinating, \"enviable and a lesson of what not to do at the same time\" (refined together to PRE-social, not antisocial: the anti-Leonard, zero self-deception, rules only kept if they survive her testing); Duncan arc hate-to-pity on schedule (shame economy bankruptcy); goat man sentenced gleefully. First film scored NATIVELY in the ten-point era. 9.3: alone on her own step, above Coherence, one tenth under Nightcrawler/StBY."
+  },
+  {
+   "slug": "valkyrie",
+   "title": "Valkyrie",
+   "score": 9.3,
+   "watched": "2026-09-22",
+   "state": "ledger",
+   "palette": {
+    "bg": "#15171A",
+    "fg": "#E6E4DF",
+    "sub": "#8C9096",
+    "acc": "#9E2B25",
+    "glyph": "VK"
+   },
+   "front": null,
+   "poster": "posters/valkyrie.jpg",
+   "year": 2008,
+   "runtime": 121,
+   "genres": [
+    "Drama",
+    "Thriller",
+    "War"
+   ],
+   "director": [
+    "Bryan Singer"
+   ],
+   "panel": "<section class=\"panel valkyrie\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Valkyrie<span>2008</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Sep 22 &middot; confessed and logged on the first night in the new Project, a no-movie wine night</div>\n  <p class=\"plot\">Berlin, July 1944. Stauffenberg and a ring of officers plant a bomb in Hitler's briefing room and try to seize the country with his own emergency plan. Everyone in the room knows how it ends. The movie makes you forget anyway.</p>\n  <p class=\"verdict\">&ldquo;LIKE IT WAS SO CLOSE! and we fucking KNOW it didn't work but the movie realy got me.&rdquo; The rage was the review: &ldquo;that just made it all the more frutrating. but i enjoyed the movie immesnely.&rdquo; Closing statement: &ldquo;tom cruise is a national hero&rdquo;. #20 of 57, tied at 9.3 with Catch Me If You Can, Amadeus, Operation Finale and Poor Things.</p>\n</section>",
+   "vibes": [
+    "wwii",
+    "true-story",
+    "tense",
+    "historical"
+   ],
+   "rewatch": false,
+   "key": "tense",
+   "hot_take": "it was reallllly good but REALLLLLy fucking pissed me off. LIKE IT WAS SO CLOSE! and we fucking KNOW it didn't work but the movie realy got me. and that just made it all the more frutrating. but i enjoyed the movie immesnely. tom cruise is a national hero",
+   "context": "solo, watched on his own sometime after the Sep 11 re-pitch; exact date unknown, told Leonard Sep 22. Twice-pitched, he found his own way to it."
+  },
+  {
+   "slug": "memories-of-murder",
+   "title": "Memories of Murder",
+   "score": 9.2,
+   "watched": "2026-09-25",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1B1A14",
+    "fg": "#E8E3D2",
+    "sub": "#958F76",
+    "acc": "#8A9A3C",
+    "glyph": "MM"
+   },
+   "front": null,
+   "poster": "posters/memories-of-murder.jpg",
+   "year": 2003,
+   "runtime": 131,
+   "genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Bong Joon Ho"
+   ],
+   "panel": "<section class=\"panel memories-of-murder\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Memories of Murder<span>2003</span></div><div class=\"score\">9.2<small> /10</small></div></div>\n  <div class=\"meta\">Sep 25 &middot; Friday double feature, the dinner after The Town &middot; number deferred a day</div>\n  <p class=\"plot\">Rural South Korea, 1986. Two detectives, one who beats confessions out of people and one from Seoul who trusts paperwork, chase a killer through rice fields and rain. Based on the Hwaseong murders, unsolved when it was made.</p>\n  <p class=\"verdict\">&ldquo;i HAVE NO FUCKING CLUE BRO!!! what the hell who the hell what's happening&rdquo; He held the number overnight on whether the frustration was the film failing him or working on him. The ruling: &ldquo;if the movie had some kind of final reveal or closure it would almost be a 10/10.&rdquo; Still: &ldquo;it really was a good and beatiful movie. the SOUNDTRACK.&rdquo; #25 of 57.</p>\n</section>",
+   "vibes": [
+    "procedural",
+    "tonal-morph",
+    "true-story",
+    "subtitles"
+   ],
+   "rewatch": false,
+   "key": "dread",
+   "hot_take": "so i realy think if the movie had some kind of final reveal or closure it would almost be a 10/10. but ust left soooo disassitisfied, and not in the fun way.",
+   "context": "home, subtitles"
   },
   {
    "slug": "bullettrain",
@@ -1896,6 +2026,42 @@
    "key": "fun",
    "hot_take": "okay so he basically just built a shitty apartment in the ground in a bank and lived there for a week to steal some diamonds and out a nazi?",
    "context": "solo, weekend bracket night one, self-picked from the guessing-night slate"
+  },
+  {
+   "slug": "the-town",
+   "title": "The Town",
+   "score": 8.4,
+   "watched": "2026-09-25",
+   "state": "ledger",
+   "palette": {
+    "bg": "#16191D",
+    "fg": "#E4E1DA",
+    "sub": "#8A8F95",
+    "acc": "#3F6FA0",
+    "glyph": "TT"
+   },
+   "front": null,
+   "poster": "posters/the-town.jpg",
+   "year": 2010,
+   "runtime": 125,
+   "genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+   ],
+   "director": [
+    "Ben Affleck"
+   ],
+   "panel": "<section class=\"panel the-town\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">The Town<span>2010</span></div><div class=\"score\">8.4<small> /10</small></div></div>\n  <div class=\"meta\">Sep 25 &middot; Friday double feature, the appetizer before Memories of Murder &middot; envelope 8.9</div>\n  <p class=\"plot\">Charlestown, Boston. A bank crew leader falls for the manager they took hostage, while his best friend gets looser with every job and the FBI closes in on Fenway.</p>\n  <p class=\"verdict\">&ldquo;renner was amazing. just loose cannon all the way around.&rdquo; Then the ending: &ldquo;the nicholas sparks ending is exactlyYYYY what that was&rdquo;, which Leonard filed as the Sparks Clause, a crime movie that loses its nerve in the last five minutes. Envelope 8.9, landed 8.4. #35 of 57, tied at 8.4 with Inside Man and Baby Driver.</p>\n</section>",
+   "vibes": [
+    "heist",
+    "crime",
+    "villain-forward"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "renner was amazing. just loose cannon all the way around ... it was the cheesy romantic shit especially at the end that really brought it back to like rom-com territoty!",
+   "context": "solo, rental, Friday first feature"
   },
   {
    "slug": "ncfom",
@@ -2838,16 +3004,6 @@
   },
   {
    "from": "the-sting",
-   "to": "game",
-   "fromState": "wall",
-   "toState": "wall",
-   "relation": "antibodies",
-   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
-   "weight": 3,
-   "directional": true
-  },
-  {
-   "from": "the-sting",
    "to": "stby",
    "fromState": "wall",
    "toState": "wall",
@@ -2857,12 +3013,52 @@
    "directional": true
   },
   {
+   "from": "the-sting",
+   "to": "game",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "antibodies",
+   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "the-town",
+   "to": "memories-of-murder",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "Friday double feature, Sep 25: The Town as appetizer, Memories of Murder as dinner. A crime movie that closed too neatly (the Sparks Clause) against one that never closed at all. He docked both for their endings.",
+   "weight": 3,
+   "directional": true
+  },
+  {
+   "from": "valkyrie",
+   "to": "inglourious-basterds",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bloodline",
+   "note": "Leonard led Valkyrie on Sep 11 as the Basterds continuation. The same war, one version where the plot works and one where history wins. Basterds rewrote it; Valkyrie made him furious that it stayed written.",
+   "weight": 3,
+   "directional": false
+  },
+  {
    "from": "annihilation",
    "to": "stby",
    "fromState": "wall",
    "toState": "wall",
    "relation": "thin-ensemble",
    "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "cmiyc",
+   "to": "stardust",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "The Sunday double, Aug 2: Catch Me If You Can 9.3 in the afternoon, Stardust 9.0 at night. Certified great Sunday.",
    "weight": 2,
    "directional": true
   },
@@ -2897,6 +3093,46 @@
    "directional": true
   },
   {
+   "from": "fight-club",
+   "to": "stby",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "calibration duel",
+   "note": "He placed it himself: \"it feels realy good at 9.4 with sorry to bother you haha\". Two films about a man sold a fake self, tied on purpose.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "gladiator",
+   "to": "spotlight",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "The epic Sunday double, Sep 13: Gladiator at 9.7, then at 8:50pm he asked for \"intense, historical or true crime\" and took Spotlight. Arena to newsroom in one night.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "hereditary",
+   "to": "oblivion",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "Triple feature weekend, Aug 14-15, step one to two: Hereditary 6.7 (anxiety, not excitement) up to Oblivion 7.4.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "in-the-grey",
+   "to": "valkyrie",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "displaced by decree",
+   "note": "Sep 9: he set out for Valkyrie on Prime and got bamboozled by Jake Gyllenhaal, renting In the Grey instead. The thirst rental took the slot; Valkyrie waited thirteen days and landed 9.3.",
+   "weight": 2,
+   "directional": true
+  },
+  {
    "from": "memento",
    "to": "Run Lola Run",
    "fromState": "wall",
@@ -2923,6 +3159,26 @@
    "toState": "wall",
    "relation": "split-watch-asterisk",
    "note": "The 8.3 carries the split-watch asterisk. Never split a tension movie across two nights; the held breath breaks. His lesson, stated by him.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "oblivion",
+   "to": "maverick",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bloodline",
+   "note": "Kosinski. Oblivion made the bloodline 2-for-2 after Top Gun: Maverick.",
+   "weight": 2,
+   "directional": false
+  },
+  {
+   "from": "oblivion",
+   "to": "baby-driver",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "bracket",
+   "note": "Triple feature weekend, step two to three: Oblivion 7.4, then Baby Driver 8.4 as the Saturday nightcap, the top of the staircase.",
    "weight": 2,
    "directional": true
   },
@@ -2988,6 +3244,16 @@
   },
   {
    "from": "the-sting",
+   "to": "cmiyc",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "fun-shelf",
+   "note": "The con lane, back to back: The Sting 9.6 on Aug 1, Catch Me If You Can 9.3 the next afternoon. The lane went officially hot.",
+   "weight": 2,
+   "directional": true
+  },
+  {
+   "from": "the-sting",
    "to": "sicario",
    "fromState": "wall",
    "toState": "wall",
@@ -3025,6 +3291,16 @@
    "note": "Salieri and the Joker: both defined entirely by the thing they cannot stop watching.",
    "weight": 1,
    "directional": false
+  },
+  {
+   "from": "frost-nixon",
+   "to": "valkyrie",
+   "fromState": "wall",
+   "toState": "wall",
+   "relation": "displaced by decree",
+   "note": "Sep 11: Leonard led Valkyrie again; he took Frost/Nixon, the talky one, instead. Second time Valkyrie lost the night.",
+   "weight": 1,
+   "directional": true
   },
   {
    "from": "obsession",

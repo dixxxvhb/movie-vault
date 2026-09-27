@@ -144,14 +144,6 @@
   "directional": true
  },
  {
-  "to": "The Game",
-  "from": "The Sting",
-  "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
-  "weight": 3,
-  "relation": "antibodies",
-  "directional": true
- },
- {
   "to": "Sorry to Bother You",
   "from": "The Sting",
   "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
@@ -160,11 +152,43 @@
   "directional": true
  },
  {
+  "to": "The Game",
+  "from": "The Sting",
+  "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
+  "weight": 3,
+  "relation": "antibodies",
+  "directional": true
+ },
+ {
+  "to": "Memories of Murder",
+  "from": "The Town",
+  "note": "Friday double feature, Sep 25: The Town as appetizer, Memories of Murder as dinner. A crime movie that closed too neatly (the Sparks Clause) against one that never closed at all. He docked both for their endings.",
+  "weight": 3,
+  "relation": "bracket",
+  "directional": true
+ },
+ {
+  "to": "Inglourious Basterds",
+  "from": "Valkyrie",
+  "note": "Leonard led Valkyrie on Sep 11 as the Basterds continuation. The same war, one version where the plot works and one where history wins. Basterds rewrote it; Valkyrie made him furious that it stayed written.",
+  "weight": 3,
+  "relation": "bloodline",
+  "directional": false
+ },
+ {
   "to": "Sorry to Bother You",
   "from": "Annihilation",
   "note": "Both staged the impossible. Only one made the people matter before the strangeness ate them.",
   "weight": 2,
   "relation": "thin-ensemble",
+  "directional": true
+ },
+ {
+  "to": "Stardust",
+  "from": "Catch Me If You Can",
+  "note": "The Sunday double, Aug 2: Catch Me If You Can 9.3 in the afternoon, Stardust 9.0 at night. Certified great Sunday.",
+  "weight": 2,
+  "relation": "bracket",
   "directional": true
  },
  {
@@ -192,6 +216,38 @@
   "directional": true
  },
  {
+  "to": "Sorry to Bother You",
+  "from": "Fight Club",
+  "note": "He placed it himself: \"it feels realy good at 9.4 with sorry to bother you haha\". Two films about a man sold a fake self, tied on purpose.",
+  "weight": 2,
+  "relation": "calibration duel",
+  "directional": false
+ },
+ {
+  "to": "Spotlight",
+  "from": "Gladiator",
+  "note": "The epic Sunday double, Sep 13: Gladiator at 9.7, then at 8:50pm he asked for \"intense, historical or true crime\" and took Spotlight. Arena to newsroom in one night.",
+  "weight": 2,
+  "relation": "bracket",
+  "directional": true
+ },
+ {
+  "to": "Oblivion",
+  "from": "Hereditary",
+  "note": "Triple feature weekend, Aug 14-15, step one to two: Hereditary 6.7 (anxiety, not excitement) up to Oblivion 7.4.",
+  "weight": 2,
+  "relation": "bracket",
+  "directional": true
+ },
+ {
+  "to": "Valkyrie",
+  "from": "In the Grey",
+  "note": "Sep 9: he set out for Valkyrie on Prime and got bamboozled by Jake Gyllenhaal, renting In the Grey instead. The thirst rental took the slot; Valkyrie waited thirteen days and landed 9.3.",
+  "weight": 2,
+  "relation": "displaced by decree",
+  "directional": true
+ },
+ {
   "to": "Run Lola Run",
   "from": "Memento",
   "note": "Same family: structure as the stimulant. Three sprints at the same twenty minutes. Tabled by the sovereign; only he raises it.",
@@ -213,6 +269,22 @@
   "note": "The 8.3 carries the split-watch asterisk. Never split a tension movie across two nights; the held breath breaks. His lesson, stated by him.",
   "weight": 2,
   "relation": "split-watch-asterisk",
+  "directional": true
+ },
+ {
+  "to": "Top Gun: Maverick",
+  "from": "Oblivion",
+  "note": "Kosinski. Oblivion made the bloodline 2-for-2 after Top Gun: Maverick.",
+  "weight": 2,
+  "relation": "bloodline",
+  "directional": false
+ },
+ {
+  "to": "Baby Driver",
+  "from": "Oblivion",
+  "note": "Triple feature weekend, step two to three: Oblivion 7.4, then Baby Driver 8.4 as the Saturday nightcap, the top of the staircase.",
+  "weight": 2,
+  "relation": "bracket",
   "directional": true
  },
  {
@@ -264,6 +336,14 @@
   "directional": false
  },
  {
+  "to": "Catch Me If You Can",
+  "from": "The Sting",
+  "note": "The con lane, back to back: The Sting 9.6 on Aug 1, Catch Me If You Can 9.3 the next afternoon. The lane went officially hot.",
+  "weight": 2,
+  "relation": "fun-shelf",
+  "directional": true
+ },
+ {
   "to": "Sicario",
   "from": "The Sting",
   "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
@@ -294,6 +374,14 @@
   "weight": 1,
   "relation": "obsession-with-a-rival",
   "directional": false
+ },
+ {
+  "to": "Valkyrie",
+  "from": "Frost/Nixon",
+  "note": "Sep 11: Leonard led Valkyrie again; he took Frost/Nixon, the talky one, instead. Second time Valkyrie lost the night.",
+  "weight": 1,
+  "relation": "displaced by decree",
+  "directional": true
  },
  {
   "to": "The Nice Guys",
