@@ -1,4 +1,4 @@
-// Phase 3: audio recipes for the 25 template-engine (Tier 2) rooms —
+// Phase 3: audio recipes for the 40 template-engine (Tier 2) rooms —
 // GenericRoom's own recipe registry, keyed by slug, the same way
 // registry.js's BESPOKE map keys Tier 1 rooms by slug. A slug not listed
 // here (any bespoke slug, any archive print/drawer slug, anything not yet
@@ -29,6 +29,21 @@ import { start as game } from './game.js'
 import { start as silverlake } from './silverlake.js'
 import { start as hereditary } from './hereditary.js'
 import { start as malignant } from './malignant.js'
+import { start as se7en } from './se7en.js'
+import { start as spotlight } from './spotlight.js'
+import { start as gladiator } from './gladiator.js'
+import { start as theBigShort } from './the-big-short.js'
+import { start as laConfidential } from './la-confidential.js'
+import { start as fightClub } from './fight-club.js'
+import { start as operationFinale } from './operation-finale.js'
+import { start as valkyrie } from './valkyrie.js'
+import { start as memoriesOfMurder } from './memories-of-murder.js'
+import { start as frostNixon } from './frost-nixon.js'
+import { start as insideMan } from './inside-man.js'
+import { start as theTown } from './the-town.js'
+import { start as theAmateur } from './the-amateur.js'
+import { start as inTheGrey } from './in-the-grey.js'
+import { start as oneBattleAfterAnother } from './one-battle-after-another.js'
 
 export const TEMPLATE_RECIPES = {
   darkknight,
@@ -56,4 +71,19 @@ export const TEMPLATE_RECIPES = {
   silverlake,
   hereditary,
   malignant,
+  se7en,
+  spotlight,
+  gladiator,
+  'the-big-short': theBigShort,
+  'la-confidential': laConfidential,
+  'fight-club': fightClub,
+  'operation-finale': operationFinale,
+  valkyrie,
+  'memories-of-murder': memoriesOfMurder,
+  'frost-nixon': frostNixon,
+  'inside-man': insideMan,
+  'the-town': theTown,
+  'the-amateur': theAmateur,
+  'in-the-grey': inTheGrey,
+  'one-battle-after-another': oneBattleAfterAnother,
 }

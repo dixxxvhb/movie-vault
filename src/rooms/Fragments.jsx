@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { houseLevel } from './houseLights.js'
@@ -97,14 +97,58 @@ export function splitTake(take) {
   return head
 }
 
-// Which props can carry writing. A fragment on a figure is a caption on a
-// person, which is exactly the wrong register, and a fragment on a pool is
-// unreadable. Everything else is fair.
-const CARRIERS = new Set([
-  'slab', 'table', 'counter', 'barShelf', 'bed', 'podium', 'throne',
-  'bevelBox', 'screenPanel', 'frameOn', 'lampPractical', 'chairRow',
-  'vehicleMass', 'mirrorPlane', 'glassWall', 'paperScatter', 'tree',
-])
+// Which props can carry writing, and WHERE on each one. A fragment on a
+// figure is a caption on a person, which is exactly the wrong register, and
+// a fragment on a pool, a tree or a floor of paper is unreadable.
+//
+// The scrap used to go at carrier.pos + (0, 0.62, 0.02) for every carrier,
+// whatever its shape. A slab's pos is its centre, so on a pillar or a house
+// that is inside the solid, and a room whose every carrier was a slab (Catch
+// Me If You Can, Coherence) showed no take at all. Each carrier kind now
+// says where its writable surface is: tops take the scrap lying flat, boxes
+// take it on the face that looks at the room, panels take it just proud of
+// the glass.
+const FLAT = -Math.PI / 2
+const facing = (p) => (Array.isArray(p.rot) ? p.rot[1] || 0 : 0)
+const sc = (p) => (Array.isArray(p.scale) ? p.scale[1] : p.scale ?? 1)
+function onTop(p, top) {
+  return { dx: 0, dz: 0, y: (p.pos[1] || 0) + top * sc(p) + 0.006, tilt: FLAT, ry: 0 }
+}
+function onFace(p, depth, y) {
+  const ry = facing(p)
+  const off = (depth / 2) * sc(p) + 0.012
+  return { dx: Math.sin(ry) * off, dz: Math.cos(ry) * off, y, ry }
+}
+// The front face of a box whose pos is its centre. A box with no face at a
+// readable height (a beam overhead, a kerb underfoot, a rail) is skipped.
+function boxFace(p, h, d) {
+  const k = sc(p)
+  const cy = p.pos[1] || 0
+  const lo = cy - (h * k) / 2, hi = cy + (h * k) / 2
+  if (hi - lo < 0.12 || lo > 1.8 || hi < 0.3) return null
+  const y = Math.min(hi - 0.07, Math.max(lo + 0.07, Math.min(1.6, cy + Math.min(0.2, (h * k) / 4))))
+  return onFace(p, d, y)
+}
+const CARRIERS = {
+  table: (p) => onTop(p, p.h ?? 0.75),
+  counter: (p) => onTop(p, p.h ?? 0.95),
+  bed: (p) => onTop(p, 0.51),
+  podium: (p) => onTop(p, 1.1),
+  vehicleMass: (p) => onTop(p, (p.h ?? 1.1) * 0.57),
+  chairRow: (p) => {
+    const n = p.count ?? 6
+    const x = -((n - 1) / 2) * (p.spacing ?? 0.62)
+    const ry = facing(p)
+    const t = onTop(p, (p.seatH ?? 0.46) + 0.05)
+    return { ...t, dx: Math.cos(ry) * x * sc(p), dz: -Math.sin(ry) * x * sc(p) }
+  },
+  slab: (p) => boxFace(p, (p.size || [1, 1, 1])[1], (p.size || [1, 1, 1])[2]),
+  bevelBox: (p) => boxFace(p, p.h ?? 1, p.d ?? 1),
+  screenPanel: (p) => onFace(p, 0, (p.pos[1] || 0) - (p.h ?? 0.6) * sc(p) * 0.32),
+  frameOn: (p) => onFace(p, 0.04, (p.pos[1] || 0) - (p.h ?? 0.8) * sc(p) * 0.3),
+  mirrorPlane: (p) => onFace(p, 0, (p.pos[1] || 0) - (p.h ?? 1.6) * sc(p) * 0.36),
+  glassWall: (p) => onFace(p, 0.02, Math.min(1.5, (p.pos[1] || 0))),
+}
 
 // Order carriers by distance from the spawn point, furthest first, so the
 // last clause of the take is the one you have to cross the room for.
@@ -114,13 +158,26 @@ export function planFragments(film, config) {
   if (!clauses.length) return []
 
   if (authored && authored.length) {
-    return authored.map((f, i) => ({ ...f, text: f.text ?? clauses[i] ?? '' }))
-      .filter((f) => f.text)
+    // An authored list shorter than the take (the take was edited after the
+    // room was staged) folds the rest of the take into the last scrap rather
+    // than quietly losing the verdict. index/of/state are filled the same way
+    // the planner fills them, so a bare { pos, y } entry still works.
+    const n = authored.length
+    const texts = clauses.length > n
+      ? [...clauses.slice(0, n - 1), clauses.slice(n - 1).join(' ')]
+      : clauses
+    return authored.map((f, i) => ({
+      index: i,
+      of: n,
+      state: i === 0 || i === n - 1 ? 'film' : i % 2 ? 'motel' : 'film',
+      ...f,
+      text: f.text ?? texts[i] ?? '',
+    })).filter((f) => f.text)
   }
 
   const props = (config?.place?.props || [])
-    .map((p, i) => ({ p, i }))
-    .filter(({ p }) => CARRIERS.has(p.type) && Array.isArray(p.pos))
+    .map((p, i) => ({ p, i, at: CARRIERS[p.type] && Array.isArray(p.pos) ? CARRIERS[p.type](p) : null }))
+    .filter(({ at }) => at)
 
   if (!props.length) return []
 
@@ -135,12 +192,18 @@ export function planFragments(film, config) {
   // would hear walking in) and the furthest gets the LAST (the verdict, which
   // is what he landed on). Reading the room in order is walking away from the
   // door.
+  // More clauses than carriers: the tail folds into the last scrap, the
+  // verdict, instead of being dropped off the end of the review.
   const n = Math.min(clauses.length, props.length)
-  return clauses.slice(0, n).map((text, k) => {
+  const texts = clauses.length > n
+    ? [...clauses.slice(0, n - 1), clauses.slice(n - 1).join(' ')]
+    : clauses
+  return texts.map((text, k) => {
     const carrier = props[Math.floor((k / n) * props.length)]
     return {
       text,
       pos: carrier.p.pos,
+      ...carrier.at,
       // Alternate which house state each fragment belongs to, so neither
       // state holds the whole take. The first and last always sit in the
       // film, because the opening reaction and the verdict are the film's.
@@ -243,6 +306,7 @@ function Scrap({ frag, palette }) {
     () => scrapTexture(frag.text, palette, (frag.index + 1) * 977),
     [frag.text, frag.index, palette]
   )
+  useEffect(() => () => tex.dispose(), [tex])
 
   // Scrap size follows the text length, so a one-clause note is a note and a
   // long one is a page. Never bigger than 26cm: it is stationery.

@@ -29,7 +29,9 @@ export default function StreakLights({ axis = 'x', speed = 3, colors = ['#e8d44d
       dummy.rotation.set(0, 0, 0)
       dummy.updateMatrix()
       ref.current.setMatrixAt(i, dummy.matrix)
-      ref.current.setColorAt(i, new THREE.Color(s.col))
+      // one Color per seed, made once; this runs every frame for every streak
+      if (!s.color) s.color = new THREE.Color(s.col)
+      ref.current.setColorAt(i, s.color)
     })
     ref.current.instanceMatrix.needsUpdate = true
     if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true

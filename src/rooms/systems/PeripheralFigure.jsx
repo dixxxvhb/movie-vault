@@ -10,11 +10,13 @@ import { abstractFigure } from '../props.jsx'
 export default function PeripheralFigure({ corner = 'high', height = 2.2, pos = [1.6, 2.0, -1.8], color = '#0c0d10' }) {
   const ref = useRef()
   const targetYaw = useRef(0)
-  useFrame(() => {
+  useFrame(({ camera }) => {
     if (!ref.current) return
     // angle between camera facing and the direction to the figure, roughly —
-    // cheap approximation using yaw only (pitch corners read fine off this too)
-    const toFigureYaw = Math.atan2(-pos[0], -pos[2])
+    // cheap approximation using yaw only (pitch corners read fine off this too).
+    // Measured from where the walker stands, not the world origin: from the
+    // origin, Hereditary's figure read as off-axis while it sat in plain view.
+    const toFigureYaw = Math.atan2(-(pos[0] - camera.position.x), -(pos[2] - camera.position.z))
     let d = Math.abs(gaze.yaw - toFigureYaw)
     while (d > Math.PI) d = Math.abs(d - Math.PI * 2)
     const edge = 0.35, full = 0.9

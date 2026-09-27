@@ -1,10 +1,11 @@
 // Bloodline doors (VAULT-IMMERSION-BRIEF-v2.md §6). Each `film_links` row
 // touching a ledger film becomes one physical door in that film's room.
-// `from`/`to` in vault-data.json's `links` array are already slugs (verified
-// against the shipped data — every current link resolves straight through
-// as a slug, not a title), but a link COULD point at a title that never
-// made it past the shoebox/drawer/queue — that's what makes a door LOCKED
-// rather than a working connection into another room.
+// `from`/`to` in vault-data.json's `links` array are slugs for anything on the
+// wall or in the archive, but a link to a QUEUED film carries the title as
+// written ('Run Lola Run', 'Sicario: Day of the Soldado'). Both sides are
+// slugified before matching, so those land on their queue entry with a year.
+// A link to something that never made it past the shoebox/drawer/queue is
+// what makes a door LOCKED rather than a working connection.
 //
 // Kept as its own module rather than folded into registry.js/configs.js:
 // both of those are mid-edit elsewhere this session for the bespoke-room
@@ -35,7 +36,7 @@ function resolveTarget(rawSlug, data) {
 
   // queue entries carry no slug of their own (title only) — match on a
   // slugified title as a defensive fallback for a link authored against one
-  const queued = (data.queue || []).find((q) => slugify(q.title) === rawSlug)
+  const queued = (data.queue || []).find((q) => slugify(q.title) === slugify(rawSlug))
   if (queued) return { kind: 'locked', title: queued.title, year: queued.year }
 
   // never catalogued anywhere this app knows about — still a locked door,

@@ -49,6 +49,9 @@
 // (each was a Wave B GenericRoom stand-in before Phase 2 replaced it with a
 // bespoke component) — stripped here rather than left as inert weight.
 
+// Lays an authored scrap flat on a top (info.fragments tilt).
+const FLAT = -Math.PI / 2
+
 export const CONFIGS = {
   // ---------------------------------------------------------------- memento
   // "the motel room, backwards" — Discount Inn room: bed, dresser, wall of
@@ -193,6 +196,9 @@ export const CONFIGS = {
       grain: 0.07, vignette: 0.66, bloomIntensity: 0.24,
     },
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.8], fov: 46 },
+    // The house switch on this set's own wall. The default anchor assumes the
+    // preset's 4.2 m box, which put it behind a wall or out in mid-air here.
+    place: { shellParams: { switch: [0.62, 2.045, Math.PI] } },
   },
 
   // ------------------------------------------------------------ nightcrawler
@@ -259,6 +265,9 @@ export const CONFIGS = {
       grain: 0.055, vignette: 0.62, bloomIntensity: 0.4,
     },
     camera: { pos: [1.35, 1.5, 1.7], look: [-0.2, 1.1, -1.2], fov: 50 },
+    // The house switch on this set's own wall. The default anchor assumes the
+    // preset's 4.2 m box, which put it behind a wall or out in mid-air here.
+    place: { shellParams: { switch: [1.85, 2.245, Math.PI] } },
   },
 
   // ---------------------------------------------------------- predestination
@@ -332,6 +341,9 @@ export const CONFIGS = {
     family: 'dread',
     grade: { key: '#e8a860', fill: '#141416', ambient: 0.16, bg: '#141416', fogColor: '#141416', grain: 0.08, vignette: 0.62, bloomIntensity: 0.2 },
     camera: { pos: [0.3, 1.55, 2.5], look: [-0.2, 1.3, -1.6], fov: 58 },
+    // The house switch on this set's own wall. The default anchor assumes the
+    // preset's 4.2 m box, which put it behind a wall or out in mid-air here.
+    place: { shellParams: { switch: [1.945, 1.2, -Math.PI / 2] } },
   },
 
   // ---------------------------------------- masters-of-the-universe-2026
@@ -368,6 +380,9 @@ export const CONFIGS = {
       grain: 0.015, vignette: 0.12, bloomIntensity: 0.18,
     },
     camera: { pos: [0, 1.5, 3], look: [0, 1.4, -2], fov: 48 },
+    // The house switch on this set's own wall. The default anchor assumes the
+    // preset's 4.2 m box, which put it behind a wall or out in mid-air here.
+    place: { shellParams: { switch: [0.62, 3.445, Math.PI] } },
   },
 
   // ------------------------------------------------------------------ darkknight
@@ -434,6 +449,9 @@ export const CONFIGS = {
         trim: { color: '#15171b', height: 0.08 },
         shadow: true,
       },
+      // the doors used to stand on the right wall, right over the two-way
+      // mirror; they take the wall behind you instead
+      doorMount: { position: [0, 0, 2.06], rotationY: Math.PI, spacing: 1.0 },
       props: [
         // the steel table — a bevelled body with a real metal surface
         // (materials.js), not a flat-colored box.
@@ -544,17 +562,20 @@ export const CONFIGS = {
         // the light disc far above — the single bright focal the brief
         // asks for, small in frame at this distance.
         { type: 'lightDisc', pos: [0, 13, 0], radius: 1.4, color: '#fff0cc' },
-        // the rope: hangs from partway up (NOT reaching the disc/opening —
-        // brief: "the rope is not attached"), drifting slightly off-plumb
-        // like real slack rather than a rigid rod.
+        // debris worked loose from the well's dry wall — Wave T touch,
+        // sitting on the lower ledge within reach.
+        { type: 'slab', pos: [1.9, 1.78, -0.6], size: [0.3, 0.12, 0.3], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
+      ],
+      // the rope: hangs from partway up (NOT reaching the disc/opening —
+      // brief: "the rope is not attached"), drifting slightly off-plumb
+      // like real slack rather than a rigid rod. A detail.jsx clutter
+      // piece, not a prop: sitting in `props` it never rendered at all.
+      clutter: [
         {
           type: 'wireRun',
           points: [[1.4, 9.2, -0.9], [1.55, 6.4, -0.75], [1.3, 3.2, -0.95]],
           sag: 0.18, radius: 0.02, color: '#3a3226',
         },
-        // debris worked loose from the well's dry wall — Wave T touch,
-        // sitting on the lower ledge within reach.
-        { type: 'slab', pos: [1.9, 1.78, -0.6], size: [0.3, 0.12, 0.3], color: '#5a4a3a', touch: { kind: 'nudge', amplitude: 0.14, foley: 'thunk' } },
       ],
       systems: [
         { type: 'PulseBeat', bpm: 40, depth: 0.3 },
@@ -657,8 +678,12 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 2.6, d: 9, h: 2.2, wallMat: 'flat', window: true },
       props: [
-        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#c8607a' },
-        { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#e8a86a' },
+        // two seats either side of the aisle, one row per z, inside the 2.6 m
+        // car (a single 3-wide row at 1.4 spacing ran 0.7 m out through both walls)
+        { type: 'chairRow', pos: [-0.75, 0, -1], count: 2, spacing: 0.48, color: '#c8607a' },
+        { type: 'chairRow', pos: [0.75, 0, -1], count: 2, spacing: 0.48, color: '#e8a86a' },
+        { type: 'chairRow', pos: [-0.75, 0, -2.6], count: 2, spacing: 0.48, color: '#e8a86a' },
+        { type: 'chairRow', pos: [0.75, 0, -2.6], count: 2, spacing: 0.48, color: '#c8607a' },
         // overhead luggage, wedged in the rack above the seats — Wave T touch.
         { type: 'slab', pos: [-0.6, 1.9, -1], size: [0.5, 0.28, 0.34], color: '#2a2420', touch: { kind: 'nudge', amplitude: 0.22, foley: 'thunk', reach: 3.2 } },
       ],
@@ -727,7 +752,9 @@ export const CONFIGS = {
     camera: { pos: [0, 1.5, 1.8], look: [0, 1.4, -1.4], fov: 46 },
     place: {
       shell: 'box',
-      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'flat' },
+      // openBack: the glass IS the back wall, so the forest beyond it shows
+      // (behind an opaque wall the three trees never rendered at all)
+      shellParams: { w: 4, d: 4, h: 2.6, wallMat: 'flat', openBack: true },
       props: [
         { type: 'glassWall', pos: [0, 1.3, -1.98], w: 3.8, h: 2.4, color: '#a8e0e8', touch: { kind: 'press', depress: 0.02, foley: 'glass' } },
         { type: 'glassWall', pos: [-1.98, 1.3, 0], rot: [0, Math.PI / 2, 0], w: 3.8, h: 2.4, color: '#a8e0e8' },
@@ -736,7 +763,7 @@ export const CONFIGS = {
         { type: 'tree', pos: [2.4, 0, -6.6], scale: 1.2, foliage: '#1c3a24' },
       ],
       systems: [
-        { type: 'ScheduledCut', period: 50, duration: 3000, altGrade: '#c81010' },
+        { type: 'ScheduledCut', period: 50, duration: 3000, altGrade: '#a83a3a' },
       ],
     },
   },
@@ -768,7 +795,7 @@ export const CONFIGS = {
     camera: { pos: [0, 1.5, 2.5], look: [0, 1.3, -6], fov: 48, far: 60 },
     place: {
       shell: 'corridor',
-      shellParams: { length: 14, width: 2.2, height: 2.4, ribs: 8, wallTint: '#0e0e10', farLight: true },
+      shellParams: { length: 14, width: 2.2, height: 2.4, ribs: 8, wallTint: '#0e0e10', farLight: true, mouthZ: 2.7 },
       props: [
         // a supply crate shoved against the corridor wall — Wave T touch.
         { type: 'slab', pos: [-0.75, 0.3, -2.2], size: [0.5, 0.6, 0.4], color: '#2e2a24', touch: { kind: 'nudge', amplitude: 0.16, foley: 'thunk', reach: 2.8 } },
@@ -778,42 +805,73 @@ export const CONFIGS = {
         { type: 'paperScatter', count: 20, area: [1.8, 8], color: '#c8c0a8', pos: [0, 0.02, -3] },
       ],
       systems: [
-        // "from" moved off the camera's own position — at from:[0,1.3,6]
-        // (behind a camera parked at z=4.4) the glow plane's travel path
-        // swept directly across the lens each cycle and blew the frame to
-        // a solid red wash (QA sweep 2026-08-21). Starting it further back
-        // keeps the advancing light behind the camera without occluding it.
-        { type: 'AdvanceGlow', from: [0, 1.3, 9], axis: 'z', speed: 0.2, resetAt: 12, color: '#c22e2e' },
+        // Starts down the corridor and comes at you, resetting before it
+        // reaches the camera. Both earlier starts (z +6, then z +9) sat behind
+        // the camera, and AdvanceGlow travels toward -Z from a positive start,
+        // so the red panel swept through the lens every cycle.
+        { type: 'AdvanceGlow', from: [0, 1.3, -12], axis: 'z', speed: 0.2, resetAt: 10, color: '#c22e2e' },
       ],
     },
+    // the default scorePos (x 1.2) sat half inside this 2.2 m corridor's wall
+    info: { scorePos: [0.5, 1.95, -2.6] },
   },
 
   // ---------------------------------------------------------------------- maverick
   maverick: {
     family: 'spectacle',
-    grade: { key: '#e8b060', fill: '#3a4a5a', ambient: 0.2 },
-    camera: { pos: [0, 1.4, 1.2], look: [0, 1.3, -1], fov: 42, far: 300 },
+    // Rebuilt 2026-09-27. The cockpit box (2.4 x 2 x 1.8 m, one window
+    // plane) rendered as a black void with the record pressed against the
+    // lens. The film's place is the carrier deck at the golden hour: the
+    // jet on the cat, the shooter, the island, the sea to the horizon.
+    grade: {
+      bg: '#e2a574', fogColor: '#d9a07a', fogDensity: 0.01,
+      key: '#ffc27e', keyIntensity: 2.2, fill: '#5a6a80', ambient: 0.42,
+      sat: 0.08, contrast: 0.08, grain: 0.04, vignette: 0.38, bloomIntensity: 0.3,
+    },
+    camera: { pos: [-0.6, 1.62, 3.4], look: [0.6, 1.3, -4], fov: 50, far: 300 },
+    lights: {
+      key: { type: 'directional', pos: [-12, 5, -22], intensity: 1.4, color: '#ffb46e' },
+      bounce: [{ pos: [0, 1.2, 3.5], intensity: 0.55, distance: 12, color: '#6a7a92', decay: 2 }],
+    },
     place: {
-      shell: 'box',
-      shellParams: { w: 2.4, d: 2, h: 1.8, wallMat: 'steel', window: true },
+      shell: 'open',
+      // the ground disc is the sea; the deck is a slab laid on it
+      shellParams: { ground: 'concrete', groundColor: '#1e3042', skyTop: '#34466a', skyBottom: '#f2aa6a', horizon: true, boundsRadius: 7.5 },
       props: [
-        // the throttle lever, within reach of the cockpit seat — Wave T touch.
-        { type: 'slab', pos: [0.35, 0.9, -0.2], size: [0.1, 0.2, 0.28], color: '#26262a', touch: { kind: 'press', depress: 0.03 } },
+        // the flight deck, and its angled landing line
+        { type: 'slab', pos: [0, 0.02, -6], size: [16, 0.04, 40], color: '#3c3e42', roughness: 0.9 },
+        { type: 'slab', pos: [-1.6, 0.045, -6], rot: [0, 0.16, 0], size: [0.12, 0.01, 30], color: '#e8c24a' },
+        { type: 'slab', pos: [1.4, 0.045, -4], size: [0.08, 0.01, 14], color: '#e8e4d8' },
+        // the jet on the catapult: fuselage, wings, canopy, twin tails
+        { type: 'slab', pos: [1.4, 1.0, -4.2], size: [0.9, 0.8, 6.2], color: '#8a9098', metalness: 0.35, roughness: 0.5 },
+        { type: 'slab', pos: [1.4, 0.95, -4.8], size: [5.4, 0.1, 1.9], color: '#7e848c', metalness: 0.35, roughness: 0.5 },
+        { type: 'slab', pos: [1.4, 1.52, -2.4], size: [0.56, 0.36, 1.5], color: '#2a3038', metalness: 0.6, roughness: 0.2 },
+        { type: 'slab', pos: [1.05, 1.85, -6.7], rot: [0, 0, 0.35], size: [0.08, 1.1, 1.0], color: '#7e848c', metalness: 0.35 },
+        { type: 'slab', pos: [1.75, 1.85, -6.7], rot: [0, 0, -0.35], size: [0.08, 1.1, 1.0], color: '#7e848c', metalness: 0.35 },
+        // the jet blast deflector, raised behind it
+        { type: 'slab', pos: [1.4, 0.7, -8.6], rot: [0.5, 0, 0], size: [4.2, 1.6, 0.12], color: '#4a4c50', metalness: 0.4 },
+        // the island
+        { type: 'slab', pos: [7.2, 3.2, -9], size: [2.6, 6.4, 5.5], color: '#50545a', roughness: 0.8 },
+        { type: 'lampPractical', pos: [6.0, 4.6, -7.0], color: '#ff5a3a', intensity: 0.5, distance: 4 },
+        // the shooter in yellow, crouched to launch; a deck hand by the helmet bag
+        { type: 'abstractFigure', pos: [-0.3, 0, -2.4], rot: [0, 0.9, 0], color: '#e0b43a', pose: 'crouch' },
+        { type: 'abstractFigure', pos: [-2.4, 0, -1.4], rot: [0, 0.5, 0], color: '#3a6ab0', pose: 'stand' },
+        // his flight bag, dropped on the deck: touch it
+        { type: 'bevelBox', pos: [-1.6, 0.18, 0.6], w: 0.6, h: 0.36, d: 0.4, radius: 0.05, color: '#4a5236', touch: { kind: 'nudge', amplitude: 0.08, foley: 'thunk' } },
+      ],
+      atmosphere: [
+        // catapult steam drifting off the track
+        { type: 'DustField', pos: [1.4, 0.3, -1.2], density: 40, size: 0.02, opacity: 0.18, area: [1.2, 0.6, 5], color: '#f0e8e0', speed: 0.3 },
       ],
       systems: [
-        { type: 'StreakLights', axis: 'x', speed: 6, colors: ['#a86a3a', '#e8b060'], count: 20, span: 8, y: 1.1, z: -1.5 },
-        { type: 'PulseBeat', bpm: 90, depth: 0.15 },
+        // the flyby: jets streaking along the horizon
+        { type: 'StreakLights', axis: 'x', speed: 7, colors: ['#fff2d8'], count: 3, span: 70, y: 9, z: -32 },
+        { type: 'PulseBeat', bpm: 90, depth: 0.12 },
       ],
     },
-    // this cockpit box is tiny (w:2.4, d:2) — the default info positions
-    // (hotTake/score/meta all around z:-1.66 to -1.7) land past the back
-    // wall (half-depth 1) and outside the side walls (half-width 1.2),
-    // so none of the record rendered inside the room at all (QA sweep
-    // 2026-08-21).
     info: {
-      hotTakePos: [0, 1.5, -0.95],
-      scorePos: [0.75, 1.65, -0.9],
-      metaPos: [0, 0.85, -0.92],
+      scorePos: [-2.2, 2.3, -3.2],
+      metaPos: [-1.4, 1.45, -3.0],
     },
   },
 
@@ -833,7 +891,7 @@ export const CONFIGS = {
     place: {
       shell: 'corridor',
       shellParams: {
-        length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#b8b8bc', farLight: false,
+        length: 8, width: 2.6, height: 2.4, ribs: 4, wallTint: '#b8b8bc', farLight: false, mouthZ: 2.4,
         mat: { walls: 'tile', floor: 'tile', ceiling: 'plaster', wallWear: 0.15, floorWear: 0.2 },
       },
       props: [
@@ -866,8 +924,10 @@ export const CONFIGS = {
       shell: 'box',
       shellParams: { w: 2.6, d: 8, h: 2.2, wallMat: 'wood', window: true },
       props: [
-        { type: 'chairRow', pos: [-0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a', touch: { kind: 'nudge', amplitude: 0.12, reach: 2.8 } },
-        { type: 'chairRow', pos: [0.6, 0, -1], count: 3, spacing: 1.4, color: '#8a5a3a' },
+        { type: 'chairRow', pos: [-0.75, 0, -1], count: 2, spacing: 0.48, color: '#8a5a3a', touch: { kind: 'nudge', amplitude: 0.12, reach: 2.8 } },
+        { type: 'chairRow', pos: [0.75, 0, -1], count: 2, spacing: 0.48, color: '#8a5a3a' },
+        { type: 'chairRow', pos: [-0.75, 0, -2.6], count: 2, spacing: 0.48, color: '#8a5a3a' },
+        { type: 'chairRow', pos: [0.75, 0, -2.6], count: 2, spacing: 0.48, color: '#8a5a3a' },
       ],
       systems: [
         { type: 'ResetFlash', period: 45, jitter: 0.05 },
@@ -1135,6 +1195,8 @@ export const CONFIGS = {
         w: 3.8, d: 3.8, h: 2.1, wallMat: 'wood', window: true,
         mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.4, floorWear: 0.45 },
       },
+      // the dollhouse ceiling is 2.1 m; a full door (2.13 m) punched through it
+      doorMount: { scale: 0.86 },
       props: [
         { type: 'table', pos: [0, 0, -0.8], w: 0.6, d: 0.4, h: 0.5, color: '#3a2c1c', touch: { kind: 'nudge', amplitude: 0.12, foley: 'thunk' } },
         { type: 'chairRow', pos: [0, 0, -0.4], count: 2, spacing: 0.35, seatH: 0.28 },
@@ -1167,6 +1229,704 @@ export const CONFIGS = {
     // this box is narrow (w:3.4) — default scorePos (x:1.2) was clipping
     // the right frame edge at this fov (QA sweep 2026-08-21).
     info: { scorePos: [0.85, 1.9, -1.35] },
+  },
+
+  // ============================================================ 2026-09-27
+  // The fifteen films that were still standing in the Default placeholder
+  // (a fog disc with no walls, doors or sound). Each is staged in the film's
+  // own iconic place, and authors its own hot-take scraps (info.fragments)
+  // so the take is never buried inside a carrier prop.
+
+  // -------------------------------------------------------------------- se7en
+  // The desert under the power pylons. The box on the ground, the unmarked car,
+  // Doe kneeling. Hot take: "WHATS IN THE BOXXXXX", Brad Pitt, "that whole scene".
+  se7en: {
+    family: 'dread',
+    grade: {
+      bg: '#a88c62', fogColor: '#a88c62', fogDensity: 0.018,
+      key: '#f2c58a', keyIntensity: 2.2, fill: '#6a5840', ambient: 0.34,
+      sat: -0.28, contrast: 0.12, grain: 0.07, vignette: 0.52, bloomIntensity: 0.18,
+    },
+    camera: { pos: [0, 1.6, 1.6], look: [0.3, 0.9, -3], fov: 42, far: 160 },
+    lights: {
+      key: { type: 'directional', pos: [-8, 5, -12], intensity: 1.1, color: '#ffcf90' },
+      bounce: [{ pos: [0, 1.2, 3], intensity: 0.5, distance: 14, color: '#8a6a48', decay: 2 }],
+    },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#b0915e', skyTop: '#c7a46e', skyBottom: '#e6cf9e', horizon: true, boundsRadius: 12 },
+      props: [
+        // the box
+        { type: 'slab', pos: [0.5, 0.18, -1.4], size: [0.42, 0.36, 0.42], color: '#a8844f', touch: { kind: 'nudge', amplitude: 0.06, foley: 'thunk' } },
+        { type: 'vehicleMass', pos: [-2.8, 0, -3.4], rot: [0, 0.45, 0], color: '#23262a', w: 1.8, h: 1.25, d: 4.6 },
+        // Doe, kneeling in the dirt
+        { type: 'abstractFigure', pos: [1.9, 0, -3.0], rot: [0, -0.5, 0], color: '#2a2622', pose: 'sit' },
+        // the pylons
+        { type: 'slab', pos: [-5, 7, -16], size: [0.45, 14, 0.45], color: '#3a3834', metalness: 0.4 },
+        { type: 'slab', pos: [-5, 12.4, -16], size: [7, 0.22, 0.22], color: '#3a3834', metalness: 0.4 },
+        { type: 'slab', pos: [7, 6, -30], size: [0.4, 12, 0.4], color: '#3a3834', metalness: 0.4 },
+      ],
+      atmosphere: [
+        { type: 'DustField', density: 36, size: 0.012, opacity: 0.2, area: [6, 2.2, 6], color: '#d8c08c', speed: 0.18 },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.4, 1.75, -2.4],
+      metaPos: [0.2, 0.55, -1.8],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [0.5, 0.18, -1.4], y: 0.365, dz: 0, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [-2.8, 0, -3.4], dx: 0.6, dz: 1.24, y: 0.715, tilt: FLAT, ry: 0.45 },
+        { index: 2, of: 3, state: 'film', pos: [-5, 7, -16], y: 1.6, dz: 0.24, ry: 0.28 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- spotlight
+  // The Spotlight team's cramped office at the Globe: two desks, the bound
+  // Church directories, the list with the circled names on the back wall.
+  spotlight: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#23272d', fogColor: '#23272d', fogDensity: 0.03,
+      key: '#e6ead8', keyIntensity: 2.2, fill: '#5a6068', ambient: 0.3,
+      sat: -0.12, contrast: 0.06, grain: 0.05, vignette: 0.45, bloomIntensity: 0.16,
+    },
+    camera: { pos: [0.3, 1.6, 2.1], look: [-0.1, 1.2, -2.2], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5.2, d: 5.6, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'tile', wallWear: 0.35, floorWear: 0.5 },
+        trim: { color: '#3a3a36' },
+      },
+      props: [
+        { type: 'table', pos: [-1.1, 0, -1.4], w: 1.5, d: 0.75, color: '#5e5448' },
+        { type: 'table', pos: [1.0, 0, -1.9], w: 1.5, d: 0.75, color: '#5e5448' },
+        { type: 'chairRow', pos: [-1.1, 0, -0.75], rot: [0, Math.PI, 0], count: 1, color: '#2c3036', cushion: '#3a3e46' },
+        // the list: 87, rows of names, the circled ones
+        { type: 'screenPanel', pos: [-0.2, 1.55, -2.78], w: 1.5, h: 0.9, color: '#d8d2c0', intensity: 0.7, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#d8d2c0'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#2a2a2a'; ctx.font = 'bold 40px Georgia'; ctx.fillText('87', 18, 48)
+          ctx.fillStyle = '#6a665c'
+          for (let r = 0; r < 13; r++) ctx.fillRect(80, 24 + r * 21, 180 + ((r * 53) % 140), 4)
+          ctx.strokeStyle = '#a8231c'; ctx.lineWidth = 3
+          ;[2, 5, 6, 9, 11].forEach((r) => { ctx.beginPath(); ctx.ellipse(170, 26 + r * 21, 110, 11, 0, 0, Math.PI * 2); ctx.stroke() })
+        } },
+        { type: 'bevelBox', pos: [2.0, 0.2, -2.4], w: 0.5, h: 0.4, d: 0.4, color: '#9a8a66', touch: { kind: 'nudge', amplitude: 0.08, foley: 'thunk' } },
+        { type: 'lampPractical', pos: [-1.6, 0.95, -1.6], color: '#fff0d0', intensity: 0.45 },
+      ],
+      clutter: [
+        { type: 'bookStack', pos: [-0.65, 0.75, -1.45], count: 6, w: 0.24, d: 0.3, colors: ['#6a2a22', '#2a3a4a', '#4a3a22'] },
+        { type: 'boxPile', pos: [1.9, 0, -1.2], count: 4, color: '#9a8660', spread: 0.45 },
+        { type: 'cup', pos: [1.35, 0.75, -1.75], color: '#e8e0d0' },
+      ],
+      systems: [
+        // the clippings pile up every time you look away from them
+        { type: 'LookAwayGrow', pos: [0.3, 0, -0.6], max: 30, color: '#e8e0c8' },
+      ],
+    },
+    info: {
+      scorePos: [1.5, 1.9, -2.77],
+      metaPos: [-1.7, 2.12, -2.77],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [-1.1, 0, -1.4], dx: -0.3, dz: 0.1, y: 0.757, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [-0.2, 1.55, -2.78], dx: 1.0, dz: 0.012, y: 1.3 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- gladiator
+  // The Colosseum floor: sand, the curved wall, the tiers, the emperor's box.
+  // Maximus stands centre; the verdict is on the wall under the box.
+  gladiator: {
+    family: 'spectacle',
+    grade: {
+      bg: '#d6bf94', fogColor: '#d6bf94', fogDensity: 0.02,
+      key: '#ffe2a8', keyIntensity: 2.4, fill: '#8a6c46', ambient: 0.36,
+      sat: 0.06, contrast: 0.1, grain: 0.04, vignette: 0.4, bloomIntensity: 0.28,
+    },
+    // camera z < 5.5 so the open-shell door mount (z 5.5, facing -Z) stands behind you
+    camera: { pos: [0, 1.6, 3.6], look: [0, 3.2, -10], fov: 56, far: 200 },
+    lights: {
+      key: { type: 'directional', pos: [6, 12, 4], intensity: 1.2, color: '#fff0d0' },
+      bounce: [{ pos: [0, 1.2, 4], intensity: 0.6, distance: 16, color: '#8a6a44', decay: 2 }],
+    },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#c7a56c', skyTop: '#d9c9a4', skyBottom: '#efe0bd', horizon: false, boundsRadius: 10.2 },
+      props: [
+        { type: 'shaftRing', pos: [0, 3, 0], radius: 11, height: 6, segments: 48, mat: { kind: 'brick', tint: '#b89a70', wear: 0.6 } },
+        { type: 'ledgeRing', pos: [0, 3.4, 0], radius: 10.9, tube: 0.08, color: '#8a7050' },
+        { type: 'ledgeRing', pos: [0, 5.6, 0], radius: 10.9, tube: 0.07, color: '#8a7050' },
+        // the imperial box
+        { type: 'slab', pos: [0, 3.9, -10.4], size: [3.4, 0.25, 1.2], color: '#9a2a22' },
+        { type: 'throne', pos: [0, 4.03, -10.6], scale: 0.7, color: '#6a1c18', accent: '#e0c070' },
+        { type: 'abstractFigure', pos: [0.4, 0, -2.2], color: '#3a2a1e', pose: 'stand' },
+      ],
+      systems: [
+        { type: 'DustDrift', density: 90, color: '#e2c890', area: [14, 3, 14], speed: 0.1 },
+      ],
+    },
+    info: {
+      scorePos: [1.4, 2.2, -3.2],
+      metaPos: [-0.3, 0.9, -3.0],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [0.4, 0, -2.2], dx: -0.6, dz: 0.5, y: 0.012, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [0, 0, -10.9], y: 1.6, dz: 0 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------- the-big-short
+  // Burry's Scion office: the desk, three monitors of tranche data, the Jenga
+  // tower Vennett knocks over to explain the CDO. The seven-clause take walks the room.
+  'the-big-short': {
+    family: 'momentum',
+    grade: {
+      bg: '#0d1512', fogColor: '#0d1512', fogDensity: 0.035,
+      key: '#e8f0e0', keyIntensity: 2.2, fill: '#3a4a40', ambient: 0.22,
+      sat: 0.02, contrast: 0.08, grain: 0.04, vignette: 0.45, bloomIntensity: 0.26,
+    },
+    camera: { pos: [0.3, 1.6, 2.0], look: [0, 1.1, -1.6], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 5, h: 2.7, wallMat: 'flat',
+        mat: { walls: 'plaster', floor: 'wood', ceiling: 'plaster', wallWear: 0.25, floorWear: 0.3 },
+        trim: { color: '#2a2622' },
+      },
+      props: [
+        { type: 'table', pos: [0, 0, -1.3], w: 1.9, d: 0.85, color: '#2e2a26' },
+        { type: 'screenPanel', pos: [0, 1.0, -1.62], w: 1.6, h: 0.4, color: '#0c1210', intensity: 0.7, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#0c1210'; ctx.fillRect(0, 0, W, H)
+          for (let p = 0; p < 3; p++) {
+            const x0 = 8 + p * (W / 3)
+            ctx.strokeStyle = '#2a3a30'; ctx.strokeRect(x0, 8, W / 3 - 16, H - 16)
+            for (let r = 0; r < 9; r++) for (let c = 0; c < 5; c++) {
+              ctx.fillStyle = (r * 7 + c * 3 + p) % 11 === 0 ? '#d64b2a' : '#3fa66b'
+              ctx.fillRect(x0 + 10 + c * 30, 18 + r * 12, 22, 5)
+            }
+          }
+        } },
+        { type: 'chairRow', pos: [0, 0, -0.6], rot: [0, Math.PI, 0], count: 1, color: '#1c1c20', cushion: '#2a2a30' },
+        // the Jenga tower
+        { type: 'bevelBox', pos: [0.72, 0.99, -1.1], w: 0.12, h: 0.48, d: 0.12, radius: 0.006, color: '#d9c08a', touch: { kind: 'nudge', amplitude: 0.12, foley: 'thunk' } },
+        { type: 'lampPractical', pos: [-0.75, 1.05, -1.15], color: '#fff0d0', intensity: 0.5 },
+        { type: 'frameOn', pos: [-1.4, 1.65, -2.47], w: 1.0, h: 0.7, color: '#1c1a18' },
+      ],
+      clutter: [
+        { type: 'crumpledPaper', pos: [0.2, 0.78, -1.5] },
+        { type: 'cup', pos: [-0.45, 0.75, -1.0], color: '#e8e0d0' },
+        { type: 'bookStack', pos: [1.9, 0, -2.1], count: 7, w: 0.3, d: 0.24, colors: ['#e8e4d8', '#d8d4c8'] },
+      ],
+      systems: [
+        // the tonal morph: the room cuts to money green, then back
+        { type: 'ScheduledCut', period: 75, duration: 1400, altGrade: '#2f7a50' },
+      ],
+    },
+    info: {
+      scorePos: [1.45, 1.95, -2.47],
+      metaPos: [-0.2, 2.25, -2.47],
+      fragments: [
+        { index: 0, of: 7, state: 'film', pos: [0, 1.0, -1.62], dx: -0.5, dz: 0.01, y: 1.26 },
+        { index: 1, of: 7, state: 'motel', pos: [0, 0, -1.3], dx: -0.3, dz: 0.25, y: 0.757, tilt: FLAT },
+        { index: 2, of: 7, state: 'film', pos: [-1.4, 1.65, -2.47], dz: 0.02, y: 1.65 },
+        { index: 3, of: 7, state: 'motel', pos: [0.9, 1.7, -2.48], dz: 0.01, y: 1.7 },
+        { index: 4, of: 7, state: 'film', pos: [0.72, 0, -1.1], dx: -0.25, dz: 0, y: 0.757, tilt: FLAT },
+        { index: 5, of: 7, state: 'motel', pos: [-2.48, 1.5, -0.6], dz: 0, y: 1.5, ry: Math.PI / 2 },
+        { index: 6, of: 7, state: 'film', pos: [2.48, 1.45, -1.8], dz: 0, y: 1.45, ry: -Math.PI / 2 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------- la-confidential
+  // The Nite Owl coffee shop: red counter, stools, the back bar, a booth.
+  // Flashbulb pops (Hush-Hush) through ScheduledCut, i.e. through claimFlash.
+  'la-confidential': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1a1512', fogColor: '#1a1512', fogDensity: 0.04,
+      key: '#e8b474', keyIntensity: 2.4, fill: '#4a3a2c', ambient: 0.22,
+      sat: 0.06, contrast: 0.08, grain: 0.06, vignette: 0.58, bloomIntensity: 0.26,
+    },
+    camera: { pos: [0.5, 1.6, 2.0], look: [-0.2, 1.15, -1.6], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6, d: 5, h: 2.8, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'tile', ceiling: 'plaster', wallWear: 0.35, floorWear: 0.45 },
+        trim: { color: '#2a1c16' },
+      },
+      props: [
+        { type: 'counter', pos: [-0.3, 0, -1.4], w: 3.4, d: 0.7, color: '#7a2e24' },
+        { type: 'chairRow', pos: [-0.3, 0, -0.72], rot: [0, Math.PI, 0], count: 5, spacing: 0.66, seatH: 0.72, color: '#c8c0b0', cushion: '#8a2a22' },
+        { type: 'barShelf', pos: [-0.3, 0.95, -2.35], w: 2.6, rows: 2, count: 12, color: '#3a2a1e', glint: '#e8b060' },
+        { type: 'lampPractical', pos: [1.9, 2.3, -2.2], color: '#ffb060', intensity: 0.9, distance: 6 },
+        { type: 'slab', pos: [2.2, 0.6, -0.5], size: [0.1, 1.2, 1.4], color: '#5a2420' },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 48, duration: 220, altGrade: '#f4efe2' },
+      ],
+    },
+    info: {
+      scorePos: [-2.2, 2.2, -2.48],
+      metaPos: [0.2, 2.45, -2.48],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [-0.3, 0, -1.4], dx: -1.1, dz: 0.05, y: 1.0, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [-0.3, 0, -2.48], dx: 1.6, dz: 0, y: 1.9 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------- fight-club
+  // Lou's basement: one bare bulb, concrete, two men squared up, the ring.
+  // Duplicates doubles the whole room a hair off; Tyler stands where you are not looking.
+  'fight-club': {
+    family: 'mind-bender',
+    grade: {
+      bg: '#141214', fogColor: '#141214', fogDensity: 0.06,
+      key: '#e6dca0', keyIntensity: 2.0, fill: '#34402e', ambient: 0.12,
+      sat: -0.14, contrast: 0.14, grain: 0.09, vignette: 0.7, bloomIntensity: 0.22,
+    },
+    camera: { pos: [0, 1.6, 2.4], look: [0, 1.1, -1.4], fov: 50 },
+    lights: {
+      key: { pos: [0, 2.25, -0.9], intensity: 1.6, distance: 7, decay: 2, color: '#fff0c8' },
+      bounce: [{ pos: [0, 0.3, -1.2], intensity: 0.4, distance: 5, color: '#3a4030', decay: 2 }],
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6, d: 6, h: 2.6, wallMat: 'plaster',
+        mat: { walls: 'concrete', floor: 'concrete', ceiling: 'concrete', wallWear: 0.6, floorWear: 0.65 },
+        trim: { color: '#0e0e10' },
+      },
+      props: [
+        { type: 'abstractFigure', pos: [-0.35, 0, -1.0], rot: [0, 0.9, 0], color: '#2a2420', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0.4, 0, -1.3], rot: [0, -2.2, 0], color: '#3a2a26', pose: 'crouch' },
+        { type: 'abstractFigure', pos: [-1.7, 0, -1.9], color: '#161214', pose: 'stand' },
+        { type: 'abstractFigure', pos: [1.8, 0, -2.1], color: '#161214', pose: 'stand' },
+        // the bulb itself (the light is lights.key above, so Duplicates cannot double it)
+        { type: 'slab', pos: [0, 2.25, -0.9], size: [0.07, 0.1, 0.07], color: '#fff0c8', emissive: '#fff0c8', emissiveIntensity: 2.2 },
+        { type: 'bevelBox', pos: [-2.2, 0.3, -2.4], w: 0.7, h: 0.6, d: 0.5, color: '#5a4632', touch: { kind: 'nudge', amplitude: 0.06, foley: 'thunk' } },
+      ],
+      clutter: [
+        { type: 'rag', pos: [0.9, 0.01, -0.6], color: '#6a2a24' },
+        { type: 'bottleRow', pos: [-2.3, 0.6, -2.4], count: 4, color: '#3a4a2a' },
+      ],
+      systems: [
+        { type: 'Duplicates', offset: 0.05, wrongness: 'subtle', wrapsProps: true },
+        { type: 'PeripheralFigure', corner: 'high', pos: [2.4, 0, -2.5], color: '#0e0c0e' },
+      ],
+    },
+    info: {
+      scorePos: [1.4, 2.0, -2.97],
+      metaPos: [-0.2, 2.2, -2.97],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [0, 0, -0.4], y: 0.012, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [-2.2, 0.3, -2.4], y: 0.35, dz: 0.26 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------- operation-finale
+  // The Buenos Aires safehouse: the bed, Malkin's chair pulled up to it, the
+  // table with the travel document, one lamp. "the fucking house was nuts".
+  'operation-finale': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1a1714', fogColor: '#1a1714', fogDensity: 0.045,
+      key: '#e0b878', keyIntensity: 2.2, fill: '#3a3a3e', ambient: 0.16,
+      sat: -0.06, contrast: 0.1, grain: 0.06, vignette: 0.62, bloomIntensity: 0.2,
+    },
+    camera: { pos: [0.4, 1.6, 1.7], look: [-0.5, 1.0, -1.3], fov: 44 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.4, d: 4.4, h: 2.7, wallMat: 'plaster', window: false,
+        mat: { walls: 'plaster', floor: 'wood', ceiling: 'plaster', wallWear: 0.45, floorWear: 0.5 },
+        trim: { color: '#241c16' },
+      },
+      props: [
+        { type: 'bed', pos: [-1.3, 0, -1.0], color: '#9a9282', frame: '#3a3226' },
+        { type: 'chairRow', pos: [0.1, 0, -1.3], rot: [0, -Math.PI / 2, 0], count: 1, color: '#4a3a2a', cushion: '#5a4a3a' },
+        { type: 'table', pos: [1.2, 0, -1.7], w: 0.9, d: 0.6, color: '#4a3a2a' },
+        { type: 'lampPractical', pos: [1.45, 0.95, -1.85], color: '#ffcf8a', intensity: 0.55 },
+        // the document he will not sign
+        { type: 'screenPanel', pos: [1.1, 0.757, -1.6], rot: [-Math.PI / 2, 0, 0], w: 0.3, h: 0.4, color: '#e8e0c8', intensity: 0.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#e8e0c8'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#5a5448'
+          for (let r = 0; r < 18; r++) ctx.fillRect(40, 60 + r * 30, W - 80 - (r % 4) * 40, 5)
+          ctx.fillRect(W - 240, H - 70, 180, 3)
+        } },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [0.6, 1.8, -2.18],
+      metaPos: [-0.9, 1.72, -2.18],
+      fragments: [
+        { index: 0, of: 4, state: 'film', pos: [0.1, 0, -1.3], y: 0.53, tilt: FLAT },
+        { index: 1, of: 4, state: 'motel', pos: [-1.3, 0, -1.0], dz: -0.85, y: 0.675, tilt: FLAT },
+        { index: 2, of: 4, state: 'film', pos: [1.2, 0, -1.7], dx: 0.25, dz: 0.12, y: 0.757, tilt: FLAT },
+        { index: 3, of: 4, state: 'film', pos: [0, 1.55, -2.18], dx: -0.9, dz: 0, y: 1.55 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ valkyrie
+  // The Wolf's Lair map room: the long table, the oak support the briefcase
+  // ended up behind (why it failed), the map, the chairs. One cut: the blast.
+  valkyrie: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#15171a', fogColor: '#15171a', fogDensity: 0.035,
+      key: '#e8d4a8', keyIntensity: 2.4, fill: '#3c3e3a', ambient: 0.2,
+      sat: -0.22, contrast: 0.1, grain: 0.06, vignette: 0.55, bloomIntensity: 0.18,
+    },
+    camera: { pos: [1.4, 1.65, 2.0], look: [0, 0.85, -1.0], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 7, d: 5, h: 2.8, wallMat: 'wood',
+        mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.3, floorWear: 0.4 },
+        trim: { color: '#2a1c12' },
+      },
+      props: [
+        { type: 'table', pos: [0, 0, -1.0], w: 4.2, d: 1.2, h: 0.78, color: '#5a4028' },
+        // the heavy support
+        { type: 'slab', pos: [0.7, 0.36, -1.0], size: [0.3, 0.72, 0.9], color: '#3a2818' },
+        // the briefcase, on the wrong side of it
+        { type: 'bevelBox', pos: [1.1, 0.17, -0.8], w: 0.46, h: 0.34, d: 0.12, color: '#3a2a1c', touch: { kind: 'nudge', amplitude: 0.05, foley: 'thunk' } },
+        { type: 'chairRow', pos: [0, 0, -0.15], rot: [0, Math.PI, 0], count: 6, spacing: 0.66, color: '#3a2a1c', cushion: '#4a3424' },
+        { type: 'screenPanel', pos: [-1.0, 0.785, -1.0], rot: [-Math.PI / 2, 0, 0], w: 1.4, h: 0.9, color: '#d8cca8', intensity: 0.55, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#d8cca8'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#6a5a3a'; ctx.lineWidth = 2
+          for (let i = 0; i < 7; i++) { ctx.beginPath(); ctx.moveTo(0, 30 + i * 45); ctx.bezierCurveTo(W * 0.3, 10 + i * 48, W * 0.6, 60 + i * 40, W, 40 + i * 44); ctx.stroke() }
+          ctx.strokeStyle = '#9e2b25'; ctx.lineWidth = 4
+          ctx.beginPath(); ctx.moveTo(W * 0.7, 20); ctx.lineTo(W * 0.62, H * 0.5); ctx.lineTo(W * 0.74, H - 20); ctx.stroke()
+        } },
+        { type: 'frameOn', pos: [0, 1.75, -2.47], w: 1.8, h: 1.1, color: '#2a2018' },
+      ],
+      systems: [
+        { type: 'ScheduledCut', period: 64, duration: 600, altGrade: '#ffd8a8' },
+      ],
+    },
+    info: {
+      scorePos: [-2.3, 2.0, -2.48],
+      metaPos: [1.75, 1.6, -2.48],
+      fragments: [
+        { index: 0, of: 6, state: 'film', pos: [0, 0, -0.15], dx: 0.99, y: 0.53, tilt: FLAT },
+        { index: 1, of: 6, state: 'motel', pos: [0, 0, -1.0], dx: 1.4, dz: 0.2, y: 0.787, tilt: FLAT },
+        { index: 2, of: 6, state: 'film', pos: [1.1, 0.17, -0.8], dz: 0.07, y: 0.2 },
+        { index: 3, of: 6, state: 'motel', pos: [0.7, 0.36, -1.0], dz: 0.46, y: 0.45 },
+        { index: 4, of: 6, state: 'film', pos: [-1.0, 0, -1.0], dx: 0.1, dz: 0.1, y: 0.79, tilt: FLAT },
+        { index: 5, of: 6, state: 'film', pos: [0, 1.75, -2.47], dz: 0.02, y: 1.75 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------- memories-of-murder
+  // The last scene: the concrete drainage culvert in the rice field, Park
+  // crouched looking into it. The killer is anyone, so he is in the periphery.
+  'memories-of-murder': {
+    family: 'dread',
+    grade: {
+      bg: '#c6b884', fogColor: '#c6b884', fogDensity: 0.025,
+      key: '#f2dc98', keyIntensity: 2.4, fill: '#6e6c48', ambient: 0.4,
+      sat: -0.12, contrast: 0.06, grain: 0.06, vignette: 0.38, bloomIntensity: 0.22,
+    },
+    camera: { pos: [0.4, 1.5, 1.4], look: [0, 0.55, -3.2], fov: 46, far: 160 },
+    lights: {
+      key: { type: 'directional', pos: [5, 9, 4], intensity: 1.1, color: '#fff0c8' },
+      bounce: [{ pos: [0, 1, 3], intensity: 0.5, distance: 14, color: '#7a7040', decay: 2 }],
+    },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#b8a254', skyTop: '#d8d0a8', skyBottom: '#ece0b4', horizon: true, boundsRadius: 14 },
+      props: [
+        { type: 'slab', pos: [0, 0.92, -3.2], size: [2.4, 0.24, 1.4], color: '#8a8474' },
+        { type: 'slab', pos: [-1.02, 0.4, -3.2], size: [0.36, 0.8, 1.4], color: '#7a766a' },
+        { type: 'slab', pos: [1.02, 0.4, -3.2], size: [0.36, 0.8, 1.4], color: '#7a766a' },
+        // the dark inside of the drain
+        { type: 'slab', pos: [0, 0.4, -3.86], size: [1.68, 0.8, 0.06], color: '#070706' },
+        { type: 'abstractFigure', pos: [0.25, 0, -2.05], rot: [0, Math.PI, 0], color: '#3a3a2c', pose: 'crouch' },
+        { type: 'tree', pos: [-4.5, 0, -7], scale: 1.2, foliage: '#5a6a2a', trunk: '#3a2a1e' },
+      ],
+      atmosphere: [],
+      systems: [
+        { type: 'PeripheralFigure', corner: 'high', pos: [-3.2, 0, -4.2], color: '#1e1c16' },
+      ],
+    },
+    info: {
+      scorePos: [1.5, 1.5, -2.6],
+      metaPos: [-0.2, 1.35, -2.4],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [0, 0.92, -3.2], dz: 0.4, y: 1.045, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [0, 0.4, -3.86], dz: 0.035, y: 0.45 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------- frost-nixon
+  // The interview set: two armchairs squared off across a side table, the TV
+  // camera on its tripod, one hard film light. A two-hander, staged as two chairs.
+  'frost-nixon': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1a1612', fogColor: '#1a1612', fogDensity: 0.035,
+      key: '#f0dcb4', keyIntensity: 2.4, fill: '#3a3630', ambient: 0.2,
+      sat: 0.03, contrast: 0.07, grain: 0.06, vignette: 0.52, bloomIntensity: 0.24,
+    },
+    camera: { pos: [0, 1.55, 2.0], look: [0, 1.0, -1.3], fov: 40 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6, d: 5, h: 2.8, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'plaster', wallWear: 0.25, floorWear: 0.3 },
+        trim: { color: '#2a2018' },
+      },
+      props: [
+        { type: 'chairRow', pos: [-0.85, 0, -1.3], rot: [0, Math.PI / 2, 0], count: 1, color: '#6a5438', cushion: '#8a6a44' },
+        { type: 'chairRow', pos: [0.85, 0, -1.3], rot: [0, -Math.PI / 2, 0], count: 1, color: '#6a5438', cushion: '#8a6a44' },
+        { type: 'table', pos: [0, 0, -1.3], w: 0.45, d: 0.45, h: 0.5, color: '#3a2c20' },
+        { type: 'bevelBox', pos: [-1.9, 1.45, 0.3], w: 0.34, h: 0.3, d: 0.55, color: '#1c1c1e' },
+        { type: 'slab', pos: [-1.9, 0.65, 0.3], size: [0.06, 1.3, 0.06], color: '#2a2a2c' },
+        { type: 'lampPractical', pos: [2.1, 2.0, -0.3], color: '#fff2dc', intensity: 1.0, distance: 6 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [0.12, 0.5, -1.25], color: '#dcdcd4' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.3, 1.85, -2.48],
+      metaPos: [-0.9, 1.75, -2.48],
+      fragments: [
+        { index: 0, of: 1, state: 'film', pos: [0, 0, -1.3], dx: -0.06, y: 0.507, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- inside-man
+  // The bank's supply room: the false wall Dalton built, his cell behind it
+  // (mattress, one bulb), hostages in identical painter suits, the shelving.
+  'inside-man': {
+    family: 'momentum',
+    grade: {
+      bg: '#0f1a24', fogColor: '#0f1a24', fogDensity: 0.035,
+      key: '#e6ecf2', keyIntensity: 2.3, fill: '#3a4a5a', ambient: 0.22,
+      sat: 0.02, contrast: 0.09, grain: 0.04, vignette: 0.45, bloomIntensity: 0.26,
+    },
+    camera: { pos: [0.8, 1.6, 2.0], look: [-0.6, 1.1, -1.8], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 5, h: 2.7, wallMat: 'steel',
+        mat: { walls: 'plaster', floor: 'tile', ceiling: 'tile', wallWear: 0.3, floorWear: 0.35 },
+        trim: { color: '#1c2228' },
+      },
+      props: [
+        // the false wall; walk round its right end into the cell
+        { type: 'slab', pos: [-1.5, 1.2, -1.55], size: [1.6, 2.4, 0.1], color: '#9a9488' },
+        { type: 'bevelBox', pos: [-1.55, 0.07, -2.1], w: 1.3, h: 0.14, d: 0.6, radius: 0.03, color: '#3a4658' },
+        { type: 'lampPractical', pos: [-1.2, 1.9, -2.2], color: '#e8e0c0', intensity: 0.3, distance: 3 },
+        { type: 'slab', pos: [1.5, 1.0, -2.25], size: [1.6, 2.0, 0.45], color: '#5a5a5e' },
+        { type: 'abstractFigure', pos: [0.6, 0, -0.9], rot: [0, 0.4, 0], color: '#d4d4cc', pose: 'sit' },
+        { type: 'abstractFigure', pos: [1.3, 0, -1.2], rot: [0, -0.3, 0], color: '#d4d4cc', pose: 'sit' },
+      ],
+      systems: [
+        { type: 'PeripheralFigure', corner: 'low', pos: [-1.9, 0, -2.25], color: '#1a1c20' },
+      ],
+    },
+    info: {
+      scorePos: [0.2, 2.1, -2.48],
+      metaPos: [0.2, 1.7, -2.48],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [-1.5, 1.2, -1.55], dz: 0.06, y: 1.45 },
+        { index: 1, of: 2, state: 'film', pos: [-1.55, 0.07, -2.1], y: 0.145, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ the-town
+  // Charlestown at night: the getaway van, three nuns with the masks on, a
+  // brick row-house front, one sodium streetlight, cruiser light sliding along the brick.
+  'the-town': {
+    family: 'momentum',
+    grade: {
+      bg: '#16191d', fogColor: '#16191d', fogDensity: 0.035,
+      key: '#ffb46a', keyIntensity: 1.5, fill: '#2a3444', ambient: 0.14,
+      sat: -0.04, contrast: 0.08, grain: 0.05, vignette: 0.55, bloomIntensity: 0.32,
+    },
+    camera: { pos: [0, 1.6, 2.2], look: [-0.4, 1.2, -3], fov: 50, far: 160 },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#1e2024', skyTop: '#0a0e16', skyBottom: '#1a2230', horizon: false, distantCity: 18, boundsRadius: 9 },
+      props: [
+        { type: 'vehicleMass', pos: [1.1, 0, -2.6], rot: [0, 0.3, 0], color: '#8c8a82', w: 1.9, h: 1.6, d: 4.8 },
+        { type: 'abstractFigure', pos: [-1.1, 0, -1.9], color: '#0a0a0c', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.5, 0, -2.5], color: '#0a0a0c', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [-1.7, 0, -2.8], color: '#0a0a0c', pose: 'stand' },
+        { type: 'slab', pos: [0, 2.6, -6.5], size: [14, 5.2, 0.3], color: '#5a3228' },
+        { type: 'lampPractical', pos: [2.9, 3.4, -4.2], color: '#ffb060', intensity: 1.2, distance: 9 },
+      ],
+      atmosphere: [],
+      systems: [
+        { type: 'StreakLights', axis: 'x', speed: 1.6, colors: ['#3f6fa0', '#a83a3a'], count: 8, span: 12, y: 0.9, z: -6.3 },
+      ],
+    },
+    info: {
+      scorePos: [-2.6, 2.3, -6.33],
+      metaPos: [-0.4, 2.1, -6.33],
+      fragments: [
+        { index: 0, of: 4, state: 'film', pos: [1.1, 0, -2.6], dx: 0.426, dz: 1.376, y: 0.915, tilt: FLAT, ry: 0.3 },
+        { index: 1, of: 4, state: 'motel', pos: [1.1, 0, -2.6], dx: -0.113, dz: -0.367, y: 1.335, tilt: FLAT, ry: 0.3 },
+        { index: 2, of: 4, state: 'film', pos: [0, 2.6, -6.5], dx: -2.2, dz: 0.16, y: 1.6 },
+        { index: 3, of: 4, state: 'film', pos: [0, 2.6, -6.5], dx: 2.2, dz: 0.16, y: 1.6 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------- the-amateur
+  // Heller's basement decryption office at Langley: the desk, the monitor
+  // wall, the tracking board, the server rack. "the tech seemed highly unrelalistic".
+  'the-amateur': {
+    family: 'momentum',
+    grade: {
+      bg: '#0e1420', fogColor: '#0e1420', fogDensity: 0.04,
+      key: '#cfe0ff', keyIntensity: 2.0, fill: '#2a3444', ambient: 0.15,
+      sat: -0.06, contrast: 0.08, grain: 0.04, vignette: 0.55, bloomIntensity: 0.3,
+    },
+    camera: { pos: [0.4, 1.6, 1.8], look: [0, 1.1, -1.8], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 5, h: 2.5, wallMat: 'steel',
+        mat: { walls: 'concrete', floor: 'carpet', ceiling: 'tile', wallWear: 0.3, floorWear: 0.35 },
+        trim: { color: '#141820' },
+      },
+      props: [
+        { type: 'table', pos: [0, 0, -1.4], w: 2.0, d: 0.8, color: '#2a2e36' },
+        { type: 'screenPanel', pos: [0, 1.02, -1.72], w: 1.8, h: 0.42, color: '#0a0e16', intensity: 0.75, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#0a0e16'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#4c9bd6'
+          for (let c = 0; c < 24; c++) for (let r = 0; r < 10; r++) if ((c * 13 + r * 7) % 5) ctx.fillRect(10 + c * 21, 10 + r * 11, 12, 5)
+        } },
+        { type: 'screenPanel', pos: [-1.4, 1.6, -2.47], w: 1.2, h: 0.8, color: '#101822', intensity: 0.7, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#101822'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#4c9bd6'; ctx.lineWidth = 2
+          ctx.beginPath(); ctx.moveTo(60, H - 60); ctx.lineTo(W * 0.4, H * 0.45); ctx.lineTo(W * 0.62, H * 0.6); ctx.lineTo(W - 60, 60); ctx.stroke()
+          ctx.fillStyle = '#e8eef4'; [[60, H - 60], [W * 0.4, H * 0.45], [W * 0.62, H * 0.6], [W - 60, 60]].forEach(([x, y]) => ctx.fillRect(x - 5, y - 5, 10, 10))
+        } },
+        { type: 'chairRow', pos: [0, 0, -0.7], rot: [0, Math.PI, 0], count: 1, color: '#1c2028', cushion: '#2a3038' },
+        { type: 'lampPractical', pos: [0.85, 0.98, -1.25], color: '#cfe0ff', intensity: 0.4 },
+        { type: 'bevelBox', pos: [2.0, 1.0, -2.1], w: 0.6, h: 2.0, d: 0.7, color: '#1a1e26' },
+      ],
+      systems: [
+        { type: 'GlyphRain', pos: [2.0, 0.1, -1.74], area: [0.5, 1.8], color: '#4c9bd6', columns: 4, speed: 0.35 },
+      ],
+    },
+    info: {
+      scorePos: [0.3, 2.0, -2.48],
+      metaPos: [-1.4, 2.2, -2.48],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [0, 0, -1.4], dx: -0.6, dz: 0.15, y: 0.757, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [-1.4, 1.6, -2.47], dz: 0.02, y: 1.05 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------- in-the-grey
+  // PLACEHOLDER STAGING (real sets unverified): a grey-ops briefing room. The
+  // table with the op map, the two leads flanking it, the crate, one hard overhead.
+  'in-the-grey': {
+    family: 'momentum',
+    grade: {
+      bg: '#1c1e21', fogColor: '#1c1e21', fogDensity: 0.035,
+      key: '#e8e6e0', keyIntensity: 2.2, fill: '#3a3c40', ambient: 0.2,
+      sat: -0.08, contrast: 0.1, grain: 0.05, vignette: 0.5, bloomIntensity: 0.24,
+    },
+    camera: { pos: [0.3, 1.65, 2.0], look: [0, 1.0, -1.4], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6, d: 5, h: 2.8, wallMat: 'steel',
+        mat: { walls: 'concrete', floor: 'concrete', ceiling: 'metal', wallWear: 0.4, floorWear: 0.5 },
+        trim: { color: '#18191b' },
+      },
+      props: [
+        { type: 'table', pos: [0, 0, -1.2], w: 2.2, d: 1.1, color: '#2a2c2e' },
+        { type: 'screenPanel', pos: [0, 0.757, -1.2], rot: [-Math.PI / 2, 0, 0], w: 1.6, h: 0.9, color: '#9aa0a4', intensity: 0.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#9aa0a4'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#4a5054'; ctx.lineWidth = 2
+          for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.ellipse(W * 0.55, H * 0.5, 40 * i, 26 * i, 0.3, 0, Math.PI * 2); ctx.stroke() }
+          ctx.fillStyle = '#b8b9bc'; ctx.fillRect(W * 0.55 - 6, H * 0.5 - 6, 12, 12)
+        } },
+        { type: 'abstractFigure', pos: [-1.2, 0, -1.6], rot: [0, 0.6, 0], color: '#2a2a2c', pose: 'stand' },
+        { type: 'abstractFigure', pos: [1.2, 0, -1.7], rot: [0, -0.6, 0], color: '#1e1e20', pose: 'stand' },
+        { type: 'bevelBox', pos: [-2.2, 0.3, -2.0], w: 1.0, h: 0.6, d: 0.5, color: '#3a4030', touch: { kind: 'nudge', amplitude: 0.05, foley: 'thunk' } },
+        { type: 'lampPractical', pos: [0, 2.3, -1.2], color: '#e8e8e4', intensity: 0.5, distance: 5 },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.6, 2.1, -2.48],
+      metaPos: [-1.5, 2.05, -2.48],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [0, 0, -1.2], dx: 0.85, dz: 0.35, y: 0.757, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [0, 0, -1.2], dx: -0.5, dz: 0.1, y: 0.762, tilt: FLAT },
+        { index: 2, of: 5, state: 'film', pos: [-2.2, 0.3, -2.0], dz: 0.26, y: 0.35 },
+        { index: 3, of: 5, state: 'motel', pos: [0, 1.5, -2.48], dx: -1.2, dz: 0, y: 1.5 },
+        { index: 4, of: 5, state: 'film', pos: [0, 1.5, -2.48], dx: 1.3, dz: 0, y: 1.5 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------- one-battle-after-another
+  // The rolling desert highway chase: the road rises over a crest and dips out
+  // of sight, Bob's car pulled over, a second car on the crest, a headlight
+  // coming over the hill that never arrives (AdvanceGlow stops at z -18).
+  'one-battle-after-another': {
+    family: 'momentum',
+    grade: {
+      bg: '#d6c7a2', fogColor: '#d6c7a2', fogDensity: 0.012,
+      key: '#fff0d0', keyIntensity: 2.4, fill: '#a88a60', ambient: 0.44,
+      sat: 0.04, contrast: 0.08, grain: 0.05, vignette: 0.3, bloomIntensity: 0.28,
+    },
+    camera: { pos: [0, 1.25, 2.0], look: [0, 0.9, -12], fov: 38, far: 220 },
+    lights: {
+      key: { type: 'directional', pos: [4, 10, 2], intensity: 1.2, color: '#fff4dc' },
+      bounce: [{ pos: [0, 1, 3], intensity: 0.5, distance: 14, color: '#8a7050', decay: 2 }],
+    },
+    place: {
+      shell: 'open',
+      // boundsRadius 10 stops the walker before the rise (z -10.9): the walker is flat-floored
+      shellParams: { ground: 'grass', groundColor: '#b89a6a', skyTop: '#8fb0cc', skyBottom: '#e6dac0', horizon: true, boundsRadius: 10 },
+      props: [
+        { type: 'slab', pos: [0, -0.04, -5], size: [3.4, 0.08, 12], color: '#2e2c2a' },
+        { type: 'slab', pos: [0, 0.85, -15.8], rot: [0.17, 0, 0], size: [3.4, 0.08, 10], color: '#2e2c2a' },
+        { type: 'slab', pos: [0, 0.95, -26.93], rot: [-0.12, 0, 0], size: [3.4, 0.08, 12.5], color: '#2e2c2a' },
+        { type: 'vehicleMass', pos: [-0.7, 0, -4.2], color: '#6a6258', w: 1.8, h: 1.2, d: 4.4 },
+        { type: 'vehicleMass', pos: [0.8, 1.58, -19.8], rot: [0.17, 0, 0], color: '#b8b0a0', w: 1.8, h: 1.2, d: 4.4 },
+        { type: 'abstractFigure', pos: [2.3, 0, -3.6], rot: [0, -0.4, 0], color: '#7a6a52', pose: 'stand' },
+      ],
+      atmosphere: [],
+      systems: [
+        { type: 'AdvanceGlow', prop: 'sphere', from: [0.5, 1.9, -34], axis: 'z', speed: 0.05, resetAt: 16, color: '#fff0c0', intensity: 0.5 },
+      ],
+    },
+    info: {
+      scorePos: [1.5, 1.8, -3.2],
+      metaPos: [1.2, 1.3, -3.2],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [0, -0.04, -5], dx: 0.9, dz: 4.0, y: 0.012, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [-0.7, 0, -4.2], dz: -0.35, y: 1.0, tilt: FLAT },
+        { index: 2, of: 5, state: 'film', pos: [-0.7, 0, -4.2], dz: 1.5, y: 0.69, tilt: FLAT },
+        { index: 3, of: 5, state: 'motel', pos: [0, -0.04, -5], dx: -1.1, dz: -3.5, y: 0.012, tilt: FLAT },
+        { index: 4, of: 5, state: 'film', pos: [0, -0.04, -5], dx: 0.3, dz: -4.8, y: 0.012, tilt: FLAT },
+      ],
+    },
   },
 }
 

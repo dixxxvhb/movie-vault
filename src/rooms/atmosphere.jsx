@@ -198,6 +198,7 @@ export function Rainlight({ pos, rot = [0, 0, 0], w = 1.4, h = 1.8, color = '#9f
     c.width = 64; c.height = 128
     return new THREE.CanvasTexture(c)
   }, [])
+  useEffect(() => () => tex.dispose(), [tex])
   const rgb = useMemo(() => {
     const cc = new THREE.Color(color)
     return [Math.round(cc.r * 255), Math.round(cc.g * 255), Math.round(cc.b * 255)]

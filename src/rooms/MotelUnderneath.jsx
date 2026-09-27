@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import Touchable from './Touchable.jsx'
@@ -48,16 +48,22 @@ export function motelAnchorsFor(shell, params, camera) {
     // spawn: a light switch on a pole in an open field, which is exactly the
     // sort of thing that is in a film's world and not in a motel's, and reads
     // as deliberate rather than as a bug.
+    // Faces the spawn (+Z). At PI it stood in front of you with its back turned.
     return {
-      switch: [spawn[0] + 0.55, spawn[2] - 0.5, Math.PI],
+      switch: [spawn[0] + 0.55, spawn[2] - 0.5, 0],
     }
   }
 
   if (shell === 'corridor') {
-    const halfW = (params.w ?? 2.4) / 2
+    // Corridors are sized by `width` (CorridorShell), not `w`; reading `w`
+    // picked up the family preset's box width and floated the switch a metre
+    // outside the tunnel. Clamped inside the mouth (walls end at z 0) for
+    // rooms whose camera starts out in front of it.
+    const halfW = (params.width ?? 2.6) / 2
+    const z = Math.min(spawn[2] - 0.35, -0.3)
     return {
-      switch: [halfW - 0.06, spawn[2] - 0.35, -Math.PI / 2],
-      ac: [-halfW + 0.13, 1.95, spawn[2] - 1.6, Math.PI / 2],
+      switch: [halfW - 0.06, z, -Math.PI / 2],
+      ac: [-halfW + 0.13, 1.95, Math.min(spawn[2] - 1.6, -0.9), Math.PI / 2],
     }
   }
 
@@ -274,6 +280,7 @@ export default function MotelUnderneath({ shell, anchors, filmAmbient = 0.1 }) {
       pen: make('#2A2723', 0.5),
     }
   }, [])
+  useEffect(() => () => Object.values(mats).forEach((m) => m.dispose()), [mats])
 
   useFrame(() => {
     const t = houseLevel()

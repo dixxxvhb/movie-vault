@@ -114,7 +114,9 @@ export default function Touchable({
       meshEntries.current.forEach((entry) => {
         const clone = ensureClone(entry)
         if (!clone) return
-        clone.color.copy(entry.base).lerp(WHITE, hoverT.current * HOVER_LIFT)
+        // a press/light flash (touchKinds useFlashOnTouch) rides on top
+        const lift = Math.max(hoverT.current * HOVER_LIFT, entry.mesh.userData.touchFlash || 0)
+        clone.color.copy(entry.base).lerp(WHITE, lift)
       })
     }
 
