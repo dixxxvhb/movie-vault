@@ -18,6 +18,7 @@ import { standardMat } from '../materials.js'
 import { Bevel, wireRun as WireRun } from '../detail.jsx'
 import LightRig, { LIGHT_SCALE } from '../lightRig.js'
 import { HazeCone } from '../atmosphere.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // 9.9 — "the tunnel descent." Two zones, one click-to-advance path between
 // them: the dusk staging ground (the silhouette-line-at-sunset entry
@@ -99,7 +100,7 @@ function gradeForIndex(index) {
 /* ------------------------------------------------------------ ground zone */
 
 function DuskGround({ grade }) {
-  const skyTex = useMemo(
+  const skyTex = useOwned(
     () => makeDuskSkyTexture(grade.fill || '#2a3a55', grade.key || '#e8935a', '#1a1410'),
     [grade.fill, grade.key]
   )
@@ -559,7 +560,7 @@ const SICARIO_DOOR_GRADE = { key: '#5a5346', fill: '#3a362c', acc: '#847a63' }
 // entry viewpoint stays config.camera (GROUND_STATION above), and the whole
 // descent is walked, not clicked — so it's deliberately not destructured;
 // FilmWorld still passes it, unused.
-export default function Sicario({ film, config, doors = [], onDoor }) {
+export default function Sicario({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const dwellRef = useRef(0)
   const decayRef = useRef(1)
@@ -574,7 +575,8 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
   const nearBottomRef = useRef(false)
   const [nearBottom, setNearBottom] = useState(false)
 
-  const tunnelTex = useMemo(() => makeTunnelTexture('#1c1a14'), [])
+  const tunnelTex = useOwned(() => makeTunnelTexture('#1c1a14'), [])
+  const publishedDepthRef = useRef(null)
 
   // grade: keyed to walker depth, published every frame on gradeBus the same
   // way Memento publishes its split — a zone per the film's own "dual
@@ -588,9 +590,16 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
     }
 
     const depthIdx = inTun ? depthIndexAt(z) : -1
-    const g = gradeForIndex(depthIdx)
-    if (g) setGradeOverride(g)
-    else clearGradeOverride()
+    // Publishing re-renders App, so the grade goes out only when it moves:
+    // depth quantised to 1/20 of a cell (finer than the eye reads a grade
+    // step), sent on change instead of every frame.
+    const depthQ = depthIdx < 0 ? -1 : Math.round(depthIdx * 20) / 20
+    if (depthQ !== publishedDepthRef.current) {
+      publishedDepthRef.current = depthQ
+      const g = gradeForIndex(depthQ)
+      if (g) setGradeOverride(g)
+      else clearGradeOverride()
+    }
 
     const bottom = depthIdx >= CELLS - 2
     if (bottom !== nearBottomRef.current) {
@@ -672,7 +681,8 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
           <SilhouetteLine />
           <StagingCrates />
           <TunnelMouth />
-          <MissionBrief film={film} />
+          {/* the brief and the thermal score are the record: `i` hides them */}
+          {infoVisible && <MissionBrief film={film} />}
           <LightRig lights={mouthLights} />
           <HazeCone pos={[0, 0.75, -1.2]} rot={[Math.PI, 0, 0]} length={0.9} radius={1.05} color="#dce8f0" opacity={0.1} />
         </>
@@ -692,7 +702,7 @@ export default function Sicario({ film, config, doors = [], onDoor }) {
       <CableRun />
       <TunnelEndCap />
       <DescentGlow decayRef={decayRef} tint={tint} inTunnelRef={inTunnelRef} />
-      <ThermalScore film={film} />
+      {infoVisible && <ThermalScore film={film} />}
 
       <DoorRow
         doors={doors}

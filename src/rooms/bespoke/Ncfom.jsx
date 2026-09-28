@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { screenPanel as ScreenPanel } from '../props.jsx'
-import { startWind } from '../audio/recipes/ncfom.js'
+import { start as startNcfomAudio } from '../audio/recipes/ncfom.js'
 import {
   makeHighwaySignTexture, makePeanutsLabelTexture, makeCoinFaceTexture, makeCoinBlankTexture,
 } from './ncfomTextures.js'
@@ -10,19 +10,18 @@ import DoorRow from '../DoorRow.jsx'
 import { wasDrag } from '../../pointer.js'
 import { registerColliders, setBounds, clearOwner } from '../colliders.js'
 import Touchable from '../Touchable.jsx'
-import { playOneShot } from '../audio/engine.js'
+import { playOneShot, useRoomAudio } from '../audio/engine.js'
 import { standardMat } from '../materials.js'
 import { HazeCone } from '../atmosphere.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // 8.3 — "the gas station counter." One small shop, two stations: the
 // customer side (where you approach the counter) and behind it (where the
 // clerk would stand). Approaching the coin from the front makes it spin
 // once and land, exactly like the film's own beat — but the room genuinely
 // will not show you the face from that side, only from behind the counter,
-// so the reveal costs you the walk. Wind is the only sound; per this
-// session's own audio recipe (audio/recipes/ncfom.js) it ignores the HUD
-// mute toggle entirely rather than trying to grey the button out from in
-// here, which would require touching App.jsx.
+// so the reveal costs you the walk. Wind is the only sound, and like every
+// room's it waits for the sound toggle (audio/recipes/ncfom.js).
 //
 // Wave M3: free walk. The counter and the shelves block straight-through
 // movement; the only open path around the counter is past its RIGHT
@@ -161,7 +160,7 @@ function Register() {
 }
 
 function PeanutsBag() {
-  const tex = useMemo(() => makePeanutsLabelTexture(), [])
+  const tex = useOwned(() => makePeanutsLabelTexture(), [])
   return (
     <group position={[-0.55, 0.955, -0.42]} rotation={[0, 0.3, 0]}>
       <mesh position={[0, 0.09, 0]}>
@@ -208,6 +207,9 @@ const HELD_LOCAL = new THREE.Vector3(0.07, -0.12, -0.45)
 const HELD_SCALE = 0.22
 const ARC_MS = 300
 const ARC_BUMP = 0.16
+// read-only rest orientation for the lift/lower slerp (was a fresh
+// Quaternion every frame of the arc)
+const IDENTITY_Q = new THREE.Quaternion()
 const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 
 function Coin({ behind }) {
@@ -222,9 +224,9 @@ function Coin({ behind }) {
   const arcFromQuat = useRef(new THREE.Quaternion())
   const tmpVec = useRef(new THREE.Vector3())
   const { camera } = useThree()
-  const starTex = useMemo(() => makeCoinFaceTexture('star'), [])
-  const ringTex = useMemo(() => makeCoinFaceTexture('ring'), [])
-  const blankTex = useMemo(() => makeCoinBlankTexture(), [])
+  const starTex = useOwned(() => makeCoinFaceTexture('star'), [])
+  const ringTex = useOwned(() => makeCoinFaceTexture('ring'), [])
+  const blankTex = useOwned(() => makeCoinBlankTexture(), [])
 
   useFrame((_, dt) => {
     const g = groupRef.current
@@ -247,9 +249,9 @@ function Coin({ behind }) {
       const scaleTo = phase === 'lifting' ? HELD_SCALE : 1
       g.scale.setScalar(THREE.MathUtils.lerp(scaleFrom, scaleTo, e))
       if (phase === 'lifting') {
-        g.quaternion.slerpQuaternions(new THREE.Quaternion(), camera.quaternion, e)
+        g.quaternion.slerpQuaternions(IDENTITY_Q, camera.quaternion, e)
       } else {
-        g.quaternion.slerpQuaternions(arcFromQuat.current, new THREE.Quaternion(), e)
+        g.quaternion.slerpQuaternions(arcFromQuat.current, IDENTITY_Q, e)
       }
       if (arcT.current >= 1) {
         if (phase === 'lifting') {
@@ -358,11 +360,13 @@ function DoorGlow() {
   )
 }
 
-function HighwaySign({ film }) {
-  const tex = useMemo(() => makeHighwaySignTexture(film), [film.slug, film.hot_take, film.score])
+function HighwaySign({ film, infoVisible = true }) {
+  const tex = useOwned(() => makeHighwaySignTexture(film), [film.slug, film.hot_take, film.score])
   return (
     <group position={[0.2, 1.6, DOOR_Z + 2.4]} rotation={[0, Math.PI, 0]}>
-      <mesh>
+      {/* the sign carries the take and the score, so `i` takes the face and
+          leaves a bare post */}
+      <mesh visible={infoVisible}>
         <planeGeometry args={[2.9, 1.9]} />
         <meshBasicMaterial map={tex} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
@@ -410,18 +414,13 @@ function ncfomRects() {
 
 const BOUNDS = { kind: 'rect', minX: -ROOM_W / 2 + 0.1, maxX: ROOM_W / 2 - 0.1, minZ: -ROOM_D / 2 + 0.1, maxZ: ROOM_D / 2 - 0.1 }
 
-export default function Ncfom({ film, config, goToStation, doors = [], onDoor }) {
+export default function Ncfom({ film, config, infoVisible = true, goToStation, doors = [], onDoor }) {
   const { grade } = config
 
   const [behind, setBehind] = useState(false)
 
-  // Wind, and only wind — mounted directly (not via useRoomAudio), because
-  // this recipe deliberately ignores the shared engine's mute gate. See
-  // audio/recipes/ncfom.js for the full reasoning.
-  useEffect(() => {
-    const stop = startWind()
-    return stop
-  }, [])
+  // Wind, and only wind, through the shared engine's mute gate.
+  useRoomAudio(startNcfomAudio)
 
   useEffect(() => {
     registerColliders(OWNER_ID, ncfomRects())
@@ -449,7 +448,7 @@ export default function Ncfom({ film, config, goToStation, doors = [], onDoor })
 
       <ShopShell />
       <DoorGlow />
-      <HighwaySign film={film} />
+      <HighwaySign film={film} infoVisible={infoVisible} />
       {/* the harsh daylight itself: a hard white beam pouring straight in
           through the door — the room's actual key light, made visible as a
           shaft rather than only implied by the glow plane */}

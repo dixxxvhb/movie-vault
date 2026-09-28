@@ -12,6 +12,9 @@ import { registerColliders, setBounds, registerFloor, clearOwner } from '../coll
 import Touchable from '../Touchable.jsx'
 import { standardMat } from '../materials.js'
 import { FrameOn } from '../detail.jsx'
+import { claimFlash } from '../../flashPolicy.js'
+import { get as getSetting } from '../../settings.js'
+import { useOwned } from '../kit/paint.js'
 
 // 7.6 — "the house on Barbary." The living room first (cozy, tidy, rain
 // outside), the basement door standing open, then a straight descent
@@ -167,7 +170,7 @@ function Couch() {
 }
 
 function RainWindow() {
-  const tex = useMemo(() => makeRainWindowTexture(), [])
+  const tex = useOwned(() => makeRainWindowTexture(), [])
   return (
     <mesh position={[LR_W / 2 - 0.02, 1.5, -0.6]} rotation={[0, -Math.PI / 2, 0]}>
       <planeGeometry args={[1.1, 1.4]} />
@@ -215,9 +218,9 @@ function StairsGlimpse() {
   )
 }
 
-function LitDoorSignage({ film }) {
-  const cardTex = useMemo(() => makeIndexCardTexture(), [])
-  const ratingTex = useMemo(() => makeDoorRatingTexture(film.score), [film.score])
+function LitDoorSignage({ film, infoVisible = true }) {
+  const cardTex = useOwned(() => makeIndexCardTexture(), [])
+  const ratingTex = useOwned(() => makeDoorRatingTexture(film.score), [film.score])
   return (
     <group>
       {/* the door itself, standing open against the side wall it swung
@@ -226,12 +229,13 @@ function LitDoorSignage({ film }) {
         <planeGeometry args={[1.9, LR_DOOR_H]} />
         <meshStandardMaterial color="#4a3a28" roughness={0.7} />
       </mesh>
-      <mesh position={[-LR_DOOR_W / 2 - 0.015, LR_DOOR_H / 2 + 0.1, LR_DOOR_Z + 0.9]} rotation={[0, Math.PI / 2, 0]}>
+      {/* the rating and the card are the record: `i` hides them, the door stays */}
+      <mesh visible={infoVisible} position={[-LR_DOOR_W / 2 - 0.015, LR_DOOR_H / 2 + 0.1, LR_DOOR_Z + 0.9]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.9, 0.9]} />
         <meshBasicMaterial map={ratingTex} transparent toneMapped={false} />
       </mesh>
       {/* index card taped to the frame, right at the threshold */}
-      <mesh position={[LR_DOOR_W / 2 + 0.03, 1.5, LR_DOOR_Z + 0.02]} rotation={[0, -0.2, 0]}>
+      <mesh visible={infoVisible} position={[LR_DOOR_W / 2 + 0.03, 1.5, LR_DOOR_Z + 0.02]} rotation={[0, -0.2, 0]}>
         <planeGeometry args={[0.34, 0.4]} />
         <meshBasicMaterial map={cardTex} toneMapped={false} />
       </mesh>
@@ -550,7 +554,7 @@ function corridorColliders() {
 
 /* ------------------------------------------------------------------ room */
 
-export default function Barbarian({ film, config, doors = [], onDoor }) {
+export default function Barbarian({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
 
   // Wave M3: depth is now read straight off the walker every frame instead
@@ -597,9 +601,19 @@ export default function Barbarian({ film, config, doors = [], onDoor }) {
     function schedule() {
       timers.push(setTimeout(() => {
         if (!live) return
+        // A full-view white cut is a luminance event: it goes through the
+        // shared flash budget, and only at full strength (a 32% daylight
+        // swap is not the cut, it is a smudge). No budget, or the visitor
+        // turned room events off: skip this beat and wait for the next.
+        if (getSetting('content.roomEvents') === false || claimFlash('barbarian-smash', 1) < 0.99) {
+          schedule()
+          return
+        }
         setSmashed(true)
         timers.push(setTimeout(() => {
           if (!live) return
+          // cutting back is its own edge; same id so it keeps its budget
+          claimFlash('barbarian-smash', 1)
           setSmashed(false)
           schedule()
         }, SMASH_DURATION_MS))
@@ -611,6 +625,8 @@ export default function Barbarian({ film, config, doors = [], onDoor }) {
 
   useEffect(() => {
     if (smashed) {
+      // Only bg + the Post fields (sat/contrast) reach App; key/fill/ambient/
+      // keyIntensity/fogColor are carried for a future reader, not applied.
       setGradeOverride({ bg: '#fff6da', fogColor: '#fff6da', sat: 0.35, contrast: 0.1, key: '#fff8e0', fill: '#ffe8b0', ambient: 1.3, keyIntensity: 2.2 })
     } else {
       clearGradeOverride()
@@ -636,7 +652,7 @@ export default function Barbarian({ film, config, doors = [], onDoor }) {
           <LampPractical pos={[-0.4, 0.6, 0.4]} color="#ffc888" intensity={1.1} />
           <RainWindow />
           <StairsGlimpse />
-          <LitDoorSignage film={film} />
+          <LitDoorSignage film={film} infoVisible={infoVisible} />
         </>
       )}
 

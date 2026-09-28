@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { Slab, Fan } from '../../kit/architecture.jsx'
 import { makePaintedTexture } from './basterdsTextures.js'
+import { useOwned } from '../../kit/paint.js'
 import { BOOTH_Y, rakeAt } from './zones.js'
 
 // LE GAMAAR: the upper walls. Above the cases and the dado, the plaster used
@@ -72,7 +73,8 @@ export default function UpperWalls() {
     gold: new THREE.MeshStandardMaterial({ color: '#b08a42', metalness: 0.9, roughness: 0.3, emissive: '#7a5520', emissiveIntensity: 0.45 }),
     field: new THREE.MeshStandardMaterial({ color: '#5a3c26', roughness: 0.85 }),
   }), [])
-  const frieze = useMemo(() => {
+  // the material and its painted map both go on unmount (useOwned)
+  const frieze = useOwned(() => {
     const t = makePaintedTexture(512, 64, paintFrieze)
     t.wrapS = THREE.RepeatWrapping
     return new THREE.MeshStandardMaterial({ map: t, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: 0.45, roughness: 0.6 })

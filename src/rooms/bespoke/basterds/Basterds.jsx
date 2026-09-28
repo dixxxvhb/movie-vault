@@ -89,15 +89,24 @@ export default function Basterds({ film, config, goToStation, onDoor }) {
   const [streetOpen, setStreetOpen] = useState(false)
   const [houseOpen, setHouseOpen] = useState(false)
   const busy = useRef(false)
+  // everything the cut schedules, so Esc mid-doors cancels it instead of
+  // flying the rig of a room that is gone and holding black over the exit
+  const pending = useRef({ timers: [], cancelCut: null })
+  useEffect(() => () => {
+    pending.current.timers.forEach(clearTimeout)
+    if (pending.current.cancelCut) pending.current.cancelCut()
+  }, [])
   const through = (setOpen, to, key) => {
     if (busy.current) return
     busy.current = true
     setOpen(true)
     window.dispatchEvent(new CustomEvent('basterds:threshold', { detail: { to: key } }))
-    setTimeout(() => cutTo(() => {
-      fly(to, 'threshold-' + key); setOpen(false)
-      setTimeout(() => { busy.current = false }, 1400)
-    }), 380)
+    pending.current.timers.push(setTimeout(() => {
+      pending.current.cancelCut = cutTo(() => {
+        fly(to, 'threshold-' + key); setOpen(false)
+        pending.current.timers.push(setTimeout(() => { busy.current = false }, 1400))
+      })
+    }, 380))
   }
   const enter = () => through(setStreetOpen, ROOM_ENTRY, 'room')
   const leave = () => through(setHouseOpen, STREET_RETURN, 'street')

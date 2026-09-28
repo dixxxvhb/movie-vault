@@ -18,6 +18,7 @@ import { OpenKind } from '../touchKinds.jsx'
 import { standardMat } from '../materials.js'
 import { Bevel, Trim, crumpledPaper as CrumpledPaper, cup as Cup } from '../detail.jsx'
 import LightRig, { LIGHT_SCALE } from '../lightRig.js'
+import { flicker } from '../../flashPolicy.js'
 
 // THE CROWN, 10.0 — "the motel room, backwards." This is the room that
 // states the Vault's own thesis (brief §5), so it is the one place in the
@@ -55,7 +56,7 @@ const NOTE_COPY = [
   "structure can't be spoiled",
   'the insulin question stays open',
   "antibodies didn't save him",
-  'watched on peacock — july 16',
+  'watched on peacock, july 16',
   'he chooses the lie at the end',
   'a set up bullshittery for lenny',
   'very much life of pi coded',
@@ -369,7 +370,7 @@ function NoteWall() {
 
 /* ------------------------------------------------------------ floor take */
 
-function FloorPolaroid({ film }) {
+function FloorPolaroid({ film, infoVisible = true }) {
   const [tex, setTex] = useState(null)
   useEffect(() => {
     let live = true
@@ -387,7 +388,7 @@ function FloorPolaroid({ film }) {
   return (
     <group>
       <pointLight position={[0.3, 0.85, 0.35]} color="#d8c8a8" intensity={LIGHT_SCALE.practicals * 0.08} distance={1.8} decay={2.4} />
-      <mesh position={[0.3, 0.008, 0.35]} rotation={[-Math.PI / 2, 0, 0.06]}>
+      <mesh visible={infoVisible} position={[0.3, 0.008, 0.35]} rotation={[-Math.PI / 2, 0, 0.06]}>
         <planeGeometry args={[1.76, 2.2]} />
         {tex
           ? <meshStandardMaterial key="mapped" map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.05} roughness={0.7} />
@@ -398,7 +399,7 @@ function FloorPolaroid({ film }) {
           an overhead light as a soft streak rather than a hard specular
           dot (this material has no clearcoat layer to fake with roughness
           alone). */}
-      <mesh position={[0.1, 0.012, 0.55]} rotation={[-Math.PI / 2, 0, 0.06]}>
+      <mesh visible={infoVisible} position={[0.1, 0.012, 0.55]} rotation={[-Math.PI / 2, 0, 0.06]}>
         <planeGeometry args={[0.7, 1.1]} />
         <meshBasicMaterial color="#fff6e0" transparent opacity={0.06} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
@@ -408,7 +409,7 @@ function FloorPolaroid({ film }) {
 
 /* -------------------------------------------------------------- mirror 10 */
 
-function MirrorNumeral({ score }) {
+function MirrorNumeral({ score, infoVisible = true }) {
   const [tex, setTex] = useState(null)
   useEffect(() => {
     let live = true
@@ -424,7 +425,7 @@ function MirrorNumeral({ score }) {
           UVs with it) — one texture, drawn once, reads BACKWARDS here and
           correctly inside the mirror plane below. This is the whole trick:
           no second canvas, just a flipped mesh. */}
-      <mesh position={[wallX, 1.98, -0.5]} rotation={[0, -Math.PI / 2, 0]} scale={[-1, 1, 1]}>
+      <mesh visible={infoVisible} position={[wallX, 1.98, -0.5]} rotation={[0, -Math.PI / 2, 0]} scale={[-1, 1, 1]}>
         <planeGeometry args={[0.46, 0.46]} />
         {tex
           ? <meshBasicMaterial key="mapped" map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
@@ -437,7 +438,7 @@ function MirrorNumeral({ score }) {
           this app has no real-time reflection pass, so it is faked the same
           way mirrorPlane already is everywhere else (a tinted quad, not a
           render target) */}
-      <mesh position={[wallX - 0.018, 1.55, -0.9]} rotation={[0, -Math.PI / 2, 0]}>
+      <mesh visible={infoVisible} position={[wallX - 0.018, 1.55, -0.9]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.34, 0.34]} />
         {tex
           ? <meshBasicMaterial key="mapped" map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
@@ -496,9 +497,11 @@ function ColdFlicker({ position }) {
   useFrame(({ clock }) => {
     if (!ref.current) return
     const t = clock.elapsedTime
-    // an old bathroom tube: mostly steady, the occasional stutter
-    const stutter = Math.sin(t * 41) > 0.982 ? 0.35 : 0
-    ref.current.intensity = (base + Math.sin(t * 3.1) * 0.03 - stutter) * 12
+    // an old bathroom tube: mostly steady, the occasional stutter. Was a
+    // single-frame 58% dip ~3.6 times a second; now one decaying stutter
+    // every ~9s, rate-capped by the flash policy.
+    const stutter = flicker(t % 9, 0.6, { hz: 2.5, low: 0.4 })
+    ref.current.intensity = (base + Math.sin(t * 3.1) * 0.03) * stutter * 12
   })
   return <pointLight ref={ref} position={position} color="#c9dbe0" distance={3} decay={2} />
 }
@@ -514,7 +517,7 @@ function ColdFlicker({ position }) {
 // reparented in here at the same local offset that reproduces its old world
 // position exactly when the drawer is closed — it rides out with the drawer
 // front rather than floating independently.
-function NightstandDrawer({ film }) {
+function NightstandDrawer({ film, infoVisible = true }) {
   const [token, setToken] = useState(0)
   const palette = sheetOf(film.palette)
   const [tex, setTex] = useState(null)
@@ -543,7 +546,7 @@ function NightstandDrawer({ film }) {
           </mesh>
           {/* the notepad, riding along — local offset chosen so the closed
               pose lands exactly on its old world position [1.35,0.66,1.55] */}
-          <mesh position={[-0.02, 0.66, 0.205]} rotation={[-Math.PI / 2, 0.15, -0.1]}>
+          <mesh visible={infoVisible} position={[-0.02, 0.66, 0.205]} rotation={[-Math.PI / 2, 0.15, -0.1]}>
             <planeGeometry args={[0.42, 0.1]} />
             {tex
               ? <meshBasicMaterial key="mapped" map={tex} transparent depthWrite={false} side={THREE.DoubleSide} />
@@ -762,7 +765,7 @@ const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, sp
 // called from in here — the entry viewpoint stays config.camera, and every
 // place inside the room is reached by walking, not clicking — so it's
 // deliberately not destructured; FilmWorld still passes it, unused.
-export default function Memento({ film, config, doors = [], onDoor }) {
+export default function Memento({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   // Wave M3: the walker replaces click-to-advance. `maxIndex` is now a
   // monotonic high-water mark derived from the walker's own z each frame
@@ -801,6 +804,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
   // bearing of its opening camera cut — is what actually means "you are in
   // the corridor now."
   const warmthRef = useRef(1)
+  const publishedTRef = useRef(null)
 
   useFrame(({ camera }, dt) => {
     const z = camera.position.z
@@ -824,32 +828,39 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       t = (roomFacing + 1) / 2
     }
     warmthRef.current = t
-    setGradeOverride({
-      sat: THREE.MathUtils.lerp(-1, grade.sat ?? 0.05, t),
-      // warm ceiling retuned down (was grade.contrast ?? 0, i.e. flat) — the
-      // corridor look-back punch list fix pairs a LOWER contrast ceiling
-      // with a capped bloom below so the warm end never has two different
-      // paths pushing toward clipping at once.
-      contrast: THREE.MathUtils.lerp(0.16, Math.min(grade.contrast ?? 0, 0.08), t),
-      hue: 0,
-      // config.grade.bg has no override for this slug, so it falls back to
-      // the film's own card-front palette — Memento's is white, right for a
-      // Polaroid, very wrong for a 3D scene background peeking through the
-      // corridor's far end. Corrected here instead of in configs.js (that
-      // file is mid-edit elsewhere this session; this keeps the fix scoped
-      // to this room).
-      bg: t > 0.5 ? '#241c14' : '#0c0a08',
-      // per-side grade triplet (Wave P1): corridor reads slightly grainier
-      // and darker-vignetted (colder, more clinical); the warm room end
-      // gets a touch more grain (film-warm, not clean digital) but LESS
-      // bloom — bloomIntensity is the other half of the corridor-blowout
-      // fix, since Bloom sits on TOP of whatever the raw lights already put
-      // out and was amplifying the CorridorGlow/key overlap right at the
-      // doorway.
-      grain: THREE.MathUtils.lerp(0.09, 0.055, t),
-      vignette: THREE.MathUtils.lerp(0.82, 0.68, t),
-      bloomIntensity: THREE.MathUtils.lerp(0.26, 0.2, t),
-    })
+    // Publishing re-renders App, so only when the look actually moves: t is
+    // quantised to 1/30 (below a visible grade step) and sent on change.
+    const tq = Math.round(t * 30) / 30
+    if (tq !== publishedTRef.current) {
+      publishedTRef.current = tq
+      t = tq
+      setGradeOverride({
+        sat: THREE.MathUtils.lerp(-1, grade.sat ?? 0.05, t),
+        // warm ceiling retuned down (was grade.contrast ?? 0, i.e. flat) — the
+        // corridor look-back punch list fix pairs a LOWER contrast ceiling
+        // with a capped bloom below so the warm end never has two different
+        // paths pushing toward clipping at once.
+        contrast: THREE.MathUtils.lerp(0.16, Math.min(grade.contrast ?? 0, 0.08), t),
+        hue: 0,
+        // config.grade.bg has no override for this slug, so it falls back to
+        // the film's own card-front palette — Memento's is white, right for a
+        // Polaroid, very wrong for a 3D scene background peeking through the
+        // corridor's far end. Corrected here instead of in configs.js (that
+        // file is mid-edit elsewhere this session; this keeps the fix scoped
+        // to this room).
+        bg: t > 0.5 ? '#241c14' : '#0c0a08',
+        // per-side grade triplet (Wave P1): corridor reads slightly grainier
+        // and darker-vignetted (colder, more clinical); the warm room end
+        // gets a touch more grain (film-warm, not clean digital) but LESS
+        // bloom — bloomIntensity is the other half of the corridor-blowout
+        // fix, since Bloom sits on TOP of whatever the raw lights already put
+        // out and was amplifying the CorridorGlow/key overlap right at the
+        // doorway.
+        grain: THREE.MathUtils.lerp(0.09, 0.055, t),
+        vignette: THREE.MathUtils.lerp(0.82, 0.68, t),
+        bloomIntensity: THREE.MathUtils.lerp(0.26, 0.2, t),
+      })
+    }
 
     // door fade, gated on distance to the threshold rather than which side
     // you're on — walking through it and turning right back around does not
@@ -947,7 +958,7 @@ export default function Memento({ film, config, doors = [], onDoor }) {
           rooms — out of scope for this room's own polish pass). */}
       <PaperScatter pos={[-1.5, 0.51, -0.4]} count={10} area={[0.5, 0.4]} color="#e6dcc0" />
       <NightstandBody />
-      <NightstandDrawer film={film} />
+      <NightstandDrawer film={film} infoVisible={infoVisible} />
 
       {/* clutter: motel ashtray + strewn notes on the dresser top, a pen and
           tumbler with the meta notepad on the nightstand, the instant-camera
@@ -964,10 +975,12 @@ export default function Memento({ film, config, doors = [], onDoor }) {
       <BathroomTile />
       <Counter pos={[1.55, 0, -0.75]} rot={[0, -0.2, 0]} w={1.1} d={0.5} h={0.85} color="#8a8f92" />
       <ColdFlicker position={[1.55, 2.1, -0.75]} />
-      <MirrorNumeral score={film.score} />
+      <MirrorNumeral score={film.score} infoVisible={infoVisible} />
 
       <NoteWall />
-      <FloorPolaroid film={film} />
+      {/* the take on the floor, the score in the mirror and the notepad are
+          the record, so `i` hides them; the note wall is the set */}
+      <FloorPolaroid film={film} infoVisible={infoVisible} />
 
       <DoorRow
         doors={doors}

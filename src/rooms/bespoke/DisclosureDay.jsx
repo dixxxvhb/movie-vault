@@ -12,6 +12,7 @@ import { registerColliders, setBounds, clearOwner, resolveStep } from '../collid
 import Touchable from '../Touchable.jsx'
 import { standardMat } from '../materials.js'
 import { Bevel, Trim } from '../detail.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // P1 finishing pass (IMMERSION-V2-POLISH-SPEC.md): the boring is authored,
 // not defaulted — real institutional carpet, a glossy laminate lectern, flag
@@ -158,7 +159,7 @@ function ScrollBand({ pos, rot, w, h, tex, speed, repeatY, pauseUntilRef }) {
     if (pauseUntilRef && performance.now() < pauseUntilRef.current) return
     matRef.current.map.offset.y += dt * speed
   })
-  const ownTex = useMemo(() => {
+  const ownTex = useOwned(() => {
     const t = tex.clone()
     t.repeat.set(1, repeatY)
     t.needsUpdate = true
@@ -173,7 +174,7 @@ function ScrollBand({ pos, rot, w, h, tex, speed, repeatY, pauseUntilRef }) {
 }
 
 function SpeechWalls({ pauseUntilRef }) {
-  const tex = useMemo(() => makeSpeechScrollTexture(), [])
+  const tex = useOwned(() => makeSpeechScrollTexture(), [])
   return (
     <>
       <ScrollBand pos={[-ROOM_W / 2 + 0.02, ROOM_H / 2, 1.4]} rot={[0, Math.PI / 2, 0]} w={ROOM_D - 1.4} h={ROOM_H - 0.3} tex={tex} speed={0.035} repeatY={3.4} pauseUntilRef={pauseUntilRef} />
@@ -258,7 +259,7 @@ function RevealCurtain() {
   const left = useRef()
   const right = useRef()
   const labelRef = useRef()
-  const labelTex = useMemo(() => makeRevealLabelTexture(), [])
+  const labelTex = useOwned(() => makeRevealLabelTexture(), [])
   useFrame(({ clock }) => {
     const t = clock.elapsedTime % CURTAIN_PERIOD
     const openPhase = t > CURTAIN_PERIOD * 0.35 && t < CURTAIN_PERIOD * 0.65
@@ -314,12 +315,12 @@ function PodiumMic({ onPress }) {
 
 /* --------------------------------------------------------------- signage */
 
-function PlinthSeal({ score }) {
-  const tex = useMemo(() => makePlinthSealTexture(score), [score])
+function PlinthSeal({ score, infoVisible = true }) {
+  const tex = useOwned(() => makePlinthSealTexture(score), [score])
   return (
     <group position={[1.7, 0, -1.1]}>
       <Bevel pos={[0, 0.45, 0]} w={0.5} h={0.9} d={0.5} radius={0.015} mat={plinthMat} />
-      <mesh position={[0, 0.911, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh visible={infoVisible} position={[0, 0.911, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[0.22, 32]} />
         <meshBasicMaterial map={tex} toneMapped={false} />
       </mesh>
@@ -334,7 +335,7 @@ function PlinthSeal({ score }) {
 // it slightly proud of the wall so it reads as a mounted object, not a
 // decal.
 function BronzePlaque({ film }) {
-  const tex = useMemo(() => makeBronzePlaqueTexture(film), [film.slug, film.hot_take])
+  const tex = useOwned(() => makeBronzePlaqueTexture(film), [film.slug, film.hot_take])
   return (
     <group position={[-ROOM_W / 2 + 0.03, 1.6, -1.9]} rotation={[0, Math.PI / 2, 0]}>
       <Bevel pos={[0, 0, -0.008]} w={2.72} h={2.06} d={0.03} radius={0.012} mat={bronzeFrameMat} />
@@ -355,7 +356,7 @@ const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.4], rotationY: Math.PI, spa
 
 /* ------------------------------------------------------------------ room */
 
-export default function DisclosureDay({ film, config, doors = [], onDoor }) {
+export default function DisclosureDay({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   // Wave T: press the mic -> a tick, the scrolling speech pauses 3s, then
   // resumes. The curtain cycle deliberately never reads this — see
@@ -388,8 +389,11 @@ export default function DisclosureDay({ film, config, doors = [], onDoor }) {
       <Lectern pos={[0, 0, -2.6]} />
       <PodiumMic onPress={handleMicPress} />
       <RevealCurtain />
-      <PlinthSeal score={film.score} />
-      <BronzePlaque film={film} />
+      <PlinthSeal score={film.score} infoVisible={infoVisible} />
+      {/* the record (score, take, meta): `i` hides it, the set stays */}
+      <group visible={infoVisible}>
+        <BronzePlaque film={film} />
+      </group>
 
       <DoorRow
         doors={doors}

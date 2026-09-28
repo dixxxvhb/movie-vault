@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { standardMat } from '../../materials.js'
 import { FloorBand, Sconce, useGlow } from '../../kit/architecture.jsx'
 import { makePaintedTexture, whenFonts } from './basterdsTextures.js'
+import { useOwned } from '../../kit/paint.js'
 import { BOOTH_Y, BOOTH, BOOTH_DOOR, BAR_Y, APRON_Y, rakeAt, ROOM_DOORS } from './zones.js'
 
 // LE GAMAAR: THE ROOM. One volume, the auditorium on premiere night
@@ -21,7 +22,7 @@ const stairY = (z) => Math.min(BOOTH_Y, Math.max(0, (z + 12.4) / 5.8 * BOOTH_Y))
 
 // A lit enamel sign in the house's own lettering: where the balcony is.
 function WaySign({ pos, ry = 0, w = 1.1, lines, arrow = 0 }) {
-  const tex = useMemo(() => makePaintedTexture(512, 200, async (c) => {
+  const tex = useOwned(() => makePaintedTexture(512, 200, async (c) => {
     await whenFonts()
     const ctx = c.getContext('2d')
     ctx.fillStyle = '#5a1210'; ctx.fillRect(0, 0, 512, 200)

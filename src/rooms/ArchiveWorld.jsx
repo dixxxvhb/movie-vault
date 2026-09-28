@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useThree } from '@react-three/fiber'
 import CameraRig from '../CameraRig.jsx'
 import { getArchiveRoomComponent } from './registry.js'
+import { HouseRig, useLitConfig } from './useHouseLights.js'
+import MotelUnderneath, { motelAnchorsFor } from './MotelUnderneath.jsx'
+import { resetHouse, subscribeLevel } from './houseLights.js'
 
 // The archive's own FilmWorld (see FilmWorld.jsx): mounted only while world
 // is '{print,hazy}:<slug>' or 'exiting-{print,hazy}:<slug>' (App.jsx). Same
@@ -30,6 +33,22 @@ export default function ArchiveWorld({ kind, slug, item, config }) {
 
   const Room = getArchiveRoomComponent(kind)
 
+  // The house lights, same as FilmWorld: the switch is in every scene, the
+  // print and drawer rooms included. Level quantised to 1/60 so a settled
+  // room stops re-rendering; the room is handed the blended config so its
+  // own key and fill move with the switch.
+  const [house, setHouse] = useState(0)
+  useEffect(() => {
+    resetHouse()
+    setHouse(0)
+    return subscribeLevel((v) => setHouse(Math.round(v * 60) / 60))
+  }, [slug, kind])
+  const lit = useLitConfig(config, house)
+  const motelAnchors = useMemo(
+    () => motelAnchorsFor(config.place?.shell || 'box', config.place?.shellParams || {}, config.camera),
+    [config.place?.shell, config.place?.shellParams, config.camera]
+  )
+
   // Same interior-navigation seam FilmWorld gives a bespoke Ledger room
   // (Memento's corridor stations) — Undeveloped's one "step forward" uses
   // this to move CameraRig without ArchiveWorld's own fixed camera prop
@@ -46,13 +65,16 @@ export default function ArchiveWorld({ kind, slug, item, config }) {
 
   return (
     <>
-      <ambientLight intensity={config.grade.ambient} color={config.grade.fill} />
+      <ambientLight intensity={lit.grade.ambient} color={lit.grade.fill} />
+      <HouseRig />
+      <MotelUnderneath shell={config.place?.shell || 'box'} anchors={motelAnchors}
+                       filmAmbient={config.grade?.ambient} />
       {/* Wave M1: same free-walk grant as FilmWorld — the archive rooms are
           places too. FadedRoom (print) wraps GenericRoom's engine and picks
           up auto-colliders for free; Undeveloped (hazy) has none yet
           (M3 scope), so walking there has bounds but no wall collision. */}
       <CameraRig station={cam.station} stationKey={cam.key} walkable={{ eye: config.camera.pos[1] ?? 1.55 }} />
-      <Room film={item} config={config} goToStation={goToStation} infoVisible />
+      <Room film={item} config={lit} baseGrade={config.grade} goToStation={goToStation} infoVisible />
     </>
   )
 }

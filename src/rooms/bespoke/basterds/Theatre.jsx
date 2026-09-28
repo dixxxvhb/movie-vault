@@ -317,9 +317,13 @@ export default function Theatre() {
   const keyLight = useRef()
   const fireLight = useRef()
   const baseFog = useRef(null)
+  // the burnt/rewind resets, dropped if the room unmounts before they land
+  const resetTimers = useRef([])
+  useEffect(() => () => resetTimers.current.forEach(clearTimeout), [])
+  const later = (fn, ms) => { resetTimers.current.push(setTimeout(fn, ms)) }
 
   const ignite = () => {
-    if (getSetting('content.roomEvents') === false) { setFire('burnt'); setTimeout(() => { setFire(null); setReel(null) }, 6000); return }
+    if (getSetting('content.roomEvents') === false) { setFire('burnt'); later(() => { setFire(null); setReel(null) }, 6000); return }
     claimFlash('basterds-fire', 1)
     window.dispatchEvent(new CustomEvent('basterds:fire', { detail: { phase: 'start' } }))
     setFire({ t0: performance.now() })
@@ -363,7 +367,7 @@ export default function Theatre() {
       if (scene.fog && baseFog.current != null) scene.fog.density = baseFog.current
       window.dispatchEvent(new CustomEvent('basterds:fire', { detail: { phase: 'end' } }))
       setFire('rewind'); setP(0)
-      setTimeout(() => { setFire(null); setReel(null) }, 3500)
+      later(() => { setFire(null); setReel(null) }, 3500)
     }
   })
 

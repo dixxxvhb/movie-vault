@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
+import { useOwned } from './paint.js'
 
 // THE KIT: architecture pieces for Two-Scene rooms
 // (docs/VAULT-TWO-SCENE-STANDARD.md §4). Each one was first built for a real
@@ -131,5 +132,5 @@ export function FloorRunner({ x0, x1, z0, z1, floorY, lift = 0.008, mat, steps =
 
 // Materials every picture-palace-ish room ends up wanting.
 export function useGlow(color = '#ffcf8a', intensity = 2) {
-  return useMemo(() => new THREE.MeshStandardMaterial({ color: '#fff4de', emissive: color, emissiveIntensity: intensity, side: THREE.DoubleSide }), [color, intensity])
+  return useOwned(() => new THREE.MeshStandardMaterial({ color: '#fff4de', emissive: color, emissiveIntensity: intensity, side: THREE.DoubleSide }), [color, intensity])
 }

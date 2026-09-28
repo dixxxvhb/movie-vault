@@ -5,7 +5,7 @@ import { useRoomAudio } from '../audio/engine.js'
 import { start as startNightcrawlerAudio } from '../audio/recipes/nightcrawler.js'
 import {
   makeNightSkyTexture, makeCityGridTexture,
-  makeCaptionTexture, makeOverlookPolaroidFront, makeOverlookPolaroidBack,
+  makeCaptionTexture, drawCaption, makeOverlookPolaroidFront, makeOverlookPolaroidBack,
 } from './nightcrawlerTextures.js'
 import DoorRow from '../DoorRow.jsx'
 import { registerColliders, setBounds, clearOwner, resolveStep } from '../colliders.js'
@@ -14,6 +14,7 @@ import { standardMat } from '../materials.js'
 import { Bevel } from '../detail.jsx'
 import { FogLayers } from '../atmosphere.jsx'
 import LightRig from '../lightRig.js'
+import { useOwned } from '../kit/paint.js'
 
 // 9.4 — "the overlook." A Mulholland-style turnout: guardrail, dry brush,
 // LA laid out as a sodium-orange grid to the horizon, clean digital night
@@ -65,11 +66,11 @@ function NightcrawlerColliders({ spawn }) {
 /* --------------------------------------------------------------- overlook */
 
 function Overlook({ grade }) {
-  const skyTex = useMemo(
+  const skyTex = useOwned(
     () => makeNightSkyTexture(grade.fill || '#0a0d14', '#0e1420', '#02040a'),
     [grade.fill]
   )
-  const gridTex = useMemo(() => makeCityGridTexture(), [])
+  const gridTex = useOwned(() => makeCityGridTexture(), [])
   return (
     <group>
       {/* the turnout itself — bare dirt/gravel right at your feet */}
@@ -190,8 +191,8 @@ function DryBrush() {
 // reachable by drag-look — front is the unresolved night smear every bespoke
 // polaroid in this app uses, back is the Olympics correction.
 function OverlookPolaroid() {
-  const frontTex = useMemo(() => makeOverlookPolaroidFront(), [])
-  const backTex = useMemo(() => makeOverlookPolaroidBack(), [])
+  const frontTex = useOwned(() => makeOverlookPolaroidFront(), [])
+  const backTex = useOwned(() => makeOverlookPolaroidBack(), [])
   return (
     <group position={[1.7, RAIL_H + 0.16, RAIL_Z + 0.05]} rotation={[0, -0.5, 0]}>
       <mesh rotation={[0, 0, 0]}>
@@ -212,7 +213,7 @@ const FRAME_W = 1.05
 const FRAME_H = 0.62
 const FRAME_DIST = 0.85
 
-function ViewfinderFrame({ film }) {
+function ViewfinderFrame({ film, infoVisible = true }) {
   const groupRef = useRef()
   const spotRef = useRef()
   const targetRef = useRef()
@@ -221,7 +222,7 @@ function ViewfinderFrame({ film }) {
   const revealRef = useRef(0)
   const [capTex, setCapTex] = useState(null)
   const lastLenRef = useRef(-1)
-  const pauseRef = useRef(0)
+  const cursorRef = useRef(null)
   // Wave T: press the REC dot -> the frame LOCKS to whatever it's currently
   // framing for 5s (stops reframing entirely — position/quaternion just
   // stop being overwritten below), and the dot blinks noticeably faster
@@ -249,14 +250,14 @@ function ViewfinderFrame({ film }) {
     const locked = performance.now() < lockUntilRef.current
     if (!locked) {
       camera.getWorldDirection(dir)
-      groupRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(FRAME_DIST))
+      groupRef.current.position.copy(camera.position).addScaledVector(dir, FRAME_DIST)
       groupRef.current.quaternion.copy(camera.quaternion)
 
       if (spotRef.current) {
         spotRef.current.position.copy(camera.position)
       }
       if (targetRef.current) {
-        targetRef.current.position.copy(camera.position).add(dir.clone().multiplyScalar(6))
+        targetRef.current.position.copy(camera.position).addScaledVector(dir, 6)
       }
     }
     // locked: position/quaternion/spotlight simply stop being overwritten —
@@ -277,27 +278,14 @@ function ViewfinderFrame({ film }) {
     const total = text.length
     if (revealRef.current >= total + HOLD * CPS) revealRef.current = 0
     const shown = Math.min(total, Math.floor(revealRef.current))
-    if (shown !== lastLenRef.current) {
+    // One canvas, repainted in place, and only when what it shows changes:
+    // a new character, or the cursor's blink phase (every 400ms).
+    const cursorOn = shown < total && Math.floor(clock.elapsedTime / 0.4) % 2 === 0
+    if (capTex && (shown !== lastLenRef.current || cursorOn !== cursorRef.current)) {
       lastLenRef.current = shown
-      if (capTex) {
-        const fresh = makeCaptionTexture(text, shown, film.score)
-        if (capMeshRef.current) {
-          capMeshRef.current.material.map.dispose()
-          capMeshRef.current.material.map = fresh
-          capMeshRef.current.material.needsUpdate = true
-        }
-      }
-    } else if (shown < total && capMeshRef.current) {
-      // cursor blink still needs occasional redraws even when char count
-      // hasn't advanced this frame
-      pauseRef.current += dt
-      if (pauseRef.current > 0.2) {
-        pauseRef.current = 0
-        const fresh = makeCaptionTexture(text, shown, film.score)
-        capMeshRef.current.material.map.dispose()
-        capMeshRef.current.material.map = fresh
-        capMeshRef.current.material.needsUpdate = true
-      }
+      cursorRef.current = cursorOn
+      drawCaption(capTex.image, text, shown, film.score, cursorOn)
+      capTex.needsUpdate = true
     }
   })
 
@@ -363,8 +351,8 @@ function ViewfinderFrame({ film }) {
           </mesh>
         </Touchable>
 
-        {/* lower-third caption bar */}
-        <mesh ref={capMeshRef} position={[0, -FRAME_H / 2 + 0.09, 0]}>
+        {/* lower-third caption bar: the take and the score, so `i` hides it */}
+        <mesh ref={capMeshRef} visible={infoVisible} position={[0, -FRAME_H / 2 + 0.09, 0]}>
           <planeGeometry args={[FRAME_W * 0.98, FRAME_H * 0.34]} />
           {capTex
             ? <meshBasicMaterial map={capTex} transparent depthWrite={false} toneMapped={false} />
@@ -383,7 +371,7 @@ const DOOR_MOUNT = { position: [-1.6, 0, RAIL_Z + 0.05], rotationY: 0, spacing: 
 
 /* ------------------------------------------------------------------ room */
 
-export default function Nightcrawler({ film, config, doors = [], onDoor }) {
+export default function Nightcrawler({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
 
   useRoomAudio(startNightcrawlerAudio)
@@ -406,7 +394,7 @@ export default function Nightcrawler({ film, config, doors = [], onDoor }) {
       <GuardRail />
       <DryBrush />
       <OverlookPolaroid />
-      <ViewfinderFrame film={film} />
+      <ViewfinderFrame film={film} infoVisible={infoVisible} />
 
       <DoorRow
         doors={doors}

@@ -71,7 +71,7 @@ export function makePencilScoreTexture(print) {
   }
   ctx.globalAlpha = 1
 
-  const label = print?.memory != null ? print.memory.toFixed(1) : '—'
+  const label = print?.memory != null ? print.memory.toFixed(1) : '?'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   const maxWidth = W * 0.8

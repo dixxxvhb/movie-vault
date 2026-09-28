@@ -12,6 +12,7 @@ import { registerColliders, setBounds, clearOwner, teleportWalker } from '../col
 import Touchable from '../Touchable.jsx'
 import { standardMat } from '../materials.js'
 import { FrameOn } from '../detail.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // 9.1 — "the bar." Low amber light, bottle shelf, two stools mid-
 // conversation, 70s-brown grade. Behind the bar a doorway opens onto a
@@ -270,7 +271,7 @@ function BarBottleShelf({ pos, rot }) {
 }
 
 function CertifiedCoaster() {
-  const tex = useMemo(() => makeCertifiedBadgeTexture(), [])
+  const tex = useOwned(() => makeCertifiedBadgeTexture(), [])
   return (
     <mesh position={[-0.3, 0.951, -0.5]} rotation={[-Math.PI / 2, 0, 0.15]}>
       <circleGeometry args={[0.1, 24]} />
@@ -286,9 +287,9 @@ function CertifiedCoaster() {
 // it an actual physical band — the engraved text texture rides flush on its
 // own thin face ring so up close it reads as lettering cut into the metal,
 // not paint floating in front of it.
-function TextRing({ film }) {
-  const tex = useMemo(() => makeRingTextTexture(film.hot_take), [film.slug, film.hot_take])
-  const scoreTex = useMemo(() => makeFixedScoreTexture(film.score), [film.score])
+function TextRing({ film, infoVisible = true }) {
+  const tex = useOwned(() => makeRingTextTexture(film.hot_take), [film.slug, film.hot_take])
+  const scoreTex = useOwned(() => makeFixedScoreTexture(film.score), [film.score])
   const bandMat = useMemo(() => standardMat({ kind: 'metal', tint: '#c9a227', scale: 1.6, wear: 0.35, roughness: 0.32, metalness: 0.85 }), [])
   const cx = -1.0, cz = -1.4, cy = 1.95
   return (
@@ -298,17 +299,18 @@ function TextRing({ film }) {
         <torusGeometry args={[0.5, 0.07, 16, 64]} />
         <primitive object={bandMat} attach="material" />
       </mesh>
-      {/* the engraved text, flush on the ring's own face */}
-      <mesh position={[0, 0, 0.065]}>
+      {/* the engraved text, flush on the ring's own face. Text and score
+          are the record, so `i` leaves just the band */}
+      <mesh visible={infoVisible} position={[0, 0, 0.065]}>
         <ringGeometry args={[0.42, 0.58, 64]} />
         <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
-      <mesh position={[0, 0, -0.065]} rotation={[0, Math.PI, 0]}>
+      <mesh visible={infoVisible} position={[0, 0, -0.065]} rotation={[0, Math.PI, 0]}>
         <ringGeometry args={[0.42, 0.58, 64]} />
         <meshBasicMaterial map={tex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
       {/* the 9.1: the only fixed point, at the ring's own center */}
-      <mesh position={[0, 0, 0.02]}>
+      <mesh visible={infoVisible} position={[0, 0, 0.02]}>
         <planeGeometry args={[0.5, 0.5]} />
         <meshBasicMaterial map={scoreTex} transparent depthWrite={false} toneMapped={false} />
       </mesh>
@@ -450,7 +452,7 @@ const LOOP_BOUNDS = { kind: 'circle', cx: RING_CX, cz: RING_CZ, r: RING_OUTER_R 
 
 /* ------------------------------------------------------------------ room */
 
-export default function Predestination({ film, config, doors = [], onDoor }) {
+export default function Predestination({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const [inLoop, setInLoop] = useState(false)
   const inLoopRef = useRef(false)
@@ -539,7 +541,7 @@ export default function Predestination({ film, config, doors = [], onDoor }) {
           <BarBottleShelf pos={[-1.0, 0.95, -1.42]} rot={[0, 0, 0]} />
           <Stools />
           <CertifiedCoaster />
-          <TextRing film={film} />
+          <TextRing film={film} infoVisible={infoVisible} />
         </>
       )}
 

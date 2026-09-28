@@ -14,6 +14,9 @@ import { playOneShot } from '../audio/engine.js'
 import { standardMat } from '../materials.js'
 import { Bevel, Trim, crumpledPaper as CrumpledPaper, cup as Cup, wireRun as WireRun, boxPile as BoxPile } from '../detail.jsx'
 import { DustField } from '../atmosphere.jsx'
+import { claimFlash } from '../../flashPolicy.js'
+import { get as getSetting } from '../../settings.js'
+import { useOwned } from '../kit/paint.js'
 
 // 9.4 — "the call floor, then the swerve." One fixed station, like The
 // Departed's roof: the RegalView cubicle grid, fluorescent and mundane, cut
@@ -170,7 +173,7 @@ function Desk({ tint, seed }) {
 // rather than the old toneMapped-false meshBasicMaterial, so it reads as an
 // office monitor left on, not a light source (P1 checklist item 3).
 function Monitor({ seed }) {
-  const tex = useMemo(() => makeMonitorUITexture(seed), [seed])
+  const tex = useOwned(() => makeMonitorUITexture(seed), [seed])
   return (
     <group position={[0, 0.98, -0.42]}>
       <Bevel w={0.56} h={0.4} d={0.03} radius={0.015} segments={2} color="#1c1e22" roughness={0.55} metalness={0.15} />
@@ -294,7 +297,7 @@ function OfficeShell() {
 // scream sign now both fold under it, so the mood-shot check `i` promises
 // actually works here too.
 function OfficeScoreScreen({ film, visible = true }) {
-  const tex = useMemo(() => makeOfficeScoreTexture(film.score, film.title), [film.slug, film.score, film.title])
+  const tex = useOwned(() => makeOfficeScoreTexture(film.score, film.title), [film.slug, film.score, film.title])
   if (!visible) return null
   return (
     <group position={[-2.2, 0, -1.6]} rotation={[0, 0.35, 0]}>
@@ -354,7 +357,7 @@ function LongTable() {
 // corners rather than lit and inspected up close. Never explicit; never a
 // recognizable face.
 function FleshMass({ pos, rot, scale = 1, seed }) {
-  const tex = useMemo(() => makeFleshTexture(seed), [seed])
+  const tex = useOwned(() => makeFleshTexture(seed), [seed])
   return (
     <group position={pos} rotation={rot} scale={scale}>
       {/* haunch */}
@@ -389,7 +392,7 @@ function screamLine(hotTake) {
 
 function Scream({ text, visible = true }) {
   const line = screamLine(text)
-  const tex = useMemo(() => makeScreamTexture(line), [line])
+  const tex = useOwned(() => makeScreamTexture(line), [line])
   if (!visible) return null
   return (
     <mesh position={[0, 1.85, -2.85]}>
@@ -453,13 +456,23 @@ export default function Stby({ film, config, infoVisible = true, doors = [], onD
     let live = true
     let officeTimer = null
     let penthouseTimer = null
-    function scheduleOffice(wait) {
+    function scheduleOffice(wait, forced = false) {
       officeTimer = setTimeout(() => {
         if (!live) return
+        // The swerve is a full-view hard cut, so it spends the shared flash
+        // budget like any other. Room events off only stops the timer's own
+        // swerve; a pressed headset is the visitor asking for it. Either way,
+        // no budget means this beat is skipped, not fired late.
+        const eventsOn = forced || getSetting('content.roomEvents') !== false
+        if (!eventsOn || claimFlash('stby-swerve', 1) <= 0) {
+          scheduleOffice(OFFICE_MS)
+          return
+        }
         setInPenthouse(true)
         notifySwerve(true)
         penthouseTimer = setTimeout(() => {
           if (!live) return
+          claimFlash('stby-swerve', 1) // the cut back is an edge too
           setInPenthouse(false)
           notifySwerve(false)
           scheduleOffice(OFFICE_MS)
@@ -470,7 +483,7 @@ export default function Stby({ film, config, infoVisible = true, doors = [], onD
     forceSwerveRef.current = () => {
       if (!live || inPenthouseRef.current) return // already swerved — no-op
       clearTimeout(officeTimer)
-      scheduleOffice(3000)
+      scheduleOffice(3000, true)
     }
     return () => {
       live = false
@@ -481,6 +494,10 @@ export default function Stby({ film, config, infoVisible = true, doors = [], onD
     }
   }, [])
 
+  // the ring's second and third ticks, dropped if the room unmounts first
+  const ringTimers = useRef([])
+  useEffect(() => () => ringTimers.current.forEach(clearTimeout), [])
+
   // A quiet 3-ring phone pattern — answered by the swerve arriving early.
   const handleHeadsetPress = () => {
     if (import.meta.env.DEV) {
@@ -488,8 +505,10 @@ export default function Stby({ film, config, infoVisible = true, doors = [], onD
       console.info('[stby] headset pressed — forcing swerve within ~3s')
     }
     playOneShot('tick', { freq: 1100, gain: 0.05 })
-    setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 420)
-    setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 840)
+    ringTimers.current.push(
+      setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 420),
+      setTimeout(() => playOneShot('tick', { freq: 1100, gain: 0.05 }), 840),
+    )
     forceSwerveRef.current && forceSwerveRef.current()
   }
 
