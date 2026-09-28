@@ -70,17 +70,20 @@ export default function Find({ index, onGo, onClose }) {
     if (e.key === 'Escape') { e.stopPropagation(); return onClose() }
     if (e.key === 'ArrowDown') { e.preventDefault(); return setI((n) => Math.min(n + 1, hits.length - 1)) }
     if (e.key === 'ArrowUp') { e.preventDefault(); return setI((n) => Math.max(n - 1, 0)) }
-    if (e.key === 'Enter' && hits[i]) { e.preventDefault(); onGo(hits[i]) }
+    // stopPropagation as well: App's window listener treats Enter as "step
+    // inside the inspected film", and picking a result must not also do that
+    if (e.key === 'Enter' && hits[i]) { e.preventDefault(); e.stopPropagation(); onGo(hits[i]) }
   }
 
   return (
-    <div style={S.card} onKeyDown={key}>
+    <div style={S.card} onKeyDown={key} role="dialog" aria-label="Find a film">
       <div style={S.tape} />
       <input
         ref={input}
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="find a film…"
+        aria-label="Find a film"
         style={S.input}
       />
       {q.trim() && !hits.length && (
@@ -107,10 +110,13 @@ export default function Find({ index, onGo, onClose }) {
   )
 }
 
+// Small text colours sit at #6b5f47: the lightest warm brown that clears
+// 4.5:1 on this cream. The old #a2947a / #b3a68c read at about 2:1.
 const S = {
   card: {
     position: 'fixed', top: '16%', left: '50%', transform: 'translateX(-50%) rotate(-.3deg)',
-    width: 'min(430px, 88vw)',
+    zoom: 'var(--ts, 1)',
+    width: 'min(430px, calc(88vw / var(--ts, 1)))',
     background: 'linear-gradient(168deg, #FBF3E2, #EFE3C9)', color: '#2b2519',
     padding: '24px 22px 16px', boxSizing: 'border-box',
     boxShadow: '0 34px 80px rgba(0,0,0,.72)',
@@ -127,7 +133,7 @@ const S = {
     font: 'inherit', fontSize: 21, fontStyle: 'italic', color: '#2b2519',
     padding: '0 0 8px', outline: 'none', marginBottom: 12,
   },
-  none: { fontSize: 13, color: '#8d8471', fontStyle: 'italic', padding: '4px 0 8px' },
+  none: { fontSize: 13, color: '#6b5f47', fontStyle: 'italic', padding: '4px 0 8px' },
   hit: {
     display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
     background: 'none', border: 'none', borderLeft: '3px solid transparent',
@@ -135,13 +141,13 @@ const S = {
   },
   hitOn: { background: 'rgba(140,43,38,.08)', borderLeft: '3px solid #8c2b26' },
   title: { display: 'block', fontSize: 15 },
-  year: { color: '#8d8471', fontSize: 13 },
+  year: { color: '#6b5f47', fontSize: 13 },
   meta: {
     display: 'block', fontFamily: 'system-ui, sans-serif', fontSize: 10.5,
-    letterSpacing: '.08em', textTransform: 'uppercase', color: '#a2947a', marginTop: 2,
+    letterSpacing: '.08em', textTransform: 'uppercase', color: '#6b5f47', marginTop: 2,
   },
   foot: {
     fontFamily: 'system-ui, sans-serif', fontSize: 9.5, letterSpacing: '.16em',
-    textTransform: 'uppercase', color: '#b3a68c', marginTop: 12, textAlign: 'right',
+    textTransform: 'uppercase', color: '#6b5f47', marginTop: 12, textAlign: 'right',
   },
 }

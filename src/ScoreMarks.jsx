@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 
 // The axis, drawn on the wall in pencil.
@@ -43,6 +43,11 @@ export default function ScoreMarks({ scoreToY, avg, from = 6, to = 10, width = 3
     for (let s = from; s <= to; s++) out.push({ s, y: scoreToY(s), tex: numeralTexture(s) })
     return out
   }, [from, to, scoreToY])
+
+  // Built per mount, not cached, so they go with it. R3F disposes a material
+  // on unmount but never a map passed in.
+  useEffect(() => () => avgMark?.tex.dispose(), [avgMark])
+  useEffect(() => () => marks.forEach((m) => m.tex.dispose()), [marks])
 
   return (
     <group>

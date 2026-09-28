@@ -154,15 +154,22 @@ export default function Nights({ films, z, lens, selected, hover, onSelect, onHo
   useEffect(() => {
     let live = true
     Promise.all(placed.map(async (p) => [p.film.slug, await frameTexture(p.film)]))
-      .then((pairs) => { if (live) setTexes(Object.fromEntries(pairs)) })
+      .then((pairs) => {
+        if (live) setTexes(Object.fromEntries(pairs))
+        else pairs.forEach(([, t]) => t.dispose()) // superseded before it landed
+      })
     return () => { live = false }
   }, [placed])
+  // R3F disposes the material, never a map handed to it
+  useEffect(() => () => Object.values(texes).forEach((t) => t.dispose()), [texes])
 
   const tickTex = useMemo(
     () => Object.fromEntries(ticks.map((t) => [t.key, penTexture(t.label)])),
     [ticks]
   )
   const railTex = useMemo(() => penTexture('the nights', { size: 34, color: 'rgba(226,214,186,0.42)' }), [])
+  useEffect(() => () => Object.values(tickTex).forEach((t) => t.dispose()), [tickTex])
+  useEffect(() => () => railTex.dispose(), [railTex])
 
   if (!placed.length) return null
 

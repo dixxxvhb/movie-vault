@@ -10,6 +10,7 @@
 import { useEffect } from 'react'
 import { ONESHOTS } from './oneshots.js'
 import { subscribeWalk } from '../walkBus.js'
+import { get as getSetting, subscribe as subscribeSettings } from '../../settings.js'
 
 const KEY = 'vault-sound'
 
@@ -37,6 +38,35 @@ export function isSoundOn() {
   return readPersisted() === 'on'
 }
 
+// What a toggle should SHOW: the preference is on AND a running context is
+// actually carrying it. After a reload the preference survives but the
+// context cannot exist until a gesture, and a button reading "on" over
+// silence is a lie.
+export function isSoundLive() {
+  return isSoundOn() && !!ctx && ctx.state === 'running'
+}
+
+const soundListeners = new Set()
+function notify() {
+  soundListeners.forEach((fn) => { try { fn(isSoundLive()) } catch { /* one bad subscriber */ } })
+}
+export function subscribeSound(fn) {
+  soundListeners.add(fn)
+  return () => soundListeners.delete(fn)
+}
+
+// Mono. Forcing the destination to one channel downmixes every recipe at
+// the very end of the graph, so no recipe has to know the setting exists.
+function applyMono() {
+  if (!ctx) return
+  const mono = !!getSetting('audio.mono')
+  try {
+    ctx.destination.channelCount = mono ? 1 : Math.min(2, ctx.destination.maxChannelCount || 2)
+    ctx.destination.channelCountMode = 'explicit'
+  } catch { /* some devices refuse a channel count; stereo stands */ }
+}
+subscribeSettings(applyMono)
+
 function ensureContext() {
   if (ctx) return ctx
   const AC = window.AudioContext || window.webkitAudioContext
@@ -57,6 +87,8 @@ function ensureContext() {
   master.connect(compressor)
   compressor.connect(ctx.destination)
   mediaGraphReady = true
+  applyMono()
+  ctx.addEventListener?.('statechange', notify)
   return ctx
 }
 
@@ -90,10 +122,12 @@ export function setSoundOn(on) {
   if (on) {
     const c = ensureContext()
     if (!c) return
-    if (c.state === 'suspended') c.resume()
+    if (c.state === 'suspended') c.resume()?.then?.(notify, () => {})
     ramp(master.gain, 1, c)
     startPending()
+    notify()
   } else {
+    notify()
     if (!ctx) return // never constructed — nothing to ramp, nothing to stop
     ramp(master.gain, 0, ctx)
     // stop the recipe's own oscillators/timers rather than just riding the
@@ -102,6 +136,25 @@ export function setSoundOn(on) {
     // exit" rule true of "stopped/disconnected on mute" too).
     stopActive()
   }
+}
+
+// A persisted "on" re-arms on the first gesture after a reload. Browsers
+// refuse an AudioContext before one, so this is the earliest honest moment.
+// The sound toggle itself is skipped (data-sound-toggle): its own click is
+// the gesture there, and arming first would make that click turn it off.
+const GESTURES = ['pointerdown', 'pointerup', 'keydown', 'touchend']
+function armOnGesture(e) {
+  if (e?.target?.closest?.('[data-sound-toggle]')) return
+  if (!isSoundOn()) return disarm()
+  if (isSoundLive()) return disarm()
+  setSoundOn(true)
+  if (isSoundLive()) disarm()
+}
+function disarm() {
+  GESTURES.forEach((t) => window.removeEventListener(t, armOnGesture, true))
+}
+if (typeof window !== 'undefined' && isSoundOn()) {
+  GESTURES.forEach((t) => window.addEventListener(t, armOnGesture, true))
 }
 
 // A room mounts a recipe with this. `factory(ctx, master, clockApi) -> stop`

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { makeQuoteTexture } from './archiveTextures.js'
@@ -12,6 +12,8 @@ export function QuoteScrap({ q, position, rotation = [0, 0, 0], width = 0.13 }) 
   const ref = useRef()
   const [hovered, setHovered] = useState(false)
   const tex = useMemo(() => makeQuoteTexture(q), [q])
+  // one texture per scrap, never shared: it goes when the scrap does
+  useEffect(() => () => tex.dispose(), [tex])
   const h = width * 0.5   // the canvas is 420x210
 
   useFrame((_, dt) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 // The card on the nightstand of every motel: what the room has in it and how to
 // work the switches. It exists because the Vault had no answer to "what is this
@@ -13,6 +13,7 @@ const KEY = 'vault.guide.seen.v1'
 
 export default function Guide({ counts }) {
   const [open, setOpen] = useState(false)
+  const card = useRef(null)
 
   useEffect(() => {
     let seen = null
@@ -34,8 +35,12 @@ export default function Guide({ counts }) {
 
   useEffect(() => {
     if (!open) return
-    const k = (e) => { if (e.key === 'Escape') close() }
+    // stopPropagation, as Options does: this Esc closes the card and nothing
+    // else. Without it the same press also put the case file back.
+    const k = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close() } }
     window.addEventListener('keydown', k, true)
+    // focus into the card, so a keyboard or screen reader user lands on it
+    card.current?.focus()
     return () => window.removeEventListener('keydown', k, true)
   }, [open])
 
@@ -45,13 +50,14 @@ export default function Guide({ counts }) {
         onClick={() => (open ? close() : setOpen(true))}
         aria-label="what is this"
         title="what is this"
+        aria-expanded={open}
         style={S.ask}
       >
-        ?
+        <span style={S.askFace} aria-hidden="true">?</span>
       </button>
 
       {open && (
-        <div style={S.card}>
+        <div style={S.card} ref={card} role="dialog" aria-label="What this room is" tabIndex={-1}>
           <div style={S.tape} />
           <div style={S.kicker}>guest information</div>
           <div style={S.title}>What this room is</div>
@@ -69,13 +75,13 @@ export default function Guide({ counts }) {
             <Row k="The Shoebox" v={`${counts.shoebox} older films, scored from memory. Under the window.`} />
             <Row k="The Dark Drawer" v={`${counts.drawer} seen, none scoreable. In the nightstand.`} />
             <Row k="The Nights" v="The strip along the bottom of the wall is the calendar. Gaps are gaps." />
-            <Row k="The Lens" v="Filter the wall by a tag written on the night — dread, mind-bendy, one-man-show." />
+            <Row k="The Lens" v="Filter the wall by a tag written on the night: dread, mind-bendy, one-man-show." />
           </dl>
 
           <div style={S.rule} />
 
           <p style={S.keys}>
-            Drag to look — you can turn the whole way round. Scroll or pinch to
+            Drag to look. You can turn the whole way round. Scroll or pinch to
             zoom. Click a wall, the box or the drawer to walk over. Click any
             photo to take it down and read its case file. Press / to find a film
             anywhere in the room. Esc steps back out.
@@ -98,16 +104,26 @@ function Row({ k, v }) {
 }
 
 const S = {
+  // a 44px hit box around the 30px face, same as the settings gear below it
   ask: {
-    position: 'fixed', top: 18, right: 20, width: 30, height: 30,
-    background: 'rgba(14,10,8,.62)', color: '#b7a98e',
+    position: 'fixed', top: 11, right: 13, width: 44, height: 44,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'none', border: 'none', padding: 0, color: '#b7a98e',
+    cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: 15, lineHeight: 1,
+  },
+  askFace: {
+    width: 30, height: 30, boxSizing: 'border-box',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'rgba(14,10,8,.62)',
     border: '1px solid rgba(180,160,120,.28)', borderRadius: '50%',
-    cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: 15,
-    backdropFilter: 'blur(3px)', lineHeight: 1,
+    backdropFilter: 'blur(3px)',
   },
   card: {
     position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%) rotate(-.5deg)',
-    width: 'min(470px, 88vw)', maxHeight: '84vh', overflowY: 'auto',
+    // text size via zoom, with the width divided back out so a 200% card
+    // still fits a phone
+    zoom: 'var(--ts, 1)', outline: 'none',
+    width: 'min(470px, calc(88vw / var(--ts, 1)))', maxHeight: 'calc(84vh / var(--ts, 1))', overflowY: 'auto',
     background: 'linear-gradient(168deg, #FBF3E2, #EFE3C9)', color: '#2b2519',
     padding: '26px 30px 24px', boxSizing: 'border-box',
     boxShadow: '0 40px 90px rgba(0,0,0,.7)',
@@ -120,7 +136,7 @@ const S = {
   },
   kicker: {
     fontFamily: 'system-ui, sans-serif', fontSize: 10, letterSpacing: '.3em',
-    textTransform: 'uppercase', color: '#a2947a',
+    textTransform: 'uppercase', color: '#6b5f47', // 4.9:1 on the cream
   },
   title: { fontSize: 24, fontStyle: 'italic', marginTop: 9 },
   lede: { fontSize: 14, lineHeight: 1.55, color: '#4a4234', margin: '10px 0 18px' },

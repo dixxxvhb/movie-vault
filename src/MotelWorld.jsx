@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import Room, { ROOM, WALLS } from './Room.jsx'
 import CameraRig from './CameraRig.jsx'
 import { wasDrag } from './pointer.js'
@@ -70,6 +70,17 @@ export default function MotelWorld({
   openBoxAt,
   onEnter,
 }) {
+  // slug -> title across every place a film can be, so a case-file link
+  // names the other film instead of printing its slug. Anything unknown
+  // (a queued film, already a title) falls back to itself.
+  const titleOf = useMemo(() => {
+    const m = new Map()
+    for (const f of [...(data?.films || []), ...(data?.shoebox || []), ...(data?.drawer || [])]) {
+      if (f?.slug) m.set(f.slug, f.title)
+    }
+    return (v) => m.get(v) || v
+  }, [data])
+
   return (
     <>
       <Room
@@ -159,8 +170,11 @@ export default function MotelWorld({
           links={data?.links || []}
           anchor={byPlace[selected].position}
           onClose={() => setSelected(null)}
-          onJump={(slug) => setSelected(slug)}
+          // only a film that hangs on the wall can be jumped to; anything
+          // else would select a card that does not exist and blank the view
+          onJump={(slug) => { if (byPlace[slug]) setSelected(slug) }}
           onEnter={onEnter}
+          titleOf={titleOf}
         />
       )}
 

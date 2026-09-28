@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { EffectComposer, Bloom, Vignette, Noise, ChromaticAberration, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
@@ -21,7 +21,8 @@ import Options from './Options.jsx'
 import Lens, { useVibes } from './Lens.jsx'
 import Find, { buildIndex } from './Find.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
-import { isSoundOn, setSoundOn } from './rooms/audio/engine.js'
+import { isSoundLive, setSoundOn, subscribeSound } from './rooms/audio/engine.js'
+import { clearEdges } from './input.js'
 import { subscribeGrade } from './rooms/gradeBus.js'
 import { subscribeLevel, blendGrade } from './rooms/houseLights.js'
 import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
@@ -113,6 +114,17 @@ function layout(films, scoreToY) {
   return placed
 }
 
+// A grade override arrives every frame from rooms like Memento, as a fresh
+// object each time. Same fields, same values: keep the old one, so App does
+// not re-render sixty times a second for nothing.
+function sameGrade(a, b) {
+  if (a === b) return true
+  if (!a || !b) return false
+  const ka = Object.keys(a)
+  if (ka.length !== Object.keys(b).length) return false
+  return ka.every((k) => a[k] === b[k])
+}
+
 // The whole postprocessing stack comes off in a headset. Two reasons, either one
 // sufficient: a screen-space composer has no correct answer for a stereo pair
 // (it runs per-eye and the grain/aberration then differ between your eyes, which
@@ -191,9 +203,11 @@ export default function App() {
   const [picked, setPicked] = useState(null)     // archive print held up
   const [tone, setTone] = useState(false)
   // The film room's own sound toggle — independent of the motel's `tone`
-  // (roomTone.js's air handler). Lazy-init from whatever's persisted so a
-  // returning visitor who already unmuted once doesn't have to again.
-  const [sound, setSound] = useState(() => isSoundOn())
+  // (roomTone.js's air handler). It shows what is actually audible, not the
+  // stored preference: after a reload a persisted "on" cannot play until the
+  // first gesture, and the engine re-arms it then (see engine.js).
+  const [sound, setSound] = useState(() => isSoundLive())
+  useEffect(() => subscribeSound(setSound), [])
   // Walk bob moved to the Options panel and out of the film HUD, so it is
   // reachable from the motel too. CameraRig owns the module state (read every
   // frame inside useFrame, outside React) and now backs it with the settings
@@ -203,7 +217,9 @@ export default function App() {
   // the one subscription that closes the loop, merged onto the room's own
   // config.grade below, at the Post call site.
   const [gradeOverride, setGradeOverrideState] = useState(null)
-  useEffect(() => subscribeGrade(setGradeOverrideState), [])
+  useEffect(() => subscribeGrade((next) => {
+    setGradeOverrideState((prev) => (sameGrade(prev, next) ? prev : next))
+  }), [])
   // The house-lights level, for the post pass. This is applied AFTER the
   // room's own grade override rather than being published onto the same
   // bus, because bespoke rooms write that bus themselves (Stby's swerve,
@@ -217,6 +233,19 @@ export default function App() {
   // room that cuts to a different set on a sixty-second clock while you are
   // reading, and until now nothing in the Vault could be stopped.
   const [optionsOpen, setOptionsOpen] = useState(false)
+  // stable, so Options' key listener is not torn down on every App render
+  const closeOptions = useCallback(() => setOptionsOpen(false), [])
+  // Text size. One CSS variable on the root that every piece of 2D chrome
+  // reads through `zoom`, so the setting reaches the HUD, the cards and the
+  // settings sheet without each one subscribing on its own.
+  useEffect(() => {
+    const apply = () => {
+      const ts = Number(getSetting('vision.textScale')) || 1
+      document.documentElement.style.setProperty('--ts', String(ts))
+    }
+    apply()
+    return subscribeSettings(apply)
+  }, [])
   const [houseT, setHouseT] = useState(0)
   useEffect(() => subscribeLevel((v) => setHouseT(Math.round(v * 60) / 60)), [])
   const [lens, setLens] = useState(null)        // a vibe tag, or null
@@ -269,6 +298,28 @@ export default function App() {
   // wall exit.
   const hopChainRef = useRef([]) // [{kind, slug}, ...] oldest first
   const [hopCount, setHopCount] = useState(0)
+
+  // The latest world, for callbacks that must stay referentially stable
+  // (onDoorOpen below) but still act on where you are now.
+  const worldRef = useRef(world)
+  worldRef.current = world
+
+  // Arriving in any room drops unconsumed presses. An Enter or F that
+  // landed while the wash ran would otherwise fire the first Touchable
+  // the new room puts in front of you.
+  const inRoomNow = /^(film|print|hazy):/.test(world)
+  useEffect(() => { if (inRoomNow) clearEdges() }, [world, inRoomNow])
+
+  // The motel's air handler belongs to the motel. The film rooms have no
+  // room-tone toggle, so it goes quiet on the way in (from the wash's peak)
+  // and comes back on the way out, if it was on. Covers every room kind and
+  // the door hops between them.
+  const awayFromMotel = !(world === 'motel' || world.startsWith('entering'))
+  useEffect(() => {
+    if (!tone) return
+    if (awayFromMotel) stopRoomTone()
+    else startRoomTone()
+  }, [awayFromMotel, tone])
 
   const filmSlug = world.startsWith('film:') ? world.slice(5)
     : world.startsWith('entering:') ? world.slice(9)
@@ -454,13 +505,18 @@ export default function App() {
   // filtered out `locked` — a locked door's own onClick never calls this,
   // see Door.jsx). Runs the hop straight from whichever room is open now
   // into the target's room, no motel in between (brief §6).
-  const onDoorOpen = (spec) => {
+  //
+  // Stable identity (useCallback, state read through refs): App re-renders
+  // for house lights and grade overrides, and a fresh closure every render
+  // would hand FilmWorld a new `onDoor` prop each time.
+  const onDoorOpen = useCallback((spec) => {
     if (xrStore.getState().session != null) return
+    const world = worldRef.current
     if (world.startsWith('doorhop:')) return // already mid-hop; ignore a double-click
     exitPointerLock()
     const fromKind = world.startsWith('film:') ? 'film' : world.startsWith('print:') ? 'print' : null
     if (!fromKind) return
-    const fromSlug = fromKind === 'film' ? filmSlug : printSlug
+    const fromSlug = fromKind === 'film' ? world.slice(5) : world.slice(6)
     if (!fromSlug) return
     hopChainRef.current.push({ kind: fromKind, slug: fromSlug })
     setHopCount((h) => h + 1)
@@ -468,7 +524,14 @@ export default function App() {
     const toKind = spec.kind === 'archive' ? 'print' : 'film'
     setWorld('doorhop:' + toKind + ':' + spec.targetSlug)
     setTransition({ id: 'doorhop:' + spec.targetSlug + ':' + Date.now() })
-  }
+    // A hop is a new place, so it gets its own history entry, same as
+    // entering from the wall. Without it, browser Back skipped the room you
+    // hopped from and the address bar and the room disagreed.
+    const url = new URL(location.href)
+    for (const k of ['room', 'printroom', 'hazyroom', 'film', 'print']) url.searchParams.delete(k)
+    url.searchParams.set(toKind === 'print' ? 'printroom' : 'room', spec.targetSlug)
+    history.pushState(null, '', url)
+  }, [])
 
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
@@ -530,12 +593,20 @@ export default function App() {
 
   useEffect(() => {
     const k = (e) => {
-      // "/" is the universal open-the-search key; ignore it while typing
+      // "/" is the universal open-the-search key; ignore it while typing.
+      // Find is a question about the motel, so not behind Settings and not
+      // inside a film's room, where nothing could show the result.
       if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(e.target?.tagName || '')) {
+        if (optionsOpen || world !== 'motel') return
         e.preventDefault()
         return setFinding(true)
       }
-      if (e.key === 'Enter' && world === 'motel' && xrStore.getState().session == null) {
+      // Enter steps inside only when it is not already doing something
+      // else: activating a focused control, picking a Find result, or
+      // pressed while a panel is open.
+      const onControl = /^(BUTTON|INPUT|TEXTAREA|A|SELECT)$/.test(e.target?.tagName || '')
+      if (e.key === 'Enter' && world === 'motel' && !e.defaultPrevented && !onControl
+          && !optionsOpen && !finding && !lensOpen && xrStore.getState().session == null) {
         if (selected) return enterFilm(selected)
         // a held print gets the same shortcut as an inspected card — Enter
         // steps into whichever archive room its container implies
@@ -567,7 +638,7 @@ export default function App() {
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [picked, openBox, finding, lensOpen, lens, world, selected, station])
+  }, [picked, openBox, finding, lensOpen, lens, world, selected, station, optionsOpen])
 
   // A film is a place, so it gets an address. `?film=<slug>` started life as a
   // screenshot-harness hack; keeping the address bar in step with what is open
@@ -882,11 +953,55 @@ export default function App() {
         .vault-dock > * { flex: 0 0 auto; }
         .vault-hint {
           position: fixed; right: 20px; bottom: 62px;
-          color: #7d735f; font-size: 12.5px; font-family: system-ui, sans-serif;
+          color: #a89d86; font-size: 12.5px; font-family: system-ui, sans-serif;
           pointer-events: none; text-shadow: 0 1px 6px rgba(0,0,0,.9);
+        }
+        /* Text size (settings: vision.textScale) reaches the 2D chrome as
+           one variable. zoom rather than font-size because every piece of
+           it is authored in px. */
+        .vault-dock, .vault-hint, .vault-strip, .vault-print { zoom: var(--ts, 1); }
+
+        /* The room header, shared by all three room kinds. */
+        .vault-strip {
+          position: fixed; top: 16px; left: 20px; right: 20px;
+          display: flex; align-items: baseline; gap: 14px;
+          color: #efe7d6; pointer-events: none;
+          font-family: Georgia, serif; text-shadow: 0 2px 12px rgba(0,0,0,.85);
+        }
+        .vault-strip-title { font-size: 22px; font-style: italic; }
+        .vault-strip-score { font-size: 15px; font-family: system-ui, sans-serif; opacity: .85; }
+        /* A chip behind the hint: bare, it read at about 1.2:1 over a lit set. */
+        .vault-strip-hint {
+          margin-left: auto; font-size: 11.5px; letter-spacing: .08em; color: #d6cab2;
+          font-family: system-ui, sans-serif; text-transform: uppercase; white-space: nowrap;
+          background: rgba(10,8,6,.62); padding: 3px 7px; border-radius: 2px; text-shadow: none;
+        }
+
+        /* The held print's card. */
+        .vault-print {
+          position: fixed; top: 96px; right: 22px; width: 276px; padding: 16px 18px 18px;
+          box-sizing: border-box;
+          background: rgba(12,9,7,.82); border: 1px solid rgba(180,160,120,.22);
+          color: #cdc2ab; font-family: system-ui, sans-serif; pointer-events: none;
+          backdrop-filter: blur(4px); border-radius: 2px;
+        }
+
+        /* A keyboard hint on a device with no keyboard is noise. */
+        @media (hover: none) {
+          .vault-kbd, .vault-hint { display: none; }
         }
         @media (max-width: 720px) {
           .vault-hint { display: none; }
+          /* One row did not fit: the title wrapped to three lines and the
+             hint broke mid-phrase. Wrap on purpose instead, drop the hint,
+             and stop short of the gear's column at the right edge. */
+          .vault-strip { right: 64px; left: 14px; top: 12px; flex-wrap: wrap; gap: 4px 10px; }
+          .vault-strip-title { font-size: 18px; line-height: 1.2; }
+          .vault-strip-score { font-size: 13px; }
+          .vault-strip-hint { display: none; }
+          /* On a phone the card sat right on top of the print it describes.
+             Down to the bottom, above the dock, full width. */
+          .vault-print { top: auto; bottom: 70px; left: 12px; right: 12px; width: auto; padding: 12px 14px 14px; }
           .vault-dock {
             padding: 10px 12px 12px;
             /* The row scrolls and always did, but on a 390px screen it simply
@@ -905,7 +1020,8 @@ export default function App() {
       `}</style>
 
       {world === 'motel' && (
-        <div style={hud.brand}>
+        // maxWidth keeps a scaled-up brand out of the ? and gear column
+        <div style={{ ...hud.brand, zoom: 'var(--ts, 1)', maxWidth: 'calc((100vw - 110px) / var(--ts, 1))' }}>
           <div style={hud.title}>The Vault</div>
           {data && <div style={hud.sub}>{data.count} films · avg {data.avg} · scored live</div>}
         </div>
@@ -931,6 +1047,7 @@ export default function App() {
             <button
               key={k}
               aria-label={label}
+              aria-current={station === k ? 'true' : undefined}
               onClick={() => {
                 if (k === 'shoebox' || k === 'drawer') return goBox(k)
                 setOpenBox(null)
@@ -948,6 +1065,7 @@ export default function App() {
           <button
             aria-label="investigation"
             onClick={() => { setOpenBox(null); setPicked(null); setStation('investigation') }}
+            aria-current={station === 'investigation' ? 'true' : undefined}
             style={{ ...hud.navBtn, ...(station === 'investigation' ? hud.navOn : null) }}
             title="the red string between films that rhyme"
           >
@@ -955,6 +1073,7 @@ export default function App() {
           </button>
           <button
             aria-label="lens"
+            aria-expanded={lensOpen}
             onClick={() => { setLensOpen((v) => !v); setFinding(false) }}
             style={{ ...hud.navBtn, ...(lens || lensOpen ? hud.navOn : null) }}
             title="dim everything that is not a given vibe"
@@ -963,6 +1082,7 @@ export default function App() {
           </button>
           <button
             aria-label="find"
+            aria-expanded={finding}
             onClick={() => { setFinding((v) => !v); setLensOpen(false) }}
             style={{ ...hud.navBtn, ...(finding ? hud.navOn : null) }}
             title="find a film anywhere in the room  ( / )"
@@ -970,6 +1090,7 @@ export default function App() {
             find
           </button>
           <button
+            aria-pressed={tone}
             onClick={() => { tone ? stopRoomTone() : startRoomTone(); setTone(!tone) }}
             style={{ ...hud.navBtn, ...(tone ? hud.navOn : null) }}
             title="air handler, two floors down"
@@ -992,23 +1113,27 @@ export default function App() {
           is always there to get you back out, however you got in. */}
       {world.startsWith('film:') && roomFilm && (
         <>
-          <div style={hud.filmStrip}>
-            <div style={hud.filmTitle}>
+          <div className="vault-strip">
+            <div className="vault-strip-title">
               {roomFilm.title}{roomFilm.year ? ` (${roomFilm.year})` : ''}
             </div>
-            <div style={hud.filmScore}>{roomFilm.score.toFixed(1)}</div>
-            <div style={hud.filmHint}>i to hide the record</div>
+            <div className="vault-strip-score">{roomFilm.score.toFixed(1)}</div>
+            <div className="vault-strip-hint vault-kbd">i to hide the record</div>
             <button
-              onClick={() => { const next = !sound; setSoundOn(next); setSound(next) }}
+              // data-sound-toggle: the engine's first-gesture re-arm skips
+              // this button, whose own click is the gesture
+              data-sound-toggle=""
+              aria-pressed={sound}
+              onClick={() => setSoundOn(!isSoundLive())}
               style={{ ...hud.filmSoundBtn, ...(sound ? hud.navOn : null) }}
-              title="this room's generative audio — independent of the motel's room tone"
+              title="this room's generative audio, separate from the motel's room tone"
             >
               {sound ? 'sound ·on' : 'sound'}
             </button>
           </div>
           <button
             onClick={exitFilm}
-            style={hud.backToWall}
+            style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
             back to the wall
@@ -1021,18 +1146,18 @@ export default function App() {
           room is the archive, not the wall. */}
       {world.startsWith('print:') && printItem && (
         <>
-          <div style={hud.filmStrip}>
-            <div style={hud.filmTitle}>
+          <div className="vault-strip">
+            <div className="vault-strip-title">
               {printItem.title}{printItem.year ? ` (${printItem.year})` : ''}
             </div>
-            <div style={hud.filmScore}>
+            <div className="vault-strip-score">
               {printItem.memory != null ? `${printItem.memory.toFixed(1)} from memory` : 'never scored'}
             </div>
-            <div style={hud.filmHint}>the archive, faded</div>
+            <div className="vault-strip-hint">the archive, faded</div>
           </div>
           <button
             onClick={exitPrint}
-            style={hud.backToWall}
+            style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
             back to the wall
@@ -1044,15 +1169,15 @@ export default function App() {
           strip is the only identification"). No score line: none exists. */}
       {world.startsWith('hazy:') && hazyItem && (
         <>
-          <div style={hud.filmStrip}>
-            <div style={hud.filmTitle}>
+          <div className="vault-strip">
+            <div className="vault-strip-title">
               {hazyItem.title}{hazyItem.year ? ` (${hazyItem.year})` : ''}
             </div>
-            <div style={hud.filmHint}>undeveloped</div>
+            <div className="vault-strip-hint">undeveloped</div>
           </div>
           <button
             onClick={exitHazy}
-            style={hud.backToWall}
+            style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
             back to the wall
@@ -1079,7 +1204,7 @@ export default function App() {
           Only at the wall (`world === 'motel'`) — once you've stepped inside,
           the room's own HUD strip above takes over this same information. */}
       {world === 'motel' && pickedFilm && (
-        <div style={hud.print}>
+        <div className="vault-print">
           <div style={hud.printTitle}>
             {pickedFilm.title}{pickedFilm.year ? ` (${pickedFilm.year})` : ''}
           </div>
@@ -1126,19 +1251,21 @@ export default function App() {
         aria-expanded={optionsOpen}
         style={hud.gear}
       >
-        {/* three sliders, drawn rather than an icon font, because nothing in
-            this project imports an asset */}
-        <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true">
-          <g stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
-            <path d="M2 4h11M2 7.5h11M2 11h11" opacity=".55" />
-            <circle cx="5" cy="4" r="1.6" fill="#12100c" />
-            <circle cx="9.5" cy="7.5" r="1.6" fill="#12100c" />
-            <circle cx="4" cy="11" r="1.6" fill="#12100c" />
-          </g>
-        </svg>
+        <span style={hud.gearFace} aria-hidden="true">
+          {/* three sliders, drawn rather than an icon font, because nothing in
+              this project imports an asset */}
+          <svg width="15" height="15" viewBox="0 0 15 15">
+            <g stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+              <path d="M2 4h11M2 7.5h11M2 11h11" opacity=".55" />
+              <circle cx="5" cy="4" r="1.6" fill="#12100c" />
+              <circle cx="9.5" cy="7.5" r="1.6" fill="#12100c" />
+              <circle cx="4" cy="11" r="1.6" fill="#12100c" />
+            </g>
+          </svg>
+        </span>
       </button>
 
-      <Options open={optionsOpen} onClose={() => setOptionsOpen(false)} />
+      <Options open={optionsOpen} onClose={closeOptions} />
 
       {data && world === 'motel' && (
         <Guide
@@ -1171,11 +1298,19 @@ const hud = {
     // Below the top strip rather than in it: the motel has the guest card's
     // `?` up there and a film room has its own sound button, and a control
     // that has to exist in EVERY world cannot fight either of them.
-    position: 'fixed', top: 58, right: 20, width: 30, height: 30,
+    // The button is a 44px hit box (the touch-target minimum) around a 30px
+    // face, so the target grows and the look does not. Face sits at 62/20.
+    position: 'fixed', top: 55, right: 13, width: 44, height: 44,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    background: 'rgba(14,10,8,.62)', color: '#b7a98e',
+    background: 'none', border: 'none', color: '#b7a98e',
+    cursor: 'pointer', zIndex: 20, padding: 0,
+  },
+  gearFace: {
+    width: 30, height: 30, boxSizing: 'border-box',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    background: 'rgba(14,10,8,.62)',
     border: '1px solid rgba(180,160,120,.28)', borderRadius: '50%',
-    cursor: 'pointer', backdropFilter: 'blur(3px)', zIndex: 20, padding: 0,
+    backdropFilter: 'blur(3px)',
   },
   brand: { position: 'fixed', top: 16, left: 20, color: '#efe7d6', pointerEvents: 'none', fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.8)' },
   title: { fontSize: 26, fontStyle: 'italic', letterSpacing: '.01em' },
@@ -1196,17 +1331,8 @@ const hud = {
   // The film room's own, much smaller, HUD — title/score/hint up top, one way
   // back out fixed to the corner. No dock, no lens, no find: those are
   // questions about the wall, and you are not standing at the wall.
-  filmStrip: {
-    position: 'fixed', top: 16, left: 20, right: 20, display: 'flex',
-    alignItems: 'baseline', gap: 14, color: '#efe7d6', pointerEvents: 'none',
-    fontFamily: 'Georgia, serif', textShadow: '0 2px 12px rgba(0,0,0,.85)',
-  },
-  filmTitle: { fontSize: 22, fontStyle: 'italic' },
-  filmScore: { fontSize: 15, fontFamily: 'system-ui, sans-serif', opacity: 0.85 },
-  filmHint: {
-    marginLeft: 'auto', fontSize: 11.5, letterSpacing: '.08em', color: '#a99c85',
-    fontFamily: 'system-ui, sans-serif', textTransform: 'uppercase',
-  },
+  // The strip itself (title / score / hint) lives in the <style> block as
+  // .vault-strip: it needs a phone layout, and inline styles cannot say that.
   // independent of the motel's room-tone toggle (`navBtn` in the dock) — this
   // one lives in the film room's own strip, which is otherwise pointerEvents
   // 'none', so the button opts itself back in
@@ -1225,17 +1351,12 @@ const hud = {
     backdropFilter: 'blur(3px)',
   },
 
-  print: {
-    position: 'fixed', top: 96, right: 22, width: 276, padding: '16px 18px 18px',
-    background: 'rgba(12,9,7,.82)', border: '1px solid rgba(180,160,120,.22)',
-    color: '#cdc2ab', fontFamily: 'system-ui, sans-serif', pointerEvents: 'none',
-    backdropFilter: 'blur(4px)', borderRadius: 2,
-  },
+  // the card itself is .vault-print in the <style> block, for the same reason
   printTitle: { fontFamily: 'Georgia, serif', fontSize: 19, color: '#f0e6d2', lineHeight: 1.25 },
   // pencil, not ink — the same tell the print itself carries
   printScore: { marginTop: 7, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9a927f' },
   printMeta: { marginTop: 12, fontSize: 12.5, lineHeight: 1.65, color: '#8d8472' },
-  printNote: { marginTop: 12, fontSize: 12.5, lineHeight: 1.55, color: '#6f6857', fontStyle: 'italic' },
+  printNote: { marginTop: 12, fontSize: 12.5, lineHeight: 1.55, color: '#9a917d', fontStyle: 'italic' },
   // the card itself is pointerEvents:'none' (it must not block a click
   // through to the box behind it) — this button opts itself back in, same
   // pattern as filmSoundBtn inside the pointerEvents:'none' filmStrip

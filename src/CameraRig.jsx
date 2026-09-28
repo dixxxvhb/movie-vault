@@ -140,10 +140,14 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
   const snapDeg = useRef(getSetting('motion.snapDegrees') || 45)
   const lookRate = useRef(getSetting('motion.lookSpeed') || 1)
   const snapArmed = useRef(false)
+  // -1 flips vertical look for drag and pointer lock alike (the pad's right
+  // stick is already flipped in input.js's lookAxis)
+  const invert = useRef(getSetting('input.invertY') ? -1 : 1)
   useEffect(() => subscribeSettings(() => {
     turnMode.current = getSetting('motion.turn') || 'smooth'
     snapDeg.current = getSetting('motion.snapDegrees') || 45
     lookRate.current = getSetting('motion.lookSpeed') || 1
+    invert.current = getSetting('input.invertY') ? -1 : 1
   }), [])
 
   // Wave P0: the flight-landing micro-dip (IMMERSION-V2-POLISH-SPEC.md #4 —
@@ -220,7 +224,7 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       const sens = 0.0032 / Math.max(1, zoomShown.current * 0.82)
       // yaw is unbounded — turn all the way round, as many times as you like
       off.current.yaw -= dx * sens
-      off.current.pitch = THREE.MathUtils.clamp(off.current.pitch - dy * sens, -0.62, 0.62)
+      off.current.pitch = THREE.MathUtils.clamp(off.current.pitch - dy * sens * invert.current, -0.62, 0.62)
       el.style.cursor = 'grabbing'
     }
     const up = (e) => {
@@ -311,7 +315,7 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
       if (document.pointerLockElement !== target) return
       const sens = 0.0032 / Math.max(1, zoomShown.current * 0.82)
       off.current.yaw -= e.movementX * sens
-      off.current.pitch = THREE.MathUtils.clamp(off.current.pitch - e.movementY * sens, -0.62, 0.62)
+      off.current.pitch = THREE.MathUtils.clamp(off.current.pitch - e.movementY * sens * invert.current, -0.62, 0.62)
     }
     applyForLockState()
     document.addEventListener('pointerlockchange', applyForLockState)
@@ -327,6 +331,8 @@ export default function CameraRig({ station = 'center', stationKey, walkable = n
   // fine work and +/- is what everyone tries first
   useEffect(() => {
     const k = (e) => {
+      // typing "-" or "=" into Find is text, not a lens change
+      if (/^(INPUT|TEXTAREA)$/.test(e.target?.tagName || '') || e.target?.isContentEditable) return
       const dir = (e.key === '+' || e.key === '=') ? 1 : (e.key === '-' || e.key === '_') ? -1 : 0
       if (!dir) return
       zoom.current = THREE.MathUtils.clamp(zoom.current * (dir > 0 ? 1.18 : 1 / 1.18), ZOOM_MIN, ZOOM_MAX)

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 
 // THE LENS.
 //
@@ -30,9 +30,12 @@ export function useVibes(films) {
 }
 
 export default function Lens({ vibes, value, onPick, onClose }) {
+  const card = useRef(null)
+  // focus moves into the card on open, so the tags are the next Tab stop
+  useEffect(() => { card.current?.focus() }, [])
   if (!vibes.length) return null
   return (
-    <div style={S.card}>
+    <div style={S.card} ref={card} role="dialog" aria-label="Look through a tag" tabIndex={-1}>
       <div style={S.tape} />
       <div style={S.head}>
         <div style={S.kicker}>look through</div>
@@ -45,13 +48,14 @@ export default function Lens({ vibes, value, onPick, onClose }) {
       </div>
       <p style={S.lede}>
         Tags written on the night. Pick one and everything that does not carry
-        it goes dark — the wall keeps its shape, so you see where that taste
+        it goes dark. The wall keeps its shape, so you see where that taste
         actually sits in the scores.
       </p>
       <div style={S.tags}>
         {vibes.map(({ tag, n }) => (
           <button
             key={tag}
+            aria-pressed={value === tag}
             onClick={() => onPick(value === tag ? null : tag)}
             style={{ ...S.tag, ...(value === tag ? S.on : null) }}
           >
@@ -65,8 +69,10 @@ export default function Lens({ vibes, value, onPick, onClose }) {
 
 const S = {
   card: {
-    position: 'fixed', right: 20, bottom: 78, width: 'min(360px, 84vw)',
-    maxHeight: '62vh', overflowY: 'auto',
+    position: 'fixed', right: 20, bottom: 78,
+    zoom: 'var(--ts, 1)', outline: 'none',
+    width: 'min(360px, calc(84vw / var(--ts, 1)))',
+    maxHeight: 'calc(62vh / var(--ts, 1))', overflowY: 'auto',
     background: 'linear-gradient(168deg, #FBF3E2, #EFE3C9)', color: '#2b2519',
     padding: '22px 22px 18px', boxSizing: 'border-box',
     boxShadow: '0 30px 70px rgba(0,0,0,.7)', transform: 'rotate(.4deg)',
@@ -79,7 +85,7 @@ const S = {
   },
   kicker: {
     fontFamily: 'system-ui, sans-serif', fontSize: 10, letterSpacing: '.3em',
-    textTransform: 'uppercase', color: '#a2947a',
+    textTransform: 'uppercase', color: '#6b5f47', // 4.9:1 on the cream
   },
   lede: { fontSize: 12.5, lineHeight: 1.5, color: '#5a5142', margin: '10px 0 14px' },
   tags: { display: 'flex', flexWrap: 'wrap', gap: 6 },
@@ -90,7 +96,7 @@ const S = {
     alignItems: 'baseline', gap: 6,
   },
   on: { background: '#8c2b26', borderColor: '#8c2b26', color: '#FBF3E2' },
-  n: { fontFamily: 'system-ui, sans-serif', fontSize: 9.5, opacity: .6 },
+  n: { fontFamily: 'system-ui, sans-serif', fontSize: 9.5, opacity: .8 },
   head: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
   row: { display: 'flex', gap: 6 },
   btn: {

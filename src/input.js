@@ -61,7 +61,9 @@ const DEFAULT_BINDINGS = {
   Equal: 'zoomIn', NumpadAdd: 'zoomIn',
   Minus: 'zoomOut', NumpadSubtract: 'zoomOut',
   KeyI: 'toggleInfo',
-  Tab: 'cycleNext',
+  // Tab is deliberately NOT bound. It used to map to cycleNext and swallow
+  // the key app-wide, which broke keyboard focus in every DOM panel while
+  // nothing actually consumed the action.
 }
 
 // Standard Gamepad mapping. Left stick is move, right stick is look (read by
@@ -115,10 +117,22 @@ let stick = null       // touch joystick, overrides the keyboard move axis
 let padIndex = null
 let padPrev = []
 
+// Movement and turn: the actions "Press instead of hold" turns into toggles.
+const TOGGLEABLE = new Set(['moveForward', 'moveBack', 'strafeLeft', 'strafeRight', 'turnLeft', 'turnRight'])
+
+// Keys that activate a focused control. Enter or Space on a button is that
+// button's press, not the world's: recording it as `interact` left a stale
+// edge that the first Touchable in the next room consumed on arrival.
+const ACTIVATE_CODES = new Set(['Enter', 'NumpadEnter', 'Space'])
+
 function isTypingTarget(e) {
   const t = e.target
   if (!t) return false
-  return t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable === true
+  if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable === true) return true
+  // Only the activation keys are skipped on a button, not WASD: focus stays
+  // on the sound toggle after a click, and walking must still work then.
+  if (ACTIVATE_CODES.has(e.code) && t.closest?.('button, a, [role="switch"], [role="radio"]')) return true
+  return false
 }
 
 function press(action) {
@@ -149,16 +163,20 @@ function install() {
   window.addEventListener('keydown', (e) => {
     if (e.isComposing || isTypingTarget(e)) return
     const action = bindings()[e.code]
-    if (!action) return
-    // Tab is bound to cycleNext for keyboard-only play, so it must not also
-    // move DOM focus out of the canvas while the world has focus. Every other
-    // bound key is safe to let through.
-    if (e.code === 'Tab') e.preventDefault()
+    if (!action || e.repeat) return
+    // Press instead of hold: a keydown flips movement on or off, and the
+    // matching keyup is ignored below.
+    if (TOGGLEABLE.has(action) && get('input.holdToToggle')) {
+      if (held[action]) release(action)
+      else press(action)
+      return
+    }
     press(action)
   })
 
   window.addEventListener('keyup', (e) => {
     const action = bindings()[e.code]
+    if (TOGGLEABLE.has(action) && get('input.holdToToggle')) return
     release(action)
   })
 
