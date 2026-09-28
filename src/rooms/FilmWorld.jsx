@@ -114,6 +114,7 @@ export default function FilmWorld({ slug, film, config, doors, onDoor }) {
         <Family
           film={film}
           config={lit}
+          baseGrade={config.grade}
           infoVisible={infoOn}
           goToStation={goToStation}
           doors={doors}

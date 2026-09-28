@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Bevel, FrameOn as FrameOnDetail } from './detail.jsx'
@@ -215,6 +215,8 @@ export function screenPanel({ pos, rot, scale = 1, w = 1, h = 0.6, color = '#eee
     return t
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [w, h, color])
+  // R3F disposes the material on unmount, never the map it was handed
+  useEffect(() => () => tex.dispose(), [tex])
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
       <mesh>
@@ -311,6 +313,7 @@ export function waterPlane({ pos, rot = [-Math.PI / 2, 0, 0], scale = 1, size = 
     c.width = c.height = 256
     return new THREE.CanvasTexture(c)
   }, [])
+  useEffect(() => () => tex.dispose(), [tex])
   useFrame(({ clock }) => {
     const c = tex.image
     const ctx = c.getContext('2d')

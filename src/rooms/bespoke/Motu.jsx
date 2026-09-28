@@ -11,6 +11,9 @@ import Touchable from '../Touchable.jsx'
 import { standardMat } from '../materials.js'
 import { Bevel } from '../detail.jsx'
 import { FogLayers, HazeCone } from '../atmosphere.jsx'
+import { useOwned } from '../kit/paint.js'
+import { flashGain } from '../../flashPolicy.js'
+import { get as getSetting } from '../../settings.js'
 
 // P1 finishing pass (IMMERSION-V2-POLISH-SPEC.md): materials.js stone on the
 // dais/walls, carved-band trim rings on the columns, bone-white accent ribs
@@ -222,9 +225,11 @@ function MotuThrone({ pos }) {
 
 /* --------------------------------------------------------------- spotlight */
 
-// A hard-cut spotlight: fully off, then fully on, no ramp — SNAPS, per the
-// brief's own word. Set directly in useFrame (not React state) so the cut
-// is genuinely instantaneous rather than riding a render's worth of lag.
+// A hard-cut spotlight: fully off, then fully on. The brief's word is SNAPS,
+// but a 0 to 110 jump in one frame is a flash, so it now rises over 150ms
+// (still reads as a snap) and over 600ms when flashing is turned down. The
+// timer is a room event, so it stops when those are off; the petition's
+// aim-at-you still works, because that one the visitor asked for.
 function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
   const spot = useRef()
   const fixture = useRef()
@@ -234,7 +239,8 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
   useEffect(() => {
     if (spot.current) spot.current.target = target
   }, [target])
-  useFrame(({ clock }) => {
+  const level = useRef(0)
+  useFrame(({ clock }, dt) => {
     // Wave T: press the petition -> the spotlight SNAPS to the player for
     // 2s (hard cut, same "no ramp" law the timer-driven version already
     // follows), then snaps back to the throne — a plain performance.now()
@@ -242,13 +248,16 @@ function ThroneSpotlight({ aimUntilRef, aimPosRef }) {
     // fights it.
     const aiming = performance.now() < aimUntilRef.current
     const t = clock.elapsedTime % SPOT_PERIOD
-    const on = aiming || t < SPOT_ON
-    if (spot.current) spot.current.intensity = on ? 110 : 0
-    if (fixture.current) fixture.current.material.emissiveIntensity = on ? 2.2 : 0.15
-    if (pool.current) pool.current.material.opacity = on ? 0.55 : 0
-    // the hard-edged HazeCone snaps with the spotlight — no fade, matching
-    // the brief's own "snaps" verb for this fixture.
-    if (hazeGroup.current) hazeGroup.current.visible = on
+    const eventsOn = getSetting('content.roomEvents') !== false
+    const want = aiming || (eventsOn && t < SPOT_ON) ? 1 : 0
+    const step = Math.min(dt, 0.1) / (flashGain() >= 1 ? 0.15 : 0.6)
+    level.current += Math.max(-step, Math.min(step, want - level.current))
+    const k = level.current
+    if (spot.current) spot.current.intensity = k * 110
+    if (fixture.current) fixture.current.material.emissiveIntensity = 0.15 + k * 2.05
+    if (pool.current) pool.current.material.opacity = k * 0.55
+    // the hard-edged HazeCone follows the spotlight past its halfway mark
+    if (hazeGroup.current) hazeGroup.current.visible = k > 0.5
     const px = aiming ? aimPosRef.current.x : 0
     const pz = aiming ? aimPosRef.current.z : -2.2
     target.position.set(px, 0.9, pz)
@@ -391,15 +400,16 @@ function LightningPoses({ aimUntilRef, aimPosRef }) {
 // throne's armrest is already spoken for by the petition, per the brief).
 const SCROLL_W = 1.5, SCROLL_H = 1.0, SCROLL_SCALE = 0.86
 const SCROLL_GROUP_Y = 1.05
-function ProclamationScroll({ film }) {
-  const tex = useMemo(() => makeProclamationTexture(film), [film.slug, film.hot_take])
+function ProclamationScroll({ film, infoVisible = true }) {
+  const tex = useOwned(() => makeProclamationTexture(film), [film.slug, film.hot_take])
   const bottomLocalY = -SCROLL_H / 2
   const floorLocalY = -SCROLL_GROUP_Y / SCROLL_SCALE
   const postLen = bottomLocalY - floorLocalY
   const postMidY = (bottomLocalY + floorLocalY) / 2
   return (
     <group position={[1.85, SCROLL_GROUP_Y, -1.75]} rotation={[0, -0.42, 0]} scale={SCROLL_SCALE}>
-      <mesh>
+      {/* the take; the rolled ends and stand stay as set */}
+      <mesh visible={infoVisible}>
         <planeGeometry args={[SCROLL_W, SCROLL_H]} />
         <meshBasicMaterial map={tex} toneMapped={false} side={THREE.DoubleSide} />
       </mesh>
@@ -430,7 +440,7 @@ function ProclamationScroll({ film }) {
 // Re-tuned to MotuThrone's new chunkier armrest (world top surface ~1.095,
 // x~0.58) — was resting mid-embedded in the old thin arm fin.
 function PetitionOnArmrest({ onPress }) {
-  const tex = useMemo(() => makePetitionTexture(), [])
+  const tex = useOwned(() => makePetitionTexture(), [])
   return (
     <Touchable reach={5} anchor={[0.56, 1.1, -1.9]} onUse={onPress}>
       <mesh position={[0.56, 1.1, -1.9]} rotation={[-Math.PI / 2, 0, -0.15]}>
@@ -442,7 +452,7 @@ function PetitionOnArmrest({ onPress }) {
 }
 
 function RoyalSeal({ score }) {
-  const tex = useMemo(() => makeSealTexture(score), [score])
+  const tex = useOwned(() => makeSealTexture(score), [score])
   return (
     <mesh position={[0, 0.17, -2.0]} rotation={[-Math.PI / 2, 0, 0]}>
       <circleGeometry args={[0.22, 32]} />
@@ -457,7 +467,7 @@ const DOOR_MOUNT = { position: [0, 0, ROOM_D / 2 - 0.05], rotationY: Math.PI, sp
 
 /* ------------------------------------------------------------------ room */
 
-export default function Motu({ film, config, doors = [], onDoor }) {
+export default function Motu({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   // Wave T: press the petition -> spotlight snaps to the player + lightning
   // aims at them for 2s, then both snap back. A plain deadline (no React
@@ -503,9 +513,12 @@ export default function Motu({ film, config, doors = [], onDoor }) {
       <MotuThrone pos={[0, 0.16, -2.2]} />
       <ThroneSpotlight aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
       <LightningPoses aimUntilRef={aimUntilRef} aimPosRef={aimPosRef} />
-      <ProclamationScroll film={film} />
+      <ProclamationScroll film={film} infoVisible={infoVisible} />
       <PetitionOnArmrest onPress={handlePetitionPress} />
-      <RoyalSeal score={film.score} />
+      {/* the seal is the score: `i` hides it with the scroll's text */}
+      <group visible={infoVisible}>
+        <RoyalSeal score={film.score} />
+      </group>
 
       <DoorRow
         doors={doors}

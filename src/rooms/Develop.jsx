@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { claimFlash } from '../flashPolicy.js'
 
 // The portal wash. Pattern-copied from ColdOpen.jsx: a DOM overlay because it
 // has to cover the very first frames of whatever mounts underneath, before
@@ -40,6 +41,11 @@ export default function Develop({ onPeak, onDone, slow = false, dark = false }) 
   const total = peak + fade
   const peakPct = (peak / total) * 100
   const peakOpacity = dark ? DARK_PEAK_OPACITY : 1
+  // The white-out is a full-view luminance event, so it claims the shared
+  // flash budget like every other one. It cannot simply be skipped (it hides
+  // the world swapping underneath), so when the budget or the flash setting
+  // says no, it plays the same cover in the low-luminance dark wash instead.
+  const [soft] = useState(() => dark || claimFlash('develop', 1) < 1)
 
   const [done, setDone] = useState(false)
   const peaked = useRef(false)
@@ -72,7 +78,8 @@ export default function Develop({ onPeak, onDone, slow = false, dark = false }) 
       setDone(true)
       onDone?.()
     }
-    const t1 = setTimeout(firePeak, peak)
+    // re-claim at the peak so the budget holds through the fade
+    const t1 = setTimeout(() => { if (!soft) claimFlash('develop', 1); firePeak() }, peak)
     const t2 = setTimeout(finish, total)
     // any input at all skips straight to the end state
     const evts = ['pointerdown', 'keydown', 'wheel']
@@ -98,7 +105,7 @@ export default function Develop({ onPeak, onDone, slow = false, dark = false }) 
       <div
         style={{
           position: 'fixed', inset: 0, zIndex: 60, pointerEvents: 'none',
-          background: dark
+          background: soft
             ? 'radial-gradient(ellipse at center, #2a2a2c 0%, #101012 55%, #030304 100%)'
             : 'radial-gradient(ellipse at center, #fdf7e9 0%, #e9dcbc 68%, #ccba8f 100%)',
           animation: `vault-develop-wash ${total}ms ease-in-out forwards`,

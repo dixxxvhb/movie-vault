@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { get as getSetting, subscribe as subscribeSettings } from '../../settings.js'
 import ResetFlash from './ResetFlash.jsx'
 import Duplicates from './Duplicates.jsx'
 import SwarmEvent from './SwarmEvent.jsx'
@@ -42,8 +44,32 @@ export const SYSTEMS = {
   DustDrift,
 }
 
+// The two Options switches that decide whether a system runs at all.
+// ScheduledCut and ResetFlash read `content.roomEvents` themselves (they
+// still need to settle the grade when it flips off mid-cut); the rest are
+// simply not mounted. `content.roomReactsToYou` was stored and shown in the
+// panel but read by nothing until this map existed.
+const GATED_BY = {
+  SwarmEvent: 'content.roomEvents',
+  PeripheralFigure: 'content.roomReactsToYou',
+  LookAwayGrow: 'content.roomReactsToYou',
+  DwellConcede: 'content.roomReactsToYou',
+}
+
+function useSettingOn(path) {
+  const [on, setOn] = useState(() => !path || getSetting(path) !== false)
+  useEffect(() => {
+    if (!path) return undefined
+    const sync = () => setOn(getSetting(path) !== false)
+    sync()
+    return subscribeSettings(sync)
+  }, [path])
+  return on
+}
+
 export function System({ type, ...rest }) {
   const Comp = SYSTEMS[type]
-  if (!Comp) return null
+  const on = useSettingOn(GATED_BY[type])
+  if (!Comp || !on) return null
   return <Comp {...rest} />
 }

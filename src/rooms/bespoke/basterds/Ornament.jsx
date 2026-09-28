@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import * as THREE from 'three'
 import { Slab, Curtain, Fan, Sconce, FloorBand, FloorRunner, useGlow } from '../../kit/architecture.jsx'
 import { makePaintedTexture } from './basterdsTextures.js'
+import { useOwned } from '../../kit/paint.js'
 import { APRON_Y, BOOTH_Y, rakeAt } from './zones.js'
 import { CEIL_Y } from './Hall.jsx'
 import { Scrap } from '../../kit/notes.jsx'
@@ -83,7 +84,8 @@ export default function Ornament() {
   const glow = useGlow('#ffc070', 2.6)
   const cove = useGlow('#ffb35e', 3.2)
   const lamp = useGlow('#ffd9a0', 3.5)
-  const carpet = useMemo(() => {
+  // the material and its painted map both go on unmount (useOwned)
+  const carpet = useOwned(() => {
     const t = makePaintedTexture(256, 256, paintCarpet)
     t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 1)
     return new THREE.MeshStandardMaterial({ map: t, roughness: 0.95 })

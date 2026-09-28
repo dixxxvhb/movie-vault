@@ -15,6 +15,8 @@ import { playOneShot } from '../audio/engine.js'
 import { standardMat } from '../materials.js'
 import { Bevel, Scuff, crumpledPaper } from '../detail.jsx'
 import { makeWordTexture, makeCrosswalkBarTexture, makeFacadeTexture, makeContactShadowTexture } from './babyDriverTextures.js'
+import { useOwned } from '../kit/paint.js'
+import { flashGain } from '../../flashPolicy.js'
 
 // 8.4 — "the opening, on beat." The room that proves the audio system: a
 // shared beat clock (audio/clock.js's useBeat, rAF math only) drives BOTH
@@ -109,7 +111,7 @@ const streetMat = standardMat({ kind: 'asphalt', tint: '#a8a6a0', wear: 0.5, sca
 function BankFacade({ grade }) {
   // OUR OWN generic bank name — invented, never the film's own signage —
   // per the fidelity contract.
-  const signTex = useMemo(() => makeWordTexture('ATLANTA TRUST', { w: 1400, h: 200, color: '#e8dcc0' }), [])
+  const signTex = useOwned(() => makeWordTexture('ATLANTA TRUST', { w: 1400, h: 200, color: '#e8dcc0' }), [])
 
   const windows = useMemo(() => Array.from({ length: 6 }, (_, i) => ({
     x: -3.6 + i * 1.44,
@@ -215,7 +217,7 @@ function BankFacade({ grade }) {
 // Departed's, tuned warm-blue instead of golden-hour) fixes the backdrop
 // directly instead of only cranking lights against a black horizon.
 function DaySky() {
-  const tex = useMemo(() => {
+  const tex = useOwned(() => {
     const c = document.createElement('canvas')
     c.width = 2; c.height = 512
     const ctx = c.getContext('2d')
@@ -270,7 +272,7 @@ function Car({ beatRef }) {
   const brakeR = useRef()
 
   const W = CAR_W, H = CAR_H, D = CAR_D
-  const shadowTex = useMemo(() => makeContactShadowTexture(), [])
+  const shadowTex = useOwned(() => makeContactShadowTexture(), [])
 
   // body masses, distinct from each other so the silhouette reads as
   // "car" rather than one continuous slab
@@ -323,7 +325,8 @@ function Car({ beatRef }) {
     }
 
     const flashOn = performance.now() < flashUntilRef.current
-    const brakeGlow = (flashOn ? 5 : 0) + 0.4 + 2.6 * decay(fracBar, 4)
+    // the +5 slam is a hard edge, so it scales with the flash setting
+    const brakeGlow = (flashOn ? 5 * flashGain() : 0) + 0.4 + 2.6 * decay(fracBar, 4)
     if (brakeL.current) brakeL.current.material.emissiveIntensity = brakeGlow
     if (brakeR.current) brakeR.current.material.emissiveIntensity = brakeGlow
   })
@@ -711,7 +714,7 @@ function BabyDriverRecord({ film, beatRef, infoVisible }) {
 export default function BabyDriver({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const beatRef = useBeat(BPM)
-  const crosswalkTex = useMemo(() => makeCrosswalkBarTexture(19), [])
+  const crosswalkTex = useOwned(() => makeCrosswalkBarTexture(19), [])
 
   useRoomAudio(startBabyDriverAudio)
 

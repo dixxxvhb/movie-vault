@@ -87,7 +87,7 @@ export function makeMissionBriefTexture(film, palette, { text: textOverride, sta
   ctx.fillText('MISSION BRIEF', 92, 78)
   ctx.fillStyle = ink
   ctx.font = '600 26px system-ui, sans-serif'
-  ctx.fillText((film.title || '').toUpperCase() + ' — TASK FORCE READOUT', 92, 150)
+  ctx.fillText((film.title || '').toUpperCase() + ': TASK FORCE READOUT', 92, 150)
 
   // a stamped corner, our own invented ops-document flourish, no real seal
   ctx.save()

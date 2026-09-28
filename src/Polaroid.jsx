@@ -26,7 +26,7 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, onHov
 
   useEffect(() => {
     let live = true
-    makeCardTexture(film).then((t) => { if (live) setTex(t) })
+    makeCardTexture(film).then((t) => { if (live) setTex(t); else t.dispose() })
     return () => { live = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [film])
@@ -35,6 +35,12 @@ export default function Polaroid({ film, position, rotation = 0, onSelect, onHov
   useEffect(() => {
     if (inspected && !back) setBack(makeBackTexture(film))
   }, [inspected, back, film])
+
+  // Both faces are drawn per card, not cached, and R3F disposes a material
+  // on unmount but never a map passed to it. Without these, every return to
+  // the motel left the whole wall's textures on the GPU.
+  useEffect(() => () => tex?.dispose(), [tex])
+  useEffect(() => () => back?.dispose(), [back])
 
   useFrame((_, dt) => {
     if (!group.current) return

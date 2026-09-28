@@ -131,9 +131,19 @@ export function makeBrushTexture() {
 // revealed character count changes so the typewriter effect is visible, plus
 // a small camcorder-style readout in the corner carrying the film's score
 // (this room's stand-in for a plaque, styled as an exposure/counter readout).
-export function makeCaptionTexture(text, revealCount, score) {
-  const W = 1024, H = 220
-  const c = canvas(W, H)
+export function makeCaptionTexture(text, revealCount, score, cursorOn = true) {
+  const c = canvas(1024, 220)
+  drawCaption(c, text, revealCount, score, cursorOn)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.needsUpdate = true
+  return tex
+}
+
+// Repaints the caption into an existing canvas, so the typewriter can reuse
+// one texture instead of minting a new GPU upload for every character.
+export function drawCaption(c, text, revealCount, score, cursorOn = true) {
+  const W = c.width, H = c.height
   const ctx = c.getContext('2d')
   ctx.clearRect(0, 0, W, H)
 
@@ -151,7 +161,7 @@ export function makeCaptionTexture(text, revealCount, score) {
   ctx.fillText(shown, 20, H - 48)
 
   // a blinking cursor while still typing
-  if (revealCount < (text || '').length && Math.floor(Date.now() / 400) % 2 === 0) {
+  if (revealCount < (text || '').length && cursorOn) {
     const w = ctx.measureText(shown).width
     ctx.fillRect(24 + w, H - 68, 14, 40)
   }
@@ -162,11 +172,6 @@ export function makeCaptionTexture(text, revealCount, score) {
   ctx.textAlign = 'right'
   ctx.fillText('EV ' + (score ?? 0).toFixed(1), W - 16, 34)
   ctx.textAlign = 'left'
-
-  const tex = new THREE.CanvasTexture(c)
-  tex.colorSpace = THREE.SRGBColorSpace
-  tex.needsUpdate = true
-  return tex
 }
 
 // The polaroid prop on the guardrail — its FRONT is a blank, unresolved

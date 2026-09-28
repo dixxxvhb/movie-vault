@@ -93,6 +93,7 @@ function useFlashOnTouch(groupRef, token, { duration = 0.32, boost = 0.85 } = {}
       if (obj.isMesh && obj.material) {
         const m = obj.material
         mats.push({
+          mesh: obj,
           mat: m,
           baseColor: m.color ? m.color.clone() : null,
           baseOpacity: m.opacity,
@@ -114,13 +115,20 @@ function useFlashOnTouch(groupRef, token, { duration = 0.32, boost = 0.85 } = {}
     if (!mats || !mats.length) return
     const dt = firedAt.current ? (performance.now() - firedAt.current) / 1000 : Infinity
     const f = dt < duration ? (1 - dt / duration) : 0
-    mats.forEach(({ mat, baseColor, baseOpacity }) => {
-      if (baseColor && mat.color) {
+    mats.forEach(({ mesh, mat, baseColor, baseOpacity }) => {
+      // Touchable swaps a cloned material in on the first hover, and a hover
+      // always comes before a click, so writing the captured material flashed
+      // something no longer drawn. Publish the flash on the mesh; Touchable
+      // folds it into the clone's colour. Write the colour here only while
+      // the original is still the one on screen.
+      mesh.userData.touchFlash = f * boost
+      const live = mesh.material
+      if (live === mat && baseColor && mat.color) {
         scratch.current.copy(baseColor).lerp(white.current, f * boost)
         mat.color.copy(scratch.current)
       }
-      if (baseOpacity !== undefined && baseOpacity < 1) {
-        mat.opacity = Math.min(1, baseOpacity + (1 - baseOpacity) * f)
+      if (baseOpacity !== undefined && baseOpacity < 1 && live) {
+        live.opacity = Math.min(1, baseOpacity + (1 - baseOpacity) * f)
       }
     })
   })

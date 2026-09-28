@@ -21,6 +21,7 @@ import { standardMat } from '../materials.js'
 import { Bevel, Trim } from '../detail.jsx'
 import { FogLayers } from '../atmosphere.jsx'
 import LightRig from '../lightRig.js'
+import { useOwned } from '../kit/paint.js'
 
 // 9.9 — "the elevator and the roof." Boston golden-hour haze, a gravel roof
 // behind a parapet, an elevator lobby standing on it, and the reveal-as-event
@@ -150,8 +151,8 @@ function RoofShell({ grade }) {
     () => standardMat({ kind: 'gravel', tint: '#332c22', wear: 0.45, scale: 1.6, repeat: [5, 4] }),
     []
   )
-  const tarTex = useMemo(() => makeTarSeamTexture(ROOF_W, ROOF_D), [])
-  const skyTex = useMemo(
+  const tarTex = useOwned(() => makeTarSeamTexture(ROOF_W, ROOF_D), [])
+  const skyTex = useOwned(
     () => makeSkyTexture(grade.fill || '#3a2e22', grade.key || '#e8b060', '#241a10'),
     [grade.fill, grade.key]
   )
@@ -334,12 +335,12 @@ function CallButton({ onPress }) {
 const housingMat = standardMat({ kind: 'concrete', tint: '#332c22', wear: 0.4, scale: 1.2 })
 const doorMat = standardMat({ kind: 'metal', tint: '#5a4a30', wear: 0.4, roughness: 0.85, metalness: 0.5 })
 
-function ElevatorLobby({ doorState, score }) {
+function ElevatorLobby({ doorState, score, infoVisible = true }) {
   const doorT = useRef(0)   // 0 closed .. 1 open
   const leftRef = useRef()
   const rightRef = useRef()
   const carLightRef = useRef()
-  const indicatorTex = useMemo(() => makeFloorIndicatorTexture(score), [score])
+  const indicatorTex = useOwned(() => makeFloorIndicatorTexture(score), [score])
 
   useFrame((_, dt) => {
     const target = doorState === 'closed' ? 0 : doorState === 'closing' ? 0 : 1
@@ -378,8 +379,9 @@ function ElevatorLobby({ doorState, score }) {
         <meshStandardMaterial color="#100d08" roughness={0.7} />
       </mesh>
 
-      {/* the floor indicator, permanently reading the score */}
-      <mesh position={[0, DOOR_H + 0.32, ELEV_D / 2 + 0.03]}>
+      {/* the floor indicator, permanently reading the score (the record,
+          so `i` hides it) */}
+      <mesh visible={infoVisible} position={[0, DOOR_H + 0.32, ELEV_D / 2 + 0.03]}>
         <planeGeometry args={[0.62, 0.29]} />
         <meshBasicMaterial map={indicatorTex} toneMapped={false} />
       </mesh>
@@ -526,7 +528,7 @@ const FOREGROUND_BUTT_SEEDS = [
 ]
 
 function ForegroundClutter() {
-  const tarTex = useMemo(() => makeTarSeamTexture(3.2, 1.6), [])
+  const tarTex = useOwned(() => makeTarSeamTexture(3.2, 1.6), [])
   return (
     <group>
       {/* a low conduit/pipe run crossing the foreground, elbowed once so it
@@ -574,12 +576,12 @@ function ForegroundClutter() {
   )
 }
 
-function RoofVentDossier({ film }) {
+function RoofVentDossier({ film, infoVisible = true }) {
   const palette = sheetOf(film.palette)
   const [dossierTex, setDossierTex] = useState(null)
   const [metaTex, setMetaTex] = useState(null)
-  const rustTexA = useMemo(() => makeRustStreakTexture(5), [])
-  const rustTexB = useMemo(() => makeRustStreakTexture(11), [])
+  const rustTexA = useOwned(() => makeRustStreakTexture(5), [])
+  const rustTexB = useOwned(() => makeRustStreakTexture(11), [])
 
   useEffect(() => {
     let live = true
@@ -610,14 +612,14 @@ function RoofVentDossier({ film }) {
         <planeGeometry args={[0.5, 0.5]} />
         <meshBasicMaterial map={rustTexB} transparent opacity={0.7} depthWrite={false} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
       </mesh>
-      <mesh position={[0, 0.66, 0]} rotation={[-Math.PI / 2, 0, 0.05]}>
+      <mesh visible={infoVisible} position={[0, 0.66, 0]} rotation={[-Math.PI / 2, 0, 0.05]}>
         <planeGeometry args={[0.78, 0.55]} />
         {dossierTex
           ? <meshBasicMaterial key="mapped" map={dossierTex} toneMapped={false} side={THREE.DoubleSide} />
           : <meshBasicMaterial key="blank" color={palette.paper} toneMapped={false} />}
       </mesh>
       {/* meta line + vibe chips, small, propped against the vent's side */}
-      <mesh position={[0.62, 0.5, 0.05]} rotation={[0, -Math.PI / 2, 0]}>
+      <mesh visible={infoVisible} position={[0.62, 0.5, 0.05]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.5, 0.13]} />
         {metaTex
           ? <meshBasicMaterial key="mapped" map={metaTex} transparent depthWrite={false} side={THREE.DoubleSide} />
@@ -650,12 +652,12 @@ const DOOR_MOUNT = {
 
 /* ------------------------------------------------------------------ room */
 
-export default function Departed({ film, config, doors = [], onDoor }) {
+export default function Departed({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const [doorState, setDoorState] = useState('closed')
 
-  const copTex = useMemo(() => makeTagTexture('COP'), [])
-  const ratTex = useMemo(() => makeTagTexture('RAT'), [])
+  const copTex = useOwned(() => makeTagTexture('COP'), [])
+  const ratTex = useOwned(() => makeTagTexture('RAT'), [])
 
   // Wave T: the call button's rush hook. `doorStateRef` mirrors `doorState`
   // so the button (an imperative callback, not a render) always sees the
@@ -745,7 +747,7 @@ export default function Departed({ film, config, doors = [], onDoor }) {
 
       <RoofShell grade={grade} />
       <Skyline grade={grade} />
-      <ElevatorLobby doorState={doorState} score={film.score} />
+      <ElevatorLobby doorState={doorState} score={film.score} infoVisible={infoVisible} />
       <CallButton onPress={() => rushRef.current?.()} />
       <RailRat />
 
@@ -760,7 +762,7 @@ export default function Departed({ film, config, doors = [], onDoor }) {
         />
       ))}
 
-      <RoofVentDossier film={film} />
+      <RoofVentDossier film={film} infoVisible={infoVisible} />
       <ForegroundClutter />
 
       <DoorRow

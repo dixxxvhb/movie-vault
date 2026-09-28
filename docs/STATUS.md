@@ -8,6 +8,35 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Full audit, every room and view (2026-09-27)
+
+Three read-only audits (motel and HUD, the template engine, the bespoke and
+archive rooms), then fixes, then a headless sweep of every film room, the
+archive rooms, the motel and `?text`. Swiftshader in the cloud container, so
+fps numbers from that sweep mean nothing; errors, framing and leaks do.
+
+| What | Commit | Notes |
+|---|---|---|
+| Rooms for the 15 placeholder films | `6b8086c` | Se7en, One Battle After Another, Gladiator, The Big Short, L.A. Confidential, Fight Club, Operation Finale, Valkyrie, Memories of Murder, Frost/Nixon, Spotlight, Inside Man, The Town, The Amateur, In the Grey. Each was the Default fog disc (no walls, doors or sound). Now a template room in the film's own place, authored scraps, a recipe each. Every slug on the wall has a config or a bespoke room. In the Grey's staging is a guess (a briefing room): its real sets were not checked |
+| Maverick rebuilt | `6b8086c` | The cockpit box was a black void with the record against the lens. Now the carrier deck at golden hour |
+| Engine | `6b8086c` | Shells paint from the unlit grade (the house switch leaked a texture set per tick: 41 to 173 live textures over three flips); scraps sit on a carrier's real surface instead of inside it (Catch Me If You Can, Coherence, Obsession showed no take); Develop's wash claims the flash budget; `content.roomReactsToYou` read at last; press flashes visible through hover; PulseBeat no longer pins the key; config defects (tdkr rope, Ex Machina forest, train seats through walls, doors over the mirror and through ceilings, spawns outside bounds, Rogue One's glow through the lens, switch anchors) |
+| Motel and HUD | `e605e72` | Tab works; Enter in Find or on a button no longer enters a room; URL overrides session-only; sound button tells the truth; phone header wraps and clears the gear; text size, invert Y, hold-to-toggle, mono, keep signage wired; dialog roles, focus trap, contrast to 4.5:1; queued-film links; wall textures disposed |
+| Bespoke and archive rooms | `1f17dc1` | Barbarian's smash cut and Stby's swerve claim the flash budget and honour room events; Memento's tube flicker and Enemy's two-clock blink go through `flicker()`; Motu, BR2049, Baby Driver scaled by `flashGain()`. `kit/paint.js` `useOwned`: barbarian +58 GPU textures per visit to 0, nightcrawler +17..46 to 0. Memento and Sicario stop re-rendering App every frame. `i` hides the record in all twelve rooms that ignored it. No Country's wind obeys the sound switch. House lights in the print and hazy rooms |
+
+### Open after the audit
+- `audio.captions`, `reading.plain` (needs `plain_summary` in the data), `motion.moveVignette`,
+  `content.skip` / `content.warnBefore` (needs per-film hazard flags; the Threshold promises a
+  skip that does not exist yet). Stored, shown, not read.
+- Text size reaches the 2D chrome only, not in-world signs and numerals.
+- 78 em dashes in `vault-data.json` notes and reasons (hot takes stay verbatim). Fix in the
+  pipeline, not the client.
+- Barbarian's smash-cut override carries key/fill/ambient that no light reads; only bg and the
+  post grade move. Wire it through FilmWorld if the daylight cut should relight the room.
+- The 15 new rooms are template rooms, not Two-Scene builds. Each still wants its film sheet.
+- Door-hop Back was fixed in code but not walked headless (needs a 3D door click).
+
+---
+
 ## Done
 
 | What | Commit | Notes |
@@ -134,8 +163,8 @@ Film sheet and what's left: `docs/films/inglourious-basterds.md`.
 
 **Left (optional, plan §15.5):** signature lines on seat-card backs (need a checked source per
 line), the walkable Box. **Dixon's gate:** walk it himself in about a week and run the §0 test.
-Open for Dixon: merge the duplicate Sinners row in `film_titles`; Valkyrie (logged 09-22) needs
-its panel before the wall shows it; the in-room header wraps badly at 390 (shared chrome).
+Open for Dixon: merge the duplicate Sinners row in `film_titles`. (Valkyrie's panel landed in
+`cc87451`; the header at 390 was fixed in `e605e72`.)
 
 ## Agreed, not started
 
@@ -234,8 +263,9 @@ the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
   event through one shared budget with a hard 700ms floor, which caps the
   whole app at 1.4 Hz no matter how many systems fire. `ResetFlash` and
   `ScheduledCut` route through it and both respect `content.roomEvents`.
-  Still unrouted and worth doing: Barbarian's smash cut, `Develop`'s wash,
-  `ColdOpen`'s blink (the last already honours `motion.coldOpen`).
+  Barbarian's smash cut, Stby's swerve and `Develop`'s wash route through it
+  too since the 2026-09-27 audit. Still unrouted: `ColdOpen`'s blink (it
+  already honours `motion.coldOpen`).
 - ~~No content warning~~ **CLOSED.** `Threshold.jsx` renders before any WebGL
   work, names the specific hazards with the specific films, and offers the
   calm and steady presets in the same breath. Verified: zero canvas elements
@@ -243,9 +273,10 @@ the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
 - ~~No pause~~ **CLOSED.** `frameloop="never"` while Options is open.
 - **`?text` is the only screen-reader path.** The canvas has no focusable
   proxies yet. This is the largest remaining accessibility gap.
-- **Most Options switches are stored but unread.** Wired: flash level,
+- **Some Options switches are stored but unread.** Wired: flash level,
   keyboard turn, travel, head bob, cold open, dust, high contrast, room
-  events. Not yet: text size, captions, mono, plain language, hold-to-toggle,
-  invert Y, per-room content skip.
+  events, rooms react to you, text size, mono, hold-to-toggle, invert Y, keep
+  signage. Not yet: captions, plain language, move vignette, per-room content
+  skip and warn-before.
 
 | Weekly enrich cron `film-enrich-weekly`, Sundays 09:00 UTC | see git | Same cron-secret pattern as provider refresh. Proved live: 200, fetched 0 / skipped_fresh 231. Open: Dixon re-saves `movie-night.skill` in Chat |

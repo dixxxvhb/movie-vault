@@ -155,7 +155,9 @@ function migrate(saved) {
     const out = { v: VERSION, motion: {}, audio: {} }
     try {
       if (window.localStorage.getItem('vault-bob') === '0') out.motion.headBob = false
-      if (window.localStorage.getItem('vault-sound') === '1') out.audio.master = 0.8
+      // the engine writes 'on'/'off'; '1' is the older spelling
+      const snd = window.localStorage.getItem('vault-sound')
+      if (snd === 'on' || snd === '1') out.audio.master = 0.8
     } catch {
       // nothing to recover; defaults stand
     }
@@ -177,12 +179,39 @@ function load() {
   return merge(base, saved)
 }
 
-let state = typeof window === 'undefined' ? defaults() : load()
+// Two layers. `stored` is what localStorage holds; `session` is what a URL
+// asked for this visit only (?a11y= / ?set=). `state` is the two composed,
+// and it is the only thing readers ever see. Keeping them apart is what stops
+// a later, unrelated toggle from persisting a link's overrides along with it.
+let stored = typeof window === 'undefined' ? defaults() : load()
+const session = new Map() // path -> value
+let state = stored
 const listeners = new Set()
+
+// Copy-on-write at every level on the path, so a subscriber comparing by
+// reference sees the change.
+function assign(obj, path, value) {
+  const parts = path.split('.')
+  const last = parts.pop()
+  const root = { ...obj }
+  let node = root
+  for (const k of parts) {
+    node[k] = { ...node[k] }
+    node = node[k]
+  }
+  node[last] = value
+  return root
+}
+
+function compose() {
+  let s = stored
+  session.forEach((v, p) => { s = assign(s, p, v) })
+  state = s
+}
 
 function persist() {
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(state))
+    window.localStorage.setItem(KEY, JSON.stringify(stored))
   } catch {
     // quota, private mode, storage disabled. The session still honours the
     // choice; it just will not be here next time.
@@ -208,20 +237,22 @@ export function get(path) {
   return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), state)
 }
 
-// set('motion.travel', 'cut'). Writes a new object at every level on the
-// path so a subscriber comparing by reference sees the change.
+// set('motion.travel', 'cut'). A choice made in the panel is the player's
+// own, so it persists and replaces any session override on the same path.
 export function set(path, value) {
-  const parts = path.split('.')
-  const last = parts.pop()
-  let node = { ...state }
-  state = node
-  for (const k of parts) {
-    node[k] = { ...node[k] }
-    node = node[k]
-  }
-  if (node[last] === value) return
-  node[last] = value
+  if (get(path) === value && !session.has(path)) return
+  stored = assign(stored, path, value)
+  session.delete(path)
+  compose()
   persist()
+  publish()
+}
+
+// Session-only write: honoured until the tab closes, never saved.
+function setSession(path, value) {
+  if (get(path) === value) return
+  session.set(path, value)
+  compose()
   publish()
 }
 
@@ -231,7 +262,9 @@ export function subscribe(fn) {
 }
 
 export function resetAll() {
-  state = defaults()
+  stored = defaults()
+  session.clear()
+  compose()
   persist()
   publish()
 }
@@ -287,10 +320,11 @@ export const PRESETS = {
   },
 }
 
-export function applyPreset(name) {
+export function applyPreset(name, { sessionOnly = false } = {}) {
   const p = PRESETS[name]
   if (!p) return
-  Object.entries(p.apply).forEach(([path, value]) => set(path, value))
+  const write = sessionOnly ? setSession : set
+  Object.entries(p.apply).forEach(([path, value]) => write(path, value))
 }
 
 // URL parameters, so the screenshot harness drives the real app rather than
@@ -308,7 +342,7 @@ export function applyUrlOverrides(search) {
     return
   }
   const preset = params.get('a11y')
-  if (preset && PRESETS[preset]) applyPreset(preset)
+  if (preset && PRESETS[preset]) applyPreset(preset, { sessionOnly: true })
 
   const raw = params.get('set')
   if (!raw) return
@@ -321,6 +355,6 @@ export function applyUrlOverrides(search) {
     else if (value === 'false') value = false
     else if (value !== '' && !Number.isNaN(Number(value))) value = Number(value)
     if (get(path) === undefined) return // never invent a key from a URL
-    set(path, value)
+    setSession(path, value)
   })
 }

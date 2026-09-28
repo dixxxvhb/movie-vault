@@ -109,6 +109,15 @@ function useMountElapsed() {
 // brace) and a stage weight — a squat dark box — sitting at its foot. Real
 // geometry, not a texture, so it reads correctly from any angle once you're
 // behind the painted face that was hiding it.
+// One lumber grain for all four flats, built on first use and kept for the
+// session (same deal as the parlor's wood cache): it used to be painted four
+// times per visit and never freed.
+let lumber = null
+function sharedLumber() {
+  if (!lumber) lumber = makeLumberTexture()
+  return lumber
+}
+
 function LumberFrame({ w, h, tex }) {
   const t = 0.05
   return (
@@ -145,7 +154,7 @@ function LumberFrame({ w, h, tex }) {
 function BackWall({ elapsedRef, film }) {
   const group = useRef()
   const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 1.1, wear: 0.5, repeat: [2, 1], roughness: 0.95 }), [])
-  const lumberTex = useMemo(() => makeLumberTexture(), [])
+  const lumberTex = sharedLumber()
   const [hotTakeTex, setHotTakeTex] = useState(null)
 
   useEffect(() => {
@@ -195,7 +204,7 @@ function BackWall({ elapsedRef, film }) {
 function LeftWall({ elapsedRef }) {
   const group = useRef()
   const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#3a2814', scale: 1.2, wear: 0.55, repeat: [2, 1], roughness: 0.95 }), [])
-  const lumberTex = useMemo(() => makeLumberTexture(), [])
+  const lumberTex = sharedLumber()
 
   useFrame(() => {
     if (!group.current) return
@@ -220,7 +229,7 @@ function LeftWall({ elapsedRef }) {
 function FrontWall({ elapsedRef }) {
   const group = useRef()
   const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 1.05, wear: 0.45, repeat: [2, 1], roughness: 0.95 }), [])
-  const lumberTex = useMemo(() => makeLumberTexture(), [])
+  const lumberTex = sharedLumber()
   useFrame(() => {
     if (!group.current) return
     const drop = buildOffset(elapsedRef.current, 1.6, false)
@@ -248,7 +257,7 @@ function FrontWall({ elapsedRef }) {
 function RightWall({ elapsedRef }) {
   const group = useRef()
   const flatMat = useMemo(() => standardMat({ kind: 'fabric', tint: '#4a3018', scale: 0.95, wear: 0.5, repeat: [1.6, 1], roughness: 0.95 }), [])
-  const lumberTex = useMemo(() => makeLumberTexture(), [])
+  const lumberTex = sharedLumber()
   const panelD = (ROOM_D - DOOR_W) / 2
 
   useFrame(() => {

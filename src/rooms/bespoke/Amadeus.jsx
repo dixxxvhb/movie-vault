@@ -12,6 +12,7 @@ import { registerColliders, setBounds, clearOwner, resolveStep } from '../collid
 import Touchable from '../Touchable.jsx'
 import { standardMat } from '../materials.js'
 import { Bevel, Trim } from '../detail.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // P1 finishing pass (IMMERSION-V2-POLISH-SPEC.md): materials.js surfaces on
 // every plane, heavy fabric drape with real folds, a real candle body under
@@ -141,13 +142,17 @@ const BOOST_MULT = 4
 const BOOST_MS = 4000
 
 function InkSurfaces({ boostApiRef }) {
-  const pageBase = useMemo(() => makePageBaseTexture(), [])
+  const pageBase = useOwned(() => makePageBaseTexture(), [])
   const pageMeshRef = useRef()
   const wallMeshRefs = [useRef(), useRef()]
   const lastCountsRef = useRef([-1, -1, -1])
   const tRef = useRef(0)
   const boostUntil = useRef([0, 0, 0]) // [page, wall0, wall1]
   const extra = useRef([0, 0, 0])
+  // The ink maps swapped in below, by surface, so the last three can be freed
+  // on unmount (the mesh refs are already gone by the time a cleanup runs).
+  const inkTex = useRef([null, null, null])
+  useEffect(() => () => inkTex.current.forEach((t) => t && t.dispose()), [])
 
   useEffect(() => {
     boostApiRef.current = (which) => {
@@ -177,6 +182,7 @@ function InkSurfaces({ boostApiRef }) {
       const mat = pageMeshRef.current.material
       if (mat.map) mat.map.dispose()
       mat.map = tex
+      inkTex.current[0] = tex
       mat.needsUpdate = true
     }
 
@@ -189,6 +195,7 @@ function InkSurfaces({ boostApiRef }) {
         const mat = ref.current.material
         if (mat.map) mat.map.dispose()
         mat.map = tex
+        inkTex.current[i + 1] = tex
         mat.needsUpdate = true
       }
     })
@@ -446,7 +453,7 @@ function CandleFlame({ pos }) {
 /* ------------------------------------------------------------ score/take */
 
 function InkScorePlaque({ score }) {
-  const tex = useMemo(() => makeInkScoreTexture(score), [score])
+  const tex = useOwned(() => makeInkScoreTexture(score), [score])
   return (
     <mesh position={[0.75, 1.55, -ROOM_D / 2 + 0.02]}>
       <planeGeometry args={[0.5, 0.5]} />
@@ -456,7 +463,7 @@ function InkScorePlaque({ score }) {
 }
 
 function MarginTake({ film }) {
-  const tex = useMemo(() => makeMarginTakeTexture(film.hot_take), [film.slug, film.hot_take])
+  const tex = useOwned(() => makeMarginTakeTexture(film.hot_take), [film.slug, film.hot_take])
   // propped against the page, angled into its own "margin" rather than
   // centered — small, per the brief.
   return (
@@ -475,7 +482,7 @@ const DOOR_MOUNT = { position: [ROOM_W / 2 - 0.05, 0.8, 0.6], rotationY: -Math.P
 
 /* ------------------------------------------------------------------ room */
 
-export default function Amadeus({ film, config, doors = [], onDoor }) {
+export default function Amadeus({ film, config, infoVisible = true, doors = [], onDoor }) {
   const { grade } = config
   const boostApiRef = useRef(null)
 
@@ -516,8 +523,11 @@ export default function Amadeus({ film, config, doors = [], onDoor }) {
       <CandleFlame pos={[-0.75, 0.72, 0.15]} />
 
       <InkSurfaces boostApiRef={boostApiRef} />
-      <InkScorePlaque score={film.score} />
-      <MarginTake film={film} />
+      {/* the record (score, take, meta): `i` hides it, the set stays */}
+      <group visible={infoVisible}>
+        <InkScorePlaque score={film.score} />
+        <MarginTake film={film} />
+      </group>
 
       <DoorRow
         doors={doors}

@@ -13,6 +13,7 @@ import { wasDrag } from '../../pointer.js'
 import { setBounds, clearOwner } from '../colliders.js'
 import { standardMat } from '../materials.js'
 import { FogLayers } from '../atmosphere.jsx'
+import { useOwned } from '../kit/paint.js'
 
 // THE MATRIX (1999) · 9.8 · "the rooftop, mid bullet-time." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the helipad rooftop, hazy overcast city,
@@ -125,8 +126,8 @@ function skyTexture(top, bottom) {
 const padMat = standardMat({ kind: 'wetconcrete', tint: '#3c3e34', wear: 0.5, scale: 1.3, repeat: [3, 3] })
 
 function RoofShell({ grade }) {
-  const markingsTex = useMemo(() => buildMarkingsTexture(), [])
-  const sky = useMemo(() => skyTexture(grade.fill || '#5a6a48', '#2a3222'), [grade.fill])
+  const markingsTex = useOwned(() => buildMarkingsTexture(), [])
+  const sky = useOwned(() => skyTexture(grade.fill || '#5a6a48', '#2a3222'), [grade.fill])
   // hazy distant city, overcast — same deterministic-box trick GenericRoom's
   // OpenShell uses, kept local so this bespoke room has no dependency on it
   const city = useMemo(() => Array.from({ length: 22 }, (_, i) => ({
@@ -435,7 +436,7 @@ const DOOR_MOUNT = { position: [2.6, 0, 2.2], rotationY: -Math.PI / 4, spacing: 
 const PAD_TRIGGER_R = 0.6
 const PAD_BOUNDS_R = 6.5
 
-export default function Matrix({ film, config, doors = [], goToStation, onDoor }) {
+export default function Matrix({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationIndex, setStationIndex] = useState(-1) // -1 = entry
   const stationRef = useRef(-1)
@@ -517,8 +518,11 @@ export default function Matrix({ film, config, doors = [], goToStation, onDoor }
       </group>
 
       <GlyphPeriphery />
-      <ScoreGlyphs film={film} />
-      <InfoPlinth film={film} />
+      {/* the record (score, take, meta): `i` hides it, the set stays */}
+      <group visible={infoVisible}>
+        <ScoreGlyphs film={film} />
+        <InfoPlinth film={film} />
+      </group>
 
       {/* orbit stations: small ring pads on the helipad, click to walk to
           that vantage; entry pad returns you to the front-on station */}

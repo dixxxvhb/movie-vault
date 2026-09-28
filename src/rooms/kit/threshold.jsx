@@ -8,7 +8,9 @@ import Touchable from '../Touchable.jsx'
 //
 //   cutTo(go)     fades to black over ~0.4 s, calls go() while it's black (fly
 //                 the rig there), then fades back up. Timers, not frames, so it
-//                 still plays in a preview pane that isn't ticking.
+//                 still plays in a preview pane that isn't ticking. Returns a
+//                 cancel: call it on unmount, or leaving mid-cut flies the rig
+//                 of a room that is gone and holds black over the exit.
 //   DoubleDoors   a pair of doors that swing away from you when used; pass
 //                 `open` to drive them and `onUse` to start the cut.
 //
@@ -20,10 +22,17 @@ export function cutTo(go, { fadeIn = 380, hold = 830, fadeOut = 700 } = {}) {
   const el = document.createElement('div')
   el.style.cssText = `position:fixed;inset:0;z-index:1900;background:#000;opacity:0;transition:opacity ${fadeIn}ms ease;pointer-events:none`
   document.body.appendChild(el)
-  requestAnimationFrame(() => { el.style.opacity = '1' })
-  setTimeout(go, fadeIn + 40)
-  setTimeout(() => { el.style.transition = `opacity ${fadeOut}ms ease`; el.style.opacity = '0' }, fadeIn + hold)
-  setTimeout(() => el.remove(), fadeIn + hold + fadeOut + 100)
+  const raf = requestAnimationFrame(() => { el.style.opacity = '1' })
+  const timers = [
+    setTimeout(go, fadeIn + 40),
+    setTimeout(() => { el.style.transition = `opacity ${fadeOut}ms ease`; el.style.opacity = '0' }, fadeIn + hold),
+    setTimeout(() => el.remove(), fadeIn + hold + fadeOut + 100),
+  ]
+  return function cancel() {
+    cancelAnimationFrame(raf)
+    timers.forEach(clearTimeout)
+    el.remove()
+  }
 }
 
 export function DoubleDoors({ pos, ry = 0, w = 2.2, h = 2.5, glass = true, open, onUse, mat, glow = '#ffb35e', brass = '#b89045' }) {

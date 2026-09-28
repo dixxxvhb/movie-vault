@@ -1,7 +1,8 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { ROOM } from './Room.jsx'
+import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
 
 // Signage.
 //
@@ -77,6 +78,10 @@ function Sign({ position, rotation, width, title, sub, wide = true, near = 1.15 
   const mat = useRef()
   const mesh = useRef()
   const tex = useMemo(() => tapeTexture(title, sub, { wide }), [title, sub, wide])
+  useEffect(() => () => tex.dispose(), [tex])
+  // "Keep the signs up": the approach fade goes, the signs stay at full.
+  const [keep, setKeep] = useState(() => !!getSetting('vision.keepSignage'))
+  useEffect(() => subscribeSettings(() => setKeep(!!getSetting('vision.keepSignage'))), [])
   const h = width * ((wide ? 168 : 128) / (wide ? 1024 : 512))
 
   useFrame(({ camera }, dt) => {
@@ -90,8 +95,8 @@ function Sign({ position, rotation, width, title, sub, wide = true, near = 1.15 
     // how squarely you are looking at it
     const aim = THREE.MathUtils.smoothstep(fwd.dot(toSign), 0.62, 0.93)
     // and it gets out of the way once you are standing at the thing it names
-    const room = THREE.MathUtils.smoothstep(dist, near, near + 0.9)
-    const want = aim * room * 0.72
+    const room = keep ? 1 : THREE.MathUtils.smoothstep(dist, near, near + 0.9)
+    const want = (keep ? 1 : aim * room) * 0.72
 
     mat.current.opacity = THREE.MathUtils.damp(mat.current.opacity, want, 5, dt)
     mesh.current.visible = mat.current.opacity > 0.01

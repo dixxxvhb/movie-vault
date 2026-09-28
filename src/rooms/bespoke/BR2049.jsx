@@ -18,6 +18,8 @@ import { standardMat } from '../materials.js'
 import { Bevel, Trim } from '../detail.jsx'
 import LightRig from '../lightRig.js'
 import { Rainlight } from '../atmosphere.jsx'
+import { useOwned } from '../kit/paint.js'
+import { flashGain } from '../../flashPolicy.js'
 
 // BLADE RUNNER 2049 (2017) · 9.8 · "the sea wall." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): night, driving rain, waves detonating
@@ -113,7 +115,7 @@ function SeaWallShell({ grade, onTouchDeck }) {
     kind: 'concrete', tint: '#4a5862', scale: 0.8, wear: 0.35,
     repeat: [7, 1], seed: 505, roughness: 0.7, bumpScale: 0.012,
   }), [])
-  const sky = useMemo(() => skyTexture(grade.fogColor || '#0a1620', '#03060a'), [grade.fogColor])
+  const sky = useOwned(() => skyTexture(grade.fogColor || '#0a1620', '#03060a'), [grade.fogColor])
   return (
     <group>
       {/* the night sky backdrop: a plain flat gradient plane rather than a
@@ -301,7 +303,9 @@ function SplashBurst({ x, seed }) {
     // catching light for a beat every few seconds, offset per burst
     const cycle = (t % 4.2) / 4.2
     const active = cycle < 0.12
-    ref.current.material.opacity = active ? (1 - cycle / 0.12) * 0.85 : 0
+    // the leading edge is a one-frame 0 to 0.85 jump, so it answers to the
+    // flash setting (zero at 'none', a third at 'reduced')
+    ref.current.material.opacity = active ? (1 - cycle / 0.12) * 0.85 * flashGain() : 0
   })
   return (
     <mesh ref={ref} position={[x, 1.0, WALL_Z + 0.55]}>

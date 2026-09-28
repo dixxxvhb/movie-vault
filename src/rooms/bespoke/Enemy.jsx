@@ -19,6 +19,7 @@ import { standardMat } from '../materials.js'
 import { Bevel, Trim, FrameOn } from '../detail.jsx'
 import { FogLayers } from '../atmosphere.jsx'
 import LightRig from '../lightRig.js'
+import { useOwned } from '../kit/paint.js'
 
 // ENEMY (2013) · 9.6 · "the apartment, doubled." Brief
 // (VAULT-IMMERSION-BRIEF-v2.md §5): the Toronto apartment, venetian-blind
@@ -418,14 +419,23 @@ function ScoreDuo({ film, corrected }) {
   const lieLabel = (Math.round((film.score - 0.1) * 10) / 10).toFixed(1)
   const lieRef = useRef()
   const flickerUntil = useRef(0)
-
-  useEffect(() => {
-    if (corrected) flickerUntil.current = performance.now() / 1000 + 0.7
-  }, [corrected])
+  const flickerArmed = useRef(false)
+  const trueTex = useOwned(() => makeMarkedScoreTexture(trueLabel, '#c9a24a'), [trueLabel])
+  const lieTex = useOwned(
+    () => makeMarkedScoreTexture(corrected ? trueLabel : lieLabel, '#c9a24a'),
+    [corrected, trueLabel, lieLabel]
+  )
 
   useFrame(({ clock }) => {
     if (!lieRef.current) return
     const t = clock.elapsedTime
+    // Armed on the frame `corrected` flips, from the same clock it is
+    // compared against (it used to be set from performance.now(), which put
+    // the end minutes away and left the number blinking).
+    if (corrected && !flickerArmed.current) {
+      flickerArmed.current = true
+      flickerUntil.current = t + 0.7
+    }
     if (corrected && t < flickerUntil.current) {
       // The lie correcting itself. This was `Math.floor(t * 22) % 2` — an
       // 11 Hz hard square wave, small on screen but squarely inside the
@@ -443,17 +453,14 @@ function ScoreDuo({ film, corrected }) {
       <mesh position={[ROOM_W / 2 - 0.012, 1.7, 1.2]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[0.5, 0.5]} />
         <meshBasicMaterial
-          map={useMemo(() => makeMarkedScoreTexture(trueLabel, '#c9a24a'), [trueLabel])}
+          map={trueTex}
           transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide}
         />
       </mesh>
       <mesh ref={lieRef} position={[-ROOM_W / 2 + 0.012, 1.6, -0.7]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.5, 0.5]} />
         <meshBasicMaterial
-          map={useMemo(
-            () => makeMarkedScoreTexture(corrected ? trueLabel : lieLabel, '#c9a24a'),
-            [corrected, trueLabel, lieLabel]
-          )}
+          map={lieTex}
           transparent opacity={1} depthWrite={false} toneMapped={false} side={THREE.DoubleSide}
         />
       </mesh>
@@ -464,7 +471,7 @@ function ScoreDuo({ film, corrected }) {
 /* --------------------------------------------------------------- chalk */
 
 function ChalkCrack() {
-  const tex = useMemo(() => makeChalkTexture(CHALK_TEXT, '— Dixon, in debrief'), [])
+  const tex = useMemo(() => makeChalkTexture(CHALK_TEXT, 'Dixon, in debrief'), [])
   useEffect(() => () => tex.dispose(), [tex])
   return (
     <mesh position={[0.9, 1.45, -ROOM_D / 2 + 0.012]}>
@@ -562,7 +569,7 @@ const OWNER_ID = 'bespoke:enemy'
 // intent (you had to be standing at the station to click it).
 const CORRECT_RADIUS = 0.9
 
-export default function Enemy({ film, config, doors = [], goToStation, onDoor }) {
+export default function Enemy({ film, config, infoVisible = true, doors = [], goToStation, onDoor }) {
   const { grade } = config
   const [stationKey, setStationKey] = useState('entry')
   const [corrected, setCorrected] = useState(false)
@@ -693,9 +700,12 @@ export default function Enemy({ film, config, doors = [], goToStation, onDoor })
 
       <SpiderShadow pos={[ROOM_W / 2 - 0.9, ROOM_H - 0.02, -ROOM_D / 2 + 0.9]} cornerYaw={Math.atan2(-(ROOM_W / 2 - 0.9), -(-ROOM_D / 2 + 0.9))} />
 
-      <ScoreDuo film={film} corrected={corrected} />
-      <ChalkCrack />
-      <InfoPlinth film={film} />
+      {/* the record (score, take, meta): `i` hides it, the set stays */}
+      <group visible={infoVisible}>
+        <ScoreDuo film={film} corrected={corrected} />
+        <ChalkCrack />
+        <InfoPlinth film={film} />
+      </group>
 
       {Object.entries(STATIONS).map(([key, st]) => (
         <mesh

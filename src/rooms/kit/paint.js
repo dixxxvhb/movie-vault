@@ -25,6 +25,24 @@ export function usePainted(w, h, paint, deps) {
   return tex
 }
 
+// A texture or material built in render that this component owns. R3F
+// disposes what it built from JSX, but not a texture handed in as map={tex},
+// so a plain useMemo leaks one GPU texture per visit. A material goes with
+// its map. Never pass a module-cached object here: the next mount would get
+// it back disposed and pay the re-upload for nothing.
+export function useOwned(make, deps) {
+  const obj = useMemo(make, deps) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => disposeOwned(obj), [obj])
+  return obj
+}
+
+export function disposeOwned(obj) {
+  if (!obj) return
+  if (Array.isArray(obj)) { obj.forEach(disposeOwned); return }
+  if (obj.isMaterial && obj.map) obj.map.dispose()
+  if (typeof obj.dispose === 'function') obj.dispose()
+}
+
 // Word wrap that returns the lines, so a caller can measure before drawing.
 export function wrap(ctx, text, maxW) {
   const words = String(text).split(/\s+/)

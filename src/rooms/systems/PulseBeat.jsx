@@ -10,6 +10,7 @@ import { useFrame } from '@react-three/fiber'
 // as Room.jsx's dim-on-inspect) so repeated mounts never compound.
 export default function PulseBeat({ bpm = 100, depth = 0.4, lightRef, onPulse }) {
   const base = useRef(null)
+  const wrote = useRef(null)
   useFrame(({ clock }) => {
     const hz = bpm / 60
     const phase = (clock.elapsedTime * hz) % 1
@@ -19,8 +20,12 @@ export default function PulseBeat({ bpm = 100, depth = 0.4, lightRef, onPulse })
     if (onPulse) onPulse(factor)
     const light = lightRef?.current
     if (light) {
-      if (base.current === null) base.current = light.intensity
+      // Re-read the base whenever someone else has set the light since our
+      // last write (the house switch re-renders the key at a new intensity).
+      // Capturing it once pinned the key, so the switch could not dim it.
+      if (base.current === null || light.intensity !== wrote.current) base.current = light.intensity
       light.intensity = base.current * factor
+      wrote.current = light.intensity
     }
   })
   return null

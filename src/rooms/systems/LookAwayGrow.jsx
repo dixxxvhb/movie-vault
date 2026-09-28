@@ -17,9 +17,10 @@ export default function LookAwayGrow({ pos = [0, 0, -1.6], max = 40, color = '#c
     r: 0.05 + Math.sqrt(i) * 0.055,
   })))
 
-  useFrame(() => {
+  useFrame(({ camera }) => {
     if (!ref.current) return
-    const toYaw = Math.atan2(-pos[0], -pos[2])
+    // bearing from the walker, not the world origin
+    const toYaw = Math.atan2(-(pos[0] - camera.position.x), -(pos[2] - camera.position.z))
     let d = Math.abs(gaze.yaw - toYaw)
     while (d > Math.PI) d = Math.abs(d - Math.PI * 2)
     const looking = d < 0.3

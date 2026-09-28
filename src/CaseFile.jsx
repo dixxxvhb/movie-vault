@@ -48,7 +48,7 @@ function useTypeset(html) {
   }, [html])
 }
 
-export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter }) {
+export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter, titleOf = (v) => v }) {
   const body = useTypeset(film.panel)
   const [show, setShow] = useState(false)
   const scroller = useRef(null)
@@ -188,15 +188,24 @@ export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter
                 pinned to
               </div>
               {kin.map((l, i) => {
-                const otherSlug = l.from === film.slug ? l.to : l.from
+                const mine = l.from === film.slug
+                const other = mine ? l.to : l.from
+                // Only a film on the wall has somewhere to jump to. A queued
+                // film is a slip by the door, and jumping to its title
+                // blanked the view, so it is plain text here.
+                const onWall = (mine ? l.toState : l.fromState) === 'wall'
+                const Tag = onWall ? 'button' : 'div'
                 return (
-                  <button
+                  <Tag
                     key={i}
-                    onClick={() => onJump(otherSlug)}
+                    {...(onWall ? { type: 'button', onClick: () => onJump(other) } : null)}
                     style={{
-                      display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer',
-                      background: rgba(P.acc, 0.07), border: `1px solid ${rgba(P.acc, 0.3)}`,
-                      borderLeft: `3px solid ${P.acc}`, padding: '8px 11px', marginBottom: 7,
+                      display: 'block', width: '100%', textAlign: 'left',
+                      cursor: onWall ? 'pointer' : 'default', boxSizing: 'border-box',
+                      background: rgba(P.acc, onWall ? 0.07 : 0.03),
+                      border: `1px solid ${rgba(P.acc, onWall ? 0.3 : 0.16)}`,
+                      borderLeft: `3px solid ${onWall ? P.acc : rgba(P.acc, 0.4)}`,
+                      padding: '8px 11px', marginBottom: 7,
                       font: 'inherit', color: P.ink,
                     }}
                   >
@@ -206,10 +215,21 @@ export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter
                     }}>
                       {l.relation}
                     </span>
+                    <span style={{ display: 'block', fontSize: 14, marginTop: 3, fontStyle: 'italic' }}>
+                      {titleOf(other)}
+                      {!onWall && (
+                        <span style={{
+                          fontStyle: 'normal', fontFamily: 'system-ui, sans-serif', fontSize: 10,
+                          letterSpacing: '.1em', textTransform: 'uppercase', color: P.sub,
+                        }}>
+                          {'  '}queued by the door
+                        </span>
+                      )}
+                    </span>
                     <span style={{ display: 'block', fontSize: 13, marginTop: 3, lineHeight: 1.42 }}>
                       {l.note || 'linked'}
                     </span>
-                  </button>
+                  </Tag>
                 )
               })}
             </div>

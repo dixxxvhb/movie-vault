@@ -180,12 +180,14 @@ export function QueueWall({ queue, origin, rotation }) {
       }
     })
   }, [queue])
+  // R3F disposes the material, never a map handed to it
+  useEffect(() => () => slips.forEach((s) => s.tex.dispose()), [slips])
 
   return (
     <group position={origin} rotation={rotation}>
+      {/* never dimmed: a queue slip is not earned or unearned, it is next */}
       {slips.map((s) => (
-        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation}
-              size={s.size} dim={!s.earned} />
+        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation} size={s.size} />
       ))}
     </group>
   )
@@ -253,11 +255,13 @@ export function LessonsWall({ lessons, films = [], origin, rotation }) {
       }
     })
   }, [lessons, seen, titleOf])
+  useEffect(() => () => slips.forEach((s) => s.tex.dispose()), [slips])
 
   return (
     <group position={origin} rotation={rotation}>
       {slips.map((s) => (
-        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation} size={s.size} />
+        <Slip key={s.key} texture={s.tex} position={s.position} rotation={s.rotation}
+              size={s.size} dim={!s.earned} />
       ))}
     </group>
   )

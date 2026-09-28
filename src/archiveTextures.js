@@ -297,7 +297,17 @@ export function makeQuoteTexture(q) {
     ctx.font = "400 24px 'Caveat', 'Segoe Script', cursive"
     ctx.fillStyle = '#8A2F2A'
     ctx.textAlign = 'right'
-    ctx.fillText('— ' + q.said_by, W - 24, H - 18)
+    ctx.fillText(q.said_by, W - 24, H - 18)
+    // the attribution mark is a short pen stroke drawn before the name,
+    // not a dash character (no em dashes in anything a visitor reads)
+    const nameW = ctx.measureText(q.said_by).width
+    ctx.strokeStyle = '#8A2F2A'
+    ctx.lineWidth = 2
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(W - 24 - nameW - 30, H - 25)
+    ctx.lineTo(W - 24 - nameW - 10, H - 26)
+    ctx.stroke()
   }
 
   const tex = new THREE.CanvasTexture(c)

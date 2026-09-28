@@ -1,6 +1,6 @@
 # movie-vault — The Vault
 
-Dixon's movie-night ledger as a first-person 3D motel room. Last verified: 2026-09-08.
+Dixon's movie-night ledger as a first-person 3D motel room. Last verified: 2026-09-28.
 
 ## Stack
 Vite 5 + React 18 + React-Three-Fiber (Three.js 0.161), drei, postprocessing, @react-three/xr.

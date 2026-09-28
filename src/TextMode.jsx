@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
 import * as LE_GAMAAR from './rooms/bespoke/basterds/content.js'
 
 // ?text — the whole Vault as a document.
@@ -23,7 +24,14 @@ const WRAP = {
   margin: '0 auto',
   padding: '3rem 1.25rem 6rem',
   color: '#EDE6D8',
-  font: '16px/1.65 ui-serif, Georgia, "Times New Roman", serif',
+  // 1rem, not 16px: the root font size carries the text-size setting
+  font: '1rem/1.65 ui-serif, Georgia, "Times New Roman", serif',
+}
+
+// Read by a screen reader, invisible on screen.
+const SR_ONLY = {
+  position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
+  overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0,
 }
 
 const H = {
@@ -125,7 +133,9 @@ function Films({ films, cast }) {
         <article key={f.slug} id={'film-' + f.slug} style={{ margin: '0 0 2.2rem' }}>
           <h3 style={{ font: '600 1.1rem ui-serif, Georgia, serif', margin: '0 0 0.15rem' }}>
             {f.title} <span style={{ color: '#9A9081', fontWeight: 400 }}>({f.year})</span>{' '}
-            <span aria-label={'scored ' + fmt(f.score) + ' out of ten'}>{fmt(f.score)}</span>
+            {/* aria-label on a plain span is ignored by most readers */}
+            <span aria-hidden="true">{fmt(f.score)}</span>
+            <span style={SR_ONLY}>scored {fmt(f.score)} out of ten</span>
           </h3>
           <p style={{ ...SUB, margin: '0 0 0.5rem' }}>
             {[f.watched, f.runtime && f.runtime + ' min', (f.director || []).join(', '),
@@ -208,6 +218,24 @@ a:focus-visible, button:focus-visible {
 `
 
 export default function TextMode({ data }) {
+  // Text size: everything here is in rem, so the root font size is the
+  // one knob. 16px is the browser default the page was written against.
+  useEffect(() => {
+    const apply = () => {
+      const ts = Number(getSetting('vision.textScale')) || 1
+      document.documentElement.style.fontSize = 16 * ts + 'px'
+    }
+    apply()
+    return subscribeSettings(apply)
+  }, [])
+  // Bloodlines store slugs for wall films and titles for queued ones.
+  const titleOf = useMemo(() => {
+    const m = new Map()
+    for (const f of [...(data?.films || []), ...(data?.shoebox || []), ...(data?.drawer || [])]) {
+      if (f?.slug) m.set(f.slug, f.title)
+    }
+    return (v) => m.get(v) || v
+  }, [data])
   if (!data) return null
   const { films = [], shoebox = [], drawer = [], queue = [], lessons = [], links = [], quotes = [] } = data
 
@@ -244,6 +272,8 @@ export default function TextMode({ data }) {
             <li key={i} style={{ margin: '0 0 0.7rem' }}>
               <strong>{q.title}</strong> {q.year ? '(' + q.year + ')' : ''}
               {q.reason ? <div style={{ color: '#B8AE9C' }}>{q.reason}</div> : null}
+              {/* the same note the slip on the door carries */}
+              {q.note ? <div style={{ color: '#D8B87A', fontStyle: 'italic' }}>{q.note}</div> : null}
               {q.where ? <div style={SUB}>{q.where}</div> : null}
             </li>
           ))}
@@ -270,7 +300,7 @@ export default function TextMode({ data }) {
         <ul>
           {links.map((l, i) => (
             <li key={i} style={{ margin: '0 0 0.9rem' }}>
-              <strong>{l.from}</strong> {l.directional ? '→' : '↔'} <strong>{l.to}</strong>{' '}
+              <strong>{titleOf(l.from)}</strong> {l.directional ? '→' : '↔'} <strong>{titleOf(l.to)}</strong>{' '}
               <span style={{ color: '#9A9081' }}>({l.relation})</span>
               {l.note ? <div style={{ color: '#B8AE9C' }}>{l.note}</div> : null}
             </li>

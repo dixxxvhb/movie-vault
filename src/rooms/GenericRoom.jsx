@@ -134,10 +134,15 @@ function BoxShell({ grade, p }) {
         <planeGeometry args={[w, d]} />
         {ceilSurface ? <primitive object={ceilSurface} attach="material" /> : <meshStandardMaterial map={floorTex} roughness={0.96} />}
       </mesh>
-      <mesh position={[0, h / 2, -d / 2]}>
-        <planeGeometry args={[w, h]} />
-        {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
-      </mesh>
+      {/* openBack: a room whose back wall is glass (ex machina) leaves the
+          plaster out so what is beyond the glass can be seen. The collider
+          stays; the glass is still a wall. */}
+      {!p.openBack && (
+        <mesh position={[0, h / 2, -d / 2]}>
+          <planeGeometry args={[w, h]} />
+          {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
+        </mesh>
+      )}
       <mesh position={[0, h / 2, d / 2]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[w, h]} />
         {wallSurface ? <primitive object={wallSurface} attach="material" /> : <meshStandardMaterial map={tex} roughness={0.88} />}
@@ -364,7 +369,10 @@ function corridorShellColliders(p) {
     // far end; entry end (z=0) stays open
     { minX: -width / 2, maxX: width / 2, minZ: -len - WALL_T, maxZ: -len },
   ]
-  const bounds = { kind: 'rect', minX: -width / 2 + 0.05, maxX: width / 2 - 0.05, minZ: -len + 0.05, maxZ: 1 }
+  // mouthZ: how far out of the tunnel mouth you may stand. A room whose camera
+  // starts outside the mouth (rogue-one, moon) needs it past the spawn, or
+  // the first key press snaps the walker a metre and a half forward.
+  const bounds = { kind: 'rect', minX: -width / 2 + 0.05, maxX: width / 2 - 0.05, minZ: -len + 0.05, maxZ: p.mouthZ ?? 1 }
   return { rects, bounds }
 }
 
@@ -496,7 +504,7 @@ function TouchedProp({ pp, index, pairPulse, onPairBump }) {
 // vibe chips — a print never carries either) instead of the Ledger's
 // InfoSurfaces. Defaults to InfoSurfaces so every existing Ledger config is
 // untouched; archive/FadedRoom.jsx is the only caller that overrides it.
-export default function GenericRoom({ film, config, infoVisible, InfoComponent = InfoSurfaces, doors = [], onDoor }) {
+export default function GenericRoom({ film, config, baseGrade, infoVisible, InfoComponent = InfoSurfaces, doors = [], onDoor }) {
   // NOTE: the house lights are applied UPSTREAM now. FilmWorld blends the
   // grade and mounts the switch, the fixtures and the fragments, because the
   // sixteen bespoke rooms never come through here and the switch has to be in
@@ -506,7 +514,9 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
   const Shell = SHELLS[place.shell] || SHELLS.box
   const props = place.props || []
   const systems = place.systems || []
-  const doorMount = useMemo(() => defaultDoorMount(place), [place])
+  // place.doorMount lets a room whose default wall is taken (a mirror, a
+  // cockpit too low for a door) put its bloodline doors somewhere they fit.
+  const doorMount = useMemo(() => ({ ...defaultDoorMount(place), ...place.doorMount }), [place])
   // If the room's own props can carry the take, they do, and the floating
   // card stands down. A room with no carrier props keeps the card rather
   // than losing the review entirely. FilmWorld renders the scraps; this only
@@ -558,7 +568,10 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
     }
 
     return () => clearOwner(ownerId)
-  }, [config, film?.slug, place, props])
+    // Not keyed on `config`: the house switch hands down a fresh config every
+    // quantised tick while it travels, and the walls have not moved.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [film?.slug, place, props])
 
   // Duplicates and Assembler are the two systems that WRAP content (the
   // spec's own wording — "renders children twice", "props fly in ... becoming
@@ -650,7 +663,11 @@ export default function GenericRoom({ film, config, infoVisible, InfoComponent =
         </>
       )}
 
-      <Shell grade={grade} p={place.shellParams || {}} />
+      {/* The shell paints its walls from the UNLIT grade. Its surfaces are
+          canvas textures cached by colour, so feeding it the blended grade
+          minted (and never freed) a new set of textures on every tick of the
+          house switch. The lights carry the switch; the plaster does not. */}
+      <Shell grade={baseGrade ?? grade} p={place.shellParams || {}} />
 
       {propsNode}
 

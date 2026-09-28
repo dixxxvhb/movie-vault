@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   get, set, subscribe, resetAll, PRESETS, applyPreset,
 } from './settings.js'
@@ -36,7 +36,12 @@ const PANEL = {
   font: '14px/1.5 system-ui, -apple-system, sans-serif',
 }
 const SHEET = {
-  width: 'min(420px, 100%)', height: '100%', overflowY: 'auto',
+  // text size via zoom; the width is divided back out so 200% still fits
+  zoom: 'var(--ts, 1)',
+  // border-box: without it the 80px of vertical padding pushed the bottom of
+  // the sheet (and its last controls) below the viewport
+  width: 'min(420px, calc(100vw / var(--ts, 1)))', height: 'calc(100vh / var(--ts, 1))', overflowY: 'auto',
+  boxSizing: 'border-box',
   background: 'rgba(12,10,8,.96)', borderLeft: '1px solid rgba(180,160,120,.22)',
   padding: '20px 22px 60px', color: '#e8ddc8',
 }
@@ -110,24 +115,57 @@ function Choice({ path, label, hint, options }) {
   )
 }
 
+const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+
 export default function Options({ open, onClose }) {
+  const sheet = useRef(null)
+  const closeBtn = useRef(null)
   // Escape closes. Focus moves into the sheet on open so a keyboard user is
-  // not left tabbing through the canvas to reach it.
+  // not left tabbing through the canvas to reach it, and goes back to
+  // whatever opened it (the gear, usually) on close.
   useEffect(() => {
     if (!open) return undefined
+    // Read the opener BEFORE moving focus in. (autoFocus would already have
+    // moved it by the time any effect runs, so it is done by hand here.)
+    const opener = document.activeElement
+    closeBtn.current?.focus()
     const k = (e) => {
       if (e.key === 'Escape') { e.stopPropagation(); onClose() }
     }
     window.addEventListener('keydown', k, true)
-    return () => window.removeEventListener('keydown', k, true)
+    return () => {
+      window.removeEventListener('keydown', k, true)
+      if (opener && opener !== document.body && opener.isConnected) opener.focus?.()
+    }
   }, [open, onClose])
+
+  // A simple trap: Tab past the last control wraps to the first, and
+  // Shift-Tab back. The sheet is modal; focus leaving it lands on a paused
+  // room nobody can see into.
+  const trap = (e) => {
+    if (e.key !== 'Tab' || !sheet.current) return
+    const items = [...sheet.current.querySelectorAll(FOCUSABLE)]
+    if (!items.length) return
+    const first = items[0]
+    const last = items[items.length - 1]
+    const here = document.activeElement
+    if (e.shiftKey && (here === first || !sheet.current.contains(here))) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && (here === last || !sheet.current.contains(here))) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
 
   if (!open) return null
 
   return (
     <div style={PANEL} onClick={onClose}>
       <div
+        ref={sheet}
         style={SHEET}
+        onKeyDown={trap}
         role="dialog"
         aria-modal="true"
         aria-label="Settings"
@@ -135,7 +173,7 @@ export default function Options({ open, onClose }) {
       >
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <h1 style={{ font: '400 22px Georgia, serif', margin: 0 }}>Settings</h1>
-          <button type="button" onClick={onClose} style={BTN} autoFocus>close</button>
+          <button type="button" onClick={onClose} style={BTN} ref={closeBtn}>close</button>
         </div>
         <p style={{ color: '#8d8371', fontSize: 12.5, margin: '10px 0 0' }}>
           The room stays visible behind this, so you can see what each one does.
