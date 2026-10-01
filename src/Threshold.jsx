@@ -26,7 +26,7 @@ import { applyPreset, get, set } from './settings.js'
 const KEY = 'vault-threshold-seen'
 
 const WRAP = {
-  position: 'fixed', inset: 0, zIndex: 80,
+  position: 'fixed', inset: 0, zIndex: 110, // above #boot (100) in index.html, or the gate hides under the splash
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   background: '#0b0906', padding: '24px',
   font: '15px/1.6 system-ui, -apple-system, sans-serif', color: '#e6dbc4',
