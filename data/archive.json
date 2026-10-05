@@ -22,6 +22,22 @@
    "memory_score": null
   },
   {
+   "slug": "american-nightmare",
+   "year": 2024,
+   "title": "American Nightmare",
+   "genres": [
+    "Crime",
+    "Documentary"
+   ],
+   "poster": "/y7dQEXvqzNxm3sFY3VV7PqKeHzB.jpg",
+   "runtime": null,
+   "director": [],
+   "seen_note": "Watched Oct 4 2026 (Netflix, friend's login), all 3 episodes. Doc, deliberately unscored: doc rating system undecided.",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
    "slug": "apollo-13",
    "year": 1995,
    "title": "Apollo 13",
@@ -531,7 +547,11 @@
    "slug": "james-bond",
    "year": null,
    "title": "James Bond (the franchise)",
-   "genres": [],
+   "genres": [
+    "Adventure",
+    "Action",
+    "Thriller"
+   ],
    "poster": "/lMrxYKKhd4lqRzwUHAy5gcx9PSO.jpg",
    "runtime": null,
    "director": [],
@@ -771,10 +791,18 @@
    "slug": "planet-of-the-apes",
    "year": null,
    "title": "Planet of the Apes (the modern trilogy)",
-   "genres": [],
+   "genres": [
+    "Thriller",
+    "Action",
+    "Drama",
+    "Science Fiction"
+   ],
    "poster": "/oqA45qMyyo1TtrnVEBKxqmTPhbN.jpg",
    "runtime": null,
-   "director": [],
+   "director": [
+    "Rupert Wyatt",
+    "Matt Reeves"
+   ],
    "seen_note": "vault archive — memory 8.9, seen in the past year",
    "seen_bucket": "R",
    "abandon_note": null,
@@ -978,10 +1006,17 @@
    "slug": "bourne-trilogy",
    "year": null,
    "title": "The Bourne trilogy",
-   "genres": [],
+   "genres": [
+    "Action",
+    "Mystery",
+    "Thriller"
+   ],
    "poster": "/aP8swke3gmowbkfZ6lmNidu0y9p.jpg",
    "runtime": null,
-   "director": [],
+   "director": [
+    "Doug Liman",
+    "Paul Greengrass"
+   ],
    "seen_note": "vault archive — memory 9.3, scored as a run",
    "seen_bucket": "?",
    "abandon_note": null,
@@ -1049,10 +1084,16 @@
    "slug": "lotr",
    "year": null,
    "title": "The Lord of the Rings (trilogy)",
-   "genres": [],
+   "genres": [
+    "Adventure",
+    "Fantasy",
+    "Action"
+   ],
    "poster": "/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg",
    "runtime": null,
-   "director": [],
+   "director": [
+    "Peter Jackson"
+   ],
    "seen_note": "vault archive — memory 9.8, scored as a whole",
    "seen_bucket": "?",
    "abandon_note": null,
@@ -1074,6 +1115,24 @@
    ],
    "seen_note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
    "seen_bucket": "?",
+   "abandon_note": null,
+   "memory_score": null
+  },
+  {
+   "slug": "the-menu",
+   "year": 2022,
+   "title": "The Menu",
+   "genres": [
+    "Comedy",
+    "Horror"
+   ],
+   "poster": "/fPtUgMcLIboqlTlPrq0bQpKK8eq.jpg",
+   "runtime": 107,
+   "director": [
+    "Mark Mylod"
+   ],
+   "seen_note": "\"wait ddi i not tell you i watched the menu?!\" (2026-10-02; was still in the queue, no score given)",
+   "seen_bucket": null,
    "abandon_note": null,
    "memory_score": null
   },
@@ -1151,6 +1210,24 @@
    "seen_bucket": "?",
    "abandon_note": null,
    "memory_score": 9.8
+  },
+  {
+   "slug": "tickled",
+   "year": 2016,
+   "title": "Tickled",
+   "genres": [
+    "Documentary"
+   ],
+   "poster": "/qxUbPwyhzNEyUZYOZm6t8yYSQf.jpg",
+   "runtime": 92,
+   "director": [
+    "David Farrier",
+    "Dylan Reeve"
+   ],
+   "seen_note": "\"tickled ive also seen and i think i remember it getting debunked\" (2026-10-03, no score given)",
+   "seen_bucket": null,
+   "abandon_note": null,
+   "memory_score": null
   },
   {
    "slug": "titanic",

@@ -1221,10 +1221,13 @@ export default function App() {
               pickedFilm.genres?.join(' · '),
             ].filter(Boolean).map((line, i) => <div key={i}>{line}</div>)}
           </div>
-          {/* A snap line is the film in one sentence, in his words. It beats
-              the seen_note, which is bookkeeping ("vault archive — memory
-              10.0") and reads like the machinery talking. */}
-          <div style={hud.printNote}>{pickedFilm.snap || pickedFilm.note}</div>
+          {/* A snap line is the film in one sentence, in Leonard's synopsis
+              voice. It beats the seen_note, which is bookkeeping ("vault
+              archive — memory 10.0") and reads like the machinery talking.
+              With neither, the slot collapses instead of leaving a gap. */}
+          {(pickedFilm.snap || pickedFilm.note)
+            ? <div style={hud.printNote}>{pickedFilm.snap || pickedFilm.note}</div>
+            : null}
           {/* Wave C: step inside. A shoebox print steps into its own faded
               room; a drawer print steps into the one shared Dark Drawer room
               — which container is open (openBox) is what tells them apart,

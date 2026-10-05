@@ -8,8 +8,7 @@
  "titles": {
   "Her": {
    "flat": [
-    "Apple TV",
-    "Apple TV Amazon Channel"
+    "Apple TV"
    ],
    "free": [],
    "rent": true
@@ -31,11 +30,12 @@
   },
   "The Menu": {
    "flat": [
+    "Hulu",
+    "Netflix",
     "fuboTV",
-    "Peacock Premium",
     "YouTube TV",
     "FXNow",
-    "Peacock Premium Plus"
+    "Netflix Standard with Ads"
    ],
    "free": [],
    "rent": true
@@ -47,17 +47,18 @@
   },
   "Apollo 13": {
    "flat": [
-    "Netflix",
-    "MGM Plus",
-    "Netflix Standard with Ads"
+    "fuboTV",
+    "MGM+ Amazon Channel",
+    "Philo",
+    "MGM Plus Roku Premium Channel",
+    "MGM Plus"
    ],
    "free": [],
    "rent": true
   },
   "John Wick": {
    "flat": [
-    "YouTube TV",
-    "Lionsgate+ Amazon Channels"
+    "YouTube TV"
    ],
    "free": [
     "Pluto TV",
@@ -67,29 +68,28 @@
   },
   "Prisoners": {
    "flat": [],
-   "free": [
-    "YouTube Free"
-   ],
+   "free": [],
    "rent": true
   },
   "Jack Reacher": {
    "flat": [
     "Amazon Prime Video",
+    "fuboTV",
     "Paramount Plus Premium",
     "Paramount Plus Essential",
+    "Peacock Premium",
     "Philo",
     "AMC Plus Apple TV channel",
     "Paramount+ Amazon Channel",
-    "AMC+ Amazon Channel",
     "AMC+",
     "YouTube TV",
     "Paramount+ Roku Premium Channel",
     "Amazon Prime Video with Ads",
-    "Starz Apple TV channel"
+    "Starz Apple TV channel",
+    "Peacock Premium Plus"
    ],
    "free": [
-    "Kanopy",
-    "YouTube Free"
+    "Kanopy"
    ],
    "rent": true
   },
@@ -118,7 +118,10 @@
   },
   "The Accountant": {
    "flat": [
-    "YouTube TV"
+    "YouTube TV",
+    "TNT",
+    "TBS",
+    "tru TV"
    ],
    "free": [],
    "rent": true
@@ -152,14 +155,11 @@
    "flat": [
     "Starz Apple TV channel"
    ],
-   "free": [
-    "Tubi TV"
-   ],
+   "free": [],
    "rent": true
   },
   "Kingsman: The Secret Service": {
    "flat": [
-    "fuboTV",
     "FXNow"
    ],
    "free": [],

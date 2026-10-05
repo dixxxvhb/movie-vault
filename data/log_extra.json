@@ -152,6 +152,18 @@
    ],
    "rewatch": false
   },
+  "upgrade": {
+   "key": "fun",
+   "vibes": [
+    "sci-fi",
+    "revenge",
+    "movement-design",
+    "low-budget-miracle",
+    "tonal-morph",
+    "wtf-delivered"
+   ],
+   "rewatch": false
+  },
   "maverick": {
    "key": "fun",
    "vibes": [
@@ -468,6 +480,17 @@
    ],
    "rewatch": false
   },
+  "primal-fear": {
+   "key": "tense",
+   "vibes": [
+    "crime",
+    "mystery",
+    "twisty",
+    "courtroom",
+    "Norton showcase"
+   ],
+   "rewatch": false
+  },
   "source-code": {
    "key": "fun",
    "vibes": [
@@ -513,6 +536,16 @@
    ],
    "rewatch": false
   },
+  "terminator-2": {
+   "key": "fun",
+   "vibes": [
+    "action",
+    "sci-fi",
+    "first-watch-of-a-classic",
+    "momentum"
+   ],
+   "rewatch": false
+  },
   "the-departed": {
    "key": "tense",
    "vibes": [
@@ -544,6 +577,16 @@
     "new floor",
     "daytime watch",
     "spielberg"
+   ],
+   "rewatch": false
+  },
+  "gone-baby-gone": {
+   "key": "tense",
+   "vibes": [
+    "mystery",
+    "morally gray",
+    "procedural",
+    "crime"
    ],
    "rewatch": false
   },
@@ -600,6 +643,18 @@
     "tonal-morph",
     "true-story",
     "subtitles"
+   ],
+   "rewatch": false
+  },
+  "the-death-of-stalin": {
+   "key": "fun",
+   "vibes": [
+    "satire",
+    "camp",
+    "ensemble",
+    "historical",
+    "tonal-morph",
+    "wine-night"
    ],
    "rewatch": false
   },

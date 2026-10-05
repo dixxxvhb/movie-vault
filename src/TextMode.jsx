@@ -209,6 +209,8 @@ const CASEFILE_CSS = `
   margin: 0 0 0.8rem; }
 .casefile p { margin: 0 0 0.9rem; }
 .casefile .verdict { color: #DCD3C2; }
+.casefile .take { color: #DCD3C2; font-style: italic; padding-left: 0.9rem;
+  border-left: 2px solid #5A5040; }
 .casefile blockquote { margin: 0.6rem 0; padding-left: 0.9rem; border-left: 2px solid #5A5040; }
 .casefile b, .casefile strong { color: #D8B87A; font-weight: 600; }
 blockquote { margin: 0 0 0.6rem; padding-left: 0.9rem; border-left: 2px solid #5A5040; }

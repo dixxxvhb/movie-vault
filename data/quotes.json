@@ -72,13 +72,18 @@
   },
   {
    "film": "Everything Everywhere All at Once",
+   "quote": "In another life, I would have really liked just doing laundry and taxes with you.",
+   "said_by": "Evelyn Wang"
+  },
+  {
+   "film": "Everything Everywhere All at Once",
    "quote": "The only thing I know is that we have to be kind. Please, be kind. Especially when we don't know what's going on.",
    "said_by": "Waymond Wang"
   },
   {
-   "film": "Everything Everywhere All at Once",
-   "quote": "In another life, I would have really liked just doing laundry and taxes with you.",
-   "said_by": "Evelyn Wang"
+   "film": "Ex Machina",
+   "quote": "If you've created a conscious machine, it's not the history of man. That's the history of gods.",
+   "said_by": "Caleb"
   },
   {
    "film": "Ex Machina",
@@ -86,9 +91,9 @@
    "said_by": "Nathan"
   },
   {
-   "film": "Ex Machina",
-   "quote": "If you've created a conscious machine, it's not the history of man. That's the history of gods.",
-   "said_by": "Caleb"
+   "film": "Gone Baby Gone",
+   "quote": "Make me a fucking martini, you fat fucking retard!",
+   "said_by": "Patrick Kenzie"
   },
   {
    "film": "Interstellar",
@@ -112,12 +117,12 @@
   },
   {
    "film": "Oppenheimer",
-   "quote": "Now I am become Death, the destroyer of worlds.",
+   "quote": "They won't fear it until they understand it. And they won't understand it until they've used it.",
    "said_by": "J. Robert Oppenheimer"
   },
   {
    "film": "Oppenheimer",
-   "quote": "They won't fear it until they understand it. And they won't understand it until they've used it.",
+   "quote": "Now I am become Death, the destroyer of worlds.",
    "said_by": "J. Robert Oppenheimer"
   },
   {
@@ -164,11 +169,6 @@
    "film": "The Martian",
    "quote": "In your face, Neil Armstrong!",
    "said_by": "Mark Watney"
-  },
-  {
-   "film": "Veep",
-   "quote": "The level of incompetence in this office is staggering.",
-   "said_by": "Selina Meyer"
   },
   {
    "film": "Veep",
@@ -224,6 +224,11 @@
    "film": "Veep",
    "quote": "You are the worst thing that has happened to this country since food in buckets and maybe slavery!",
    "said_by": "Amy Brookheimer"
+  },
+  {
+   "film": "Veep",
+   "quote": "The level of incompetence in this office is staggering.",
+   "said_by": "Selina Meyer"
   }
  ],
  "_source": "film_quotes joined to film_titles. `film` is the TITLE string; emit_vault_data.py resolves it. Pulled via vault_pull()."

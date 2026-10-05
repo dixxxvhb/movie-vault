@@ -191,9 +191,11 @@ export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter
                 const mine = l.from === film.slug
                 const other = mine ? l.to : l.from
                 // Only a film on the wall has somewhere to jump to. A queued
-                // film is a slip by the door, and jumping to its title
-                // blanked the view, so it is plain text here.
-                const onWall = (mine ? l.toState : l.fromState) === 'wall'
+                // film is a slip by the door and an archive film is a print in
+                // the Shoebox; jumping to either blanked the view, so they are
+                // plain text here.
+                const otherState = mine ? l.toState : l.fromState
+                const onWall = otherState === 'wall'
                 const Tag = onWall ? 'button' : 'div'
                 return (
                   <Tag
@@ -222,7 +224,7 @@ export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter
                           fontStyle: 'normal', fontFamily: 'system-ui, sans-serif', fontSize: 10,
                           letterSpacing: '.1em', textTransform: 'uppercase', color: P.sub,
                         }}>
-                          {'  '}queued by the door
+                          {'  '}{otherState === 'archive' ? 'in the archive' : 'queued by the door'}
                         </span>
                       )}
                     </span>

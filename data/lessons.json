@@ -86,6 +86,12 @@
    "taught_by": "silverlake"
   },
   {
+   "rule": "Structure films score by their human anchor. A loop or puzzle executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9. Extends the thin-ensemble tax into the loop genre.",
+   "weight": 3,
+   "evidence": "Triangle 7.9 and Source Code 7.9 versus Predestination 9.1 (the Snook showcase) and Coherence 8.9 (Em in the room).",
+   "taught_by": "triangle"
+  },
+  {
    "rule": "Unearned sentimentality is its own dock, separate from craft. Love-saves-the-day melodrama costs points even in films he enjoys; earned warmth does not.",
    "weight": 3,
    "evidence": "Maverick 8.2 (storyline and dramatics were just a bit over). Source Code 7.9 (so cheeeesy, love saves the day blah blah). Earned warmth kept Stardust at 9.0 and Catch Me If You Can at 9.3.",
@@ -96,12 +102,6 @@
    "weight": 3,
    "evidence": "The Matrix 9.9 (screamed at dodge this, movement design as language). Bullet Train 9.1. Stardust's score praised all night. The Amadeus dictation scene was everything. John Wick rejected as mindless action that may not stimulate.",
    "taught_by": "matrix"
-  },
-  {
-   "rule": "Structure films score by their human anchor. A loop or puzzle executed cleanly but mechanism-forward ceilings in the high 7s; the same machine carried by a person he cares about reaches 9. Extends the thin-ensemble tax into the loop genre.",
-   "weight": 3,
-   "evidence": "Triangle 7.9 and Source Code 7.9 versus Predestination 9.1 (the Snook showcase) and Coherence 8.9 (Em in the room).",
-   "taught_by": "triangle"
   },
   {
    "rule": "Dread-marination pacing (slow zooms, held silences, refusing to cut, withholding) taxes Dixon even when he acknowledges it works. Anxiety and excitement are different currencies and his board only pays in excitement/momentum. Films that also demand rewatch homework to assemble their lore cap out in the high 6s regardless of craft or back-half payoff.",
@@ -126,6 +126,12 @@
    "weight": 3,
    "evidence": "L.A. Confidential 9.6 despite \"the bad guy was low key predictable but was also nice to watch unfold.\" Consistent with The Sting 9.6 and against The Game 6.8.",
    "taught_by": "la-confidential"
+  },
+  {
+   "rule": "He pays big for films that hand him a verdict and make him live with it, and the next-day stick can move a number up. But the case has to be made on screen: outside facts about a film (production lore, real-world epilogues) never move his score.",
+   "weight": 3,
+   "evidence": "Oct 4: Gone Baby Gone 9.3 on its ending; Primal Fear re-scored 8.3 to 9.0 because the twist stuck overnight; Spotlight up to 9.4. Memories of Murder dropped to 8.9 and the 2019 real-killer identification changed nothing (\"nope.\").",
+   "taught_by": "gone-baby-gone"
   }
  ]
 }

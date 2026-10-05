@@ -49,6 +49,46 @@ HOT_TAKES = load("hot_takes.json")["takes"]  # slug -> {hot_take, context}
 PAL_BY_SLUG = {p["slug"]: p["palette_css"] for p in PANELS}
 PANEL_BY_SLUG = {p["slug"]: p.get("panel_html") for p in PANELS}
 
+
+# THE DOCKET GUARD (2026-10-05). Dixon, Oct 4, after the first documentary of
+# movie night: "it needs to be separate from the vault". Docs never rank
+# against films, and how a doc gets scored is still undecided, so until he
+# rules on a shelf of their own nothing TMDB files under Documentary hangs
+# anywhere in the Vault: not on the wall, not in its average, not in the
+# Shoebox or the Dark Drawer. film_titles has no doc marker yet, so this keys
+# on the TMDB genre the weekly hydration fills in. A doc that was never
+# hydrated has no genres and slips past, which is why this is a guard and not
+# the rule; the rule waits on his ruling.
+def is_doc(genres):
+    return any((g or "").strip().lower() == "documentary" for g in (genres or []))
+
+
+_docs_on_wall = sorted(s for s in META if is_doc((TITLES.get(s) or {}).get("genres")))
+# titles of every withheld doc, so a quote from one cannot hang loose either
+_DOC_TITLES = {META[s][2].strip().lower() for s in _docs_on_wall}
+if _docs_on_wall:
+    sys.stderr.write(
+        "DOCKET: %d documentary(s) withheld from the wall -> %s\n"
+        "        Each has a film_log row, so film_rank counts it. Fix that at the source.\n"
+        % (len(_docs_on_wall), ", ".join(_docs_on_wall))
+    )
+    for _s in _docs_on_wall:
+        META.pop(_s)
+
+
+# A re-score (2026-10-05). When he moves a number after the night it was
+# logged, the panel records it: <span class="rescored" data-was="8.9"
+# data-on="2026-10-04">. The live number is still the only one that ranks.
+# `was` is the first number, struck through on the card, so a changed score
+# never looks like it was always there.
+def rescored_of(html):
+    m = re.search(r'<span[^>]*class="rescored"[^>]*>', html or "")
+    if not m:
+        return None, None
+    was = re.search(r'data-was="([0-9.]+)"', m.group(0))
+    on = re.search(r'data-on="([0-9-]+)"', m.group(0))
+    return (float(was.group(1)) if was else None), (on.group(1) if on else None)
+
 POSTER_DIR = os.path.join(OUT_DIR, "posters")
 TMDB = "https://image.tmdb.org/t/p/w500"
 
@@ -133,7 +173,8 @@ def resolve_svg(svg, pal):
 # other is a stale pull, and it must be loud.
 _panel_slugs = set(PANEL_BY_SLUG)
 _meta_slugs = set(META)
-_orphan_panels = sorted(_panel_slugs - _meta_slugs)
+# a withheld doc's panel is not a stale pull, the Docket guard said so above
+_orphan_panels = sorted(_panel_slugs - _meta_slugs - set(_docs_on_wall))
 _missing_panels = sorted(_meta_slugs - _panel_slugs)
 if _orphan_panels:
     sys.stderr.write(
@@ -147,11 +188,25 @@ if _missing_panels:
         % (len(_missing_panels), ", ".join(_missing_panels))
     )
 
+# STALE PANEL. A panel prints its own score in its header. The 3D sheet and
+# ?text hide that header and stamp the live number, but a mismatch means the
+# panel was written before a re-score and its prose may still quote the old
+# number or rank. Loud, not fatal.
+_stale = []
+for _s, (_d, _score, _t) in META.items():
+    _head = re.search(r'class="score">\s*([0-9.]+)', PANEL_BY_SLUG.get(_s) or "")
+    if _head and abs(float(_head.group(1)) - float(_score)) > 1e-9:
+        _stale.append("%s prints %s, live %s" % (_s, _head.group(1), _score))
+if _stale:
+    sys.stderr.write("STALE PANEL: %d header score(s) behind the log -> %s\n"
+                     % (len(_stale), "; ".join(_stale)))
+
 films = []
 for slug, (date, score, title) in META.items():
     pal = parse_palette(PAL_BY_SLUG.get(slug, ""))
     front = resolve_svg(PHOTOS.get(slug), pal)
     t = TITLES.get(slug) or {}
+    was, rescored_on = rescored_of(PANEL_BY_SLUG.get(slug))
     films.append({
         "slug": slug,
         "title": title,
@@ -181,6 +236,9 @@ for slug, (date, score, title) in META.items():
         # rendered VERBATIM there, never cleaned up -- see hot_takes.json.
         "hot_take": (HOT_TAKES.get(slug) or {}).get("hot_take"),
         "context": (HOT_TAKES.get(slug) or {}).get("context"),
+        # the first number, when he moved it later (see rescored_of)
+        "was": was,
+        "rescored_on": rescored_on,
     })
 
 # score desc, then title -- the salon hang order (rank = height, computed app-side)
@@ -207,10 +265,22 @@ dropped = 0
 # each end. A room can render a door that will not open yet.
 _QUEUE_TITLES = {q["title"] for q in load("queue.json")["queue"]}
 
+# A bloodline can also point back at a film he saw before the wall existed
+# (Rogue One to Dune, Oct 2026). Those used to drop as "unresolved" too. The
+# rooms already open a door onto a Shoebox print (src/rooms/doors.js), so the
+# archive end resolves to its slug with state "archive". Docs stay out.
+_ARCHIVE_SLUG_BY_TITLE = {}
+for _a in load("archive.json")["archive"]:
+    if not is_doc(_a.get("genres")):
+        _ARCHIVE_SLUG_BY_TITLE.setdefault(_a["title"].strip().lower(), _a["slug"])
+
 def _link_end(title):
     s = as_slug(title)
     if s:
         return s, "wall"
+    a = _ARCHIVE_SLUG_BY_TITLE.get((title or "").strip().lower())
+    if a:
+        return a, "archive"
     if title in _QUEUE_TITLES:
         return title, "queued"
     return None, None
@@ -315,15 +385,20 @@ LESSONS = load("lessons.json")["lessons"]  # the mirror: what he likes
 # with no score is a dark frame. The old seen_note prose parse (and its
 # parenthesized-aside trap) is gone; the columns are the source of truth.
 ARCHIVE_IN = load("archive.json")["archive"]
-# Where a title has a snap_line, the print says that instead: one line about
-# the film, in his own words.
+# Where a title has a snap_line, the print says that instead: the film in one
+# line, in Leonard's synopsis voice (film_titles.snap_line, authored in chat).
 ARCH_EXTRA = load("archive_extra.json")["titles"]
 
 archive = []
 _by_slug = {}
 _dupes = []
+_docs_held = []
 
 for a in ARCHIVE_IN:
+    if is_doc(a.get("genres")):
+        _docs_held.append(a["title"])
+        _DOC_TITLES.add(a["title"].strip().lower())
+        continue
     # abandon_note covers walkouts (Cosmos): the note moved off seen_note when
     # abandonments became first-class columns.
     note = a.get("seen_note") or a.get("abandon_note") or ""
@@ -376,6 +451,10 @@ drawer = sorted([a for a in archive if a["kind"] == "drawer"],
 if _dupes:
     sys.stderr.write("ARCHIVE: %d duplicate slug(s) merged -> %s\n"
                      % (len(_dupes), ", ".join(sorted(set(_dupes)))))
+if _docs_held:
+    # expected while the Docket is undecided; printed so it is never silent
+    print("  docket: %d documentary(s) held out of the archive -> %s"
+          % (len(_docs_held), ", ".join(sorted(_docs_held))))
 
 # ----------------------------------------------------------------- the quotes
 #
@@ -390,6 +469,8 @@ quotes = []
 _loose = 0
 for q in QUOTES_IN:
     name = (q.get("film") or "").strip().lower()
+    if name in _DOC_TITLES:
+        continue  # the Docket guard: a doc's lines wait with the doc
     slug = SLUG_BY_TITLE.get(name)
     where = "ledger" if slug else None
     if not slug:
@@ -582,7 +663,8 @@ print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),
       "| links:", len(links),
-      "(%d forward into the queue)" % sum(1 for l in links if l["toState"] == "queued"),
+      "(%d forward into the queue," % sum(1 for l in links if "queued" in (l["fromState"], l["toState"])),
+      "%d back into the archive)" % sum(1 for l in links if "archive" in (l["fromState"], l["toState"])),
       ("(%d unresolved, dropped)" % dropped) if dropped else "")
 print("  queue:", len(QUEUE), "(%d with a place to watch)" % _where, "| lessons:", len(LESSONS),
       "(%d cite films, %d cite none)" % (len(LESSONS) - _uncited, _uncited))

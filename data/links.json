@@ -1,19 +1,19 @@
 [
  {
-  "to": "Coherence",
-  "from": "Annihilation",
-  "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
-  "weight": 3,
-  "relation": "thin-ensemble",
-  "directional": true
- },
- {
   "to": "Sunshine",
   "from": "Annihilation",
   "note": "Neighbors in The Sevens. Idea-forward, visually lovely, ensemble kept deliberately thin, and he docks for it every time.",
   "weight": 3,
   "relation": "gorgeous-and-cold",
   "directional": false
+ },
+ {
+  "to": "Coherence",
+  "from": "Annihilation",
+  "note": "Equal weirdness, opposite bill. Coherence made him care about someone in the room and Annihilation held everyone at arm's length. 8.9 versus 7.4.",
+  "weight": 3,
+  "relation": "thin-ensemble",
+  "directional": true
  },
  {
   "to": "The Dark Knight",
@@ -120,19 +120,19 @@
   "directional": true
  },
  {
-  "to": "Memento",
-  "from": "The Departed",
-  "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
-  "weight": 3,
-  "relation": "calibration duel",
-  "directional": true
- },
- {
   "to": "The Matrix",
   "from": "The Departed",
   "note": "The tenth that moved. The Departed arrived at 9.9 and he ruled The Matrix down to 9.8 on the spot to make the room. First time a new film displaced a standing number by decree.",
   "weight": 3,
   "relation": "displaced by decree",
+  "directional": true
+ },
+ {
+  "to": "Memento",
+  "from": "The Departed",
+  "note": "The calibration duel. He measured it against the throne itself: Memento made him a participant, solving in real time. The Departed made him a witness to a machine. Rode it, did not operate it. It claimed the silver, but the crown held.",
+  "weight": 3,
+  "relation": "calibration duel",
   "directional": true
  },
  {
@@ -144,19 +144,19 @@
   "directional": true
  },
  {
-  "to": "Sorry to Bother You",
-  "from": "The Sting",
-  "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
-  "weight": 3,
-  "relation": "reveal-as-event",
-  "directional": true
- },
- {
   "to": "The Game",
   "from": "The Sting",
   "note": "The experiment resolved. The Game paid the antibodies tax at 6.8; The Sting didn't owe it, because the pleasure was never located in the surprise. His twist-brain fired at architecture the film never built and it won anyway.",
   "weight": 3,
   "relation": "antibodies",
+  "directional": true
+ },
+ {
+  "to": "Sorry to Bother You",
+  "from": "The Sting",
+  "note": "Staged, not explained, twenty-eight years before the doctrine had a name here. The FBI office isn't a lie the movie tells, it's a set the characters built.",
+  "weight": 3,
+  "relation": "reveal-as-event",
   "directional": true
  },
  {
@@ -182,6 +182,14 @@
   "weight": 2,
   "relation": "thin-ensemble",
   "directional": true
+ },
+ {
+  "to": "Hereditary",
+  "from": "Barbarian",
+  "note": "The house knows first.",
+  "weight": 2,
+  "relation": "house horror",
+  "directional": false
  },
  {
   "to": "Stardust",
@@ -232,6 +240,30 @@
   "directional": true
  },
  {
+  "to": "Memories of Murder",
+  "from": "Gone Baby Gone",
+  "note": "The case closes. Nobody gets to feel right.",
+  "weight": 2,
+  "relation": "no closure",
+  "directional": false
+ },
+ {
+  "to": "Spotlight",
+  "from": "Gone Baby Gone",
+  "note": "Boston, and an institution that decided it knew best.",
+  "weight": 2,
+  "relation": "boston",
+  "directional": false
+ },
+ {
+  "to": "Primal Fear",
+  "from": "Gone Baby Gone",
+  "note": "The ending is the verdict.",
+  "weight": 2,
+  "relation": "ending as verdict",
+  "directional": false
+ },
+ {
   "to": "Oblivion",
   "from": "Hereditary",
   "note": "Triple feature weekend, Aug 14-15, step one to two: Hereditary 6.7 (anxiety, not excitement) up to Oblivion 7.4.",
@@ -246,6 +278,14 @@
   "weight": 2,
   "relation": "displaced by decree",
   "directional": true
+ },
+ {
+  "to": "Inglourious Basterds",
+  "from": "Masters of the Universe",
+  "note": "Landa and Skeletor. The villain is having more fun than anyone else in the movie.",
+  "weight": 2,
+  "relation": "villain having fun",
+  "directional": false
  },
  {
   "to": "Run Lola Run",
@@ -272,14 +312,6 @@
   "directional": true
  },
  {
-  "to": "Top Gun: Maverick",
-  "from": "Oblivion",
-  "note": "Kosinski. Oblivion made the bloodline 2-for-2 after Top Gun: Maverick.",
-  "weight": 2,
-  "relation": "bloodline",
-  "directional": false
- },
- {
   "to": "Baby Driver",
   "from": "Oblivion",
   "note": "Triple feature weekend, step two to three: Oblivion 7.4, then Baby Driver 8.4 as the Saturday nightcap, the top of the staircase.",
@@ -288,11 +320,59 @@
   "directional": true
  },
  {
+  "to": "Top Gun: Maverick",
+  "from": "Oblivion",
+  "note": "Kosinski. Oblivion made the bloodline 2-for-2 after Top Gun: Maverick.",
+  "weight": 2,
+  "relation": "bloodline",
+  "directional": false
+ },
+ {
+  "to": "Valkyrie",
+  "from": "Operation Finale",
+  "note": "The Nazi thread.",
+  "weight": 2,
+  "relation": "nazi thread",
+  "directional": false
+ },
+ {
+  "to": "Inglourious Basterds",
+  "from": "Operation Finale",
+  "note": "The Nazi thread.",
+  "weight": 2,
+  "relation": "nazi thread",
+  "directional": false
+ },
+ {
   "to": "Sorry to Bother You",
   "from": "Poor Things",
   "note": "The audacious-execution lane at full volume. Worlds that should not work, run with total command.",
   "weight": 2,
   "relation": "audacity",
+  "directional": false
+ },
+ {
+  "to": "Valkyrie",
+  "from": "Pressure",
+  "note": "Summer 1944, six weeks apart. A few officers in a room, one go order, and history waiting on it.",
+  "weight": 2,
+  "relation": "summer 1944",
+  "directional": false
+ },
+ {
+  "to": "Fight Club",
+  "from": "Primal Fear",
+  "note": "Norton, and there was never a second guy.",
+  "weight": 2,
+  "relation": "norton",
+  "directional": false
+ },
+ {
+  "to": "Dune",
+  "from": "Rogue One: A Star Wars Story",
+  "note": "The big machine, seen from the ground.",
+  "weight": 2,
+  "relation": "ground-level epic",
   "directional": false
  },
  {
@@ -312,12 +392,36 @@
   "directional": true
  },
  {
+  "to": "Minority Report",
+  "from": "Terminator 2: Judgment Day",
+  "note": "Can you punish a future that hasn't happened.",
+  "weight": 2,
+  "relation": "pre-crime",
+  "directional": false
+ },
+ {
   "to": "Memento",
   "from": "The Dark Knight Rises",
   "note": "He forgot the Talia reveal completely and got to have it twice. God bless a bad memory. The Memento thesis, lived.",
   "weight": 2,
   "relation": "bad-memory-asset",
   "directional": true
+ },
+ {
+  "to": "Valkyrie",
+  "from": "The Death of Stalin",
+  "note": "The men standing closest to the monster.",
+  "weight": 2,
+  "relation": "inner circle",
+  "directional": false
+ },
+ {
+  "to": "The Big Short",
+  "from": "The Death of Stalin",
+  "note": "Funny until it isn't.",
+  "weight": 2,
+  "relation": "tonal-morph kin",
+  "directional": false
  },
  {
   "to": "Nightcrawler",
@@ -336,6 +440,14 @@
   "directional": false
  },
  {
+  "to": "Sicario",
+  "from": "The Sting",
+  "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
+  "weight": 2,
+  "relation": "execution-meritocracy",
+  "directional": true
+ },
+ {
   "to": "Catch Me If You Can",
   "from": "The Sting",
   "note": "The con lane, back to back: The Sting 9.6 on Aug 1, Catch Me If You Can 9.3 the next afternoon. The lane went officially hot.",
@@ -344,12 +456,12 @@
   "directional": true
  },
  {
-  "to": "Sicario",
-  "from": "The Sting",
-  "note": "Pitched as competence with a smirk against competence with a body count. Both hit the top steps on pure control; one of them lets you enjoy it.",
+  "to": "Predestination",
+  "from": "Triangle",
+  "note": "The loop closes on a person.",
   "weight": 2,
-  "relation": "execution-meritocracy",
-  "directional": true
+  "relation": "closed loop",
+  "directional": false
  },
  {
   "to": "Annihilation",
@@ -366,6 +478,14 @@
   "weight": 2,
   "relation": "unreliable-search",
   "directional": true
+ },
+ {
+  "to": "Ex Machina",
+  "from": "Upgrade",
+  "note": "The machine was running the test.",
+  "weight": 2,
+  "relation": "machine in charge",
+  "directional": false
  },
  {
   "to": "The Dark Knight",

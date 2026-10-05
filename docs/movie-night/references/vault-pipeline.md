@@ -22,6 +22,9 @@ Not built yet: `emit_vault_data.py` should eventually emit a `calibration.json` 
 
 Invariants:
 - `film_ledger_panels` is the panel source of truth. Every new or changed panel is stored there in the session it is scored.
+- Re-scores (2026-10-05): when a logged number moves later, refresh that film's panel in the same pass (header score, any prose that quotes the number or rank) and append to its meta line `&middot; <span class="rescored" data-was="8.9" data-on="2026-10-04">re-scored Oct 4 from 8.9</span>`. The emitter reads `data-was` and the card prints the first number struck through under the live one. `film_taste_profile.calibration` keeps first-night numbers; never rewrite it for a re-score. The emitter prints `STALE PANEL` when a panel's header score differs from the log, which is how a missed re-score shows up.
+- Docket guard (2026-10-05): Dixon ruled docs "separate from the vault" and never ranked against films. Until he picks a Docket shape, `emit_vault_data.py` withholds any title whose TMDB genres include Documentary from the wall, its average, the Shoebox and the Dark Drawer. Nothing in the schema marks a doc yet, so an unhydrated doc slips past; hydrate thin rows before publishing. Never author a panel for a doc, even if `film_night_debt` asks for one.
+- Bloodlines may end on an archive film (state `archive` in `links.json`); the case file labels it "in the archive" and the room opens a door onto the print.
 - Drift guard: a Ledger title must not also appear in Archive or Hazy data. The v3 `film_status` precedence makes this structural, but keep the build-time guard.
 - Rewatch dedupe as above.
 

@@ -157,6 +157,28 @@ export async function makeCardTexture(film) {
   ctx.fillText(scoreText, CARD_W - PAD, baseY)
   const scoreW = ctx.measureText(scoreText).width
 
+  // A re-score: the first number, smaller and struck through in pencil under
+  // the one that stands, the way you correct a photo you already wrote on.
+  // `was` comes from the panel's own record (emit_vault_data.py rescored_of).
+  if (film.was != null) {
+    const wasText = film.was.toFixed(1)
+    const wy = baseY + 40
+    const right = CARD_W - PAD - 6
+    ctx.save()
+    ctx.font = "500 31px 'Caveat', 'Segoe Script', cursive"
+    ctx.fillStyle = 'rgba(37,34,28,0.5)'
+    ctx.fillText(wasText, right, wy)
+    const w = ctx.measureText(wasText).width
+    ctx.strokeStyle = 'rgba(37,34,28,0.62)'
+    ctx.lineWidth = 2.6
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(right - w - 4, wy - 8)
+    ctx.lineTo(right + 3, wy - 12)
+    ctx.stroke()
+    ctx.restore()
+  }
+
   ctx.textAlign = 'left'
   ctx.font = "600 42px 'Caveat', 'Segoe Script', cursive"
   const room = CARD_W - PAD * 2 - scoreW - 18

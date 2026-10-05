@@ -178,6 +178,19 @@
    "Denis Villeneuve"
   ]
  },
+ "upgrade": {
+  "year": 2018,
+  "genres": [
+   "Action",
+   "Thriller",
+   "Science Fiction"
+  ],
+  "poster": "/woLGROUdPWdBnLVFKYdGD3kFkPY.jpg",
+  "runtime": 100,
+  "director": [
+   "Leigh Whannell"
+  ]
+ },
  "maverick": {
   "year": 2022,
   "genres": [
@@ -532,6 +545,19 @@
    "Guy Ritchie"
   ]
  },
+ "primal-fear": {
+  "year": 1996,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/qJf2TzE8nRTFbFMPJNW6c8mI0KU.jpg",
+  "runtime": 130,
+  "director": [
+   "Gregory Hoblit"
+  ]
+ },
  "source-code": {
   "year": 2011,
   "genres": [
@@ -582,6 +608,19 @@
    "Dan Gilroy"
   ]
  },
+ "terminator-2": {
+  "year": 1991,
+  "genres": [
+   "Action",
+   "Thriller",
+   "Science Fiction"
+  ],
+  "poster": "/jFTVD4XoWQTcg7wdyJKa8PEds5q.jpg",
+  "runtime": 137,
+  "director": [
+   "James Cameron"
+  ]
+ },
  "the-departed": {
   "year": 2006,
   "genres": [
@@ -617,6 +656,19 @@
   "runtime": 146,
   "director": [
    "Steven Spielberg"
+  ]
+ },
+ "gone-baby-gone": {
+  "year": 2007,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Mystery"
+  ],
+  "poster": "/5BXDhjKZ4AL9VPxcygdG3oL60GP.jpg",
+  "runtime": 113,
+  "director": [
+   "Ben Affleck"
   ]
  },
  "predestination": {
@@ -682,6 +734,19 @@
   "runtime": 131,
   "director": [
    "Bong Joon Ho"
+  ]
+ },
+ "the-death-of-stalin": {
+  "year": 2017,
+  "genres": [
+   "Comedy",
+   "Drama",
+   "History"
+  ],
+  "poster": "/AqH7q89NxGRDAyRWKqsL3OBtYfV.jpg",
+  "runtime": 107,
+  "director": [
+   "Armando Iannucci"
   ]
  },
  "inglourious-basterds": {

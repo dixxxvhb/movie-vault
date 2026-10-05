@@ -69,6 +69,11 @@
   9.9,
   "Sicario"
  ],
+ "upgrade": [
+  "2026-10-02",
+  9.3,
+  "Upgrade"
+ ],
  "maverick": [
   "2026-07-17",
   8.2,
@@ -151,7 +156,7 @@
  ],
  "spotlight": [
   "2026-09-13",
-  8.9,
+  9.4,
   "Spotlight"
  ],
  "the-sting": [
@@ -209,6 +214,11 @@
   7.2,
   "In the Grey"
  ],
+ "primal-fear": [
+  "2026-10-03",
+  9,
+  "Primal Fear"
+ ],
  "source-code": [
   "2026-08-11",
   7.9,
@@ -229,6 +239,11 @@
   9.5,
   "Nightcrawler"
  ],
+ "terminator-2": [
+  "2026-10-01",
+  8.4,
+  "Terminator 2: Judgment Day"
+ ],
  "the-departed": [
   "2026-08-18",
   9.9,
@@ -243,6 +258,11 @@
   "2026-07-31",
   5.2,
   "Disclosure Day"
+ ],
+ "gone-baby-gone": [
+  "2026-10-04",
+  9.3,
+  "Gone Baby Gone"
  ],
  "predestination": [
   "2026-08-10",
@@ -266,8 +286,13 @@
  ],
  "memories-of-murder": [
   "2026-09-25",
-  9.2,
+  8.9,
   "Memories of Murder"
+ ],
+ "the-death-of-stalin": [
+  "2026-10-02",
+  9.1,
+  "The Death of Stalin"
  ],
  "inglourious-basterds": [
   "2026-09-07",

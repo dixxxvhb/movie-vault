@@ -32,6 +32,8 @@ Run when Dixon asks, or weekly. Brief for the session:
 
 1. `select * from film_night_debt;` That is the worklist. Missing hot takes, tags or keys: fill only from that night's `film_session_notes` verbatims; if a take is not there, leave it and list it for Dixon. Never invent his words.
 2. Panels: author a `film_ledger_panels` row per logged film missing one, stocking the chat archive with 2 to 5 labeled verbatims from the night note.
+2b. Re-scores: any film whose live number moved since its panel was written gets the panel refreshed and the `rescored` mark (procedure in `docs/movie-night/references/vault-pipeline.md`). The emitter's `STALE PANEL` line lists them. Calibration keeps first-night numbers.
+2c. Docs: never panel a documentary. The emitter withholds TMDB-Documentary titles until Dixon rules on the Docket (2026-10-04: "it needs to be separate from the vault").
 3. Links: `film_links` only for bloodlines a night note actually names.
 4. Pull, emit, build, shot, push (see `docs/movie-night/references/vault-pipeline.md`). GitHub Pages deploys on push.
 5. Write the publish marker to `film_mailbox`.
