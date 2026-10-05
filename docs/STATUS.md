@@ -22,7 +22,7 @@ Leonard's brief, every item pre-decided. Commit `5e9f8ea`, marker "published thr
 | Quote | "Make me a fucking martini, you fat fucking retard!" Patrick Kenzie, verified against subtitles, transcript and clip (20:38) |
 
 ### Open after the pass
-- STALE PANEL: The Matrix (prints 9.9, live 9.8) and Nightcrawler (prints 9.4, live 9.5, and its prose says "landed at 9.4") never got refreshed.
+- ~~STALE PANEL: The Matrix and Nightcrawler~~ fixed the same night: The Matrix re-scored Aug 18 (decree, The Departed night), Nightcrawler Aug 26 (decree, his words added). Both carry the struck first number.
 - `film_expire_recs()` will flip American Nightmare's sealed envelope to expired after 2026-10-25 20:28 UTC.
 - Envelope timestamp on the polaroid back: not built. Needs `vault_pull()` to carry the envelope plus a ruling on re-sealed rows (The Death of Stalin) and duplicates (Memories of Murder has two, one sealed 107 seconds before its log).
 
