@@ -8,6 +8,26 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Wall pass, Oct 4 catch-up (2026-10-05)
+
+Leonard's brief, every item pre-decided. Commit `5e9f8ea`, marker "published through gone-baby-gone 2026-10-04".
+
+| What | Notes |
+|---|---|
+| 5 panels | Gone Baby Gone (his three lines lead the back as `p.take`, nothing around them), Primal Fear, Upgrade, The Death of Stalin, Terminator 2. Every quoted span checked verbatim against `film_log` and `film_session_notes` in SQL before the write |
+| Re-scores | Spotlight 8.9 to 9.4, Memories of Murder 9.2 to 8.9, Primal Fear 8.3 to 9.0. Panels refreshed; `span.rescored data-was` on the meta line; the card front prints the first number struck through. Calibration keeps first-night numbers |
+| Links | 13 of Leonard's + 2 proposed (Masters of the Universe to Inglourious Basterds, Pressure to Valkyrie). The Amateur to American Assassin dropped: American Assassin is unseen. Archive ends now resolve (Rogue One to Dune) |
+| Hydration | 7 thin rows linked through `film-enrich` action `link`. The 4 umbrellas copy genres, language, keywords and cast from their first film but keep `tmdb_id` null: `film_titles.tmdb_id` is UNIQUE and the first films already own theirs. Bond copies from Casino Royale, the poster it already wore. Sinners' thin duplicate skipped (duplicate of `5373f321`) |
+| Docket guard | Emitter withholds TMDB-Documentary titles (American Nightmare, Tickled) from wall, average, Shoebox, Drawer, quotes. No schema marker yet; the DB side (`film_rank`, brief, debt, calibration, the clerk) is unguarded until Dixon rules |
+| Quote | "Make me a fucking martini, you fat fucking retard!" Patrick Kenzie, verified against subtitles, transcript and clip (20:38) |
+
+### Open after the pass
+- STALE PANEL: The Matrix (prints 9.9, live 9.8) and Nightcrawler (prints 9.4, live 9.5, and its prose says "landed at 9.4") never got refreshed.
+- `film_expire_recs()` will flip American Nightmare's sealed envelope to expired after 2026-10-25 20:28 UTC.
+- Envelope timestamp on the polaroid back: not built. Needs `vault_pull()` to carry the envelope plus a ruling on re-sealed rows (The Death of Stalin) and duplicates (Memories of Murder has two, one sealed 107 seconds before its log).
+
+---
+
 ## Full audit, every room and view (2026-09-27)
 
 Three read-only audits (motel and HUD, the template engine, the bespoke and
