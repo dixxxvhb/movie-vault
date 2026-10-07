@@ -59,6 +59,16 @@
   9.3,
   "Amadeus"
  ],
+ "dunkirk": [
+  "2026-10-05",
+  10,
+  "Dunkirk"
+ ],
+ "frailty": [
+  "2026-10-05",
+  8.9,
+  "Frailty"
+ ],
  "memento": [
   "2026-07-16",
   10,
@@ -73,6 +83,11 @@
   "2026-10-02",
   9.3,
   "Upgrade"
+ ],
+ "hot-fuzz": [
+  "2026-10-06",
+  9.3,
+  "Hot Fuzz"
  ],
  "maverick": [
   "2026-07-17",
@@ -291,7 +306,7 @@
  ],
  "the-death-of-stalin": [
   "2026-10-02",
-  9.1,
+  9.3,
   "The Death of Stalin"
  ],
  "inglourious-basterds": [

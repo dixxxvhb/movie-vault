@@ -132,6 +132,36 @@
    ],
    "rewatch": false
   },
+  "dunkirk": {
+   "key": "awe",
+   "vibes": [
+    "nolan",
+    "wwii",
+    "historical",
+    "structural",
+    "structure-as-twist",
+    "score-driven",
+    "immersive",
+    "masterful",
+    "tense",
+    "awe",
+    "solo night"
+   ],
+   "rewatch": false
+  },
+  "frailty": {
+   "key": "dread",
+   "vibes": [
+    "horror",
+    "low-budget",
+    "twisty",
+    "structure-as-twist",
+    "reveal-driven",
+    "solo night",
+    "dread"
+   ],
+   "rewatch": false
+  },
   "memento": {
    "key": "awe",
    "vibes": [
@@ -161,6 +191,19 @@
     "low-budget-miracle",
     "tonal-morph",
     "wtf-delivered"
+   ],
+   "rewatch": false
+  },
+  "hot-fuzz": {
+   "key": "fun",
+   "vibes": [
+    "action-comedy",
+    "comedy",
+    "buddy",
+    "satire",
+    "ensemble",
+    "fun",
+    "solo night"
    ],
    "rewatch": false
   },

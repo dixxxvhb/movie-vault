@@ -153,6 +153,26 @@
    "Miloš Forman"
   ]
  },
+ "dunkirk": {
+  "year": 2017,
+  "genres": [
+   "War",
+   "Action",
+   "Drama"
+  ],
+  "poster": "/b4Oe15CGLL61Ped0RAS9JpqdmCt.jpg",
+  "runtime": 107,
+  "director": [
+   "Christopher Nolan"
+  ]
+ },
+ "frailty": {
+  "year": 2001,
+  "genres": [],
+  "poster": null,
+  "runtime": null,
+  "director": []
+ },
  "memento": {
   "year": 2000,
   "genres": [
@@ -190,6 +210,13 @@
   "director": [
    "Leigh Whannell"
   ]
+ },
+ "hot-fuzz": {
+  "year": 2007,
+  "genres": [],
+  "poster": null,
+  "runtime": null,
+  "director": []
  },
  "maverick": {
   "year": 2022,

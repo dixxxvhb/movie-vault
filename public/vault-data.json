@@ -678,9 +678,55 @@
    ]
   }
  ],
- "count": 62,
- "avg": 8.67,
+ "count": 65,
+ "avg": 8.7,
  "films": [
+  {
+   "slug": "dunkirk",
+   "title": "Dunkirk",
+   "score": 10.0,
+   "watched": "2026-10-05",
+   "state": "ledger",
+   "palette": {
+    "bg": "#182126",
+    "fg": "#E7EBE8",
+    "sub": "#7C919A",
+    "acc": "#9DB7C2",
+    "glyph": "≋"
+   },
+   "front": null,
+   "poster": "posters/dunkirk.jpg",
+   "year": 2017,
+   "runtime": 107,
+   "genres": [
+    "War",
+    "Action",
+    "Drama"
+   ],
+   "director": [
+    "Christopher Nolan"
+   ],
+   "panel": "<section class=\"panel dunkirk\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Dunkirk<span>2017</span></div><div class=\"score\">10.0<small> /10</small></div></div>\n  <div class=\"meta\">Oct 5 &middot; solo, late Monday second feature after Frailty &middot; Paramount+ &middot; first watch &middot; finished after midnight &middot; his second 10.0 ever</div>\n  <p class=\"plot\">Three timelines of different lengths, a week on the mole, a day on the water, an hour in the air, folding into one evacuation off the French beach. Almost no dialogue, a score that never lets the tension drop, and one speech at the end.</p>\n  <p class=\"quote\">\"wow wow wow woah woah woah jesus fucking christ what a movie. that man is a goddamn genius.\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"the timelines slowly starting to blend and make sense was just like watching a horrific but stunning mona lisa being painted.\"</p>\n    <p class=\"mq\"><b>Dixon</b>\"how did i cry like 3 times?!\"</p>\n    <p class=\"mq\"><b>The three cries</b>the little boats, the blind man saying just surviving was enough, and the final speech, hello Churchill.</p>\n    <p class=\"mq\"><b>Dixon, the verdict</b>\"that man is a goddamn genius.\"</p>\n  </div>\n  <p class=\"debrief\">He asked for action to stay awake plus clever and got both. Leonard warned the thin characters would cost it, and was wrong out loud. The envelope was a late seal at 9.5, since he never named his pick before pressing play, and it was half a point low. It ties Memento at the top of the wall, the second 10.0 ever and both Nolan. #1 of 65, tied at 10.0.</p>\n</section>",
+   "vibes": [
+    "nolan",
+    "wwii",
+    "historical",
+    "structural",
+    "structure-as-twist",
+    "score-driven",
+    "immersive",
+    "masterful",
+    "tense",
+    "awe",
+    "solo night"
+   ],
+   "rewatch": false,
+   "key": "awe",
+   "hot_take": "wow wow wow woah woah woah jesus fucking christ what a movie. that man is a goddamn genius. still so mindblown honestly. and how did i cry like 3 times?! and harry fucking styles!? the timelines slowly starting to blend and make sense was just like watching a horrific but stunning mona lisa being painted. (the three cries: the little boats, the blind man saying just surviving was enough, and the final speech obvi hello churchill.)",
+   "context": "solo, late Monday second feature after Frailty, Paramount+. Asked for action to stay awake plus clever. Cried three times. Finished after midnight.",
+   "was": null,
+   "rescored_on": null
+  },
   {
    "slug": "memento",
    "title": "Memento",
@@ -715,7 +761,7 @@
    "rewatch": false,
    "key": "awe",
    "hot_take": "MY GOD WHAT THE FUCKKKKK BRO ... this has been my favorite thus far. it deserves the 5.0 and everything else should be lowered a percentage",
-   "context": "Streamed on Peacock. Antibodies did not save him — structure can't be spoiled. Insulin question left unresolved on purpose.",
+   "context": "Streamed on Peacock. Antibodies did not save him. Structure can't be spoiled. Insulin question left unresolved on purpose.",
    "was": null,
    "rescored_on": null
   },
@@ -753,7 +799,7 @@
    ],
    "rewatch": false,
    "key": "tense",
-   "hot_take": "amazing. big effort big pay off. love love. [Amended Jul 25, 2026: raised 9.8 to 9.9. \"sicario beats those. bump sicario to 9.9 it needs it's own number for sure\"]",
+   "hot_take": "amazing. big effort big pay off. love love. ... sicario beats those. bump sicario to 9.9 it needs it's own number for sure",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -945,7 +991,7 @@
     "Lana Wachowski",
     "Lilly Wachowski"
    ],
-   "panel": "<section class=\"panel matrix\">\n  <div class=\"no\">No. 3</div>\n  <div class=\"head\"><div class=\"film\">The Matrix<span>1999</span></div><div class=\"score\">9.8<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, evening banger &middot; Peacock &middot; first watch of a classic &middot; <span class=\"rescored\" data-was=\"9.9\" data-on=\"2026-08-18\">re-scored Aug 18 from 9.9</span></div>\n  <p class=\"plot\">Neo takes the red pill and finds out the world he has been living in is a simulation running on top of humanity as a power source, and that he might be the one person who can fight back inside it. The Wachowskis built an entire visual language for slowed and bent physics that everything after has been quoting since.</p>\n  <p class=\"quote\">\"HOWWWW have i never seen that movie before?! Screamed out loud at 'dodge this.'\"</p>\n  <p class=\"debrief\">It hung second on the wall that night, a tenth under Memento. First-time viewing of a 26-year-old film that still landed as an event, straight into the antibodies conversation: this is the movie the antibodies doctrine explicitly does not apply to, because the reveal itself was never the pleasure, the movement and the execution were, and both still hit at full strength decades and a thousand imitators later. On Aug 18 The Departed arrived at 9.9 and he moved this one to 9.8 by decree to make room, the first time a new film moved a standing number. #7 of 62, tied at 9.8 with Blade Runner 2049, One Battle After Another and The Dark Knight.</p>\n</section>",
+   "panel": "<section class=\"panel matrix\">\n  <div class=\"no\">No. 3</div>\n  <div class=\"head\"><div class=\"film\">The Matrix<span>1999</span></div><div class=\"score\">9.8<small> /10</small></div></div>\n  <div class=\"meta\">Aug 4 &middot; solo, evening banger &middot; Peacock &middot; first watch of a classic &middot; <span class=\"rescored\" data-was=\"9.9\" data-on=\"2026-08-18\">re-scored Aug 18 from 9.9</span></div>\n  <p class=\"plot\">Neo takes the red pill and finds out the world he has been living in is a simulation running on top of humanity as a power source, and that he might be the one person who can fight back inside it. The Wachowskis built an entire visual language for slowed and bent physics that everything after has been quoting since.</p>\n  <p class=\"quote\">\"HOWWWW have i never seen that movie before?!\"</p>\n  <p class=\"debrief\">It hung second on the wall that night, a tenth under Memento. First-time viewing of a 26-year-old film that still landed as an event, straight into the antibodies conversation: this is the movie the antibodies doctrine explicitly does not apply to, because the reveal itself was never the pleasure, the movement and the execution were, and both still hit at full strength decades and a thousand imitators later. On Aug 18 The Departed arrived at 9.9 and he moved this one to 9.8 by decree to make room, the first time a new film moved a standing number. #7 of 62, tied at 9.8 with Blade Runner 2049, One Battle After Another and The Dark Knight (as of Oct 7 it sits #5 of 65, tied at 9.8).</p>\n</section>",
    "vibes": [
     "mind-blowing",
     "fun",
@@ -955,7 +1001,7 @@
    ],
    "rewatch": false,
    "key": "awe",
-   "hot_take": "HOWWWW have i never seen that movie before?! Screamed out loud at \"dodge this.\"",
+   "hot_take": "HOWWWW have i never seen that movie before?!",
    "context": "evening banger, solo, Peacock",
    "was": 9.9,
    "rescored_on": "2026-08-18"
@@ -1119,7 +1165,7 @@
    ],
    "rewatch": false,
    "key": "dread",
-   "hot_take": "what. the. fuck. — NO CLUE what that was, A TARANTULA?! Then cracked it himself in debrief: one man, and Adam is the alibi. \"He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good.\"",
+   "hot_take": "what. the. fuck. ... A TARANTULA?! ... He invented the innocent. cute shy history teacher he dreams of being instead of the monster he sees himself as. ugh so good.",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -1244,7 +1290,7 @@
    ],
    "rewatch": true,
    "key": "awe",
-   "hot_take": "On whether Rises flipped his pro-Ra's verdict from the Begins debrief: \"yeahhhh it pretty much did. Nolan knows his way around a story arc for damn sure. loved it. i had even forgetten the final twist!! haha god bless a bad jmemory it was fun all over again\" Then: \"oooooof okay i think this one goes 9.6\"",
+   "hot_take": "yeahhhh it pretty much did. Nolan knows his way around a story arc for damn sure. loved it. i had even forgetten the final twist!! haha god bless a bad jmemory it was fun all over again ... oooooof okay i think this one goes 9.6",
    "context": "Sunday solo rewatch. Completes the Nolan Batman trilogy in three days (Begins + Dark Knight Jul 24, Rises Jul 26). Long-gap rewatch: he had forgotten the Talia reveal entirely. FIRST HAZY WING EXIT - seen but unrateable before tonight, now carries a live score.",
    "was": null,
    "rescored_on": null
@@ -1355,7 +1401,7 @@
    "director": [
     "Dan Gilroy"
    ],
-   "panel": "<section class=\"panel nightcrawler\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Nightcrawler<span>2014</span></div><div class=\"score\">9.5<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · 5pm curtain, earliest of the era · free on Tubi · <span class=\"rescored\" data-was=\"9.4\" data-on=\"2026-08-26\">re-scored Aug 26 from 9.4</span></div>\n  <p class=\"plot\">Lou Bloom, unemployable and unblinking, discovers LA pays for footage of its worst nights. He buys a camera, then a better one, then starts producing the news instead of filming it: moving bodies, sabotaging rivals, placing his own employee on the mark. He is never punished. He expands.</p>\n  <p class=\"quote\">\"okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon</b>\"9.6!\" (the Olympics judging incident; the rescale later landed at 9.4, and his Aug 26 decree took it to 9.5, a tenth shy of prophecy)</p>\n    <p class=\"mq\"><b>Dixon, Aug 26, the raise</b>\"i think about that movie and character a lot. it's growing on me.\"</p>\n    <p class=\"mq\"><b>Dixon, on the only lie</b>\"the story he tells the cop at the end is a lie\"</p>\n    <p class=\"mq\"><b>Dixon, on the only feeling</b>\"the only leaping out is smashing the mirror\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Lou doesn't have relationships, he has portfolios.\"</p>\n    <p class=\"mq\"><b>The record</b>\"I think for now, youre Leonard.......and now im Lou.\" A name was taken this night.</p>\n  </div>\n  <p class=\"debrief\">You clocked the orchestration arc early, found the movie's only lie, and counted its only genuine emotion in one guess. <b>Then you took his name.</b> Lou negotiated himself a raise, as Lou does.</p>\n</section>",
+   "panel": "<section class=\"panel nightcrawler\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Nightcrawler<span>2014</span></div><div class=\"score\">9.5<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · 5pm curtain, earliest of the era · free on Tubi · <span class=\"rescored\" data-was=\"9.4\" data-on=\"2026-08-26\">re-scored Aug 26 from 9.4</span></div>\n  <p class=\"plot\">Lou Bloom, unemployable and unblinking, discovers LA pays for footage of its worst nights. He buys a camera, then a better one, then starts producing the news instead of filming it: moving bodies, sabotaging rivals, placing his own employee on the mark. He is never punished. He expands.</p>\n  <p class=\"quote\">\"okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>The scoring history, not his take</b>that night he scored it \"9.6!\" (the Olympics judging incident, corrected to 4.6 on the old 0 to 5 scale). The rescale landed it at 9.4, and his Aug 26 decree took it to 9.5, a tenth shy of prophecy.</p>\n    <p class=\"mq\"><b>Dixon, Aug 26, the raise</b>\"i think about that movie and character a lot. it's growing on me.\"</p>\n    <p class=\"mq\"><b>Dixon, on the only lie</b>\"the story he tells the cop at the end is a lie\"</p>\n    <p class=\"mq\"><b>Dixon, on the only feeling</b>\"the only leaping out is smashing the mirror\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"Lou doesn't have relationships, he has portfolios.\"</p>\n    <p class=\"mq\"><b>The record</b>\"I think for now, youre Leonard.......and now im Lou.\" A name was taken this night.</p>\n  </div>\n  <p class=\"debrief\">You clocked the orchestration arc early, found the movie's only lie, and counted its only genuine emotion in one guess. <b>Then you took his name.</b> Lou negotiated himself a raise, as Lou does.</p>\n</section>",
    "vibes": [
     "dread",
     "morally gray",
@@ -1365,8 +1411,8 @@
    ],
    "rewatch": false,
    "key": "dread",
-   "hot_take": "okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha — then scored it \"9.6!\" (Olympics judging incident, corrected: 4.6)",
-   "context": "Free w/ ads on Tubi. 5pm curtain, earliest start of the ritual era — slot one of the promised Tuesday double feature. Debrief theories, all his: suspected Lou was orchestrating the crimes for a large chunk (pre-crime — act three makes him right), found the only lie in the film instantly (the story to the detective), read Nina as targeted-from-day-one due diligence, and nailed the single-emotion count in one guess (the mirror smash). 4.6 ties Coherence on the board.",
+   "hot_take": "okkkkkkkk i really enjoyed that!! kinda in love with lou hahaha",
+   "context": "Free w/ ads on Tubi. 5pm curtain, earliest start of the ritual era, slot one of the promised Tuesday double feature. Debrief theories, all his: suspected Lou was orchestrating the crimes for a large chunk (pre-crime, and act three makes him right), found the only lie in the film instantly (the story to the detective), read Nina as targeted-from-day-one due diligence, and nailed the single-emotion count in one guess (the mirror smash). Scored 4.6 on the old five-point scale that night, tying Coherence.",
    "was": 9.4,
    "rescored_on": "2026-08-26"
   },
@@ -1433,7 +1479,7 @@
    "director": [
     "Boots Riley"
    ],
-   "panel": "<section class=\"panel stby\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Sorry to Bother You<span>2018</span></div><div class=\"score\">9.4<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · slot two of the record night · free on Tubi</div>\n  <p class=\"plot\">An Oakland telemarketer finds his \"white voice,\" rides it up the golden elevator, and discovers what WorryFree's lifetime-labor utopia is actually manufacturing: equisapiens. Half man, half horse, all workforce. The metaphor grows hooves, achieves class consciousness, and rings the CEO's doorbell to deliver the title of the movie one last time.</p>\n  <p class=\"quote\">\"YOURE FUCKING KIDDING\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, pre-watch</b>\"the way you described the 3rd act... i think i gotta fuckin know haha\"</p>\n    <p class=\"mq\"><b>Dixon, post-watch</b>\"i literally spent the whole movie trying to outsmart you cause you said id never guess\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"You can't out-think a movie that's willing to breach its own genre contract.\"</p>\n    <p class=\"mq\"><b>Dixon, the verdict</b>\"4.8 full send\"</p>\n  </div>\n  <p class=\"debrief\">Yelled audibly, alone, to an empty apartment. Top theory was multiverse, your Coherence antibodies attacking the wrong disease. <b>You can't out-think genre defection.</b> Full send, upheld on appeal.</p>\n</section>",
+   "panel": "<section class=\"panel stby\">\n  <div class=\"no\">T-7</div>\n  <div class=\"head\"><div class=\"film\">Sorry to Bother You<span>2018</span></div><div class=\"score\">9.4<small> /10</small></div></div>\n  <div class=\"meta\">July 21 · slot two of the record night · free on Tubi</div>\n  <p class=\"plot\">An Oakland telemarketer finds his \"white voice,\" rides it up the golden elevator, and discovers what WorryFree's lifetime-labor utopia is actually manufacturing: equisapiens. Half man, half horse, all workforce. The metaphor grows hooves, achieves class consciousness, and rings the CEO's doorbell to deliver the title of the movie one last time.</p>\n  <p class=\"quote\">\"YOURE FUCKING KIDDING\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, pre-watch</b>\"the way you described the 3rd act... i think i gotta fuckin know haha\"</p>\n    <p class=\"mq\"><b>Dixon, post-watch</b>\"i literally spent the whole movie trying to outsmart you cause you said id never guess\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"You can't out-think a movie that's willing to breach its own genre contract.\"</p>\n    <p class=\"mq\"><b>Dixon, the verdict</b>\"4.8 full send\" (on the old 0 to 5 scale; it stands at 9.4 now)</p>\n  </div>\n  <p class=\"debrief\">Yelled audibly, alone, to an empty apartment. Top theory was multiverse, your Coherence antibodies attacking the wrong disease. <b>You can't out-think genre defection.</b> Full send, upheld on appeal.</p>\n</section>",
    "vibes": [
     "unguessable",
     "third-act-swerve",
@@ -1443,8 +1489,8 @@
    ],
    "rewatch": false,
    "key": "camp",
-   "hot_take": "\"YOURE FUCKING KIDDING\" — audibly yelled at the empty apartment when the horse cock flopped. Went in armed (\"i think i gotta fuckin know\"), spent the whole movie trying to outsmart the swerve because I said he never would, lost anyway. Declared a long-digest marinater, then twenty minutes later: \"4.8 full send.\"",
-   "context": "Free on Tubi. Slot two of the Tue Jul 21 double feature, after Nightcrawler 4.6. Top guess: multiverse (Coherence/EEAAO antibodies attacking the wrong disease — he was clocking Boots Riley magical realism as dimensional bleed). Genre-defection thesis landed: you cannot out-think a movie willing to breach its own genre contract. Took the dehumanization deal twice in one night (Nightcrawler, then WorryFree) — clocked and owned it. 4.8 ties Enemy on the podium step below BR2049.",
+   "hot_take": "YOURE FUCKING KIDDING ... i think i gotta fuckin know",
+   "context": "Free on Tubi. Slot two of the Tue Jul 21 double feature, after Nightcrawler 4.6. Top guess: multiverse (Coherence/EEAAO antibodies attacking the wrong disease; he was clocking Boots Riley magical realism as dimensional bleed). Genre-defection thesis landed: you cannot out-think a movie willing to breach its own genre contract. Took the dehumanization deal twice in one night (Nightcrawler, then WorryFree), clocked and owned it. 4.8 ties Enemy on the podium step below BR2049.",
    "was": null,
    "rescored_on": null
   },
@@ -1608,6 +1654,42 @@
    "rescored_on": null
   },
   {
+   "slug": "hot-fuzz",
+   "title": "Hot Fuzz",
+   "score": 9.3,
+   "watched": "2026-10-06",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1E2F46",
+    "fg": "#F4F0E4",
+    "sub": "#8FA3BD",
+    "acc": "#E4493D",
+    "glyph": "★"
+   },
+   "front": null,
+   "poster": null,
+   "year": 2007,
+   "runtime": null,
+   "genres": [],
+   "director": [],
+   "panel": "<section class=\"panel hot-fuzz\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Hot Fuzz<span>2007</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Oct 6 &middot; solo, Tuesday night after Dunkirk &middot; Peacock &middot; first watch &middot; envelope 8.8 &middot; multitasked (coding) through the back hour &middot; his highest comedy</div>\n  <p class=\"plot\">The best cop in London is reassigned to the safest village in England, where the accidents keep adding up. It is a buddy comedy, a murder mystery and a full action finale, and it commits to all three.</p>\n  <p class=\"quote\">\"what a fun fucking movie hahaha ... i was giggling and buffoonering right along. how fun. i wanna watch it again.\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, picking it</b>\"yeah hot fuzz sounds cutesie.\"</p>\n    <p class=\"mq\"><b>Dixon</b>\"when they flew through the air shooting two guns i about died. like come on.\"</p>\n    <p class=\"mq\"><b>Dixon, on Dalton</b>\"seemed like the obvious red herring the whole time on purpose... i fully cackled when he walked in on the whole town chanting in the robes.\"</p>\n    <p class=\"mq\"><b>Dixon</b>\"hell yeah blow that house up cause you hate the aesthetic. i get it. if i was that rich??? probably same girl\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"HOA president Dixon. God help Orlando.\"</p>\n    <p class=\"mq\"><b>Dixon</b>\"a night where a man takes a church steeple that becomes his cranium.\"</p>\n    <p class=\"mq\"><b>Dixon</b>\"im telling everyone i know to watch that immediatley.\"</p>\n  </div>\n  <p class=\"debrief\">He picked it as the light night after a 10.0 and it ended up the highest comedy on the wall. Asked for a number once, he said he wanted to watch it again and would recommend and rewatch it infinitely. Envelope 8.8, landed 9.3, half a point low. Seeing it beside The Death of Stalin on the full list is what moved Stalin up to match. Running bit: HOA president Dixon. #22 of 65, tied at 9.3.</p>\n</section>",
+   "vibes": [
+    "action-comedy",
+    "comedy",
+    "buddy",
+    "satire",
+    "ensemble",
+    "fun",
+    "solo night"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "what a fun fucking movie hahaha ... i was giggling and buffoonering right along. how fun. i wanna watch it again. ... i would infinitely recommend and rewatch. ... when they flew through the air shooting two guns i about died. like come on.",
+   "context": "solo, Peacock, multitasked (coding) through the back hour",
+   "was": null,
+   "rescored_on": null
+  },
+  {
    "slug": "operation-finale",
    "title": "Operation Finale",
    "score": 9.3,
@@ -1681,10 +1763,51 @@
    ],
    "rewatch": false,
    "key": "awe",
-   "hot_take": "Raw reaction in three acts: \"my first question is why. closely followed by what. then immediately becoming the fuck.\" Then: \"why was it willy wonka wicked and wizard of oz fucking themed?!\" On the ending: \"FUCK the goat man. bye bye enjoy the grass forever.\"",
+   "hot_take": "my first question is why. closely followed by what. then immediately becoming the fuck. ... why was it willy wonka wicked and wizard of oz fucking themed?! ... FUCK the goat man. bye bye enjoy the grass forever.",
    "context": "Rental, weird night Thu Jul 23, his gut pick held against Titane / Sacred Deer / Annihilation challengers. Debrief: clocked the Oz black-and-white-to-color grammar himself; read Bella as fascinating, \"enviable and a lesson of what not to do at the same time\" (refined together to PRE-social, not antisocial: the anti-Leonard, zero self-deception, rules only kept if they survive her testing); Duncan arc hate-to-pity on schedule (shame economy bankruptcy); goat man sentenced gleefully. First film scored NATIVELY in the ten-point era. 9.3: alone on her own step, above Coherence, one tenth under Nightcrawler/StBY.",
    "was": null,
    "rescored_on": null
+  },
+  {
+   "slug": "the-death-of-stalin",
+   "title": "The Death of Stalin",
+   "score": 9.3,
+   "watched": "2026-10-02",
+   "state": "ledger",
+   "palette": {
+    "bg": "#18171A",
+    "fg": "#E9E4DA",
+    "sub": "#8F8A82",
+    "acc": "#B3262E",
+    "glyph": "DS"
+   },
+   "front": null,
+   "poster": "posters/the-death-of-stalin.jpg",
+   "year": 2017,
+   "runtime": 107,
+   "genres": [
+    "Comedy",
+    "Drama",
+    "History"
+   ],
+   "director": [
+    "Armando Iannucci"
+   ],
+   "panel": "<section class=\"panel the-death-of-stalin\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">The Death of Stalin<span>2017</span></div><div class=\"score\">9.3<small> /10</small></div></div>\n  <div class=\"meta\">Oct 2 &middot; solo, late second feature after Upgrade, wine open &middot; free on Paramount+, a budget night &middot; envelope 8.7, a wildcard off the Sep 15 historical slate &middot; number given the next day &middot; <span class=\"rescored\" data-was=\"9.1\" data-on=\"2026-10-07\">re-scored Oct 7 from 9.1</span></div>\n  <p class=\"plot\">Stalin drops dead and his inner circle scrambles for the chair, slapstick with a body count.</p>\n  <p class=\"verdict\">&ldquo;what a movie!! so funny and camp yet soooo dark and disturbing!! i liked it. how much is actually based in any kind of truth?? haha&rdquo; And: &ldquo;there were SEVERAL scenes that had me giggled then imediately shocked and bewildered&rdquo;. It waited for the night: &ldquo;i think ive been waiting for a night to watch death of stalin and i think this is it&rdquo;. Envelope 8.7, landed 9.1. On Oct 7, after logging Hot Fuzz and seeing the two side by side on the full list, he raised it by decree: \"wait woahhhhhh death of stalin needs to be 9.3 as well\". #22 of 65, tied at 9.3 with Hot Fuzz, Catch Me If You Can, Amadeus, Upgrade, Valkyrie, Poor Things, Gone Baby Gone and Operation Finale.</p>\n</section>",
+   "vibes": [
+    "satire",
+    "camp",
+    "ensemble",
+    "historical",
+    "tonal-morph",
+    "wine-night"
+   ],
+   "rewatch": false,
+   "key": "fun",
+   "hot_take": "so funny and camp yet soooo dark and disturbing!!",
+   "context": "solo, late second feature after Upgrade, wine open, free on Paramount+ (budget night); score given the next day",
+   "was": 9.1,
+   "rescored_on": "2026-10-07"
   },
   {
    "slug": "upgrade",
@@ -1889,47 +2012,6 @@
    "rescored_on": null
   },
   {
-   "slug": "the-death-of-stalin",
-   "title": "The Death of Stalin",
-   "score": 9.1,
-   "watched": "2026-10-02",
-   "state": "ledger",
-   "palette": {
-    "bg": "#18171A",
-    "fg": "#E9E4DA",
-    "sub": "#8F8A82",
-    "acc": "#B3262E",
-    "glyph": "DS"
-   },
-   "front": null,
-   "poster": "posters/the-death-of-stalin.jpg",
-   "year": 2017,
-   "runtime": 107,
-   "genres": [
-    "Comedy",
-    "Drama",
-    "History"
-   ],
-   "director": [
-    "Armando Iannucci"
-   ],
-   "panel": "<section class=\"panel the-death-of-stalin\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">The Death of Stalin<span>2017</span></div><div class=\"score\">9.1<small> /10</small></div></div>\n  <div class=\"meta\">Oct 2 &middot; solo, late second feature after Upgrade, wine open &middot; free on Paramount+, a budget night &middot; envelope 8.7, a wildcard off the Sep 15 historical slate &middot; number given the next day</div>\n  <p class=\"plot\">Stalin drops dead and his inner circle scrambles for the chair, slapstick with a body count.</p>\n  <p class=\"verdict\">&ldquo;what a movie!! so funny and camp yet soooo dark and disturbing!! i liked it. how much is actually based in any kind of truth?? haha&rdquo; And: &ldquo;there were SEVERAL scenes that had me giggled then imediately shocked and bewildered&rdquo;. It waited for the night: &ldquo;i think ive been waiting for a night to watch death of stalin and i think this is it&rdquo;. Envelope 8.7, landed 9.1. #31 of 62, tied at 9.1 with Bullet Train, Frost/Nixon and Predestination.</p>\n</section>",
-   "vibes": [
-    "satire",
-    "camp",
-    "ensemble",
-    "historical",
-    "tonal-morph",
-    "wine-night"
-   ],
-   "rewatch": false,
-   "key": "fun",
-   "hot_take": "so funny and camp yet soooo dark and disturbing!!",
-   "context": "solo, late second feature after Upgrade, wine open, free on Paramount+ (budget night); score given the next day",
-   "was": null,
-   "rescored_on": null
-  },
-  {
    "slug": "primal-fear",
    "title": "Primal Fear",
    "score": 9.0,
@@ -2045,6 +2127,42 @@
    "key": "tense",
    "hot_take": "it wasn't just 2 houses. or 3. its fucking infinite bitch",
    "context": "Streamed on Prime/Peacock. Ending theory: we did NOT end with the same Em.",
+   "was": null,
+   "rescored_on": null
+  },
+  {
+   "slug": "frailty",
+   "title": "Frailty",
+   "score": 8.9,
+   "watched": "2026-10-05",
+   "state": "ledger",
+   "palette": {
+    "bg": "#1B1712",
+    "fg": "#E8DFCB",
+    "sub": "#8A7B5E",
+    "acc": "#A23A2A",
+    "glyph": "†"
+   },
+   "front": null,
+   "poster": null,
+   "year": 2001,
+   "runtime": null,
+   "genres": [],
+   "director": [],
+   "panel": "<section class=\"panel frailty\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Frailty<span>2001</span></div><div class=\"score\">8.9<small> /10</small></div></div>\n  <div class=\"meta\">Oct 5 &middot; solo, Monday night &middot; Prime Video &middot; first watch &middot; envelope 8.7 &middot; passed on a fun slate to stay in the dark groove</div>\n  <p class=\"plot\">A man walks into an FBI office in Texas and says his brother is the God's Hand killer. Then he tells how, as a boy, he watched their father take an axe to the demons he said an angel had named. The story is the twist.</p>\n  <p class=\"quote\">\"woah. that was a wild dark story. a goooood ass movie.\"</p>\n  <div class=\"more-toggle\">more from the chat +</div>\n  <div class=\"more\">\n    <p class=\"mq\"><b>Dixon, going in</b>\"nahhhh not really in a fun mood... in a groove and i like it\"</p>\n    <p class=\"mq\"><b>Dixon, on the ending</b>\"i didn't love that they made the religious stuff seem semi real in the end\"</p>\n    <p class=\"mq\"><b>Dixon, on Fenton</b>\"he was supposed to be the good one!!\"</p>\n    <p class=\"mq\"><b>Leonard</b>\"a high number feels like cosigning... the axe was right.\"</p>\n  </div>\n  <p class=\"debrief\">Picked off the never-heard-of-it pile over Midnight Run, A Fish Called Wanda and Out of Sight. He sat on the number before landing it. Two things capped it, and he said both were true: the twist takes his person away, and scoring it high feels like cosigning the ending. The security tape and the forgetful agent were the beat too far. Envelope 8.7, landed 8.9. #36 of 65, tied at 8.9.</p>\n</section>",
+   "vibes": [
+    "horror",
+    "low-budget",
+    "twisty",
+    "structure-as-twist",
+    "reveal-driven",
+    "solo night",
+    "dread"
+   ],
+   "rewatch": false,
+   "key": "dread",
+   "hot_take": "woah. that was a wild dark story. a goooood ass movie. i liked the story telling a lot. i didn't love that they made the religious stuff seem semi real in the end. it was the security tape and other agent that was a bit over the line. finding out fenton was a murderer too was a fucking gut punch. he was supposed to be the good one!! it was high quality and dark and twisty turny. but for some reason something about rating it super high doesn't seem right.",
+   "context": "solo, Monday night, Prime Video. Turned down a fun slate to stay in the dark groove after Primal Fear and Gone Baby Gone. Sat on the number before landing it; agreed the cap came from losing Fenton as his person and from not wanting to cosign the ending.",
    "was": null,
    "rescored_on": null
   },
@@ -2398,7 +2516,7 @@
    ],
    "rewatch": false,
    "key": "dread",
-   "hot_take": "SPLIT WATCH ASTERISK (Jul 18 night one, Jul 19 finish) — his verdict: splitting it was the mistake, momentum broke. First-watch read: \"i don't really get what all that was about... didn't really do much for me\" — then rated it 4.1 anyway once the wrong-protagonist/elegy architecture clicked. Craft respected, meal denied by design. Also: \"the bad guy with the fucking cunt ass bob.\" Flagged for a far-future one-sitting rewatch.",
+   "hot_take": "i don't really get what all that was about... didn't really do much for me ... the bad guy with the fucking cunt ass bob.",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -2428,7 +2546,7 @@
    "director": [
     "Gareth Edwards"
    ],
-   "panel": "<section class=\"panel rogue-one\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Rogue One: A Star Wars Story<span>2016</span></div><div class=\"score\">8.2<small> /10</small></div></div>\n  <div class=\"meta\">Aug 17 &middot; his first Star Wars EVER &middot; the accidental perfect prologue</div>\n  <p class=\"plot\">A war movie wearing a space opera's clothes. The daughter of the man who built the planet-killer gets recruited to find him, and the mission curdles into the only kind of heroism this galaxy actually runs on: unglamorous, uncredited, terminal. A blind believer, a tired assassin, a rude droid, a defected pilot, a beach, a transmission tower. Everyone dies delivering a file. Then the file enters a dark corridor, and the thing pursuing it is the reason the next movie gets to exist.</p>\n  <p class=\"verdict\">A historic panel: the first Star Wars entry in the entire Vault, watched by a man encountering this universe for the first time through its bleakest side door. Opening position: a star wars movie without jedis, what are we even doing here. Closing position: full concession, because the hallway certified absolutely badass precisely BECAUSE nobody has magic to answer it. Watching ordinary soldiers meet an unstoppable red blade taught him what a Jedi means before he has ever properly met one, the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holding his purge question, Andor waiting. Really good and fun. 8.2.</p>\n</section>",
+   "panel": "<section class=\"panel rogue-one\">\n  <div class=\"no\">No. 0</div>\n  <div class=\"head\"><div class=\"film\">Rogue One: A Star Wars Story<span>2016</span></div><div class=\"score\">8.2<small> /10</small></div></div>\n  <div class=\"meta\">Aug 17 &middot; his first Star Wars EVER &middot; the accidental perfect prologue</div>\n  <p class=\"plot\">A war movie wearing a space opera's clothes. The daughter of the man who built the planet-killer gets recruited to find him, and the mission curdles into the only kind of heroism this galaxy actually runs on: unglamorous, uncredited, terminal. A blind believer, a tired assassin, a rude droid, a defected pilot, a beach, a transmission tower. Everyone dies delivering a file. Then the file enters a dark corridor, and the thing pursuing it is the reason the next movie gets to exist.</p>\n  <p class=\"verdict\">A historic panel: the first Star Wars entry in the entire Vault, watched by a man encountering this universe for the first time through its bleakest side door. Opening position: a star wars movie without jedis, what are we even doing here. Closing position: full concession, because the hallway certified absolutely badass precisely BECAUSE nobody has magic to answer it. Watching ordinary soldiers meet an unstoppable red blade taught him what a Jedi means before he has ever properly met one, the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holding his purge question, Andor waiting. 8.2.</p>\n</section>",
    "vibes": [
     "sci-fi",
     "spectacle",
@@ -2438,7 +2556,7 @@
    ],
    "rewatch": false,
    "key": "fun",
-   "hot_take": "Really good and fun. \"A star wars movie without jedis....? what are we even doing here?\" — then immediately conceded the thesis: hallway scene certified absolutely badass, lands BECAUSE nobody has magic to answer it. First-ever Star Wars entry point, watched as the accidental perfect prologue. Unlocked the whole bracket: A New Hope next, Sith holds his purge question, Andor waiting.",
+   "hot_take": "A star wars movie without jedis....? what are we even doing here?",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -2477,7 +2595,7 @@
    "rewatch": false,
    "key": "fun",
    "hot_take": "i liked it! it was entertaining. i guess it mostly did it's job haha but the storyline and dramatics were just a bit over the top in all the places for a better rating haha but the action and awesome fucking planes and plan was good!",
-   "context": "Streamed on Paramount+. Picked as rough-day counterprogramming after Memento — did its job, craft praised, melodrama docked.",
+   "context": "Streamed on Paramount+. Picked as rough-day counterprogramming after Memento. Did its job, craft praised, melodrama docked.",
    "was": null,
    "rescored_on": null
   },
@@ -2556,7 +2674,7 @@
    ],
    "rewatch": false,
    "key": "camp",
-   "hot_take": "Group watch with John and Tori. \"Fun watch... i think it was more john and tori's speed. overall entertaining just not real deep or truly satisfying.\" Clocked the One Wish Willow premise as tidy but shallow — high-functioning machine, modest reach.",
+   "hot_take": "Fun watch... i think it was more john and tori's speed. overall entertaining just not real deep or truly satisfying.",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -2625,7 +2743,7 @@
    "director": [
     "Christopher Smith"
    ],
-   "panel": "<section class=\"panel triangle\">\n  <div class=\"no\">No. 16</div>\n  <div class=\"head\"><div class=\"film\">Triangle<span>2009</span></div><div class=\"score\">7.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 3 &middot; solo, midday &middot; pitched same day for a WTF craving &middot; first watch</div>\n  <p class=\"plot\">Sally boards a yacht that sails into a storm and comes out the other side at an empty ocean liner, where she starts finding versions of herself already dead, already looping, already trying to warn the next one in. The film commits fully to the loop logic instead of hedging it.</p>\n  <p class=\"quote\">\"Sally pile and the birds were the two 'ahh shit she's never getting out of this' hits. Loop done well.\"</p>\n  <p class=\"debrief\">Pitched as a straight WTF craving and delivered exactly that. He singled out the pile of Sallys and the bird attack as the two moments that landed the dread hardest, and gave real credit to the loop being executed cleanly rather than just gestured at.</p>\n</section>",
+   "panel": "<section class=\"panel triangle\">\n  <div class=\"no\">No. 16</div>\n  <div class=\"head\"><div class=\"film\">Triangle<span>2009</span></div><div class=\"score\">7.9<small> /10</small></div></div>\n  <div class=\"meta\">Aug 3 &middot; solo, midday &middot; pitched same day for a WTF craving &middot; first watch</div>\n  <p class=\"plot\">Sally boards a yacht that sails into a storm and comes out the other side at an empty ocean liner, where she starts finding versions of herself already dead, already looping, already trying to warn the next one in. The film commits fully to the loop logic instead of hedging it.</p>\n  <p class=\"quote\">\"ahh shit she's never getting out of this\"</p>\n  <p class=\"debrief\">Pitched as a straight WTF craving and delivered exactly that. He singled out the pile of Sallys and the bird attack as the two moments that landed the dread hardest, and gave real credit to the loop being executed cleanly rather than just gestured at.</p>\n</section>",
    "vibes": [
     "time-loop",
     "structural",
@@ -2634,7 +2752,7 @@
    ],
    "rewatch": false,
    "key": "dread",
-   "hot_take": "Sally pile and the birds were the two \"ahh shit she's never getting out of this\" hits. Loop done well.",
+   "hot_take": "ahh shit she's never getting out of this",
    "context": "Midday solo watch, pitched same day for WTF craving",
    "was": null,
    "rescored_on": null
@@ -2755,7 +2873,7 @@
    ],
    "rewatch": false,
    "key": "tense",
-   "hot_take": "\"jesus christ i have so many feelings about that fucking goddamn mothershitting movie.\" Better than Sunshine, just under Pressure. The Justin Long smash cut fully conned him — thought the movie was OVER. Docked for the stairs problem (nobody should descend) and wanting one more layer on the Frank flashback. Proposed the tactically correct survival strategy: baby-voice \"please mommy\" total surrender. Collateral damage: The Ronettes, ruined in general.",
+   "hot_take": "jesus christ i have so many feelings about that fucking goddamn mothershitting movie. ... please mommy",
    "context": "wine night, early night, guessed from the clue \"doors doors doors\"",
    "was": null,
    "rescored_on": null
@@ -2916,7 +3034,7 @@
    ],
    "rewatch": false,
    "key": "fun",
-   "hot_take": "\"Fun little thing.\" Spent a big chunk going stacked cast, well made, why haven't I heard more about this... \"then all of a sudden i was like oh. that's why hahahaha.\" Speedran the 2007 reception history in real time. Verdict on the third act: Door B (turn-as-thesis) is \"reaching a bit too hard for an idea that didn't land\" — read Pinbacker's god complex straight off the screen, no commentary track required.",
+   "hot_take": "Fun little thing. ... then all of a sudden i was like oh. that's why hahahaha. ... reaching a bit too hard for an idea that didn't land",
    "context": null,
    "was": null,
    "rescored_on": null
@@ -3115,7 +3233,7 @@
    ],
    "rewatch": false,
    "key": "camp",
-   "hot_take": "Opening reaction: \"andddddd yikes. voldemort did it first and was way more chill about it haha\" Then the diagnosis: \"nahhhh it didn't really work for me. it kinda hands you the probablity of it being her the whole time fairly early on and then by the time we get to ole voldy on the back it's not the reveal i wanted it to be. but the killing got way cooler after that haha\"",
+   "hot_take": "andddddd yikes. voldemort did it first and was way more chill about it haha ... nahhhh it didn't really work for me. it kinda hands you the probablity of it being her the whole time fairly early on and then by the time we get to ole voldy on the back it's not the reveal i wanted it to be. but the killing got way cooler after that haha",
    "context": "Slot two of a Sunday double feature (after The Dark Knight Rises). Picked off a bizarre-and-fucked slate he asked for. NEW FLOOR: first film to score below The Game (6.8). Produced a permanent twist-calibration rule.",
    "was": null,
    "rescored_on": null
