@@ -5368,6 +5368,211 @@
    "character": "Lifeboat Soldier 2"
   }
  ],
+ "frailty": [
+  {
+   "id": 2053,
+   "name": "Bill Paxton",
+   "order": 0,
+   "profile": "/aLdNe6mt1cSi2zWlUYRregzfis5.jpg",
+   "character": "Dad Meiks"
+  },
+  {
+   "id": 10297,
+   "name": "Matthew McConaughey",
+   "order": 1,
+   "profile": "/lCySuYjhXix3FzQdS4oceDDrXKI.jpg",
+   "character": "Meiks"
+  },
+  {
+   "id": 6280,
+   "name": "Powers Boothe",
+   "order": 2,
+   "profile": "/xj3DBMqnEnyYfHEBcRHOxlpbQS4.jpg",
+   "character": "FBI Agent Wesley Doyle"
+  },
+  {
+   "id": 71467,
+   "name": "Matt O'Leary",
+   "order": 3,
+   "profile": "/xTjZWML92P7dMrlFTdyHIfaDgTv.jpg",
+   "character": "Young Fenton"
+  },
+  {
+   "id": 65838,
+   "name": "Jeremy Sumpter",
+   "order": 4,
+   "profile": "/pycR7N2pLA1fYFdySq1fP2wW7rN.jpg",
+   "character": "Young Adam"
+  },
+  {
+   "id": 1032173,
+   "name": "Levi Kreis",
+   "order": 5,
+   "profile": "/uOSDCQLVrrW4n2d3IlHdxhrd49G.jpg",
+   "character": "Fenton Meiks"
+  },
+  {
+   "id": 53646,
+   "name": "Missy Crider",
+   "order": 6,
+   "profile": "/rDPVqnIvk5KPan2pFo8PCaZX7B.jpg",
+   "character": "Becky Meiks"
+  },
+  {
+   "id": 8962,
+   "name": "Luke Askew",
+   "order": 7,
+   "profile": "/fZnBGTtY24YAaebGdlRA2gMeYS.jpg",
+   "character": "Sheriff Smalls"
+  },
+  {
+   "id": 1219574,
+   "name": "Derk Cheetwood",
+   "order": 8,
+   "profile": "/zmmmhScjoK6Ar9Bakrd7vhEmzTm.jpg",
+   "character": "Agent Griffin Hull"
+  },
+  {
+   "id": 154649,
+   "name": "Alan Davidson",
+   "order": 9,
+   "profile": null,
+   "character": "Brad White"
+  },
+  {
+   "id": 1212913,
+   "name": "Cynthia Ettinger",
+   "order": 10,
+   "profile": "/gwfmTVBw168lzzs9HEsjFkbqFEJ.jpg",
+   "character": "Cynthia Harbridge"
+  },
+  {
+   "id": 2558402,
+   "name": "Vincent Chase",
+   "order": 11,
+   "profile": null,
+   "character": "Edward March"
+  },
+  {
+   "id": 42296,
+   "name": "Gwen McGee",
+   "order": 12,
+   "profile": "/2wj44JWYHtbQhNWd5UIk5XYVm7o.jpg",
+   "character": "Operator"
+  },
+  {
+   "id": 1765783,
+   "name": "Edmond Scott Ratliff",
+   "order": 13,
+   "profile": null,
+   "character": "The Angel"
+  },
+  {
+   "id": 69503,
+   "name": "Rebecca Tilney",
+   "order": 14,
+   "profile": "/zBffmph3coo5VFXrh0VFKE8lIrH.jpg",
+   "character": "Teacher"
+  },
+  {
+   "id": 3381973,
+   "name": "Blake King",
+   "order": 15,
+   "profile": null,
+   "character": "Eric"
+  },
+  {
+   "id": 1905259,
+   "name": "Brad Berryhill",
+   "order": 16,
+   "profile": null,
+   "character": "Teenage Demon"
+  },
+  {
+   "id": 96553,
+   "name": "Greg Serano",
+   "order": 17,
+   "profile": "/bqKA6wmh7j4HVTm0FfsYCOBGTKo.jpg",
+   "character": "FBI Agent #1"
+  },
+  {
+   "id": 2646540,
+   "name": "Edgar L. Davis",
+   "order": 18,
+   "profile": null,
+   "character": "FBI Agent #2"
+  },
+  {
+   "id": 3238409,
+   "name": "Jim Flowers",
+   "order": 19,
+   "profile": null,
+   "character": "FBI Agent #3"
+  },
+  {
+   "id": 101847,
+   "name": "Lance E. Nichols",
+   "order": 20,
+   "profile": "/uFrgXjSwMZpOZKn7wsu438BzMHp.jpg",
+   "character": "FBI Agent #4"
+  },
+  {
+   "id": 19326,
+   "name": "John Paxton",
+   "order": 21,
+   "profile": "/ndSd4nnukk03loB6RKx3iuP5xfx.jpg",
+   "character": "Janitor in Lobby"
+  },
+  {
+   "id": 3381975,
+   "name": "Richard A. Bell",
+   "order": 22,
+   "profile": null,
+   "character": "Curtis"
+  },
+  {
+   "id": 3381976,
+   "name": "Chelsea Butler",
+   "order": 23,
+   "profile": null,
+   "character": "Little Girl"
+  },
+  {
+   "id": 1924792,
+   "name": "Jennifer Drake",
+   "order": 24,
+   "profile": null,
+   "character": "Teacher's Aide"
+  },
+  {
+   "id": 3381978,
+   "name": "Betty Gurule",
+   "order": 25,
+   "profile": null,
+   "character": "Doyle's Mother"
+  },
+  {
+   "id": 3381979,
+   "name": "Ona Harris",
+   "order": 26,
+   "profile": null,
+   "character": "Townswoman"
+  },
+  {
+   "id": 1383838,
+   "name": "Greg Bronson",
+   "order": 27,
+   "profile": "/smF0hrek3d0bVhq0m7ENLPFQpcP.jpg",
+   "character": "Postman (uncredited)"
+  },
+  {
+   "id": 78598,
+   "name": "Dave Power",
+   "order": 28,
+   "profile": "/mggYfjEh4c9ukcBficLyQRchgo.jpg",
+   "character": "Matt (uncredited)"
+  }
+ ],
  "get-out": [
   {
    "id": 206919,

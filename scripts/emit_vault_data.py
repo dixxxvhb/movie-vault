@@ -201,6 +201,32 @@ if _stale:
     sys.stderr.write("STALE PANEL: %d header score(s) behind the log -> %s\n"
                      % (len(_stale), "; ".join(_stale)))
 
+# RANK LINES. A panel's closing sentence quotes "#N of M, tied at S with ...".
+# That was hand-written prose and went stale with every new film (counts of 53,
+# 57 and 62 were still printing at 65). The emitter now owns it: any sentence
+# in the "#N of M" shape is recomputed from the live scores, ties sorted by
+# title. Panels without the sentence are untouched.
+_RANK = re.compile(r'#\d+ of \d+(?:, tied (?:at|with|between).*?)?\.(?=\s|<|$)')
+
+
+def _join(names):
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def _rank_line(slug):
+    mine = float(META[slug][1])
+    above = sum(1 for v in META.values() if float(v[1]) > mine)
+    tied = sorted(v[2] for k, v in META.items() if k != slug and float(v[1]) == mine)
+    line = "#%d of %d" % (above + 1, len(META))
+    if tied:
+        line += ", tied at %.1f with %s" % (mine, _join(tied))
+    return line + "."
+
+
+for _s in list(PANEL_BY_SLUG):
+    if _s in META and PANEL_BY_SLUG[_s] and _RANK.search(PANEL_BY_SLUG[_s]):
+        PANEL_BY_SLUG[_s] = _RANK.sub(lambda m, s=_s: _rank_line(s), PANEL_BY_SLUG[_s], count=1)
+
 films = []
 for slug, (date, score, title) in META.items():
     pal = parse_palette(PAL_BY_SLUG.get(slug, ""))

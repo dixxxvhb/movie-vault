@@ -301,3 +301,10 @@ the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
   skip and warn-before.
 
 | Weekly enrich cron `film-enrich-weekly`, Sundays 09:00 UTC | see git | Same cron-secret pattern as provider refresh. Proved live: 200, fetched 0 / skipped_fresh 231. Open: Dixon re-saves `movie-night.skill` in Chat |
+
+## Oct 7 wall pass and sweep
+
+- Published through Hot Fuzz: 65 films, average 8.70. Frailty, Dunkirk and Hot Fuzz have full backs, no bespoke fronts. Death of Stalin re-scored 9.1 to 9.3 (struck first number kept).
+- Rank lines ("#N of M, tied at S with ...") are now computed by `emit_vault_data.py` from the live scores. Hand-typed ones had gone stale at 53, 57 and 62. Keep writing the sentence in that shape and the emitter keeps it true.
+- Frailty linked to TMDB 12149 (US release 2002, so its year is 2002, matching every other title). Duplicate Sinners row merged into 5373f321.
+- By design, not bugs: the four franchise rows (Bond, Bourne, LOTR, Apes) have no year or tmdb_id; the "No. N" label in each panel is hidden by CaseFile; `lessons.json` is taste-scope only, so the Oct 7 "rewatch to rescore" rule stays off the wall.

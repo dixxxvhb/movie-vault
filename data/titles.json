@@ -167,11 +167,17 @@
   ]
  },
  "frailty": {
-  "year": 2001,
-  "genres": [],
-  "poster": null,
-  "runtime": null,
-  "director": []
+  "year": 2002,
+  "genres": [
+   "Drama",
+   "Thriller",
+   "Crime"
+  ],
+  "poster": "/jGuobXsIJOV3FmM4gRlK4QQMIos.jpg",
+  "runtime": 100,
+  "director": [
+   "Bill Paxton"
+  ]
  },
  "memento": {
   "year": 2000,
