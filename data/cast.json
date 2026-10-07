@@ -7245,6 +7245,218 @@
    "character": "Lowenstein"
   }
  ],
+ "hot-fuzz": [
+  {
+   "id": 11108,
+   "name": "Simon Pegg",
+   "order": 0,
+   "profile": "/jw8bEEoTOithyNf0qxu4Zt1yaKp.jpg",
+   "character": "Nicholas Angel"
+  },
+  {
+   "id": 11109,
+   "name": "Nick Frost",
+   "order": 1,
+   "profile": "/2CHS4t6miNGLgMQAjhFqb4fFuKS.jpg",
+   "character": "PC Danny Butterman"
+  },
+  {
+   "id": 388,
+   "name": "Jim Broadbent",
+   "order": 2,
+   "profile": "/s7lXYfrsJoGA4vKmyv61SPgABmR.jpg",
+   "character": "Inspector Frank Butterman"
+  },
+  {
+   "id": 14887,
+   "name": "Paddy Considine",
+   "order": 3,
+   "profile": "/yFDFSlF4J1m9P0kVwBTKIHB8LYk.jpg",
+   "character": "DS Andy Wainwright"
+  },
+  {
+   "id": 28847,
+   "name": "Rafe Spall",
+   "order": 4,
+   "profile": "/zcqUqAvO7RQnitcCNNfTVPaiQtS.jpg",
+   "character": "DC Andy Cartwright"
+  },
+  {
+   "id": 39185,
+   "name": "Kevin Eldon",
+   "order": 5,
+   "profile": "/1S3ft0f71Hho9QlHUnuyJVHrfKH.jpg",
+   "character": "Sergeant Tony Fisher"
+  },
+  {
+   "id": 39187,
+   "name": "Olivia Colman",
+   "order": 6,
+   "profile": "/lawJUdbLb1YW0niaYjiVGR9IBG8.jpg",
+   "character": "PC Doris Thatcher"
+  },
+  {
+   "id": 24265,
+   "name": "Bill Bailey",
+   "order": 7,
+   "profile": "/hA3vK90snmnt1xtuJR4Iac0YRXe.jpg",
+   "character": "Sergeant Turner"
+  },
+  {
+   "id": 39186,
+   "name": "Karl Johnson",
+   "order": 8,
+   "profile": "/mXEFmNvs64YOB2AbBi7rZ57rTvW.jpg",
+   "character": "PC Bob Walker"
+  },
+  {
+   "id": 10669,
+   "name": "Timothy Dalton",
+   "order": 9,
+   "profile": "/rKYQd6ihqWiOaCHEDrvgV2VPtAo.jpg",
+   "character": "Simon Skinner"
+  },
+  {
+   "id": 39188,
+   "name": "Edward Woodward",
+   "order": 10,
+   "profile": "/rCaRJ1iQeKlxW316Cq3u50u0njf.jpg",
+   "character": "Tom Weaver"
+  },
+  {
+   "id": 8226,
+   "name": "Billie Whitelaw",
+   "order": 11,
+   "profile": "/hTEhij0sI9eE89NMWNqpjKp7BxY.jpg",
+   "character": "Joyce Cooper"
+  },
+  {
+   "id": 14344,
+   "name": "Stuart Wilson",
+   "order": 12,
+   "profile": "/ghP4hkVaNc4upspxsLQCwkOBhy6.jpg",
+   "character": "Dr. Robin Hatcher"
+  },
+  {
+   "id": 652,
+   "name": "Paul Freeman",
+   "order": 13,
+   "profile": "/qrjgLfuNdXektuBwNL6onZBkbHw.jpg",
+   "character": "Rev. Philip Shooter"
+  },
+  {
+   "id": 3075,
+   "name": "Rory McCann",
+   "order": 14,
+   "profile": "/meEHyiCRXTTCiYQMzP4VEdvEuD0.jpg",
+   "character": "Michael Armstrong"
+  },
+  {
+   "id": 26258,
+   "name": "Kenneth Cranham",
+   "order": 15,
+   "profile": "/9lzTbNgaoArlxpEkYtWQfOyiYwu.jpg",
+   "character": "James Reaper"
+  },
+  {
+   "id": 194899,
+   "name": "Maria Charles",
+   "order": 16,
+   "profile": "/cecGKLGvC54zSC4ctRlaIMxocWe.jpg",
+   "character": "Mrs. Reaper"
+  },
+  {
+   "id": 17476,
+   "name": "Peter Wight",
+   "order": 17,
+   "profile": "/wE77RhCuPoE45LrqEfZuAg0KIIp.jpg",
+   "character": "Roy Porter"
+  },
+  {
+   "id": 137471,
+   "name": "Julia Deakin",
+   "order": 18,
+   "profile": "/jo2uM3LS5DjwAzsIxvMbmewbZlF.jpg",
+   "character": "Mary Porter"
+  },
+  {
+   "id": 1229320,
+   "name": "Eric Mason",
+   "order": 19,
+   "profile": null,
+   "character": "Bernard Cooper"
+  },
+  {
+   "id": 1553131,
+   "name": "Trevor Nichols",
+   "order": 20,
+   "profile": null,
+   "character": "Greg Prosser"
+  },
+  {
+   "id": 1495777,
+   "name": "Elizabeth Elvin",
+   "order": 21,
+   "profile": null,
+   "character": "Sheree Prosser"
+  },
+  {
+   "id": 117550,
+   "name": "Patricia Franklin",
+   "order": 22,
+   "profile": "/qMiL1oElU3HasELI7BBaTrSIHBE.jpg",
+   "character": "Annette Roper"
+  },
+  {
+   "id": 82150,
+   "name": "Lorraine Hilton",
+   "order": 23,
+   "profile": "/oZFf5a8b6w6phOSJWRYr6GFMTis.jpg",
+   "character": "Amanda Paver"
+  },
+  {
+   "id": 79875,
+   "name": "Tim Barlow",
+   "order": 24,
+   "profile": null,
+   "character": "Mr. Treacher"
+  },
+  {
+   "id": 77287,
+   "name": "Anne Reid",
+   "order": 25,
+   "profile": "/d9ujsWfh1SfKNaiLs40cFue0CfE.jpg",
+   "character": "Leslie Tiller"
+  },
+  {
+   "id": 155532,
+   "name": "Adam Buxton",
+   "order": 26,
+   "profile": "/jD0Pl0QnNHuls1PmYtEnBNbuLKY.jpg",
+   "character": "Tim Messenger"
+  },
+  {
+   "id": 59081,
+   "name": "David Threlfall",
+   "order": 27,
+   "profile": "/9wPLuPJOTCtNddJYNV5GyLkcYD.jpg",
+   "character": "Martin Blower"
+  },
+  {
+   "id": 66446,
+   "name": "Lucy Punch",
+   "order": 28,
+   "profile": "/aCQb4lCw4LZV9e41CZch3QeiaXO.jpg",
+   "character": "Eve Draper"
+  },
+  {
+   "id": 11180,
+   "name": "David Bradley",
+   "order": 29,
+   "profile": "/znpkwHitb3pcaJbUmgDqG0YenYp.jpg",
+   "character": "Arthur Webley"
+  }
+ ],
  "kingsman": [
   {
    "id": 1303037,

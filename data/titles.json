@@ -213,10 +213,16 @@
  },
  "hot-fuzz": {
   "year": 2007,
-  "genres": [],
-  "poster": null,
-  "runtime": null,
-  "director": []
+  "genres": [
+   "Crime",
+   "Action",
+   "Comedy"
+  ],
+  "poster": "/zPib4ukTSdXvHP9pxGkFCe34f3y.jpg",
+  "runtime": 121,
+  "director": [
+   "Edgar Wright"
+  ]
  },
  "maverick": {
   "year": 2022,
