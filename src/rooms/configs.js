@@ -1928,6 +1928,508 @@ export const CONFIGS = {
       ],
     },
   },
+  // ------------------------------------------------------------------ dunkirk
+  // The Mole: the long breakwater out into the Channel, the men queued down
+  // it facing the sea, a stretcher, a crate, and the little boats coming out
+  // of the haze (AdvanceGlow never arrives). The board at the end carries the
+  // film's three clocks; the verdict about the timelines blending is pinned
+  // to it.
+  dunkirk: {
+    family: 'spectacle',
+    grade: {
+      bg: '#7e8a8e', fogColor: '#7e8a8e', fogDensity: 0.03,
+      key: '#e4eaea', keyIntensity: 1.8, fill: '#5c686e', ambient: 0.42,
+      sat: -0.32, contrast: 0.08, grain: 0.06, vignette: 0.4, bloomIntensity: 0.14,
+    },
+    camera: { pos: [0.5, 1.6, 6.4], look: [-0.2, 1.2, -6], fov: 50, far: 200 },
+    lights: {
+      key: { type: 'directional', pos: [-6, 9, 4], intensity: 0.9, color: '#e8eef0' },
+      bounce: [{ pos: [0, 1, 4], intensity: 0.5, distance: 14, color: '#6a767c', decay: 2 }],
+    },
+    place: {
+      shell: 'deck',
+      shellParams: { length: 16, width: 3.2, railing: true, fogWall: true, floorTint: '#5e5040', skyTop: '#8d989c', skyBottom: '#b9c2c2' },
+      props: [
+        // the sea on both sides, well below the boards
+        { type: 'waterPlane', pos: [0, -1.6, -8], size: [50, 40], color: '#3c4a50', bright: '#8fa4aa' },
+        // the queue down the Mole
+        { type: 'abstractFigure', pos: [-0.75, 0, 3.4], color: '#3e4234', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.7, 0, 2.2], color: '#3a3e30', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.8, 0, 1.0], color: '#3e4234', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.72, 0, -0.2], color: '#3a3e30', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.78, 0, -1.4], color: '#3e4234', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.7, 0, -2.6], color: '#3a3e30', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.76, 0, -3.8], color: '#3e4234', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.74, 0, -5.0], color: '#3a3e30', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0.95, 0, 2.9], rot: [0, -0.6, 0], color: '#3a3e30', pose: 'sit' },
+        // the crates by the head of the Mole
+        { type: 'bevelBox', pos: [1.05, 0.25, 4.4], w: 0.6, h: 0.5, d: 0.5, color: '#5a5034', touch: { kind: 'nudge', amplitude: 0.05, foley: 'thunk' } },
+        { type: 'bevelBox', pos: [1.05, 0.72, 4.4], w: 0.5, h: 0.44, d: 0.42, color: '#4e4630' },
+        // lamp standards on the rail
+        { type: 'slab', pos: [1.5, 1.3, 1.8], size: [0.14, 2.6, 0.14], color: '#2a2c2c', metalness: 0.4 },
+        { type: 'slab', pos: [1.5, 1.3, -3.8], size: [0.14, 2.6, 0.14], color: '#2a2c2c', metalness: 0.4 },
+        // the stretcher
+        { type: 'table', pos: [0.95, 0, 0.6], w: 0.62, d: 1.9, h: 0.42, color: '#6a6450' },
+        // jerry cans
+        { type: 'bevelBox', pos: [1.0, 0.25, -2.2], w: 0.5, h: 0.5, d: 0.36, color: '#4a5236' },
+        // the board at the end of the Mole: the film's three clocks
+        { type: 'slab', pos: [0.3, 1.1, -7.48], size: [2.16, 2.2, 0.06], color: '#3a3226' },
+        { type: 'screenPanel', pos: [0.3, 1.55, -7.44], w: 2.0, h: 1.2, color: '#26302c', intensity: 0.55, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#26302c'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#e8ece6'; ctx.font = 'bold 30px Georgia'
+          ;[['THE MOLE', 'ONE WEEK'], ['THE SEA', 'ONE DAY'], ['THE AIR', 'ONE HOUR']].forEach(([a, b], i) => {
+            ctx.fillText(a, 34, 46 + i * 44); ctx.fillText(b, W / 2 + 20, 46 + i * 44)
+          })
+        } },
+        // a little boat alongside, down at the waterline
+        { type: 'vehicleMass', pos: [3.6, -1.55, -3], rot: [0, 0.2, 0], color: '#d8d4c4', w: 1.6, h: 1.0, d: 4.2 },
+      ],
+      atmosphere: [],
+      systems: [
+        // the little boats, coming out of the haze, never arriving
+        { type: 'AdvanceGlow', prop: 'sphere', from: [5, -0.8, -36], axis: 'z', speed: 0.04, resetAt: 22, color: '#fff4dc', intensity: 0.4 },
+      ],
+    },
+    info: {
+      scorePos: [-1.15, 1.85, -7.4],
+      metaPos: [0.3, 0.6, -7.44],
+      fragments: [
+        { index: 0, of: 7, state: 'film', pos: [1.05, 0.72, 4.4], y: 0.946, dz: 0, tilt: FLAT },
+        { index: 1, of: 7, state: 'motel', pos: [1.5, 1.3, 1.8], dz: 0.082, y: 1.45 },
+        { index: 2, of: 7, state: 'film', pos: [0.95, 0, 0.6], dz: 0.35, y: 0.426, tilt: FLAT },
+        { index: 3, of: 7, state: 'motel', pos: [1.0, 0.25, -2.2], dz: 0, y: 0.506, tilt: FLAT },
+        { index: 4, of: 7, state: 'film', pos: [1.5, 1.3, -3.8], dz: 0.082, y: 1.45 },
+        { index: 5, of: 7, state: 'motel', pos: [0.3, 1.55, -7.44], dx: -0.5, dz: 0.012, y: 1.12 },
+        { index: 6, of: 7, state: 'film', pos: [0.3, 1.55, -7.44], dx: 0.5, dz: 0.012, y: 1.12 },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------- gone-baby-gone
+  // Helene's apartment at the end: the couch, Patrick sitting with Amanda, the
+  // TV on low, the missing poster still on the wall. Nobody else is coming.
+  'gone-baby-gone': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#2a2620', fogColor: '#2a2620', fogDensity: 0.035,
+      key: '#c8d4e8', keyIntensity: 1.8, fill: '#5a5040', ambient: 0.22,
+      sat: -0.18, contrast: 0.06, grain: 0.07, vignette: 0.58, bloomIntensity: 0.2,
+    },
+    camera: { pos: [0.4, 1.6, 1.9], look: [-0.2, 0.9, -1.6], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.6, d: 4.8, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'plaster', wallWear: 0.55, floorWear: 0.6 },
+        trim: { color: '#3a3226' },
+      },
+      props: [
+        // the couch
+        { type: 'bevelBox', pos: [-0.4, 0.22, -1.5], w: 1.9, h: 0.44, d: 0.8, color: '#5c5446' },
+        { type: 'bevelBox', pos: [-0.4, 0.6, -1.85], w: 1.9, h: 0.5, d: 0.2, color: '#544c40' },
+        // Patrick, and Amanda beside him
+        { type: 'abstractFigure', pos: [-0.85, 0.16, -1.5], color: '#1e1e22', pose: 'sit' },
+        { type: 'abstractFigure', pos: [0.05, 0.14, -1.5], scale: 0.72, color: '#3a2e2e', pose: 'sit' },
+        { type: 'table', pos: [-0.35, 0, -0.55], w: 1.0, d: 0.5, h: 0.42, color: '#4a3c2c' },
+        // the TV on its stand against the left wall, on low
+        { type: 'bevelBox', pos: [-2.0, 0.3, -0.6], w: 0.5, h: 0.6, d: 1.0, color: '#2e2620' },
+        { type: 'screenPanel', pos: [-1.98, 0.85, -0.6], rot: [0, Math.PI / 2, 0], w: 0.7, h: 0.5, color: '#2a3a5a', intensity: 0.8, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#2a3a5a'; ctx.fillRect(0, 0, W, H)
+          ctx.globalAlpha = 0.25
+          for (let y = 0; y < H; y += 4) { ctx.fillStyle = y % 8 ? '#9ab0d8' : '#1a2440'; ctx.fillRect(0, y, W, 2) }
+          ctx.globalAlpha = 1
+        } },
+        // the poster, still up
+        { type: 'screenPanel', pos: [1.0, 1.5, -2.38], w: 0.55, h: 0.75, color: '#e8e4d8', intensity: 0.35, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#e8e4d8'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 72px Arial'; ctx.textAlign = 'center'
+          ctx.fillText('MISSING', W / 2, 86)
+          ctx.fillStyle = '#8a8a86'; ctx.fillRect(W * 0.2, 120, W * 0.6, H * 0.4)
+          ctx.fillStyle = '#4a4a46'
+          for (let r = 0; r < 4; r++) ctx.fillRect(W * 0.15, 140 + H * 0.4 + r * 26, W * 0.7, 6)
+        } },
+        // a photo over the couch
+        { type: 'frameOn', pos: [-0.4, 1.6, -2.38], w: 0.6, h: 0.45, color: '#3a2c1e' },
+        { type: 'lampPractical', pos: [1.9, 1.35, -2.0], color: '#e8b878', intensity: 0.5 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-0.65, 0.42, -0.5], color: '#d8d0c0' },
+        { type: 'bottleRow', pos: [-0.05, 0.42, -0.6], count: 3, color: '#5a3a1a' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [-1.4, 1.95, -2.37],
+      metaPos: [0.6, 2.15, -2.37],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [-0.35, 0, -0.55], dx: -0.2, dz: 0.05, y: 0.426, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [1.0, 1.5, -2.38], dz: 0.012, y: 1.26 },
+        { index: 2, of: 5, state: 'film', pos: [-1.98, 0.85, -0.6], dx: 0.012, y: 0.72, ry: Math.PI / 2 },
+        { index: 3, of: 5, state: 'motel', pos: [-0.4, 1.6, -2.38], dz: 0.032, y: 1.47 },
+        { index: 4, of: 5, state: 'film', pos: [-0.4, 0.22, -1.5], dx: 0.82, dz: 0.05, y: 0.446, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------------- hot-fuzz
+  // Sandford's square on a summer morning: the Village of the Year sign, the
+  // fete table, the bench, the police car, the escaped swan, the shopfronts,
+  // the church. Nicholas Angel is mid-air in front of the Crown, two guns.
+  'hot-fuzz': {
+    family: 'weird-fable',
+    grade: {
+      bg: '#a9c4d8', fogColor: '#c8d8e2', fogDensity: 0.012,
+      key: '#fff4d8', keyIntensity: 2.2, fill: '#7a9a6a', ambient: 0.46,
+      sat: 0.1, contrast: 0.05, grain: 0.03, vignette: 0.28, bloomIntensity: 0.26,
+    },
+    camera: { pos: [0, 1.6, 4], look: [0, 1.4, -4], fov: 54, far: 160 },
+    lights: {
+      key: { type: 'directional', pos: [5, 10, 4], intensity: 1.1, color: '#fff2d8' },
+      bounce: [{ pos: [0, 1, 3], intensity: 0.55, distance: 15, color: '#5a7a4a', decay: 2 }],
+    },
+    place: {
+      shell: 'open',
+      shellParams: { ground: 'grass', groundColor: '#6a8a4a', skyTop: '#7aa8d0', skyBottom: '#d8e6ee', horizon: true, boundsRadius: 9 },
+      props: [
+        // the sign on its two posts
+        { type: 'slab', pos: [-2.85, 0.6, -1.7], rot: [0, 0.3, 0], size: [0.08, 1.2, 0.08], color: '#e8e4d8' },
+        { type: 'slab', pos: [-1.55, 0.6, -1.3], rot: [0, 0.3, 0], size: [0.08, 1.2, 0.08], color: '#e8e4d8' },
+        { type: 'screenPanel', pos: [-2.2, 1.3, -1.48], rot: [0, 0.3, 0], w: 1.4, h: 0.7, color: '#24502e', intensity: 0.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#24502e'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#e8dcb8'; ctx.lineWidth = 6; ctx.strokeRect(10, 10, W - 20, H - 20)
+          ctx.fillStyle = '#f0e6c8'; ctx.textAlign = 'center'
+          ctx.font = 'bold 64px Georgia'; ctx.fillText('SANDFORD', W / 2, H * 0.48)
+          ctx.font = 'italic 30px Georgia'; ctx.fillText('Village of the Year', W / 2, H * 0.78)
+        } },
+        // the fete table
+        { type: 'table', pos: [-2.6, 0, 1.0], w: 1.6, d: 0.7, color: '#e8e0d0' },
+        // the bench
+        { type: 'chairRow', pos: [2.8, 0, 0.2], rot: [0, -Math.PI / 2, 0], count: 3, color: '#5a4430', cushion: '#5a4430' },
+        // the police car
+        { type: 'vehicleMass', pos: [1.6, 0, -2.6], rot: [0, -0.4, 0], color: '#ececf0', w: 1.8, h: 1.2, d: 4.2 },
+        // the swan, loose again
+        { type: 'bevelBox', pos: [-1.0, 0.18, -0.4], w: 0.24, h: 0.36, d: 0.5, color: '#f4f4f0', touch: { kind: 'nudge', amplitude: 0.08, foley: 'thunk' } },
+        // Angel, flying through the air, two guns
+        { type: 'abstractFigure', pos: [-0.6, 1.0, -4.2], rot: [0, 0, -1.25], color: '#1a1e2a', pose: 'walk-cycle-frozen' },
+        // the shopfronts and the Crown
+        { type: 'slab', pos: [-4.4, 1.6, -8], size: [5, 3.2, 2], color: '#e8dcc0' },
+        { type: 'slab', pos: [1.2, 1.8, -8.5], size: [4.5, 3.6, 2], color: '#c8b898' },
+        { type: 'screenPanel', pos: [1.2, 3.1, -7.48], w: 2.0, h: 0.4, color: '#1e2a3a', intensity: 0.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#1e2a3a'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#e8c870'; ctx.textAlign = 'center'; ctx.font = 'bold 60px Georgia'
+          ctx.fillText('THE CROWN', W / 2, H * 0.75)
+        } },
+        { type: 'slab', pos: [6, 2.2, -7], rot: [0, -0.5, 0], size: [3.5, 4.4, 2], color: '#d8ccb0' },
+        // the church
+        { type: 'slab', pos: [3.5, 4, -14], size: [3, 8, 3], color: '#b8ac90' },
+        { type: 'slab', pos: [3.5, 8.6, -14], size: [1.4, 1.2, 1.4], color: '#a89c80' },
+        { type: 'tree', pos: [-6, 0, -4], scale: 0.9, foliage: '#4a6a32' },
+        { type: 'tree', pos: [6.5, 0, -1], scale: 0.8, foliage: '#3e5e2c' },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-3.0, 0.75, 1.0], color: '#f0ece0' },
+        { type: 'cup', pos: [-2.2, 0.75, 1.1], color: '#f0ece0' },
+      ],
+      atmosphere: [],
+      systems: [],
+    },
+    info: {
+      scorePos: [-0.3, 2.55, -7.45],
+      metaPos: [2.0, 0.9, -7.45],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [-2.6, 0, 1.0], dx: 0.2, dz: 0, y: 0.756, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [2.8, 0, 0.2], y: 0.516, tilt: FLAT, ry: -Math.PI / 2 },
+        { index: 2, of: 5, state: 'film', pos: [-2.2, 1.3, -1.48], dx: 0.004, dz: 0.012, y: 1.08, ry: 0.3 },
+        { index: 3, of: 5, state: 'motel', pos: [1.6, 0, -2.6], y: 0.69, tilt: FLAT, ry: -0.4 },
+        { index: 4, of: 5, state: 'film', pos: [1.2, 1.8, -8.5], dx: -1.2, dz: 1.012, y: 1.4 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------ the-death-of-stalin
+  // The dacha study, the night of the stroke: the rug, the desk, the record
+  // still on the player, Stalin on the floor in his own puddle, the
+  // Committee standing round him deciding who fetches a doctor. Yudina's note
+  // is on the floor where he dropped it; that is where the take goes.
+  'the-death-of-stalin': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1e1a16', fogColor: '#1e1a16', fogDensity: 0.035,
+      key: '#e8c890', keyIntensity: 2.0, fill: '#4a3a2c', ambient: 0.16,
+      sat: -0.2, contrast: 0.1, grain: 0.07, vignette: 0.6, bloomIntensity: 0.2,
+    },
+    camera: { pos: [0.6, 1.6, 1.9], look: [-0.3, 0.5, -1.2], fov: 46 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 5, h: 2.8, wallMat: 'wood',
+        mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.25, floorWear: 0.3 },
+        trim: { color: '#1e140c' },
+      },
+      props: [
+        { type: 'slab', pos: [0, 0.005, -0.8], size: [3, 0.01, 2.4], color: '#5a1e1a' },
+        { type: 'table', pos: [-0.9, 0, -1.9], w: 1.6, d: 0.8, color: '#3a2a1c' },
+        { type: 'lampPractical', pos: [-1.4, 0.95, -2.0], color: '#d8e0a0', intensity: 0.5 },
+        // the record player, the record still on it
+        { type: 'bevelBox', pos: [1.4, 0.45, -2.0], w: 0.6, h: 0.9, d: 0.5, color: '#4a3020' },
+        { type: 'slab', pos: [1.4, 0.91, -2.0], size: [0.34, 0.02, 0.34], color: '#111111' },
+        // him, and the puddle
+        { type: 'abstractFigure', pos: [0.1, 0.18, -0.15], rot: [-Math.PI / 2, 0, 0], color: '#6a6a54', pose: 'stand' },
+        { type: 'pool', pos: [0.35, 0.012, -0.6], radius: 0.45, color: '#2a2618', glow: '#3a3420' },
+        // the Committee
+        { type: 'abstractFigure', pos: [-1.2, 0, -0.3], rot: [0, 0.8, 0], color: '#1e1e1e', pose: 'stand' },
+        { type: 'abstractFigure', pos: [1.25, 0, -0.6], rot: [0, -0.9, 0], color: '#262420', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.5, 0, 0.5], rot: [0, 2.6, 0], color: '#1a1a1c', pose: 'stand' },
+        { type: 'frameOn', pos: [-0.9, 1.75, -2.48], w: 0.6, h: 0.8, color: '#5a4220' },
+        { type: 'bevelBox', pos: [2.25, 1.0, -0.4], w: 0.4, h: 2.0, d: 1.4, color: '#2e2018' },
+      ],
+      clutter: [
+        { type: 'bookStack', pos: [2.2, 2.0, -0.4], count: 4, w: 0.2, d: 0.28, colors: ['#4a2a1a', '#2a2a22'] },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [0.3, 2.15, -2.48],
+      metaPos: [1.2, 1.45, -2.48],
+      fragments: [
+        { index: 0, of: 1, state: 'film', pos: [0.75, 0, -0.5], y: 0.014, tilt: FLAT, ry: 0.4 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------- upgrade
+  // The hospital bed he dreamed: Grey under the sheet, Asha in the chair, the
+  // monitor keeping time (PulseBeat at 60), the window giving nothing back.
+  upgrade: {
+    family: 'mind-bender',
+    grade: {
+      bg: '#1a2224', fogColor: '#1a2224', fogDensity: 0.035,
+      key: '#d8f0f0', keyIntensity: 2.0, fill: '#3a5a5c', ambient: 0.24,
+      sat: -0.1, contrast: 0.06, grain: 0.04, vignette: 0.5, bloomIntensity: 0.26,
+    },
+    camera: { pos: [1.4, 1.65, 1.0], look: [-0.7, 0.55, -1.3], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.4, d: 4.6, h: 2.7, wallMat: 'flat', window: true,
+        mat: { walls: 'plaster', floor: 'tile', ceiling: 'tile', wallWear: 0.12, floorWear: 0.15 },
+        trim: { color: '#8a9496' },
+      },
+      props: [
+        { type: 'bed', pos: [-0.4, 0, -1.2], color: '#d8e0e0', frame: '#8a9496' },
+        { type: 'abstractFigure', pos: [-0.4, 0.72, -0.45], rot: [-Math.PI / 2, 0, 0], scale: 0.9, color: '#6e7a7c', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0.75, 0, -1.4], rot: [0, -1.2, 0], color: '#4a3a44', pose: 'sit' },
+        // the monitor
+        { type: 'slab', pos: [-1.5, 0.7, -1.9], size: [0.06, 1.4, 0.06], color: '#9aa4a6', metalness: 0.5 },
+        { type: 'screenPanel', pos: [-1.5, 1.45, -1.86], w: 0.5, h: 0.36, color: '#061210', intensity: 0.85, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#061210'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#3ae0a0'; ctx.lineWidth = 4; ctx.beginPath()
+          const m = H * 0.55
+          ctx.moveTo(0, m)
+          for (let x = 0; x < W; x += 120) { ctx.lineTo(x + 50, m); ctx.lineTo(x + 60, m - 90); ctx.lineTo(x + 70, m + 40); ctx.lineTo(x + 80, m) }
+          ctx.lineTo(W, m); ctx.stroke()
+          ctx.fillStyle = '#3ae0a0'; ctx.font = 'bold 54px Arial'; ctx.fillText('60', W - 90, 60)
+        } },
+        { type: 'lampPractical', pos: [-0.4, 2.45, -1.2], color: '#e8f4f4', intensity: 0.45 },
+      ],
+      systems: [
+        { type: 'PulseBeat', bpm: 60, depth: 0.1 },
+      ],
+    },
+    info: {
+      scorePos: [0.4, 1.6, -2.29],
+      metaPos: [-0.2, 2.3, -2.29],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [-0.4, 0, -1.2], dx: 0.36, dz: 0.4, y: 0.516, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [-1.5, 1.45, -1.86], dz: 0.012, y: 1.33 },
+      ],
+    },
+  },
+
+  // --------------------------------------------------------------- primal-fear
+  // The Chicago courtroom between sessions: the bench, the witness stand, the
+  // two counsel tables, the gallery, the rail. Everything in it is very
+  // slightly doubled (Duplicates, subtle): two people in one chair.
+  'primal-fear': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#2a2018', fogColor: '#2a2018', fogDensity: 0.028,
+      key: '#f0dcb0', keyIntensity: 2.0, fill: '#5a4430', ambient: 0.26,
+      sat: -0.08, contrast: 0.06, grain: 0.05, vignette: 0.5, bloomIntensity: 0.2,
+    },
+    camera: { pos: [0.2, 1.65, 2.9], look: [0.4, 1.1, -2.6], fov: 52 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6.4, d: 6.6, h: 3.2, wallMat: 'wood',
+        mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.2, floorWear: 0.35 },
+        trim: { color: '#2a1c10' },
+      },
+      props: [
+        { type: 'counter', pos: [0, 0, -2.6], w: 2.6, d: 0.8, h: 1.15, color: '#4a3020', keys: false },
+        { type: 'podium', pos: [1.8, 0, -2.1], color: '#4a3020' },
+        { type: 'abstractFigure', pos: [1.8, 0, -2.55], color: '#3a3a42', pose: 'stand' },
+        { type: 'table', pos: [-1.4, 0, -0.6], w: 1.8, d: 0.8, color: '#5a3c24' },
+        { type: 'chairRow', pos: [-1.4, 0, -0.05], rot: [0, Math.PI, 0], count: 2, color: '#3a2a1e', cushion: '#5a2a24' },
+        { type: 'table', pos: [1.2, 0, -0.4], w: 1.6, d: 0.8, color: '#5a3c24' },
+        // the rail, with its gate gap
+        { type: 'slab', pos: [-1.9, 0.45, 0.75], size: [2.4, 0.9, 0.06], color: '#4a3020' },
+        { type: 'slab', pos: [1.9, 0.45, 0.75], size: [2.4, 0.9, 0.06], color: '#4a3020' },
+        { type: 'chairRow', pos: [-1.2, 0, 1.4], rot: [0, Math.PI, 0], count: 4, spacing: 0.58, color: '#3a2a1e', cushion: '#3a2a1e' },
+        { type: 'frameOn', pos: [0, 2.4, -3.28], w: 0.7, h: 0.7, color: '#6a5020' },
+        { type: 'lampPractical', pos: [-0.6, 1.3, -2.6], color: '#f0d8a0', intensity: 0.4 },
+      ],
+      clutter: [
+        { type: 'bookStack', pos: [-1.9, 0.75, -0.6], count: 3, w: 0.24, d: 0.3, colors: ['#3a2a1a', '#5a1a1a'] },
+      ],
+      systems: [
+        { type: 'Duplicates', offset: 0.03, wrongness: 'subtle', wrapsProps: true },
+      ],
+    },
+    info: {
+      scorePos: [1.6, 2.4, -3.28],
+      metaPos: [-1.6, 2.3, -3.28],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [-1.4, 0, -0.6], dx: 0.3, dz: 0.05, y: 0.756, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [1.2, 0, -0.4], dx: 0.1, dz: 0.05, y: 0.756, tilt: FLAT },
+        { index: 2, of: 5, state: 'film', pos: [-1.4, 0, -0.6], dx: -0.2, dz: 0.05, y: 0.756, tilt: FLAT },
+        { index: 3, of: 5, state: 'motel', pos: [1.8, 0, -2.1], y: 1.106, tilt: FLAT },
+        { index: 4, of: 5, state: 'film', pos: [0, 0, -2.6], dx: -0.6, dz: 0.1, y: 1.156, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ frailty
+  // The cellar Dad dug under the rose garden: the stair down, one bare bulb,
+  // the workbench with the axe on it, his list on the wall, and an old set on
+  // a crate playing a security tape. Someone small stands in the corner.
+  frailty: {
+    family: 'dread',
+    grade: {
+      bg: '#1c1610', fogColor: '#1c1610', fogDensity: 0.05,
+      key: '#ffcf88', keyIntensity: 2.0, fill: '#3a2e20', ambient: 0.1,
+      sat: -0.12, contrast: 0.1, grain: 0.09, vignette: 0.65, bloomIntensity: 0.22,
+    },
+    camera: { pos: [0.5, 1.55, 1.9], look: [-0.2, 0.8, -1.6], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.6, d: 4.8, h: 2.3, wallMat: 'plaster',
+        mat: { walls: 'concrete', floor: 'concrete', ceiling: 'wood', wallWear: 0.7, floorWear: 0.75 },
+        trim: { color: '#140e0a' },
+      },
+      props: [
+        { type: 'lampPractical', pos: [0, 2.1, -0.8], color: '#ffcf88', intensity: 0.9, distance: 6 },
+        // the stair down
+        { type: 'slab', pos: [-1.95, 0.15, 0.4], size: [0.7, 0.3, 0.4], color: '#3a2c1e' },
+        { type: 'slab', pos: [-1.95, 0.3, 0.0], size: [0.7, 0.6, 0.4], color: '#3a2c1e' },
+        { type: 'slab', pos: [-1.95, 0.45, -0.4], size: [0.7, 0.9, 0.4], color: '#3a2c1e' },
+        { type: 'slab', pos: [-1.95, 0.6, -0.8], size: [0.7, 1.2, 0.4], color: '#3a2c1e' },
+        { type: 'slab', pos: [-1.95, 0.75, -1.2], size: [0.7, 1.5, 0.4], color: '#3a2c1e' },
+        // the bench and the axe
+        { type: 'table', pos: [1.2, 0, -1.9], w: 1.6, d: 0.7, color: '#3a2c1e' },
+        { type: 'slab', pos: [1.0, 0.775, -1.85], rot: [0, 0.3, 0], size: [0.9, 0.04, 0.05], color: '#6a4a2a' },
+        { type: 'slab', pos: [1.42, 0.78, -1.98], rot: [0, 0.3, 0], size: [0.12, 0.05, 0.22], color: '#6a6a6a', metalness: 0.6 },
+        // his list
+        { type: 'screenPanel', pos: [-0.6, 1.4, -2.38], w: 0.7, h: 0.9, color: '#d8ccb0', intensity: 0.3, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#d8ccb0'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#2a1a10'; ctx.lineWidth = 3
+          for (let r = 0; r < 9; r++) {
+            ctx.beginPath(); ctx.moveTo(40, 70 + r * 58)
+            for (let x = 40; x < W - 60 - (r * 37) % 120; x += 18) ctx.lineTo(x, 70 + r * 58 + Math.sin(x * 0.4 + r) * 6)
+            ctx.stroke()
+          }
+          ctx.strokeStyle = '#7a1a10'; ctx.lineWidth = 4
+          ;[1, 4, 6].forEach((r) => { ctx.beginPath(); ctx.moveTo(30, 70 + r * 58); ctx.lineTo(W - 40, 64 + r * 58); ctx.stroke() })
+        } },
+        // the set on a crate, the security tape running
+        { type: 'bevelBox', pos: [1.9, 0.3, -0.3], w: 0.6, h: 0.6, d: 0.6, color: '#4a3c2a' },
+        { type: 'bevelBox', pos: [1.9, 0.81, -0.32], w: 0.5, h: 0.42, d: 0.45, color: '#222222' },
+        { type: 'screenPanel', pos: [1.9, 0.82, -0.085], w: 0.4, h: 0.3, color: '#5a5e5a', intensity: 0.8, draw: (ctx, W, H) => {
+          for (let i = 0; i < 9000; i++) { const v = Math.floor(Math.random() * 160 + 40); ctx.fillStyle = `rgb(${v},${v},${v})`; ctx.fillRect(Math.random() * W, Math.random() * H, 3, 2) }
+          ctx.fillStyle = '#f0f0f0'; ctx.font = 'bold 40px monospace'; ctx.fillText('REC', 24, 54)
+        } },
+      ],
+      clutter: [
+        { type: 'rag', pos: [0.6, 0.75, -1.8], color: '#5a4a3a' },
+      ],
+      systems: [
+        { type: 'PeripheralFigure', corner: 'low', pos: [1.7, 0, -2.0], color: '#120e0a' },
+      ],
+    },
+    info: {
+      scorePos: [1.4, 1.75, -2.38],
+      metaPos: [-0.6, 2.03, -2.38],
+      fragments: [
+        { index: 0, of: 7, state: 'film', pos: [-1.95, 0.15, 0.4], dx: 0.1, y: 0.306, tilt: FLAT },
+        { index: 1, of: 7, state: 'motel', pos: [-1.95, 0.45, -0.4], dx: 0.1, y: 0.906, tilt: FLAT },
+        { index: 2, of: 7, state: 'film', pos: [1.9, 0.3, -0.3], dz: 0.312, y: 0.4 },
+        { index: 3, of: 7, state: 'motel', pos: [-1.95, 0.75, -1.2], dx: 0.1, y: 1.506, tilt: FLAT },
+        { index: 4, of: 7, state: 'film', pos: [-0.6, 1.4, -2.38], dz: 0.012, y: 1.11 },
+        { index: 5, of: 7, state: 'motel', pos: [1.9, 0.82, -0.085], dz: 0.012, y: 0.73 },
+        { index: 6, of: 7, state: 'film', pos: [1.2, 0, -1.9], dx: 0.55, dz: -0.05, y: 0.756, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------- terminator-2
+  // The steel mill: the catwalk out over the molten pit, Sarah and John at
+  // the rail, and down in the glow, the arm going under with its thumb up.
+  'terminator-2': {
+    family: 'momentum',
+    grade: {
+      bg: '#1a1210', fogColor: '#3a1a0c', fogDensity: 0.03,
+      key: '#ff8a3a', keyIntensity: 2.4, fill: '#2a3444', ambient: 0.32,
+      sat: 0.05, contrast: 0.1, grain: 0.05, vignette: 0.5, bloomIntensity: 0.4,
+    },
+    camera: { pos: [0.3, 1.6, 3.8], look: [0, 0.8, -9], fov: 52, far: 120 },
+    lights: {
+      key: { pos: [0, 0.2, -8.4], intensity: 2.4, distance: 16, color: '#ff7a2a', decay: 2 },
+      practicals: [
+        { pos: [-1.4, 3.5, 0], intensity: 0.9, distance: 9, color: '#8aa4c0', decay: 2 },
+        { pos: [1.2, 3.2, -4], intensity: 0.8, distance: 8, color: '#ffb070', decay: 2 },
+      ],
+      bounce: [{ pos: [0, 0.5, 3], intensity: 0.4, distance: 8, color: '#2a3444', decay: 2 }],
+    },
+    place: {
+      shell: 'deck',
+      shellParams: { length: 12, width: 3, railing: true, fogWall: false, floorTint: '#4a4440', skyTop: '#140a06', skyBottom: '#5a2a10' },
+      props: [
+        // the end rail, and the pit past it
+        { type: 'slab', pos: [0, 1.05, -6], size: [3, 0.06, 0.06], color: '#1c1e20', metalness: 0.4 },
+        { type: 'slab', pos: [0, 0.55, -6], size: [3, 0.04, 0.04], color: '#1c1e20', metalness: 0.4 },
+        // the warning plate wired to the rail
+        { type: 'slab', pos: [0.8, 0.78, -6], size: [0.8, 0.32, 0.02], color: '#c8a838' },
+        { type: 'pool', pos: [0, -0.6, -9], radius: 3, color: '#5a1a04', glow: '#ff7a1a' },
+        // the arm, the fist, the thumb
+        { type: 'slab', pos: [0, 0.15, -9], size: [0.14, 1.5, 0.14], color: '#6a6e72', metalness: 0.7 },
+        { type: 'bevelBox', pos: [0, 1.0, -9], w: 0.2, h: 0.2, d: 0.18, color: '#6a6e72', metalness: 0.7 },
+        { type: 'slab', pos: [0.04, 1.2, -9], size: [0.06, 0.22, 0.06], color: '#6a6e72', metalness: 0.7 },
+        // Sarah and John at the rail
+        { type: 'abstractFigure', pos: [-1.0, 0, -5.4], color: '#14161a', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-1.35, 0, -5.45], scale: 0.85, color: '#1a1c20', pose: 'stand' },
+        // the control box on the catwalk
+        { type: 'bevelBox', pos: [1.0, 0.4, 1.8], w: 0.6, h: 0.8, d: 0.5, color: '#3a3a34' },
+        // the crane overhead and its chains
+        { type: 'slab', pos: [0, 4.2, -4], size: [8, 0.4, 0.4], color: '#2a2a2a', metalness: 0.5 },
+        { type: 'slab', pos: [-1.2, 2.7, -3], size: [0.04, 3, 0.04], color: '#2a2622', metalness: 0.5 },
+        { type: 'slab', pos: [1.3, 2.9, -4.6], size: [0.04, 2.6, 0.04], color: '#2a2622', metalness: 0.5 },
+      ],
+      atmosphere: [
+        { type: 'DustField', density: 40, size: 0.016, opacity: 0.5, area: [6, 4, 10], color: '#ffa050', speed: 0.2 },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.0, 1.75, -6.03],
+      metaPos: [0, 1.3, -6.03],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [1.0, 0.4, 1.8], y: 0.806, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [0.8, 0.78, -6], dx: -0.19, dz: 0.022, y: 0.78 },
+        { index: 2, of: 3, state: 'film', pos: [0.8, 0.78, -6], dx: 0.19, dz: 0.022, y: 0.78 },
+      ],
+    },
+  },
 }
 
 const CAMERA = { pos: [0, 1.55, 3.2], look: [0, 1.3, 0], fov: 50, far: undefined }
