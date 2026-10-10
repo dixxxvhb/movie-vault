@@ -8,6 +8,30 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Rooms for the eight Oct 4 and Oct 7 films (2026-10-10)
+
+Dixon's pick from the Oct 10 check-in. Same shape as the Sep 27 fifteen: a template room in the film's own place, verbatim take scraps placed by hand, a sound recipe each. Headless check of every room in swiftshader: zero console errors, framing looked at.
+
+| Film | Room |
+|---|---|
+| Dunkirk | The Mole: the queue down the boards, crates, a stretcher, the sea below, a little boat alongside, the boats' light coming out of the haze. The board at the end carries the three clocks (THE MOLE ONE WEEK, THE SEA ONE DAY, THE AIR ONE HOUR); the verdict is pinned to it. Sound: surf, a watch tick, a tone that climbs and never arrives |
+| Gone Baby Gone | Helene's apartment at the end: Patrick and Amanda on the couch, the TV on low, the MISSING poster still up |
+| Hot Fuzz | Sandford's square: Village of the Year sign, fete table, bench, police car, the swan, the Crown, the church, Angel mid-air with two guns |
+| The Death of Stalin | The dacha study: rug, desk, the record still on the player, him on the floor, the Committee round him. One scrap (one-clause take), Yudina's note on the floor |
+| Upgrade | The hospital bed he dreamed: Grey in bed, Asha in the chair, the monitor at 60 (PulseBeat) |
+| Primal Fear | The courtroom between sessions: bench, witness stand, both counsel tables, rail, gallery. Duplicates (subtle) on everything |
+| Frailty | The cellar under the rose garden: the stair, one bare bulb, the axe on the bench, his list, a set on a crate showing the security tape, a PeripheralFigure in the corner |
+| Terminator 2 | The steel mill catwalk: Sarah and John at the rail, the arm rising out of the pit with its thumb up |
+
+- `emit_vault_data.py` now prints `rooms: N / M` and names any wall film with no CONFIGS entry and no bespoke room (the Default fog disc). Checked against the pre-change configs: it named exactly these eight.
+- Staging is from memory of the films, not checked against stills. Hot Fuzz's square and Frailty's security-tape set are compositions, not literal sets.
+
+### Open after this pass
+- `emotional_key` is null for all 65 films in the current `vault-data.json` (it was emitted for 47 on the session-two slice, `6be2f8c`). Pipeline regression, not looked into yet.
+- The eight are template rooms, not Two-Scene builds, same as the fifteen.
+
+---
+
 ## Wall pass, Oct 4 catch-up (2026-10-05)
 
 Leonard's brief, every item pre-decided. Commit `5e9f8ea`, marker "published through gone-baby-gone 2026-10-04".

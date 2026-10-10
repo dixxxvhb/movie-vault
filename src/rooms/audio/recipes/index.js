@@ -44,6 +44,14 @@ import { start as theTown } from './the-town.js'
 import { start as theAmateur } from './the-amateur.js'
 import { start as inTheGrey } from './in-the-grey.js'
 import { start as oneBattleAfterAnother } from './one-battle-after-another.js'
+import { start as dunkirk } from './dunkirk.js'
+import { start as goneBabyGone } from './gone-baby-gone.js'
+import { start as hotFuzz } from './hot-fuzz.js'
+import { start as theDeathOfStalin } from './the-death-of-stalin.js'
+import { start as upgrade } from './upgrade.js'
+import { start as primalFear } from './primal-fear.js'
+import { start as frailty } from './frailty.js'
+import { start as terminator2 } from './terminator-2.js'
 
 export const TEMPLATE_RECIPES = {
   darkknight,
@@ -86,4 +94,12 @@ export const TEMPLATE_RECIPES = {
   'the-amateur': theAmateur,
   'in-the-grey': inTheGrey,
   'one-battle-after-another': oneBattleAfterAnother,
+  dunkirk,
+  'gone-baby-gone': goneBabyGone,
+  'hot-fuzz': hotFuzz,
+  'the-death-of-stalin': theDeathOfStalin,
+  upgrade,
+  'primal-fear': primalFear,
+  frailty,
+  'terminator-2': terminator2,
 }

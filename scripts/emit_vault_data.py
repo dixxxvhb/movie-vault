@@ -706,3 +706,21 @@ print("  quotes:", len(quotes),
       % (sum(1 for q in quotes if q["where"] == "ledger"),
          sum(1 for q in quotes if q["where"] == "archive"),
          _loose))
+
+# Rooms owed. A film on the wall with neither a CONFIGS entry nor a bespoke
+# room walks into the Default fog disc: no walls, no props, the take on a
+# floating card. That happened to fifteen films by Sep 27 and to eight more by
+# Oct 7, each time unnoticed until an audit, so the wall pass says it out loud.
+def _room_slugs():
+    src = os.path.join(BASE, "src", "rooms")
+    key = re.compile(r"^  '?([a-z0-9-]+)'?: ", re.M)
+    cfg = io.open(os.path.join(src, "configs.js"), encoding="utf-8").read()
+    cfg = cfg[cfg.index("export const CONFIGS"):cfg.index("\nconst CAMERA")]
+    reg = io.open(os.path.join(src, "registry.js"), encoding="utf-8").read()
+    reg = reg[reg.index("const BESPOKE"):reg.index("\n}", reg.index("const BESPOKE"))]
+    return set(key.findall(cfg)) | set(key.findall(reg))
+
+_rooms = _room_slugs()
+_roomless = [f["slug"] for f in films if f["slug"] not in _rooms]
+print("  rooms:", len(films) - len(_roomless), "/", len(films),
+      ("| OWED, no room yet (Default fog disc): " + ", ".join(_roomless)) if _roomless else "")
