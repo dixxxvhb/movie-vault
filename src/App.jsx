@@ -31,8 +31,14 @@ import { subscribeLevel, blendGrade } from './rooms/houseLights.js'
 import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
 import { XR } from '@react-three/xr'
 import { xrStore, XRPlayer, XRFloorZone, EnterVR, useInXR } from './xr.jsx'
+import CourtWorld from './building/CourtWorld.jsx'
+import CourtHUD from './building/CourtHUD.jsx'
+import { returnTo, setCourt } from './building/courtStore.js'
 
 const HD = ROOM.D / 2
+// The Court's post pass: no hue shift, but enough bloom for the windows,
+// the light under every door and the pool to read at night.
+const COURT_GRADE = { hue: 0, sat: 0, contrast: 0.04, bloomIntensity: 0.85, vignette: 0.62, grain: 0.035 }
 const HW = ROOM.W / 2
 
 // Phase 2 spec's "cold detail": Memento's own wash runs longer and settles
@@ -282,7 +288,21 @@ export default function App() {
   // CameraRig/XRPlayer/originFor/the dock's active test for the MOTEL, and
   // overloading it here would mean every one of those has to learn to ignore
   // values that mean nothing to it.
-  const [world, setWorld] = useState('motel')
+  //
+  // NO VACANCY Phase 5: 'court' is the building outside, and it is where a
+  // plain visit lands. The motel room above is Room 4, the office, and the
+  // address ?wall (or any of ?film=/?print=) still lands you straight in it.
+  // 'court-entering:<slug>' and 'court-office' are the wash from the Court
+  // into a room or the office; 'motel-outside' is the wash back out.
+  const [world, setWorld] = useState(() => {
+    try {
+      const q = new URLSearchParams(location.search)
+      return ['wall', 'film', 'print', 'room', 'printroom', 'hazyroom'].some((k) => q.has(k)) ? 'motel' : 'court'
+    } catch { return 'court' }
+  })
+  // Where "back out" goes from a room: the Court if you came in from it (or
+  // straight from an address), the wall if you stepped in through a Polaroid.
+  const homeRef = useRef('court')
   // the develop wash currently on screen, or null. Its own state (not derived
   // from `world`) because it has to keep fading out for ~600ms AFTER `world`
   // has already flipped to the other side — if it were only mounted while
@@ -356,6 +376,8 @@ export default function App() {
     : null
   const motelMounted = world === 'motel' || world.startsWith('entering:')
     || world.startsWith('entering-print:') || world.startsWith('entering-hazy:')
+    || world === 'motel-outside'
+  const courtMounted = world === 'court' || world.startsWith('court-entering:') || world === 'court-office'
   // 'doorhop:' never mounts the motel (brief §6: "runs exit-into-enter
   // directly, skip the wall") — instead it keeps whichever room the hop
   // started FROM mounted for the whole wash, via doorHopFromRef.
@@ -373,6 +395,7 @@ export default function App() {
   const enterFilm = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    homeRef.current = 'motel'
     // a fresh trip in from the wall starts the bloodline-door breadcrumb over
     hopChainRef.current = []
     setHopCount(0)
@@ -418,6 +441,7 @@ export default function App() {
   const enterPrint = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    homeRef.current = 'motel'
     hopChainRef.current = []
     setHopCount(0)
     setWorld('entering-print:' + slug)
@@ -453,6 +477,7 @@ export default function App() {
   const enterHazy = (slug) => {
     if (world !== 'motel' || !slug || xrStore.getState().session != null) return
     preEntryStation.current = station
+    homeRef.current = 'motel'
     hopChainRef.current = []
     setHopCount(0)
     setWorld('entering-hazy:' + slug)
@@ -472,13 +497,58 @@ export default function App() {
     setTransition({ id: 'exit-hazy:' + world.slice(5) + ':' + Date.now() })
   }
 
+  // Through a door on the Court: the same develop wash as stepping into a
+  // Polaroid, landing in the same film room.
+  const enterFromCourt = useCallback((slug) => {
+    if (worldRef.current !== 'court' || !slug || xrStore.getState().session != null) return
+    exitPointerLock()
+    homeRef.current = 'court'
+    hopChainRef.current = []
+    setHopCount(0)
+    setCourt({ selected: null })
+    setWorld('court-entering:' + slug)
+    setTransition({ id: 'enter:' + slug + ':' + Date.now() })
+    const url = new URL(location.href)
+    for (const k of ['wall', 'film', 'print', 'printroom', 'hazyroom']) url.searchParams.delete(k)
+    url.searchParams.set('room', slug)
+    history.pushState(null, '', url)
+  }, [])
+  // The office door, Room 4: the wall.
+  const enterOffice = useCallback(() => {
+    if (worldRef.current !== 'court') return
+    setCourt({ selected: null })
+    setWorld('court-office')
+    setTransition({ id: 'office:4:' + Date.now() })
+  }, [])
+  // And back out of the office onto the lot.
+  const stepOutside = () => {
+    if (world !== 'motel') return
+    setSelected(null)
+    setPicked(null)
+    setOpenBox(null)
+    setWorld('motel-outside')
+    setTransition({ id: 'outside:4:' + Date.now() })
+  }
+
   // The wash's peak is where the world actually swaps underneath the white-
   // out — MotelWorld/FilmWorld (or ArchiveWorld) trade places while the
   // screen is fully covered.
   const handleDevelopPeak = () => {
     setDragDistance(0)
     document.body.style.cursor = 'auto'
-    if (world.startsWith('entering:')) {
+    if (world.startsWith('court-entering:')) {
+      setWorld('film:' + world.slice(15))
+    } else if (world === 'court-office') {
+      setWorld('motel')
+      setStation('center')
+    } else if (world === 'motel-outside') {
+      setWorld('court')
+      returnTo(data?.films, 'office')
+    } else if (homeRef.current === 'court' && /^exiting(-print|-hazy)?:/.test(world)) {
+      // back out onto the walkway, in front of the door you went in by
+      setWorld('court')
+      returnTo(data?.films, world.slice(world.indexOf(':') + 1))
+    } else if (world.startsWith('entering:')) {
       setWorld('film:' + world.slice(9))
       setSelected(null)
     } else if (world.startsWith('exiting:')) {
@@ -640,6 +710,8 @@ export default function App() {
       if (world.startsWith('film:')) return exitFilm()
       if (world.startsWith('print:')) return exitPrint()
       if (world.startsWith('hazy:')) return exitHazy()
+      // the Court's HUD handles its own Esc
+      if (world !== 'motel') return
       // panels first: Esc should shut what is in front of you before it starts
       // walking you back across the room
       if (finding) return setFinding(false)
@@ -688,7 +760,12 @@ export default function App() {
       url.searchParams.delete('printroom')
       url.searchParams.delete('film')
       url.searchParams.delete('print')
+    } else if (world === 'court') {
+      for (const k of ['wall', 'room', 'printroom', 'hazyroom', 'film', 'print']) url.searchParams.delete(k)
     } else if (world === 'motel') {
+      // the wall is Room 4 now; say so, so a reload lands back in it
+      if (!selected && !picked) url.searchParams.set('wall', '')
+      else url.searchParams.delete('wall')
       url.searchParams.delete('room')
       url.searchParams.delete('printroom')
       url.searchParams.delete('hazyroom')
@@ -871,7 +948,7 @@ export default function App() {
             the room correct it without configs.js needing a matching edit */}
         <color attach="background" args={[activeRoomConfig
           ? blendGrade({ ...activeRoomConfig.grade, ...(gradeOverride || {}) }, houseT).bg
-          : '#05040a']} />
+          : courtMounted ? '#0a1020' : '#05040a']} />
 
         <XRPlayer station={view.station} />
         {motelMounted && (
@@ -910,6 +987,8 @@ export default function App() {
           />
         )}
 
+        {courtMounted && data && <CourtWorld films={data.films} onOffice={enterOffice} />}
+
         {filmMounted && roomFilm && roomConfig && (
           <FilmWorld slug={filmSlug} film={roomFilm} config={roomConfig} doors={roomDoors} onDoor={onDoorOpen} />
         )}
@@ -923,7 +1002,7 @@ export default function App() {
         )}
 
         <Post
-          grade={activeRoomConfig
+          grade={courtMounted ? COURT_GRADE : activeRoomConfig
             ? blendGrade(
                 gradeOverride ? { ...activeRoomConfig.grade, ...gradeOverride } : activeRoomConfig.grade,
                 houseT
@@ -1038,6 +1117,10 @@ export default function App() {
         }
       `}</style>
 
+      {world === 'court' && data && (
+        <CourtHUD films={data.films} onEnter={(slug) => gated(slug, () => enterFromCourt(slug))} onOffice={enterOffice} />
+      )}
+
       {world === 'motel' && (
         // maxWidth keeps a scaled-up brand out of the ? and gear column
         <div style={{ ...hud.brand, zoom: 'var(--ts, 1)', maxWidth: 'calc((100vw - 110px) / var(--ts, 1))' }}>
@@ -1055,6 +1138,15 @@ export default function App() {
           room has its own, much smaller, HUD below. */}
       {world === 'motel' && (
         <div className="vault-dock">
+          <button
+            aria-label="outside"
+            onClick={stepOutside}
+            style={hud.navBtn}
+            title="out of the office, onto the lot"
+          >
+            outside
+          </button>
+          <span style={hud.rule} />
           {[
             ['center', 'stand'],
             ['ledger', 'the ledger'],
@@ -1155,7 +1247,7 @@ export default function App() {
             style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
-            back to the wall
+            {homeRef.current === 'court' ? 'back outside' : 'back to the wall'}
           </button>
         </>
       )}
@@ -1179,7 +1271,7 @@ export default function App() {
             style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
-            back to the wall
+            {homeRef.current === 'court' ? 'back outside' : 'back to the wall'}
           </button>
         </>
       )}
@@ -1199,7 +1291,7 @@ export default function App() {
             style={{ ...hud.backToWall, zoom: 'var(--ts, 1)' }}
             title="esc, or browser back, does the same thing"
           >
-            back to the wall
+            {homeRef.current === 'court' ? 'back outside' : 'back to the wall'}
           </button>
         </>
       )}
