@@ -1118,7 +1118,7 @@ export default function App() {
       `}</style>
 
       {world === 'court' && data && (
-        <CourtHUD films={data.films} onEnter={enterFromCourt} onOffice={enterOffice} />
+        <CourtHUD films={data.films} onEnter={(slug) => gated(slug, () => enterFromCourt(slug))} onOffice={enterOffice} />
       )}
 
       {world === 'motel' && (
