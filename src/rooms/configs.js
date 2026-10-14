@@ -456,21 +456,33 @@ export const CONFIGS = {
         // the steel table — a bevelled body with a real metal surface
         // (materials.js), not a flat-colored box.
         {
-          type: 'bevelBox', pos: [0, 0.36, -0.8], w: 1.2, h: 0.06, d: 0.7, radius: 0.02,
+          type: 'bevelBox', pos: [0, 0.73, -0.8], w: 1.2, h: 0.06, d: 0.7, radius: 0.02,
           mat: { kind: 'metal', tint: '#3a3f46', wear: 0.35 },
           castShadow: true, receiveShadow: true,
           touch: { kind: 'nudge', amplitude: 0.18 },
         },
-        { type: 'slab', pos: [0.36, 0.18, -0.6], size: [0.04, 0.36, 0.04], color: '#22252a' },
-        { type: 'slab', pos: [-0.36, 0.18, -0.6], size: [0.04, 0.36, 0.04], color: '#22252a' },
-        { type: 'slab', pos: [0.36, 0.18, -1.0], size: [0.04, 0.36, 0.04], color: '#22252a' },
-        { type: 'slab', pos: [-0.36, 0.18, -1.0], size: [0.04, 0.36, 0.04], color: '#22252a' },
-        { type: 'chairRow', pos: [0, 0, -0.3], count: 2, spacing: 0.7 },
+        { type: 'slab', pos: [0.5, 0.36, -0.55], size: [0.04, 0.72, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [-0.5, 0.36, -0.55], size: [0.04, 0.72, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [0.5, 0.36, -1.05], size: [0.04, 0.72, 0.04], color: '#22252a' },
+        { type: 'slab', pos: [-0.5, 0.36, -1.05], size: [0.04, 0.72, 0.04], color: '#22252a' },
+        // Rebuilt 2026-10-14: the table stood knee-high with two empty
+        // chairs filling the foreground. It is the scene now. The Joker
+        // sits across the table under the light, cuffed and smiling; Batman
+        // stands at the end of the table, between him and the mirror.
+        { type: 'chairRow', pos: [0, 0, -1.42], count: 1, color: '#2a2d32', cushion: '#2a2d32' },
+        {
+          type: 'abstractFigure', pos: [0, 0.03, -1.36], rot: [0, 0, 0], pose: 'sit',
+          skin: '#9c968c', hair: '#3e5a32', color: '#4a2c58', coat: true, shirt: '#3c5a3a', legs: '#3a2446', shoes: '#1a1418',
+        },
+        {
+          type: 'abstractFigure', pos: [0.82, 0, -1.02], rot: [0, -1.75, 0], pose: 'stand', breathe: true,
+          color: '#16171a', legs: '#121316', skin: '#9a7c6a', hat: 'cowl', hatColor: '#0e0f11', coat: 'cape', shirt: false, shoes: '#0a0a0a',
+        },
         { type: 'mirrorPlane', pos: [2.08, 1.5, 0], rot: [0, -Math.PI / 2, 0], w: 1.4, h: 1.6 },
         { type: 'frameOn', pos: [-2.08, 1.4, 0.9], rot: [0, Math.PI / 2, 0], w: 0.9, h: 1.2, color: '#15171b' },
         // the coin-flip object at the seam between order and entropy —
         // brief §5's own line for this room.
-        { type: 'slab', pos: [0, 0.375, -0.8], size: [0.05, 0.006, 0.05], color: '#c8c0a0', touch: { kind: 'nudge', amplitude: 0.1, foley: 'tick' } },
+        { type: 'slab', pos: [0.18, 0.765, -0.62], size: [0.05, 0.006, 0.05], color: '#c8c0a0', touch: { kind: 'nudge', amplitude: 0.1, foley: 'tick' } },
       ],
       // Wave P0 clutter (detail.jsx): the room's own half-and-half rule.
       // Ordered side (camera-left, toward the practical): a squared case-
@@ -503,9 +515,9 @@ export const CONFIGS = {
     // center from the key's beam column so the record sits BESIDE the
     // light, never inside it.
     info: {
-      hotTakePos: [-0.85, 1.55, -2.06], hotTakeRot: [0, 0, 0],
-      scorePos: [1.15, 2.0, -2.06],
-      metaPos: [-0.2, 0.85, -2.06],
+      hotTakePos: [-1.05, 1.45, -2.06], hotTakeRot: [0, 0, 0],
+      scorePos: [1.25, 2.05, -2.06],
+      metaPos: [-0.95, 0.75, -2.06],
     },
   },
 

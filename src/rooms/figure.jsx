@@ -103,9 +103,14 @@ function geo() {
   GEO.longHair = new THREE.CylinderGeometry(0.1, 0.13, 0.32, 14, 1, true, Math.PI * 0.25, Math.PI * 1.5).translate(0, -0.12, -0.015)
   GEO.robe = new THREE.CylinderGeometry(0.2, 0.32, 0.86, 16, 1, true)
   GEO.coat = new THREE.CylinderGeometry(0.2, 0.27, 0.62, 14, 1, true)
+  // a cape: shoulders to calves, open at the front
+  GEO.cape = new THREE.CylinderGeometry(0.2, 0.36, 1.18, 18, 1, true, Math.PI * 0.3, Math.PI * 1.4)
   GEO.brim = new THREE.CylinderGeometry(0.17, 0.17, 0.012, 18)
   GEO.crown = new THREE.CylinderGeometry(0.095, 0.105, 0.11, 16)
   GEO.cap = new THREE.SphereGeometry(0.112, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2)
+  // a cowl: the whole head down past the eyes, two short ears on top
+  GEO.cowl = new THREE.SphereGeometry(0.122, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.7).scale(1, 1.08, 1)
+  GEO.ear = new THREE.ConeGeometry(0.024, 0.1, 6)
   GEO.gun = new THREE.BoxGeometry(0.03, 0.05, 0.17).translate(0, 0, 0.06)
   GEO.grip = new THREE.BoxGeometry(0.026, 0.09, 0.035).translate(0, -0.03, 0)
   GEO.ready = true
@@ -210,7 +215,10 @@ export function Figure({
         <mesh geometry={g.pelvis} material={look.legs} />
         <Leg side={1} l={P.ll} k={P.lk} mat={look.legs} shoeMat={look.shoe} g={g} />
         <Leg side={-1} l={P.rl} k={P.rk} mat={look.legs} shoeMat={look.shoe} g={g} />
-        {coat && hangs && coat !== 'robe' && (
+        {coat === 'cape' && hangs && (
+          <mesh geometry={g.cape} material={look.top} position={[0, -0.02, -0.03]} scale={[1, 1, 0.7]} />
+        )}
+        {coat && hangs && coat !== 'robe' && coat !== 'cape' && (
           <mesh geometry={g.coat} material={look.top} position={[0, -0.25, 0]} scale={[1, 1, 0.75]} />
         )}
         {coat === 'robe' && hangs && (
@@ -223,7 +231,7 @@ export function Figure({
           <Arm side={1} a={P.la} e={P.le} mat={look.top} skinMat={look.skin} gun={gunL} g={g} />
           <Arm side={-1} a={P.ra} e={P.re} mat={look.top} skinMat={look.skin} gun={gunR} g={g} />
           <group position={[0, H.torso + 0.02, 0]} rotation={[P.nk, 0, 0]}>
-            <mesh geometry={g.neck} material={look.skin} position={[0, H.neck / 2, 0]} />
+            <mesh geometry={g.neck} material={hat === 'cowl' ? look.hat : look.skin} position={[0, H.neck / 2, 0]} />
             <group ref={headRef} position={[0, H.neck + H.head * 0.95, 0.01]}>
               <mesh geometry={g.head} material={look.skin} />
               <mesh geometry={g.jaw} material={look.skin} position={[0, -0.05, 0.028]} />
@@ -233,6 +241,13 @@ export function Figure({
                 <group position={[0, 0.075, 0]}>
                   <mesh geometry={g.brim} material={look.top} />
                   <mesh geometry={g.crown} material={look.top} position={[0, 0.055, 0]} />
+                </group>
+              )}
+              {hat === 'cowl' && (
+                <group>
+                  <mesh geometry={g.cowl} material={look.hat} position={[0, 0.004, -0.004]} />
+                  <mesh geometry={g.ear} material={look.hat} position={[-0.058, 0.14, -0.01]} rotation={[0, 0, 0.1]} />
+                  <mesh geometry={g.ear} material={look.hat} position={[0.058, 0.14, -0.01]} rotation={[0, 0, -0.1]} />
                 </group>
               )}
               {hat === 'cap' && <mesh geometry={g.cap} material={look.hair || look.top} position={[0, 0.02, -0.005]} />}

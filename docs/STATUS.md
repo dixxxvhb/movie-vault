@@ -8,6 +8,24 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Room polish pass (2026-10-14)
+
+Every room shot headless (desk 16:10 and phone portrait) before and after, swiftshader. Zero console errors either side. Branch `claude/project-thread-9iy0k6`. Settings, data files and the building layout untouched (other threads own them).
+
+| What | Notes |
+|---|---|
+| People | Capsule people replaced by a jointed `Figure` (`src/rooms/figure.jsx`): real limbs, joints, head, poses (stand, walk, sit, crouch, kneel, aim, lie, dive, hold, huddle, raise), optional clothes, hair, hats (fedora, cap, helmet, veil, cowl), coat, robe, cape, guns, a breathing idle. Config rooms get dressed people; PeripheralFigure, BR2049 and The Matrix keep the bare silhouette |
+| Staging | Figures re-posed per film: Dunkirk queue in helmets facing the sea, Stalin and Grey lying down, Angel diving with two guns, the nuns in The Town, Sarah and John at the rail, Doe kneeling, Mills aiming |
+| Rebuilt | Se7en (the pylons, the car, the van, the three of them), One Battle After Another (the rolling desert road, hills, scrub, the car cresting with its lights on), Batman Begins (it was a blue slot; now the brick well with the boy, the crack and the bats), The Dark Knight (table at real height, the Joker cuffed under the light, Batman standing in a cape) |
+| Kit | `src/rooms/landmarks.jsx`: pylonLine, hills, roadStrip, scrub. `vehicleMass` now draws a car, van or boat with cabin glass, wheels and lights |
+| Bugs | Nightcrawler caption bar, BR2049 reflected score and the door plaque rendered solid white (an unkeyed conditional material reused its map-less program); keyed. Phone portrait cut the score off the right in about ten rooms; score and meta now slide into view on narrow screens (desktop unchanged). Dunkirk's fog wall was a hard gray card; now a soft haze. Hereditary and Source Code had the score inside the ceiling |
+
+### Open after this pass
+- The other weak template rooms from the audit (Malignant, Triangle, Sunshine, The Game, Annihilation, Stardust, Poor Things, Coherence, TDKR) were not rebuilt.
+- Faces are plain; figures have no expressions or hands with fingers.
+
+---
+
 ## Rooms for the eight Oct 4 and Oct 7 films (2026-10-10)
 
 Dixon's pick from the Oct 10 check-in. Same shape as the Sep 27 fifteen: a template room in the film's own place, verbatim take scraps placed by hand, a sound recipe each. Headless check of every room in swiftshader: zero console errors, framing looked at.
