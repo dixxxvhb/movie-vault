@@ -311,7 +311,7 @@
    "rank": 2,
    "year": 2013,
    "title": "Prisoners",
-   "reason": "Villeneuve, heavy, excellent — REWATCH, I've seen it before and remember the sledgehammer; flag is_rewatch when logged",
+   "reason": "Villeneuve, heavy, excellent. REWATCH, I've seen it before and remember the sledgehammer; flag is_rewatch when logged",
    "where": "rent"
   },
   {
@@ -407,7 +407,7 @@
    "rank": 21,
    "year": 2018,
    "title": "Sicario: Day of the Soldado",
-   "reason": "sequel, decent but lesser — no Villeneuve, no Kate; expectations pre-lowered",
+   "reason": "sequel, decent but lesser, no Villeneuve, no Kate; expectations pre-lowered",
    "where": "needs Starz Apple TV channel"
   },
   {
@@ -419,11 +419,11 @@
    "where": "needs Disney+"
   },
   {
-   "note": "coming soon — late 2026",
+   "note": "coming soon, late 2026",
    "rank": 23,
    "year": 2026,
    "title": "Dune: Part Three",
-   "reason": "highly anticipated — Villeneuve lane, the spine",
+   "reason": "highly anticipated, Villeneuve lane, the spine",
    "where": null
   },
   {
@@ -439,15 +439,15 @@
    "rank": null,
    "year": 2015,
    "title": "Kingsman: The Secret Service",
-   "reason": "SEEN buzzed Jul 21, 2026 — flagged by him as deserving a rewatch at some point. Competent-operator lane turned gonzo.",
+   "reason": "SEEN buzzed Jul 21, 2026, flagged by him as deserving a rewatch at some point. Competent-operator lane turned gonzo.",
    "where": "needs FXNow"
   },
   {
-   "note": "tabled — his to raise, fresh start only",
+   "note": "tabled, his to raise, fresh start only",
    "rank": null,
    "year": 1998,
    "title": "Run Lola Run",
-   "reason": "Wed Jul 22 pick. Sleepy-but-stimulate brief: 80 min, three sprints at the same 20 minutes, structure-as-stimulation in the Memento family, techno score as caffeine. On Prime (verify tier at press play). Log only on completion per house rules. — Jul 22 attempt: SLEEP WON (career victim #3), not even running techno held him. Also missed the German-subtitles disclosure (it WAS in the pitch, receipts on file; split liability ruled). Back in queue, no penalty, Vast of Night precedent. — Jul 22 ruling: TABLED indefinitely by the sovereign. Not finishing, not resuming; \"it was a lot.\" When it returns, it returns as a full from-the-start watch after enough time has passed. Do not pitch again soon; he raises it.",
+   "reason": "Wed Jul 22 pick. Sleepy-but-stimulate brief: 80 min, three sprints at the same 20 minutes, structure-as-stimulation in the Memento family, techno score as caffeine. On Prime (verify tier at press play). Log only on completion per house rules. Jul 22 attempt: SLEEP WON (career victim #3), not even running techno held him. Also missed the German-subtitles disclosure (it WAS in the pitch, receipts on file; split liability ruled). Back in queue, no penalty, Vast of Night precedent. Jul 22 ruling: TABLED indefinitely by the sovereign. Not finishing, not resuming; \"it was a lot.\" When it returns, it returns as a full from-the-start watch after enough time has passed. Do not pitch again soon; he raises it.",
    "where": "free on YouTube"
   },
   {
@@ -455,7 +455,7 @@
    "rank": null,
    "year": 2019,
    "title": "The Vast of Night",
-   "reason": "Midnight slot Jul 17 — the \"short weird one\" pick. Free on Prime (Amazon original), Coherence-lane low-budget wonder. Started ~midnight; sleep-dependent whether it counts as a watch. — Did not happen night of Jul 17; sleep won. Back in the queue, no penalty.",
+   "reason": "Midnight slot Jul 17, the \"short weird one\" pick. Free on Prime (Amazon original), Coherence-lane low-budget wonder. Started ~midnight; sleep-dependent whether it counts as a watch. Did not happen night of Jul 17; sleep won. Back in the queue, no penalty.",
    "where": null
   }
  ],
@@ -3949,7 +3949,7 @@
    "year": 2016,
    "kind": "shoebox",
    "memory": 10.0,
-   "note": "vault archive — memory 10.0, seen in the past year",
+   "note": "vault archive, memory 10.0, seen in the past year",
    "poster": "posters/arrival.jpg",
    "genres": [
     "Drama",
@@ -3969,7 +3969,7 @@
    "year": 1997,
    "kind": "shoebox",
    "memory": 10.0,
-   "note": "vault archive — memory 10.0, seen in the past year",
+   "note": "vault archive, memory 10.0, seen in the past year",
    "poster": "posters/contact.jpg",
    "genres": [
     "Drama",
@@ -3989,7 +3989,7 @@
    "year": 1998,
    "kind": "shoebox",
    "memory": 10.0,
-   "note": "vault archive — memory 10.0, seen in the past year",
+   "note": "vault archive, memory 10.0, seen in the past year",
    "poster": "posters/deep-impact.jpg",
    "genres": [
     "Action",
@@ -4009,7 +4009,7 @@
    "year": 2014,
    "kind": "shoebox",
    "memory": 10.0,
-   "note": "vault archive — memory 10.0",
+   "note": "vault archive, memory 10.0",
    "poster": "posters/interstellar.jpg",
    "genres": [
     "Adventure",
@@ -4029,7 +4029,7 @@
    "year": 2023,
    "kind": "shoebox",
    "memory": 10.0,
-   "note": "vault archive — memory 10.0",
+   "note": "vault archive, memory 10.0",
    "poster": "posters/oppenheimer.jpg",
    "genres": [
     "Drama",
@@ -4067,7 +4067,7 @@
    "year": 2024,
    "kind": "shoebox",
    "memory": 9.9,
-   "note": "vault archive — memory 9.9, seen in the past year",
+   "note": "vault archive, memory 9.9, seen in the past year",
    "poster": "posters/dune-part-two.jpg",
    "genres": [
     "Science Fiction",
@@ -4086,7 +4086,7 @@
    "year": null,
    "kind": "shoebox",
    "memory": 9.8,
-   "note": "vault archive — memory 9.8, scored as a whole",
+   "note": "vault archive, memory 9.8, scored as a whole",
    "poster": "posters/lotr.jpg",
    "genres": [
     "Adventure",
@@ -4106,7 +4106,7 @@
    "year": 1998,
    "kind": "shoebox",
    "memory": 9.8,
-   "note": "vault archive — memory 9.8",
+   "note": "vault archive, memory 9.8",
    "poster": "posters/truman-show.jpg",
    "genres": [
     "Comedy",
@@ -4125,7 +4125,7 @@
    "year": 1997,
    "kind": "shoebox",
    "memory": 9.8,
-   "note": "vault archive — memory 9.8",
+   "note": "vault archive, memory 9.8",
    "poster": "posters/titanic.jpg",
    "genres": [
     "Drama",
@@ -4144,7 +4144,7 @@
    "year": 2021,
    "kind": "shoebox",
    "memory": 9.7,
-   "note": "vault archive — memory 9.7, seen in the past year",
+   "note": "vault archive, memory 9.7, seen in the past year",
    "poster": "posters/dune.jpg",
    "genres": [
     "Science Fiction",
@@ -4164,7 +4164,7 @@
    "year": 2010,
    "kind": "shoebox",
    "memory": 9.7,
-   "note": "vault archive — memory 9.7, seen a few years back",
+   "note": "vault archive, memory 9.7, seen a few years back",
    "poster": "posters/inception.jpg",
    "genres": [
     "Action",
@@ -4184,7 +4184,7 @@
    "year": 2024,
    "kind": "shoebox",
    "memory": 9.7,
-   "note": "vault archive — memory 9.7, seen in the past year",
+   "note": "vault archive, memory 9.7, seen in the past year",
    "poster": "posters/the-substance.jpg",
    "genres": [
     "Horror",
@@ -4204,7 +4204,7 @@
    "year": 2007,
    "kind": "shoebox",
    "memory": 9.7,
-   "note": "vault archive — memory 9.7, seen a few years back",
+   "note": "vault archive, memory 9.7, seen a few years back",
    "poster": "posters/zodiac.jpg",
    "genres": [
     "Crime",
@@ -4224,7 +4224,7 @@
    "year": 2002,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6",
+   "note": "vault archive, memory 9.6",
    "poster": "posters/chicago.jpg",
    "genres": [
     "Comedy",
@@ -4244,7 +4244,7 @@
    "year": 2024,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6, seen in the past year",
+   "note": "vault archive, memory 9.6, seen in the past year",
    "poster": "posters/conclave.jpg",
    "genres": [
     "Drama",
@@ -4263,7 +4263,7 @@
    "year": 2021,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6, seen in the past year",
+   "note": "vault archive, memory 9.6, seen in the past year",
    "poster": "posters/dont-look-up.jpg",
    "genres": [
     "Comedy",
@@ -4283,7 +4283,7 @@
    "year": 2017,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6",
+   "note": "vault archive, memory 9.6",
    "poster": "posters/get-out.jpg",
    "genres": [
     "Mystery",
@@ -4303,7 +4303,7 @@
    "year": 2014,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6",
+   "note": "vault archive, memory 9.6",
    "poster": "posters/gone-girl.jpg",
    "genres": [
     "Mystery",
@@ -4323,7 +4323,7 @@
    "year": 2015,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6; rewatch queued (his call)",
+   "note": "vault archive, memory 9.6; rewatch queued (his call)",
    "poster": "posters/kingsman.jpg",
    "genres": [
     "Crime",
@@ -4344,7 +4344,7 @@
    "year": 2019,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6 (corrected from 9.7 on the spot)",
+   "note": "vault archive, memory 9.6 (corrected from 9.7 on the spot)",
    "poster": "posters/parasite.jpg",
    "genres": [
     "Comedy",
@@ -4364,7 +4364,7 @@
    "year": 2020,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6, seen a few years back",
+   "note": "vault archive, memory 9.6, seen a few years back",
    "poster": "posters/tenet.jpg",
    "genres": [
     "Action",
@@ -4384,7 +4384,7 @@
    "year": 1991,
    "kind": "shoebox",
    "memory": 9.6,
-   "note": "vault archive — memory 9.6",
+   "note": "vault archive, memory 9.6",
    "poster": "posters/silence-of-the-lambs.jpg",
    "genres": [
     "Crime",
@@ -4404,7 +4404,7 @@
    "year": 2025,
    "kind": "shoebox",
    "memory": 9.5,
-   "note": "vault archive — memory 9.5, seen in the past year",
+   "note": "vault archive, memory 9.5, seen in the past year",
    "poster": "posters/bugonia.jpg",
    "genres": [
     "Science Fiction",
@@ -4424,7 +4424,7 @@
    "year": 1996,
    "kind": "shoebox",
    "memory": 9.5,
-   "note": "vault archive — whole franchise seen and loved, memory 9.5 as a run",
+   "note": "vault archive, whole franchise seen and loved, memory 9.5 as a run",
    "poster": "posters/mission-impossible.jpg",
    "genres": [
     "Adventure",
@@ -4444,7 +4444,7 @@
    "year": 2022,
    "kind": "shoebox",
    "memory": 9.4,
-   "note": "vault archive — memory 9.4, seen a few years back",
+   "note": "vault archive, memory 9.4, seen a few years back",
    "poster": "posters/eeaao.jpg",
    "genres": [
     "Action",
@@ -4465,7 +4465,7 @@
    "year": 2013,
    "kind": "shoebox",
    "memory": 9.4,
-   "note": "vault archive — memory 9.4, SEEN AND LOVED buzz Jul 22",
+   "note": "vault archive, memory 9.4, SEEN AND LOVED buzz Jul 22",
    "poster": "posters/snowpiercer.jpg",
    "genres": [
     "Action",
@@ -4485,7 +4485,7 @@
    "year": 2004,
    "kind": "shoebox",
    "memory": 9.3,
-   "note": "vault archive — memory 9.3",
+   "note": "vault archive, memory 9.3",
    "poster": "posters/saw.jpg",
    "genres": [
     "Horror",
@@ -4505,7 +4505,7 @@
    "year": null,
    "kind": "shoebox",
    "memory": 9.3,
-   "note": "vault archive — memory 9.3, scored as a run",
+   "note": "vault archive, memory 9.3, scored as a run",
    "poster": "posters/bourne-trilogy.jpg",
    "genres": [
     "Action",
@@ -4526,7 +4526,7 @@
    "year": 2000,
    "kind": "shoebox",
    "memory": 9.2,
-   "note": "vault archive — memory 9.2",
+   "note": "vault archive, memory 9.2",
    "poster": "posters/center-stage.jpg",
    "genres": [
     "Drama",
@@ -4545,7 +4545,7 @@
    "year": 2006,
    "kind": "shoebox",
    "memory": 9.1,
-   "note": "vault archive — memory 9.1, seen a few years back",
+   "note": "vault archive, memory 9.1, seen a few years back",
    "poster": "posters/the-prestige.jpg",
    "genres": [
     "Drama",
@@ -4565,7 +4565,7 @@
    "year": null,
    "kind": "shoebox",
    "memory": 8.9,
-   "note": "vault archive — memory 8.9, seen in the past year",
+   "note": "vault archive, memory 8.9, seen in the past year",
    "poster": "posters/planet-of-the-apes.jpg",
    "genres": [
     "Thriller",
@@ -4587,7 +4587,7 @@
    "year": 2014,
    "kind": "shoebox",
    "memory": 8.7,
-   "note": "archive addition — memory 8.7, rewatch queued per Dixon",
+   "note": "archive addition, memory 8.7, rewatch queued per Dixon",
    "poster": "posters/whiplash.jpg",
    "genres": [
     "Drama",
@@ -4607,7 +4607,7 @@
    "year": 2006,
    "kind": "shoebox",
    "memory": 8.4,
-   "note": "vault archive — memory 8.4",
+   "note": "vault archive, memory 8.4",
    "poster": "posters/step-up.jpg",
    "genres": [
     "Music",
@@ -4628,7 +4628,7 @@
    "year": 2014,
    "kind": "shoebox",
    "memory": 4.3,
-   "note": "vault archive — memory 4.3, the floor (John and Tori retaliation watch)",
+   "note": "vault archive, memory 4.3, the floor (John and Tori retaliation watch)",
    "poster": "posters/flowers-in-the-attic.jpg",
    "genres": [
     "Drama",
@@ -4672,7 +4672,7 @@
    "year": 1995,
    "kind": "drawer",
    "memory": null,
-   "note": "seen once or twice, not recently, a big favorite — confirmed 2026-08-13",
+   "note": "seen once or twice, not recently, a big favorite, confirmed 2026-08-13",
    "poster": "posters/apollo-13.jpg",
    "genres": [
     "Drama",
@@ -4691,7 +4691,7 @@
    "year": 1998,
    "kind": "drawer",
    "memory": null,
-   "note": "seen before — confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
+   "note": "seen before, confirmed 2026-08-13 during slate pitch; asteroid rematch vs Deep Impact (memory 10.0) already settled apparently",
    "poster": "posters/armageddon.jpg",
    "genres": [
     "Action",
@@ -4711,7 +4711,7 @@
    "year": 2010,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago",
+   "note": "hazy, seen long ago",
    "poster": "posters/black-swan.jpg",
    "genres": [
     "Drama",
@@ -4771,7 +4771,7 @@
    "year": 2009,
    "kind": "drawer",
    "memory": null,
-   "note": "uncertain — \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
+   "note": "uncertain, \"don't know, maybe.\" Treat as possibly seen; confirm before any fresh-pick pitch. 2026-08-13",
    "poster": "posters/district-9.jpg",
    "genres": [
     "Science Fiction"
@@ -4789,7 +4789,7 @@
    "year": 2014,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen a few years back, faded",
+   "note": "hazy, seen a few years back, faded",
    "poster": "posters/edge-of-tomorrow.jpg",
    "genres": [
     "Action",
@@ -4808,7 +4808,7 @@
    "year": 2013,
    "kind": "drawer",
    "memory": null,
-   "note": "seen — \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\" — confirmed 2026-08-13",
+   "note": "seen, \"huge win, big, obsessed, space, Sandra Bullock, what else do you need\", confirmed 2026-08-13",
    "poster": "posters/gravity.jpg",
    "genres": [
     "Science Fiction",
@@ -4828,7 +4828,7 @@
    "year": 2014,
    "kind": "drawer",
    "memory": null,
-   "note": "seen — confirmed 2026-08-17 lightning round",
+   "note": "seen, confirmed 2026-08-17 lightning round",
    "poster": "posters/guardians-of-the-galaxy.jpg",
    "genres": [
     "Action",
@@ -4867,7 +4867,7 @@
    "year": null,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — most seen and loved over decades, no number",
+   "note": "hazy, most seen and loved over decades, no number",
    "poster": "posters/james-bond.jpg",
    "genres": [
     "Adventure",
@@ -4885,7 +4885,7 @@
    "year": 2019,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen a few years back, did not stick",
+   "note": "hazy, seen a few years back, did not stick",
    "poster": "posters/knives-out.jpg",
    "genres": [
     "Comedy",
@@ -4905,7 +4905,7 @@
    "year": 2016,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen a few years back",
+   "note": "hazy, seen a few years back",
    "poster": "posters/la-la-land.jpg",
    "genres": [
     "Comedy",
@@ -4925,7 +4925,7 @@
    "year": 2012,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago, load-bearing in his taste",
+   "note": "hazy, seen long ago, load-bearing in his taste",
    "poster": "posters/life-of-pi.jpg",
    "genres": [
     "Adventure",
@@ -4944,7 +4944,7 @@
    "year": 2015,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
+   "note": "hazy, saw in theaters 2015, remembers liking it and that's about it. rewatch overdue. updated 2026-08-13",
    "poster": "posters/mad-max-fury-road.jpg",
    "genres": [
     "Action",
@@ -4964,7 +4964,7 @@
    "year": 2019,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen a few years back, faded",
+   "note": "hazy, seen a few years back, faded",
    "poster": "posters/midsommar.jpg",
    "genres": [
     "Horror",
@@ -4984,7 +4984,7 @@
    "year": 2001,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago",
+   "note": "hazy, seen long ago",
    "poster": "posters/moulin-rouge.jpg",
    "genres": [
     "Drama",
@@ -5044,7 +5044,7 @@
    "year": 2013,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen; standing rule: NEVER pitch, only Dixon raises it",
+   "note": "hazy, seen; standing rule: NEVER pitch, only Dixon raises it",
    "poster": "posters/prisoners.jpg",
    "genres": [
     "Drama",
@@ -5064,7 +5064,7 @@
    "year": 2026,
    "kind": "drawer",
    "memory": null,
-   "note": "seen and LOVED — confirmed 2026-08-17, no memory score yet",
+   "note": "seen and LOVED, confirmed 2026-08-17, no memory score yet",
    "poster": "posters/project-hail-mary.jpg",
    "genres": [
     "Science Fiction",
@@ -5084,7 +5084,7 @@
    "year": 2010,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen long ago, rewatch could be loud",
+   "note": "hazy, seen long ago, rewatch could be loud",
    "poster": "posters/shutter-island.jpg",
    "genres": [
     "Drama",
@@ -5124,7 +5124,7 @@
    "year": 2018,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen a few years back",
+   "note": "hazy, seen a few years back",
    "poster": "posters/spider-verse.jpg",
    "genres": [
     "Animation",
@@ -5147,7 +5147,7 @@
    "year": 2009,
    "kind": "drawer",
    "memory": null,
-   "note": "seen — confirmed 2026-08-17 during pitch",
+   "note": "seen, confirmed 2026-08-17 during pitch",
    "poster": "posters/star-trek.jpg",
    "genres": [
     "Science Fiction",
@@ -5167,7 +5167,7 @@
    "year": 2012,
    "kind": "drawer",
    "memory": null,
-   "note": "seen — confirmed 2026-08-17 during slate pitch",
+   "note": "seen, confirmed 2026-08-17 during slate pitch",
    "poster": "posters/the-cabin-in-the-woods.jpg",
    "genres": [
     "Horror",
@@ -5228,7 +5228,7 @@
    "year": 2015,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
+   "note": "hazy, seen maybe once, remembers it pretty well and really liking it, never drawn back. updated 2026-08-13",
    "poster": "posters/the-martian.jpg",
    "genres": [
     "Science Fiction",
@@ -5267,7 +5267,7 @@
    "year": 2019,
    "kind": "drawer",
    "memory": null,
-   "note": "seen — confirmed 2026-08-17 during slate pitch",
+   "note": "seen, confirmed 2026-08-17 during slate pitch",
    "poster": "posters/us.jpg",
    "genres": [
     "Horror",
@@ -5287,7 +5287,7 @@
    "year": 2005,
    "kind": "drawer",
    "memory": null,
-   "note": "seen fairly recently, very much enjoyed — confirmed 2026-08-13",
+   "note": "seen fairly recently, very much enjoyed, confirmed 2026-08-13",
    "poster": "posters/war-of-the-worlds.jpg",
    "genres": [
     "Adventure",
@@ -5326,7 +5326,7 @@
    "year": 1961,
    "kind": "drawer",
    "memory": null,
-   "note": "hazy — childhood",
+   "note": "hazy, childhood",
    "poster": "posters/west-side-story.jpg",
    "genres": [
     "Crime",

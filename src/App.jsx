@@ -18,8 +18,11 @@ import { doorsForSlug } from './rooms/doors.js'
 import ColdOpen from './ColdOpen.jsx'
 import Guide from './Guide.jsx'
 import Options from './Options.jsx'
-import Lens, { useVibes } from './Lens.jsx'
+import Lens, { useVibes, useFeels, lensLabel } from './Lens.jsx'
 import Find, { buildIndex } from './Find.jsx'
+import RoomGate, { needsGate } from './RoomGate.jsx'
+import MoveVignette, { MoveVignetteOverlay } from './MoveVignette.jsx'
+import SoundCaption from './SoundCaption.jsx'
 import { startRoomTone, stopRoomTone } from './roomTone.js'
 import { isSoundLive, setSoundOn, subscribeSound } from './rooms/audio/engine.js'
 import { clearEdges } from './input.js'
@@ -251,6 +254,15 @@ export default function App() {
   const [lens, setLens] = useState(null)        // a vibe tag, or null
   const [lensOpen, setLensOpen] = useState(false)
   const [finding, setFinding] = useState(false)
+  // The per-room card (RoomGate.jsx): {slug, go} while it is up. Every way
+  // into a ledger film's room (step inside, Enter, a bloodline door) goes
+  // through `gated`, so a skipped room or a flagged one asks first.
+  const [gate, setGate] = useState(null)
+  const gated = useCallback((slug, go) => {
+    if (!needsGate(slug)) return go()
+    exitPointerLock()
+    setGate({ slug, go })
+  }, [])
   // Wave M2: pointer lock. `pointerLocked` mirrors pointer.js's module state
   // (read every frame's worth of DOM events there, not React state — this is
   // just what the crosshair re-renders on). `forceCrosshair` is a one-time
@@ -510,6 +522,10 @@ export default function App() {
   // for house lights and grade overrides, and a fresh closure every render
   // would hand FilmWorld a new `onDoor` prop each time.
   const onDoorOpen = useCallback((spec) => {
+    if (spec.kind === 'archive') return hopThrough(spec)
+    gated(spec.targetSlug, () => hopThrough(spec))
+  }, [gated])
+  const hopThrough = (spec) => {
     if (xrStore.getState().session != null) return
     const world = worldRef.current
     if (world.startsWith('doorhop:')) return // already mid-hop; ignore a double-click
@@ -531,7 +547,7 @@ export default function App() {
     for (const k of ['room', 'printroom', 'hazyroom', 'film', 'print']) url.searchParams.delete(k)
     url.searchParams.set(toKind === 'print' ? 'printroom' : 'room', spec.targetSlug)
     history.pushState(null, '', url)
-  }, [])
+  }
 
   useEffect(() => {
     fetch(import.meta.env.BASE_URL + 'vault-data.json')
@@ -607,7 +623,8 @@ export default function App() {
       const onControl = /^(BUTTON|INPUT|TEXTAREA|A|SELECT)$/.test(e.target?.tagName || '')
       if (e.key === 'Enter' && world === 'motel' && !e.defaultPrevented && !onControl
           && !optionsOpen && !finding && !lensOpen && xrStore.getState().session == null) {
-        if (selected) return enterFilm(selected)
+        if (gate) return
+        if (selected) return gated(selected, () => enterFilm(selected))
         // a held print gets the same shortcut as an inspected card — Enter
         // steps into whichever archive room its container implies
         if (picked) return openBox === 'drawer' ? enterHazy(picked) : enterPrint(picked)
@@ -638,7 +655,7 @@ export default function App() {
     window.addEventListener('keydown', k)
     return () => window.removeEventListener('keydown', k)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [picked, openBox, finding, lensOpen, lens, world, selected, station, optionsOpen])
+  }, [picked, openBox, finding, lensOpen, lens, world, selected, station, optionsOpen, gate])
 
   // A film is a place, so it gets an address. `?film=<slug>` started life as a
   // screenshot-harness hack; keeping the address bar in step with what is open
@@ -685,6 +702,7 @@ export default function App() {
 
   const scoreToY = useMemo(() => makeScoreToY(data?.films), [data])
   const vibes = useVibes(data?.films)
+  const feels = useFeels(data?.films)
   const findIndex = useMemo(() => buildIndex(data), [data])
 
   // where a search result actually lives, and what it takes to stand in front
@@ -845,6 +863,7 @@ export default function App() {
       >
        <XR store={xrStore}>
         <FpsMeter />
+        <MoveVignette />
         {/* gradeOverride can carry `bg` too — Memento's own film-palette bg
             is card-front white (right for a Polaroid, wrong for a 3D void),
             and config.grade.bg falls back to that same palette when a
@@ -887,7 +906,7 @@ export default function App() {
             setHover={setHover}
             goBox={goBox}
             openBoxAt={openBoxAt}
-            onEnter={enterFilm}
+            onEnter={(slug) => gated(slug, () => enterFilm(slug))}
           />
         )}
 
@@ -1078,7 +1097,7 @@ export default function App() {
             style={{ ...hud.navBtn, ...(lens || lensOpen ? hud.navOn : null) }}
             title="dim everything that is not a given vibe"
           >
-            {lens ? 'lens · ' + lens : 'lens'}
+            {lens ? 'lens · ' + lensLabel(lens) : 'lens'}
           </button>
           <button
             aria-label="find"
@@ -1194,10 +1213,25 @@ export default function App() {
       )}
 
       {lensOpen && (
-        <Lens vibes={vibes} value={lens} onPick={setLens} onClose={() => setLensOpen(false)} />
+        <Lens vibes={vibes} feels={feels} value={lens} onPick={setLens} onClose={() => setLensOpen(false)} />
       )}
 
       {finding && <Find index={findIndex} onGo={goTo} onClose={() => setFinding(false)} />}
+
+      {gate && (
+        <RoomGate
+          slug={gate.slug}
+          title={data?.films.find((f) => f.slug === gate.slug)?.title || gate.slug}
+          onGo={() => { const go = gate.go; setGate(null); go() }}
+          onClose={() => setGate(null)}
+        />
+      )}
+
+      {/* motion.moveVignette: the edges darken while the camera travels */}
+      <MoveVignetteOverlay />
+
+      {/* audio.captions: what the room is playing, in words */}
+      <SoundCaption slug={world.startsWith('film:') ? filmSlug : world === 'motel' && tone ? 'motel' : null} sound={world === 'motel' ? tone : sound} />
 
       {/* What a print says when you hold it up. Deliberately thin next to a
           case file — there is no hot take here, because he never wrote one.

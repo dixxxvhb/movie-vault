@@ -8,6 +8,22 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Loose ends from the Oct 10 check-in (2026-10-14)
+
+| What | Notes |
+|---|---|
+| Skip and warn, for real | `src/hazards.js` names what each room does (flashes, hard cuts, timed cuts, horror, a figure at the edge of view), from the rooms' own code. `src/RoomGate.jsx` is the per-room card: every way into a ledger room (step inside, Enter, a bloodline door) asks first when the room is flagged and `content.warnBefore` is on, or when the room is on `content.skip`. Go in, go in calmly (the calm-room preset, this tab only), or skip. A skipped room stays on the wall; the card is how you open it again |
+| Describe sounds in text | `audio.captions` now shows a line naming what the room is playing, only while it is audible. One caption per room in `src/rooms/audio/captions.js`, written from each recipe's own header comment, plus the motel air handler |
+| Narrow the view while moving | `motion.moveVignette` now darkens the screen edges while the camera travels (`src/MoveVignette.jsx`: a probe in the Canvas, an overlay in the DOM). A one-frame jump is a cut and is ignored |
+| Plain language | `reading.plain` shows only each case file's plot paragraph, on the wall and in `?text`. No machine-simplified text; the Phase 1 hand-written `plain_summary` is still owed if he wants shorter |
+| Emotional key | Not blank. It has emitted as `key` (not `emotional_key`) on all 65 films since the slice; the Oct 10 note looked for the wrong field name. It was simply never read. Now it is: a "how it felt" row in the lens, "feels tense" and a "by feel" sort in `?text`. The seven wings stay with the building-layout work |
+| Em dashes | The emitter swaps them out of every emitted string except his own words (hot take, case file, quotes) and prints the count: 69 this run, 0 left in `vault-data.json`. Done in the pipeline so a re-pull cannot bring them back |
+| Far wing | Not published. The 78 pitched titles and the recommendations are not in `data/` (`vault_pull()` does not return them), and "the 78 pitched doors are public. Comfortable?" is still open for Dixon below. Needs his yes, then a pull change, then the layout thread's doors |
+
+Still open from the audit list: `reading.speak` (no UI), text size in world signage.
+
+---
+
 ## Rooms for the eight Oct 4 and Oct 7 films (2026-10-10)
 
 Dixon's pick from the Oct 10 check-in. Same shape as the Sep 27 fifteen: a template room in the film's own place, verbatim take scraps placed by hand, a sound recipe each. Headless check of every room in swiftshader: zero console errors, framing looked at.
@@ -27,7 +43,7 @@ Dixon's pick from the Oct 10 check-in. Same shape as the Sep 27 fifteen: a templ
 - Staging is from memory of the films, not checked against stills. Hot Fuzz's square and Frailty's security-tape set are compositions, not literal sets.
 
 ### Open after this pass
-- `emotional_key` is null for all 65 films in the current `vault-data.json` (it was emitted for 47 on the session-two slice, `6be2f8c`). Pipeline regression, not looked into yet.
+- ~~`emotional_key` is null for all 65 films~~ not so: it emits as `key`, all 65 (checked 2026-10-14).
 - The eight are template rooms, not Two-Scene builds, same as the fifteen.
 
 ---
@@ -69,12 +85,10 @@ fps numbers from that sweep mean nothing; errors, framing and leaks do.
 | Bespoke and archive rooms | `1f17dc1` | Barbarian's smash cut and Stby's swerve claim the flash budget and honour room events; Memento's tube flicker and Enemy's two-clock blink go through `flicker()`; Motu, BR2049, Baby Driver scaled by `flashGain()`. `kit/paint.js` `useOwned`: barbarian +58 GPU textures per visit to 0, nightcrawler +17..46 to 0. Memento and Sicario stop re-rendering App every frame. `i` hides the record in all twelve rooms that ignored it. No Country's wind obeys the sound switch. House lights in the print and hazy rooms |
 
 ### Open after the audit
-- `audio.captions`, `reading.plain` (needs `plain_summary` in the data), `motion.moveVignette`,
-  `content.skip` / `content.warnBefore` (needs per-film hazard flags; the Threshold promises a
-  skip that does not exist yet). Stored, shown, not read.
+- ~~`audio.captions`, `reading.plain`, `motion.moveVignette`, `content.skip` / `content.warnBefore`~~
+  wired 2026-10-14, see the loose-ends pass above.
 - Text size reaches the 2D chrome only, not in-world signs and numerals.
-- 78 em dashes in `vault-data.json` notes and reasons (hot takes stay verbatim). Fix in the
-  pipeline, not the client.
+- ~~78 em dashes in `vault-data.json` notes and reasons~~ swapped in the emitter 2026-10-14.
 - Barbarian's smash-cut override carries key/fill/ambient that no light reads; only bg and the
   post grade move. Wire it through FilmWorld if the daylight cut should relight the room.
 - The 15 new rooms are template rooms, not Two-Scene builds. Each still wants its film sheet.
