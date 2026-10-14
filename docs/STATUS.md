@@ -10,7 +10,7 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ## Room polish pass (2026-10-14)
 
-Every room shot headless (desk 16:10 and phone portrait) before and after, swiftshader. Zero console errors either side. Branch `claude/project-thread-9iy0k6`. Settings, data files and the building layout untouched (other threads own them).
+Every room shot headless (desk 16:10 and phone portrait) before and after, swiftshader. Zero console errors either side. Branch `claude/project-thread-9iy0k6`, commits `9386bd4`, `f83f435`. Settings, data files and the building layout untouched (other threads own them).
 
 | What | Notes |
 |---|---|
