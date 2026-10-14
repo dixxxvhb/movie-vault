@@ -374,8 +374,8 @@ function ReflectedScore({ film }) {
       <mesh ref={scoreRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.002, 0]} scale={[1, -1, 1]}>
         <planeGeometry args={[1.1, 1.1]} />
         {scoreTex
-          ? <meshBasicMaterial map={scoreTex} transparent opacity={0.4} depthWrite={false} toneMapped={false} />
-          : <meshBasicMaterial transparent opacity={0} />}
+          ? <meshBasicMaterial key="mapped" map={scoreTex} transparent opacity={0.4} depthWrite={false} toneMapped={false} />
+          : <meshBasicMaterial key="blank" transparent opacity={0} />}
       </mesh>
     </group>
   )

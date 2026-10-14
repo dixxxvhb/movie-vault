@@ -96,6 +96,25 @@ function skyCanvas(top, bottom) {
 
 /* ------------------------------------------------------------------ shell */
 
+// Soft-edged alpha for haze cards: opaque low and centre, clear at the top
+// and both sides. One texture, shared.
+let hazeTex = null
+function hazeAlpha() {
+  if (hazeTex) return hazeTex
+  const c = document.createElement('canvas')
+  c.width = c.height = 128
+  const ctx = c.getContext('2d')
+  const v = ctx.createLinearGradient(0, 0, 0, 128)
+  v.addColorStop(0, '#000'); v.addColorStop(0.45, '#888'); v.addColorStop(0.75, '#fff'); v.addColorStop(1, '#fff')
+  ctx.fillStyle = v; ctx.fillRect(0, 0, 128, 128)
+  ctx.globalCompositeOperation = 'multiply'
+  const h = ctx.createLinearGradient(0, 0, 128, 0)
+  h.addColorStop(0, '#000'); h.addColorStop(0.25, '#fff'); h.addColorStop(0.75, '#fff'); h.addColorStop(1, '#000')
+  ctx.fillStyle = h; ctx.fillRect(0, 0, 128, 128)
+  hazeTex = new THREE.CanvasTexture(c)
+  return hazeTex
+}
+
 // Wave P0: `p.mat = {walls, floor, ceiling}` (each a kind name from
 // materials.js, e.g. 'concrete'/'tile'/'metal') opts a box shell into the
 // real PBR-feel surface factory instead of the flat wallCanvas() swatch
@@ -316,10 +335,14 @@ function DeckShell({ grade, p }) {
           <meshStandardMaterial color="#1c1e20" roughness={0.6} metalness={0.4} />
         </mesh>
       ))}
+      {/* The fog wall used to be a flat 70% plane with hard edges: against a
+          sky that is not exactly the fog colour (Dunkirk) it hung there as a
+          grey card. It is a bank of haze now: dense at the deck, gone by
+          its top edge and at both sides. */}
       {p.fogWall !== false && (
-        <mesh position={[0, 2, -len / 2 - 1]}>
-          <planeGeometry args={[width + 6, 8]} />
-          <meshBasicMaterial color={grade.fogColor} transparent opacity={0.7} />
+        <mesh position={[0, 3, -len / 2 - 1]}>
+          <planeGeometry args={[width + 14, 10]} />
+          <meshBasicMaterial color={grade.fogColor} alphaMap={hazeAlpha()} transparent opacity={0.85} depthWrite={false} />
         </mesh>
       )}
     </group>

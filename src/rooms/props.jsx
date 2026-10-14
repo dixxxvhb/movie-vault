@@ -3,6 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Bevel, FrameOn as FrameOnDetail } from './detail.jsx'
 import { standardMat } from './materials.js'
+import { Figure } from './figure.jsx'
+import { pylonLine, hills, roadStrip, scrub } from './landmarks.jsx'
 
 // The prop kit: parameterized primitive set pieces. Every export is a pure
 // component — pos/rot/scale/color/emissive props, no config reads, no
@@ -371,51 +373,104 @@ export function mirrorPlane({ pos, rot, scale = 1, w = 1, h = 1.6, tint = '#8899
   )
 }
 
-export function vehicleMass({ pos, rot, scale = 1, color = '#a02020', w = 1.8, h = 1.1, d = 4 }) {
+// vehicleMass: was two stacked boxes on four discs. Now a vehicle with a
+// shape: a sedan (default), a van (`kind: 'van'`, or any h >= 1.5), or a
+// small boat (`kind: 'boat'`: hull, wheelhouse, no wheels). Same w/h/d
+// envelope, same footprint, so every config that placed the old block still
+// lands its vehicle in the same spot. `lights` turns the headlamps on.
+const glassMat = new THREE.MeshStandardMaterial({ color: '#0e1216', roughness: 0.08, metalness: 0.6 })
+const tyreMat = new THREE.MeshStandardMaterial({ color: '#0e0e0e', roughness: 0.85 })
+const rimMat = new THREE.MeshStandardMaterial({ color: '#9a9a96', roughness: 0.35, metalness: 0.7 })
+const trimMat = new THREE.MeshStandardMaterial({ color: '#141414', roughness: 0.5, metalness: 0.3 })
+
+function Wheel({ x, z, r }) {
+  return (
+    <group position={[x, r, z]} rotation={[0, 0, Math.PI / 2]}>
+      <mesh material={tyreMat}><cylinderGeometry args={[r, r, 0.2, 18]} /></mesh>
+      <mesh material={rimMat} position={[0, -Math.sign(x) * 0.101, 0]}><cylinderGeometry args={[r * 0.55, r * 0.55, 0.01, 14]} /></mesh>
+    </group>
+  )
+}
+
+export function vehicleMass({ pos, rot, scale = 1, color = '#a02020', w = 1.8, h = 1.1, d = 4, kind, lights = false }) {
+  const k = kind || (h >= 1.5 ? 'van' : 'car')
+  const paint = useMemo(() => new THREE.MeshStandardMaterial({ color, roughness: 0.32, metalness: 0.45 }), [color])
+  useEffect(() => () => paint.dispose(), [paint])
+  if (k === 'boat') {
+    return (
+      <Wrap pos={pos} rot={rot} scale={scale}>
+        {/* hull: a box narrowed to a bow, sitting in the water to its waist */}
+        <mesh material={paint} position={[0, h * 0.3, -d * 0.05]} scale={[1, 1, 1]}>
+          <boxGeometry args={[w, h * 0.6, d * 0.8]} />
+        </mesh>
+        <mesh material={paint} position={[0, h * 0.3, d * 0.36]} rotation={[0, Math.PI / 4, 0]} scale={[1, 1, 1]}>
+          <boxGeometry args={[w * 0.707, h * 0.6, w * 0.707]} />
+        </mesh>
+        <mesh material={trimMat} position={[0, h * 0.61, 0]}><boxGeometry args={[w + 0.04, 0.05, d * 0.82]} /></mesh>
+        {/* wheelhouse aft, its windows, a mast */}
+        <Bevel pos={[0, h * 0.85, -d * 0.18]} w={w * 0.7} h={h * 0.5} d={d * 0.32} radius={0.03} color="#e8e4d8" roughness={0.6} />
+        <mesh material={glassMat} position={[0, h * 0.92, -d * 0.18 + d * 0.161]}><planeGeometry args={[w * 0.58, h * 0.18]} /></mesh>
+        <mesh material={trimMat} position={[0, h * 1.5, -d * 0.12]}><cylinderGeometry args={[0.025, 0.03, h * 1.1, 6]} /></mesh>
+      </Wrap>
+    )
+  }
+  const r = Math.min(0.34, h * 0.27)
+  const bodyH = k === 'van' ? h * 0.62 : h * 0.42
+  const bodyY = r * 0.75 + bodyH / 2
+  const cabH = k === 'van' ? h * 0.3 : h * 0.36
+  const cabD = k === 'van' ? d * 0.7 : d * 0.5
+  const cabZ = k === 'van' ? -d * 0.1 : -d * 0.06
+  const wz = d * 0.33
   return (
     <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, h * 0.32, 0]}>
-        <boxGeometry args={[w, h * 0.5, d]} />
-        <meshStandardMaterial color={color} roughness={0.35} metalness={0.4} />
-      </mesh>
-      <mesh position={[0, h * 0.62, -d * 0.08]}>
-        <boxGeometry args={[w * 0.86, h * 0.42, d * 0.5]} />
-        <meshStandardMaterial color={color} roughness={0.2} metalness={0.3} />
-      </mesh>
-      {[[-1, 1], [1, 1], [-1, -1], [1, -1]].map(([sx, sz], i) => (
-        <mesh key={i} position={[sx * w * 0.42, 0.14, sz * d * 0.32]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.16, 0.16, 0.14, 16]} />
-          <meshStandardMaterial color="#111" roughness={0.8} />
+      <Bevel pos={[0, bodyY, 0]} w={w} h={bodyH} d={d} radius={Math.min(0.12, bodyH * 0.3)} segments={3} mat={paint} />
+      {/* the cabin, glass all round, a roof in the body colour */}
+      <Bevel pos={[0, bodyY + bodyH / 2 + cabH / 2 - 0.02, cabZ]} w={w * 0.86} h={cabH} d={cabD} radius={Math.min(0.1, cabH * 0.3)} segments={3} mat={glassMat} />
+      <Bevel pos={[0, bodyY + bodyH / 2 + cabH - 0.02, cabZ]} w={w * 0.84} h={0.05} d={cabD * 0.92} radius={0.02} mat={paint} />
+      {/* pillars, so the glass reads as windows not a black box */}
+      {[-1, 1].map((sx) => [-1, 0, 1].map((sz) => (
+        <mesh key={sx + ':' + sz} material={paint} position={[sx * w * 0.43, bodyY + bodyH / 2 + cabH / 2 - 0.02, cabZ + sz * cabD * 0.47]}>
+          <boxGeometry args={[0.04, cabH, 0.07]} />
         </mesh>
+      )))}
+      {/* bumpers, grille, lamps */}
+      {[-1, 1].map((sz) => (
+        <mesh key={sz} material={trimMat} position={[0, r * 0.9, sz * (d / 2 + 0.02)]}><boxGeometry args={[w * 0.98, 0.14, 0.08]} /></mesh>
       ))}
+      <mesh material={trimMat} position={[0, bodyY, d / 2 + 0.005]}><planeGeometry args={[w * 0.42, bodyH * 0.45]} /></mesh>
+      {[-1, 1].map((sx) => (
+        <group key={sx}>
+          <mesh position={[sx * w * 0.36, bodyY + bodyH * 0.12, d / 2 + 0.006]}>
+            <circleGeometry args={[0.075, 14]} />
+            <meshStandardMaterial color="#f4eedc" emissive="#fff2cc" emissiveIntensity={lights ? 2.2 : 0.25} roughness={0.2} />
+          </mesh>
+          <mesh position={[sx * w * 0.38, bodyY + bodyH * 0.12, -d / 2 - 0.006]} rotation={[0, Math.PI, 0]}>
+            <planeGeometry args={[0.2, 0.08]} />
+            <meshStandardMaterial color="#6a0a0a" emissive="#c01010" emissiveIntensity={0.45} roughness={0.3} />
+          </mesh>
+          {/* wheel arches */}
+          {[-1, 1].map((sz) => (
+            <mesh key={sz} material={trimMat} position={[sx * (w / 2 + 0.002), r, sz * wz]} rotation={[0, sx * Math.PI / 2, 0]}>
+              <circleGeometry args={[r * 1.12, 18, 0, Math.PI]} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+      {lights && <spotLight position={[0, bodyY, d / 2 + 0.1]} target-position={[0, 0, d / 2 + 8]} angle={0.5} penumbra={0.6} intensity={18} distance={14} color="#fff2cc" />}
+      <Wheel x={w / 2 - 0.07} z={wz} r={r} />
+      <Wheel x={-w / 2 + 0.07} z={wz} r={r} />
+      <Wheel x={w / 2 - 0.07} z={-wz} r={r} />
+      <Wheel x={-w / 2 + 0.07} z={-wz} r={r} />
     </Wrap>
   )
 }
 
-export function abstractFigure({ pos, rot, scale = 1, color = '#12141a', pose = 'stand', emissive }) {
-  const poseY = pose === 'sit' ? 0.62 : pose === 'crouch' ? 0.5 : 0.9
-  const bodyScale = pose === 'crouch' ? [1, 0.55, 1] : pose === 'sit' ? [1, 0.7, 1] : [1, 1, 1]
-  const legRot = pose === 'walk-cycle-frozen' ? 0.5 : 0
-  return (
-    <Wrap pos={pos} rot={rot} scale={scale}>
-      <mesh position={[0, poseY * 0.5, 0]} scale={bodyScale}>
-        <capsuleGeometry args={[0.2, poseY * 0.6, 4, 8]} />
-        <meshStandardMaterial color={color} emissive={emissive || '#000'} emissiveIntensity={emissive ? 0.3 : 0} roughness={0.95} />
-      </mesh>
-      <mesh position={[0, poseY + 0.14, 0]}>
-        <sphereGeometry args={[0.13, 12, 12]} />
-        <meshStandardMaterial color={color} roughness={0.95} />
-      </mesh>
-      <mesh position={[0.06, poseY * 0.25, 0.06]} rotation={[legRot, 0, 0]}>
-        <capsuleGeometry args={[0.07, poseY * 0.5, 4, 6]} />
-        <meshStandardMaterial color={color} roughness={0.95} />
-      </mesh>
-      <mesh position={[-0.06, poseY * 0.25, -0.06]} rotation={[-legRot, 0, 0]}>
-        <capsuleGeometry args={[0.07, poseY * 0.5, 4, 6]} />
-        <meshStandardMaterial color={color} roughness={0.95} />
-      </mesh>
-    </Wrap>
-  )
+// abstractFigure: the kit's person. The body lives in figure.jsx (jointed,
+// posed by joint angles); this keeps the old name every config, system and
+// bespoke room already calls, and returns an element so the figure's own
+// hooks belong to it, not to whoever called this as a function.
+export function abstractFigure(p) {
+  return <Figure {...p} />
 }
 
 // paperScatter: instanced quads. Count keyed on the mesh key so a resize
@@ -522,7 +577,7 @@ export function shaftRing({ pos, rot, scale = 1, radius = 2.2, height = 6, segme
     clone.side = THREE.BackSide
     return clone
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mat?.kind, mat?.tint, mat?.wear, mat?.roughness])
+  }, [mat?.kind, mat?.tint, mat?.wear, mat?.roughness, mat?.repeat?.[0], mat?.repeat?.[1]])
   return (
     <group position={V3(pos)} rotation={V3(rot)} scale={scale}>
       <mesh>
@@ -564,8 +619,11 @@ export function lightDisc({ pos, rot = [-Math.PI / 2, 0, 0], scale = 1, radius =
 export const PROPS = {
   slab, table, chairRow, counter, barShelf, bed, screenPanel, podium, throne,
   tree, branchTags, waterPlane, glassWall, mirrorPlane, vehicleMass,
-  abstractFigure, paperScatter, pool, lampPractical, bevelBox, frameOn,
+  // configs get a dressed person; abstractFigure() itself stays a shadow
+  abstractFigure: (p) => <Figure dressed {...p} />,
+  paperScatter, pool, lampPractical, bevelBox, frameOn,
   shaftRing, ledgeRing, lightDisc,
+  pylonLine, hills, roadStrip, scrub,
 }
 
 export function Prop({ type, ...rest }) {

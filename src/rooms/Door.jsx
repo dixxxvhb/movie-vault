@@ -106,8 +106,8 @@ export default function Door({ position, rotationY = 0, scale = 1, grade, spec, 
       <mesh position={[0, DOOR_H * 0.58, 0.09]}>
         <planeGeometry args={[DOOR_W * 0.86, 0.38]} />
         {plaqueTex
-          ? <meshBasicMaterial map={plaqueTex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
-          : <meshBasicMaterial transparent opacity={0} />}
+          ? <meshBasicMaterial key="mapped" map={plaqueTex} transparent depthWrite={false} toneMapped={false} side={THREE.DoubleSide} />
+          : <meshBasicMaterial key="blank" transparent opacity={0} />}
       </mesh>
     </group>
   )
