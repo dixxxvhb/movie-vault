@@ -598,28 +598,57 @@ export const CONFIGS = {
   // -------------------------------------------------------------------- batman
   batman: {
     family: 'dread',
-    // QA sweep 2026-08-21: ambient 0.06 plus a near-vertical look-at read as
-    // a black void with a few dim particles in it — bumped ambient/key just
-    // enough that the well walls are visible without losing the "dry well
-    // at dusk" darkness the brief wants.
-    // fill brightened — see sicario's note; a near-black fill caps the
-    // ambientLight (which uses grade.fill as its color) near zero.
-    grade: { key: '#3a5a8a', fill: '#242a3c', ambient: 0.4, keyIntensity: 0.4 },
-    camera: { pos: [0, 0.6, 0.8], look: [0, 2.6, -1.6], fov: 54, far: 40 },
+    // Rebuilt 2026-10-14. It was a corridor shell stood on end: a square
+    // blue slot with nothing in it (the corridor's far-light plane was the
+    // only thing in frame). It is the well now, the way TDKR's pit is built:
+    // an open shell holding a stone cylinder you look up out of, daylight
+    // in a ring at the top, roots hanging down the dry wall, the crack the
+    // bats come out of, and the boy at the bottom holding his arm.
+    grade: {
+      bg: '#0c0e12', fogColor: '#10141a', fogDensity: 0.02,
+      key: '#c8d8f0', keyIntensity: 1.6, fill: '#2a3242', ambient: 0.36,
+      contrast: 0.12, sat: -0.12, grain: 0.06, vignette: 0.6, bloomIntensity: 0.4,
+    },
+    camera: { pos: [0.6, 1.05, 0.75], look: [-0.25, 1.15, -1.2], fov: 70, far: 40 },
+    lights: {
+      key: { pos: [0.3, 9.5, -0.2], intensity: 1.7, distance: 13, decay: 2, color: '#d8e6f8' },
+      practicals: [
+        { pos: [-0.9, 2.4, -0.6], intensity: 0.7, distance: 4.5, color: '#8aa0c0', decay: 2 },
+      ],
+      bounce: [{ pos: [0, 0.4, 0], intensity: 0.45, distance: 4, color: '#3a4250', decay: 2 }],
+      rim: { pos: [0.9, 5.5, -0.9], intensity: 0.9, distance: 8, color: '#b8cce4', decay: 2 },
+    },
     place: {
-      shell: 'corridor',
-      shellParams: { length: 6, width: 2.6, height: 9, ribs: 4, wallTint: '#141210', farLight: true },
+      shell: 'open',
+      shellParams: { ground: 'concrete', groundColor: '#2a2620', skyTop: '#05060a', skyBottom: '#05060a', horizon: false, boundsRadius: 1.15 },
       props: [
-        // a loose stone worked free of the well's dry wall — Wave T touch.
+        { type: 'shaftRing', pos: [0, 5, 0], radius: 1.55, height: 10, segments: 28, mat: { kind: 'brick', tint: '#7a7266', wear: 0.8, repeat: [7, 9] } },
+        { type: 'ledgeRing', pos: [0, 2.6, 0], radius: 1.5, tube: 0.04, color: '#1a1814' },
+        { type: 'ledgeRing', pos: [0, 6.2, 0], radius: 1.48, tube: 0.035, color: '#1a1814' },
+        // daylight at the top of the well
+        { type: 'lightDisc', pos: [0, 10, 0], radius: 1.5, color: '#e4eefc' },
+        // the crack low in the wall, where they come from
+        { type: 'slab', pos: [-1.12, 0.55, -1.0], rot: [0, 0.85, 0], size: [0.7, 1.1, 0.06], color: '#020203' },
+        // rubble and the boy, curled on it, holding his arm
         { type: 'slab', pos: [0.65, 0.15, -1], size: [0.3, 0.3, 0.3], color: '#1c1a16', touch: { kind: 'nudge', amplitude: 0.2, foley: 'thunk', reach: 4.2 } },
+        { type: 'bevelBox', pos: [-0.4, 0.06, -1.0], w: 0.5, h: 0.12, d: 0.38, radius: 0.05, color: '#2a2620' },
+        { type: 'abstractFigure', pos: [-0.05, 0, -1.05], rot: [0, 0.5, 0], scale: 0.6, color: '#8a8478', legs: '#4a4a52', pose: 'huddle', hair: '#1a120c', shirt: false },
+      ],
+      clutter: [
+        // roots coming down the dry wall
+        { type: 'wireRun', points: [[-1.1, 8.5, -1.0], [-1.2, 6.0, -0.9], [-1.05, 3.6, -1.05]], sag: 0.12, radius: 0.018, color: '#2a2216' },
+        { type: 'wireRun', points: [[0.9, 9.0, -1.15], [1.0, 6.8, -1.1], [0.85, 4.7, -1.2]], sag: 0.1, radius: 0.014, color: '#2a2216' },
+        { type: 'wireRun', points: [[1.35, 7.5, 0.4], [1.4, 5.5, 0.3], [1.3, 3.9, 0.45]], sag: 0.1, radius: 0.012, color: '#241e14' },
       ],
       systems: [
-        { type: 'SwarmEvent', period: 40, count: 60, color: '#0d0d10', origin: [0, 3, -1] },
+        { type: 'SwarmEvent', period: 40, count: 60, color: '#0d0d10', origin: [-1.0, 0.9, -0.9] },
       ],
     },
-    // narrow well (width 2.6) at this FOV pushes the default scorePos (x:
-    // 1.2) to the frame edge — pulled in (QA sweep 2026-08-21).
-    info: { scorePos: [0.75, 2.0, -1.4] },
+    info: {
+      hotTakePos: [-0.45, 2.15, -1.05], hotTakeRot: [0.3, 0.4, 0],
+      scorePos: [0.62, 1.95, -1.2],
+      metaPos: [-0.2, 1.5, -1.25],
+    },
   },
 
   // ---------------------------------------------------------------- poorthings
@@ -654,9 +683,9 @@ export const CONFIGS = {
         { type: 'slab', pos: [1.6, 1.4, -3], size: [0.4, 2.8, 0.4], color: '#8a7040' },
         { type: 'slab', pos: [-1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
         { type: 'slab', pos: [1.6, 1.4, -7], size: [0.4, 2.8, 0.4], color: '#8a7040' },
-        { type: 'abstractFigure', pos: [-0.4, 0, -5], color: '#181410', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.2, 0, -5.6], color: '#181410', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [0.8, 0, -5.2], color: '#181410', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [-0.4, 0, -5], color: '#181410', pose: 'walk-cycle-frozen', hat: 'cap' },
+        { type: 'abstractFigure', pos: [0.2, 0, -5.6], color: '#181410', pose: 'walk-cycle-frozen', hat: 'cap' },
+        { type: 'abstractFigure', pos: [0.8, 0, -5.2], color: '#181410', pose: 'walk-cycle-frozen', hat: 'cap' },
       ],
       systems: [
         { type: 'StreakLights', axis: 'z', speed: 2.5, colors: ['#e8c060'], count: 16, span: 16, y: 0.05, z: 0 },
@@ -778,7 +807,7 @@ export const CONFIGS = {
       shellParams: { ground: 'grass', groundColor: '#7a8a5a', skyTop: '#e8c880', skyBottom: '#f0d8a0', horizon: true },
       props: [
         { type: 'pool', pos: [0.6, 0, -1.6], radius: 1.2, glow: '#3ac8d8' },
-        { type: 'abstractFigure', pos: [0.9, 0.6, -1.1], rot: [0.9, 0, 0.3], color: '#0e1218', pose: 'crouch' },
+        { type: 'abstractFigure', pos: [0.75, 0.55, -1.2], rot: [0, -0.5, 0.15], color: '#0e1218', pose: 'dive' },
         { type: 'paperScatter', pos: [-1, 0, 0.4], count: 16, area: [2, 1.4], color: '#e8dcc0' },
         { type: 'slab', pos: [-2.2, 0.6, -0.4], rot: [0.4, 0.2, 0.6], size: [0.4, 1.2, 0.4], color: '#a05030', touch: { kind: 'nudge', amplitude: 0.2, reach: 3.4 } },
       ],
@@ -854,8 +883,8 @@ export const CONFIGS = {
         { type: 'slab', pos: [7.2, 3.2, -9], size: [2.6, 6.4, 5.5], color: '#50545a', roughness: 0.8 },
         { type: 'lampPractical', pos: [6.0, 4.6, -7.0], color: '#ff5a3a', intensity: 0.5, distance: 4 },
         // the shooter in yellow, crouched to launch; a deck hand by the helmet bag
-        { type: 'abstractFigure', pos: [-0.3, 0, -2.4], rot: [0, 0.9, 0], color: '#e0b43a', pose: 'crouch' },
-        { type: 'abstractFigure', pos: [-2.4, 0, -1.4], rot: [0, 0.5, 0], color: '#3a6ab0', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-0.3, 0, -2.4], rot: [0, 0.9, 0], color: '#e0b43a', legs: '#e0b43a', pose: 'kneel', hat: 'helmet', hatColor: '#e0b43a', shirt: false },
+        { type: 'abstractFigure', pos: [-2.4, 0, -1.4], rot: [0, 0.5, 0], color: '#3a6ab0', legs: '#3a6ab0', pose: 'raise', hat: 'helmet', hatColor: '#3a6ab0', shirt: false },
         // his flight bag, dropped on the deck: touch it
         { type: 'bevelBox', pos: [-1.6, 0.18, 0.6], w: 0.6, h: 0.36, d: 0.4, radius: 0.05, color: '#4a5236', touch: { kind: 'nudge', amplitude: 0.08, foley: 'thunk' } },
       ],
@@ -933,6 +962,8 @@ export const CONFIGS = {
         { type: 'ResetFlash', period: 45, jitter: 0.05 },
       ],
     },
+    // the default score height (2.05) ran the number into a 2.2m carriage roof
+    info: { scorePos: [1.0, 1.72, -1.68] },
   },
 
   // ----------------------------------------------------------------------- obsession
@@ -1207,6 +1238,8 @@ export const CONFIGS = {
         { type: 'PeripheralFigure', corner: 'high', pos: [1.7, 1.95, -1.7], color: '#0a0806' },
       ],
     },
+    // the default score height (2.05) put half the number in a 2.1m ceiling
+    info: { scorePos: [1.0, 1.58, -1.86] },
   },
 
   // -------------------------------------------------------------------------- malignant
@@ -1220,7 +1253,7 @@ export const CONFIGS = {
       props: [
         { type: 'bed', pos: [-0.4, 0, -0.6], rot: [0, 0.1, 0], touch: { kind: 'nudge', amplitude: 0.1, foley: 'thunk' } },
         { type: 'mirrorPlane', pos: [1.4, 1.5, -0.8], rot: [0, -0.4, 0], w: 0.8, h: 1.4, tint: '#3a2828' },
-        { type: 'abstractFigure', pos: [1.4, 0, -0.4], rot: [0, Math.PI, 0], color: '#0a0808', pose: 'stand' },
+        { type: 'abstractFigure', pos: [1.4, 0, -0.4], rot: [0, Math.PI, 0], color: '#0a0808', pose: 'stand', hairStyle: 'long', hair: '#050404', skin: '#4a3a34', shirt: false },
       ],
       systems: [
         { type: 'DwellConcede', afterSec: 25 },
@@ -1258,13 +1291,17 @@ export const CONFIGS = {
       props: [
         // the box
         { type: 'slab', pos: [0.5, 0.18, -1.4], size: [0.42, 0.36, 0.42], color: '#a8844f', touch: { kind: 'nudge', amplitude: 0.06, foley: 'thunk' } },
+        // their car, and the van that brought it, pulled off on the dirt
         { type: 'vehicleMass', pos: [-2.8, 0, -3.4], rot: [0, 0.45, 0], color: '#23262a', w: 1.8, h: 1.25, d: 4.6 },
-        // Doe, kneeling in the dirt
-        { type: 'abstractFigure', pos: [1.9, 0, -3.0], rot: [0, -0.5, 0], color: '#2a2622', pose: 'sit' },
-        // the pylons
-        { type: 'slab', pos: [-5, 7, -16], size: [0.45, 14, 0.45], color: '#3a3834', metalness: 0.4 },
-        { type: 'slab', pos: [-5, 12.4, -16], size: [7, 0.22, 0.22], color: '#3a3834', metalness: 0.4 },
-        { type: 'slab', pos: [7, 6, -30], size: [0.4, 12, 0.4], color: '#3a3834', metalness: 0.4 },
+        { type: 'vehicleMass', pos: [-1.2, 0, -8.5], rot: [0, 0.9, 0], color: '#d8d4c8', w: 1.9, h: 1.6, d: 4.6 },
+        // Doe on his knees; Mills over him with the gun; Somerset coming
+        // back from the van, too far away to stop it
+        { type: 'abstractFigure', pos: [1.9, 0, -3.1], rot: [0, -1.4, 0], color: '#2a2622', pose: 'kneel', hair: false, shirt: false },
+        { type: 'abstractFigure', pos: [-0.1, 0, -2.75], rot: [0, 1.72, 0], color: '#d6d0c4', legs: '#2a2a2e', pose: 'aim', holding: 'gun', shirt: false },
+        { type: 'abstractFigure', pos: [-1.7, 0, -6.4], rot: [0, 0.4, 0], color: '#4a4038', pose: 'walk', coat: true, hat: 'fedora' },
+        // the towers marching off across the flats, two lines of them
+        { type: 'pylonLine', from: [-16, -26], to: [22, -110], count: 5, height: 17, color: '#3a3834', wire: '#2a2824' },
+        { type: 'pylonLine', from: [12, -34], to: [46, -118], count: 4, height: 15, color: '#3a3834', wire: '#2a2824' },
       ],
       atmosphere: [
         { type: 'DustField', density: 36, size: 0.012, opacity: 0.2, area: [6, 2.2, 6], color: '#d8c08c', speed: 0.18 },
@@ -1276,8 +1313,8 @@ export const CONFIGS = {
       metaPos: [0.2, 0.55, -1.8],
       fragments: [
         { index: 0, of: 3, state: 'film', pos: [0.5, 0.18, -1.4], y: 0.365, dz: 0, tilt: FLAT },
-        { index: 1, of: 3, state: 'motel', pos: [-2.8, 0, -3.4], dx: 0.6, dz: 1.24, y: 0.715, tilt: FLAT, ry: 0.45 },
-        { index: 2, of: 3, state: 'film', pos: [-5, 7, -16], y: 1.6, dz: 0.24, ry: 0.28 },
+        { index: 1, of: 3, state: 'motel', pos: [-2.8, 0, -3.4], dx: 0.6, dz: 1.24, y: 0.79, tilt: FLAT, ry: 0.45 },
+        { index: 2, of: 3, state: 'film', pos: [-1.2, 0, -8.5], dx: 1.33, dz: 1.06, y: 1.252, tilt: FLAT, ry: 0.9 },
       ],
     },
   },
@@ -1732,8 +1769,8 @@ export const CONFIGS = {
         { type: 'bevelBox', pos: [-1.55, 0.07, -2.1], w: 1.3, h: 0.14, d: 0.6, radius: 0.03, color: '#3a4658' },
         { type: 'lampPractical', pos: [-1.2, 1.9, -2.2], color: '#e8e0c0', intensity: 0.3, distance: 3 },
         { type: 'slab', pos: [1.5, 1.0, -2.25], size: [1.6, 2.0, 0.45], color: '#5a5a5e' },
-        { type: 'abstractFigure', pos: [0.6, 0, -0.9], rot: [0, 0.4, 0], color: '#d4d4cc', pose: 'sit' },
-        { type: 'abstractFigure', pos: [1.3, 0, -1.2], rot: [0, -0.3, 0], color: '#d4d4cc', pose: 'sit' },
+        { type: 'abstractFigure', pos: [0.6, 0, -0.9], rot: [0, 0.4, 0], color: '#d4d4cc', legs: '#c8c8c0', pose: 'huddle', shirt: false },
+        { type: 'abstractFigure', pos: [1.3, 0, -1.2], rot: [0, -0.3, 0], color: '#d4d4cc', legs: '#c8c8c0', pose: 'huddle', shirt: false },
       ],
       systems: [
         { type: 'PeripheralFigure', corner: 'low', pos: [-1.9, 0, -2.25], color: '#1a1c20' },
@@ -1765,9 +1802,9 @@ export const CONFIGS = {
       shellParams: { ground: 'concrete', groundColor: '#1e2024', skyTop: '#0a0e16', skyBottom: '#1a2230', horizon: false, distantCity: 18, boundsRadius: 9 },
       props: [
         { type: 'vehicleMass', pos: [1.1, 0, -2.6], rot: [0, 0.3, 0], color: '#8c8a82', w: 1.9, h: 1.6, d: 4.8 },
-        { type: 'abstractFigure', pos: [-1.1, 0, -1.9], color: '#0a0a0c', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.5, 0, -2.5], color: '#0a0a0c', pose: 'walk-cycle-frozen' },
-        { type: 'abstractFigure', pos: [-1.7, 0, -2.8], color: '#0a0a0c', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-1.1, 0, -1.9], rot: [0, 0.35, 0], color: '#0a0a0c', pose: 'stand', coat: 'robe', hat: 'veil', skin: '#e2d8cc', shirt: false, holding: 'gun' },
+        { type: 'abstractFigure', pos: [-0.5, 0, -2.5], rot: [0, 0.9, 0], color: '#0a0a0c', pose: 'walk-cycle-frozen', coat: 'robe', hat: 'veil', skin: '#e2d8cc', shirt: false },
+        { type: 'abstractFigure', pos: [-1.7, 0, -2.8], rot: [0, 0.2, 0], color: '#0a0a0c', pose: 'aim', coat: 'robe', hat: 'veil', skin: '#e2d8cc', shirt: false, holding: 'guns' },
         { type: 'slab', pos: [0, 2.6, -6.5], size: [14, 5.2, 0.3], color: '#5a3228' },
         { type: 'lampPractical', pos: [2.9, 3.4, -4.2], color: '#ffb060', intensity: 1.2, distance: 9 },
       ],
@@ -1780,8 +1817,8 @@ export const CONFIGS = {
       scorePos: [-2.6, 2.3, -6.33],
       metaPos: [-0.4, 2.1, -6.33],
       fragments: [
-        { index: 0, of: 4, state: 'film', pos: [1.1, 0, -2.6], dx: 0.426, dz: 1.376, y: 0.915, tilt: FLAT, ry: 0.3 },
-        { index: 1, of: 4, state: 'motel', pos: [1.1, 0, -2.6], dx: -0.113, dz: -0.367, y: 1.335, tilt: FLAT, ry: 0.3 },
+        { index: 0, of: 4, state: 'film', pos: [1.1, 0, -2.6], dx: 0.426, dz: 1.376, y: 1.252, tilt: FLAT, ry: 0.3 },
+        { index: 1, of: 4, state: 'motel', pos: [1.1, 0, -2.6], dx: -0.113, dz: -0.367, y: 1.737, tilt: FLAT, ry: 0.3 },
         { index: 2, of: 4, state: 'film', pos: [0, 2.6, -6.5], dx: -2.2, dz: 0.16, y: 1.6 },
         { index: 3, of: 4, state: 'film', pos: [0, 2.6, -6.5], dx: 2.2, dz: 0.16, y: 1.6 },
       ],
@@ -1907,9 +1944,22 @@ export const CONFIGS = {
         { type: 'slab', pos: [0, -0.04, -5], size: [3.4, 0.08, 12], color: '#2e2c2a' },
         { type: 'slab', pos: [0, 0.85, -15.8], rot: [0.17, 0, 0], size: [3.4, 0.08, 10], color: '#2e2c2a' },
         { type: 'slab', pos: [0, 0.95, -26.93], rot: [-0.12, 0, 0], size: [3.4, 0.08, 12.5], color: '#2e2c2a' },
-        { type: 'vehicleMass', pos: [-0.7, 0, -4.2], color: '#6a6258', w: 1.8, h: 1.2, d: 4.4 },
-        { type: 'vehicleMass', pos: [0.8, 1.58, -19.8], rot: [0.17, 0, 0], color: '#b8b0a0', w: 1.8, h: 1.2, d: 4.4 },
-        { type: 'abstractFigure', pos: [2.3, 0, -3.6], rot: [0, -0.4, 0], color: '#7a6a52', pose: 'stand' },
+        // the asphalt itself, laid over the three pitches: the dip and the
+        // crest that hide whoever is coming until they are on you
+        { type: 'roadStrip', pos: [0, 0.006, -5], w: 3.3, len: 12 },
+        { type: 'roadStrip', pos: [0, 0.896, -15.8], rot: [0.17, 0, 0], w: 3.3, len: 10 },
+        { type: 'roadStrip', pos: [0, 0.996, -26.93], rot: [-0.12, 0, 0], w: 3.3, len: 12.5 },
+        // the rolling desert either side, scrub on it, the poles keeping pace
+        { type: 'hills', count: 14, band: [-70, -6], spread: 90, height: [1.2, 4.5], width: [10, 26], color: '#b39465', seed: 21, clear: 3 },
+        { type: 'hills', count: 6, band: [-140, -90], spread: 220, height: [8, 18], width: [50, 90], color: '#9c8a74', seed: 5 },
+        { type: 'scrub', count: 90, area: [36, 40], center: [0, -16], clear: 2.4, color: '#5a5a36' },
+        { type: 'slab', pos: [3.4, 3, -2], size: [0.16, 6, 0.16], color: '#4a3a2a' },
+        { type: 'slab', pos: [3.4, 5.6, -2], size: [1.4, 0.1, 0.1], color: '#4a3a2a' },
+        { type: 'slab', pos: [3.4, 3, -12], size: [0.16, 6, 0.16], color: '#4a3a2a' },
+        { type: 'slab', pos: [3.4, 5.6, -12], size: [1.4, 0.1, 0.1], color: '#4a3a2a' },
+        { type: 'vehicleMass', pos: [-0.7, 0, -4.2], rot: [0, Math.PI, 0], color: '#6a6258', w: 1.8, h: 1.2, d: 4.4 },
+        { type: 'vehicleMass', pos: [0.8, 1.58, -19.8], rot: [0.17, 0, 0], color: '#b8b0a0', w: 1.8, h: 1.2, d: 4.4, lights: true },
+        { type: 'abstractFigure', pos: [2.3, 0, -3.6], rot: [0, Math.PI - 0.3, 0], color: '#7a6a52', legs: '#3a3a40', pose: 'aim', holding: 'gun', hairStyle: 'long', hair: '#2a1a12' },
       ],
       atmosphere: [],
       systems: [
@@ -1921,8 +1971,8 @@ export const CONFIGS = {
       metaPos: [1.2, 1.3, -3.2],
       fragments: [
         { index: 0, of: 5, state: 'film', pos: [0, -0.04, -5], dx: 0.9, dz: 4.0, y: 0.012, tilt: FLAT },
-        { index: 1, of: 5, state: 'motel', pos: [-0.7, 0, -4.2], dz: -0.35, y: 1.0, tilt: FLAT },
-        { index: 2, of: 5, state: 'film', pos: [-0.7, 0, -4.2], dz: 1.5, y: 0.69, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [-0.7, 0, -4.2], dz: 0.3, y: 1.185, tilt: FLAT },
+        { index: 2, of: 5, state: 'film', pos: [-0.7, 0, -4.2], dz: 1.6, y: 0.755, tilt: FLAT },
         { index: 3, of: 5, state: 'motel', pos: [0, -0.04, -5], dx: -1.1, dz: -3.5, y: 0.012, tilt: FLAT },
         { index: 4, of: 5, state: 'film', pos: [0, -0.04, -5], dx: 0.3, dz: -4.8, y: 0.012, tilt: FLAT },
       ],
@@ -1953,15 +2003,15 @@ export const CONFIGS = {
         // the sea on both sides, well below the boards
         { type: 'waterPlane', pos: [0, -1.6, -8], size: [50, 40], color: '#3c4a50', bright: '#8fa4aa' },
         // the queue down the Mole
-        { type: 'abstractFigure', pos: [-0.75, 0, 3.4], color: '#3e4234', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.7, 0, 2.2], color: '#3a3e30', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.8, 0, 1.0], color: '#3e4234', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.72, 0, -0.2], color: '#3a3e30', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.78, 0, -1.4], color: '#3e4234', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.7, 0, -2.6], color: '#3a3e30', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.76, 0, -3.8], color: '#3e4234', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-0.74, 0, -5.0], color: '#3a3e30', pose: 'stand' },
-        { type: 'abstractFigure', pos: [0.95, 0, 2.9], rot: [0, -0.6, 0], color: '#3a3e30', pose: 'sit' },
+        { type: 'abstractFigure', rot: [0, 2.96, 0], pos: [-0.75, 0, 3.4], color: '#3e4234', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.02, 0], pos: [-0.7, 0, 2.2], color: '#3a3e30', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.08, 0], pos: [-0.8, 0, 1.0], color: '#3e4234', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.14, 0], pos: [-0.72, 0, -0.2], color: '#3a3e30', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.20, 0], pos: [-0.78, 0, -1.4], color: '#3e4234', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.26, 0], pos: [-0.7, 0, -2.6], color: '#3a3e30', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.32, 0], pos: [-0.76, 0, -3.8], color: '#3e4234', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', rot: [0, 3.38, 0], pos: [-0.74, 0, -5.0], color: '#3a3e30', pose: 'stand', hat: 'helmet', shirt: false },
+        { type: 'abstractFigure', pos: [1.2, 0, 2.9], rot: [0, -1.9, 0], color: '#3a3e30', pose: 'huddle', hat: 'helmet', shirt: false },
         // the crates by the head of the Mole
         { type: 'bevelBox', pos: [1.05, 0.25, 4.4], w: 0.6, h: 0.5, d: 0.5, color: '#5a5034', touch: { kind: 'nudge', amplitude: 0.05, foley: 'thunk' } },
         { type: 'bevelBox', pos: [1.05, 0.72, 4.4], w: 0.5, h: 0.44, d: 0.42, color: '#4e4630' },
@@ -1982,7 +2032,7 @@ export const CONFIGS = {
           })
         } },
         // a little boat alongside, down at the waterline
-        { type: 'vehicleMass', pos: [3.6, -1.55, -3], rot: [0, 0.2, 0], color: '#d8d4c4', w: 1.6, h: 1.0, d: 4.2 },
+        { type: 'vehicleMass', kind: 'boat', pos: [3.6, -1.75, -3], rot: [0, 0.2, 0], color: '#d8d4c4', w: 1.6, h: 1.0, d: 4.2 },
       ],
       atmosphere: [],
       systems: [
@@ -2028,8 +2078,8 @@ export const CONFIGS = {
         { type: 'bevelBox', pos: [-0.4, 0.22, -1.5], w: 1.9, h: 0.44, d: 0.8, color: '#5c5446' },
         { type: 'bevelBox', pos: [-0.4, 0.6, -1.85], w: 1.9, h: 0.5, d: 0.2, color: '#544c40' },
         // Patrick, and Amanda beside him
-        { type: 'abstractFigure', pos: [-0.85, 0.16, -1.5], color: '#1e1e22', pose: 'sit' },
-        { type: 'abstractFigure', pos: [0.05, 0.14, -1.5], scale: 0.72, color: '#3a2e2e', pose: 'sit' },
+        { type: 'abstractFigure', pos: [-0.85, 0, -1.45], color: '#1e1e22', pose: 'sit' },
+        { type: 'abstractFigure', pos: [0.05, 0, -1.48], scale: 0.72, color: '#3a2e2e', pose: 'sit', hairStyle: 'long', hair: '#c8a060' },
         { type: 'table', pos: [-0.35, 0, -0.55], w: 1.0, d: 0.5, h: 0.42, color: '#4a3c2c' },
         // the TV on its stand against the left wall, on low
         { type: 'bevelBox', pos: [-2.0, 0.3, -0.6], w: 0.5, h: 0.6, d: 1.0, color: '#2e2620' },
@@ -2110,7 +2160,7 @@ export const CONFIGS = {
         // the swan, loose again
         { type: 'bevelBox', pos: [-1.0, 0.18, -0.4], w: 0.24, h: 0.36, d: 0.5, color: '#f4f4f0', touch: { kind: 'nudge', amplitude: 0.08, foley: 'thunk' } },
         // Angel, flying through the air, two guns
-        { type: 'abstractFigure', pos: [-0.6, 1.0, -4.2], rot: [0, 0, -1.25], color: '#1a1e2a', pose: 'walk-cycle-frozen' },
+        { type: 'abstractFigure', pos: [-0.6, 1.25, -4.2], rot: [0, 1.0, 0.2], color: '#1a1e2a', pose: 'dive', holding: 'guns', hat: 'cap' },
         // the shopfronts and the Crown
         { type: 'slab', pos: [-4.4, 1.6, -8], size: [5, 3.2, 2], color: '#e8dcc0' },
         { type: 'slab', pos: [1.2, 1.8, -8.5], size: [4.5, 3.6, 2], color: '#c8b898' },
@@ -2140,7 +2190,7 @@ export const CONFIGS = {
         { index: 0, of: 5, state: 'film', pos: [-2.6, 0, 1.0], dx: 0.2, dz: 0, y: 0.756, tilt: FLAT },
         { index: 1, of: 5, state: 'motel', pos: [2.8, 0, 0.2], y: 0.516, tilt: FLAT, ry: -Math.PI / 2 },
         { index: 2, of: 5, state: 'film', pos: [-2.2, 1.3, -1.48], dx: 0.004, dz: 0.012, y: 1.08, ry: 0.3 },
-        { index: 3, of: 5, state: 'motel', pos: [1.6, 0, -2.6], y: 0.69, tilt: FLAT, ry: -0.4 },
+        { index: 3, of: 5, state: 'motel', pos: [1.6, 0, -2.6], dx: -0.58, dz: 1.3, y: 0.755, tilt: FLAT, ry: -0.4 },
         { index: 4, of: 5, state: 'film', pos: [1.2, 1.8, -8.5], dx: -1.2, dz: 1.012, y: 1.4 },
       ],
     },
@@ -2174,7 +2224,7 @@ export const CONFIGS = {
         { type: 'bevelBox', pos: [1.4, 0.45, -2.0], w: 0.6, h: 0.9, d: 0.5, color: '#4a3020' },
         { type: 'slab', pos: [1.4, 0.91, -2.0], size: [0.34, 0.02, 0.34], color: '#111111' },
         // him, and the puddle
-        { type: 'abstractFigure', pos: [0.1, 0.18, -0.15], rot: [-Math.PI / 2, 0, 0], color: '#6a6a54', pose: 'stand' },
+        { type: 'abstractFigure', pos: [0.3, 0, -0.68], rot: [0, 0.5, 0], color: '#6a6a54', pose: 'lie', breathe: false },
         { type: 'pool', pos: [0.35, 0.012, -0.6], radius: 0.45, color: '#2a2618', glow: '#3a3420' },
         // the Committee
         { type: 'abstractFigure', pos: [-1.2, 0, -0.3], rot: [0, 0.8, 0], color: '#1e1e1e', pose: 'stand' },
@@ -2217,8 +2267,9 @@ export const CONFIGS = {
       },
       props: [
         { type: 'bed', pos: [-0.4, 0, -1.2], color: '#d8e0e0', frame: '#8a9496' },
-        { type: 'abstractFigure', pos: [-0.4, 0.72, -0.45], rot: [-Math.PI / 2, 0, 0], scale: 0.9, color: '#6e7a7c', pose: 'stand' },
-        { type: 'abstractFigure', pos: [0.75, 0, -1.4], rot: [0, -1.2, 0], color: '#4a3a44', pose: 'sit' },
+        { type: 'abstractFigure', pos: [-0.4, 0.4, -1.15], scale: 0.95, color: '#6e7a7c', pose: 'lie' },
+        { type: 'chairRow', pos: [0.78, 0, -1.41], rot: [0, -1.2, 0], count: 1, color: '#7a8486', cushion: '#5a6a6c' },
+        { type: 'abstractFigure', pos: [0.75, 0, -1.4], rot: [0, -1.2, 0], color: '#4a3a44', pose: 'sit', hairStyle: 'long' },
         // the monitor
         { type: 'slab', pos: [-1.5, 0.7, -1.9], size: [0.06, 1.4, 0.06], color: '#9aa4a6', metalness: 0.5 },
         { type: 'screenPanel', pos: [-1.5, 1.45, -1.86], w: 0.5, h: 0.36, color: '#061210', intensity: 0.85, draw: (ctx, W, H) => {
@@ -2406,8 +2457,8 @@ export const CONFIGS = {
         { type: 'bevelBox', pos: [0, 1.0, -9], w: 0.2, h: 0.2, d: 0.18, color: '#6a6e72', metalness: 0.7 },
         { type: 'slab', pos: [0.04, 1.2, -9], size: [0.06, 0.22, 0.06], color: '#6a6e72', metalness: 0.7 },
         // Sarah and John at the rail
-        { type: 'abstractFigure', pos: [-1.0, 0, -5.4], color: '#14161a', pose: 'stand' },
-        { type: 'abstractFigure', pos: [-1.35, 0, -5.45], scale: 0.85, color: '#1a1c20', pose: 'stand' },
+        { type: 'abstractFigure', pos: [-1.0, 0, -5.4], rot: [0, Math.PI - 0.15, 0], color: '#14161a', pose: 'hold', hairStyle: 'long', hair: '#2a1c14', shirt: false },
+        { type: 'abstractFigure', pos: [-1.38, 0, -5.45], rot: [0, Math.PI + 0.1, 0], scale: 0.84, color: '#3a3430', legs: '#1e2a3a', pose: 'stand', hair: '#4a3020', shirt: false },
         // the control box on the catwalk
         { type: 'bevelBox', pos: [1.0, 0.4, 1.8], w: 0.6, h: 0.8, d: 0.5, color: '#3a3a34' },
         // the crane overhead and its chains

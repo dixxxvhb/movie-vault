@@ -354,9 +354,12 @@ function ViewfinderFrame({ film, infoVisible = true }) {
         {/* lower-third caption bar: the take and the score, so `i` hides it */}
         <mesh ref={capMeshRef} visible={infoVisible} position={[0, -FRAME_H / 2 + 0.09, 0]}>
           <planeGeometry args={[FRAME_W * 0.98, FRAME_H * 0.34]} />
+          {/* keyed: without a fresh material when the texture arrives, R3F
+              keeps the map-less one it compiled first and the bar renders
+              solid white (sweep, 2026-10-14) */}
           {capTex
-            ? <meshBasicMaterial map={capTex} transparent depthWrite={false} toneMapped={false} />
-            : <meshBasicMaterial transparent opacity={0} />}
+            ? <meshBasicMaterial key="mapped" map={capTex} transparent depthWrite={false} toneMapped={false} />
+            : <meshBasicMaterial key="blank" transparent opacity={0} />}
         </mesh>
       </group>
     </group>
