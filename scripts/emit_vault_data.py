@@ -682,9 +682,43 @@ data = {
     "quotes": quotes,
 }
 
+# NO EM DASHES (2026-10-14). Dixon's rule for copy: periods, commas or
+# parens, never an em dash. The notes in the database are Leonard's and the
+# pull writes them verbatim, so the swap happens here, on the way out, and a
+# re-pull can never bring them back. His own words are left alone: the hot
+# take, the case file HTML, the quote wall. Order matters: a dash after a
+# full stop just goes; one before a word in CAPS starts a new sentence; anything
+# left is a comma, which is how every remaining note reads aloud.
+VERBATIM = {"hot_take", "panel", "front", "quote", "quotes"}
+_undashed = [0]
+
+
+def undash(s):
+    if "—" not in s:
+        return s
+    _undashed[0] += s.count("—")
+    s = re.sub(r"([.!?])\s*—\s*", r"\1 ", s)
+    s = re.sub(r"\s*—\s*(?=[A-Z]{2,}\b)", ". ", s)
+    s = re.sub(r"\s*—\s*", ", ", s)
+    return s.strip(" ,")
+
+
+def undash_all(o):
+    if isinstance(o, dict):
+        return {k: (v if k in VERBATIM else undash_all(v)) for k, v in o.items()}
+    if isinstance(o, list):
+        return [undash_all(v) for v in o]
+    if isinstance(o, str):
+        return undash(o)
+    return o
+
+
+data = undash_all(data)
+
 os.makedirs(OUT_DIR, exist_ok=True)
 json.dump(data, io.open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print("wrote", OUT, "-", data["count"], "films, avg", data["avg"])
+print("  em dashes swapped out of notes:", _undashed[0])
 print("  fronts:", sum(1 for f in films if f["front"]),
       "| posters:", sum(1 for f in films if f["poster"]),
       "| panels:", sum(1 for f in films if f["panel"]),

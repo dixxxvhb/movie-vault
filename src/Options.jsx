@@ -237,7 +237,7 @@ export default function Options({ open, onClose }) {
         />
         <Toggle path="vision.highContrast" label="Higher contrast" hint="Drops the grain, the bloom and most of the vignette." />
         <Toggle path="vision.keepSignage" label="Keep the signs up" hint="Signs fade as you approach by default." />
-        <Toggle path="reading.plain" label="Plain language" hint="Short summaries instead of the full written reviews." />
+        <Toggle path="reading.plain" label="Plain language" hint="Each case file shows just its short plot summary, not the full review." />
 
         <h2 style={H2}>Sound</h2>
         <Toggle path="audio.mono" label="Mono" />

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
+import { plainPanel } from './plain.js'
 import * as LE_GAMAAR from './rooms/bespoke/basterds/content.js'
 
 // ?text — the whole Vault as a document.
@@ -100,8 +101,13 @@ function Films({ films, cast }) {
     if (sort === 'score') r.sort((a, b) => b.score - a.score)
     if (sort === 'title') r.sort((a, b) => a.title.localeCompare(b.title))
     if (sort === 'date') r.sort((a, b) => String(b.watched || '').localeCompare(String(a.watched || '')))
+    // the emotional key, logged on the night: groups by how a film feels,
+    // not how it scored. Within a feel, still best first.
+    if (sort === 'feel') r.sort((a, b) => String(a.key || '~').localeCompare(String(b.key || '~')) || b.score - a.score)
     return r
   }, [films, sort])
+  const [plain, setPlain] = useState(() => !!getSetting('reading.plain'))
+  useEffect(() => subscribeSettings(() => setPlain(!!getSetting('reading.plain'))), [])
 
   return (
     <section aria-labelledby="ledger-h">
@@ -110,7 +116,7 @@ function Films({ films, cast }) {
         {films.length} films he scored the night he watched them. {AXIS_NOTE}
       </p>
       <div role="group" aria-label="Sort the ledger" style={{ margin: '0 0 1rem' }}>
-        {['score', 'title', 'date'].map((k) => (
+        {['score', 'title', 'date', 'feel'].map((k) => (
           <button
             key={k}
             onClick={() => setSort(k)}
@@ -139,7 +145,7 @@ function Films({ films, cast }) {
           </h3>
           <p style={{ ...SUB, margin: '0 0 0.5rem' }}>
             {[f.watched, f.runtime && f.runtime + ' min', (f.director || []).join(', '),
-              (f.genres || []).join(', '), f.rewatch ? 'rewatch' : null]
+              (f.genres || []).join(', '), f.key ? 'feels ' + f.key : null, f.rewatch ? 'rewatch' : null]
               .filter(Boolean).join(' · ')}
           </p>
           {f.context ? <p style={{ margin: '0 0 0.5rem', color: '#B8AE9C' }}>{f.context}</p> : null}
@@ -150,7 +156,7 @@ function Films({ films, cast }) {
               the stylesheet below hides that header rather than the panel
               being re-authored. The plot, the verdict and the "more from the
               chat" blocks are the reason it is here. */}
-          {f.panel ? <div className="casefile" dangerouslySetInnerHTML={{ __html: f.panel }} /> : null}
+          {f.panel ? <div className="casefile" dangerouslySetInnerHTML={{ __html: plain ? plainPanel(f.panel) : f.panel }} /> : null}
           {ROOM_DOCS[f.slug] ? <RoomDoc doc={ROOM_DOCS[f.slug]} cast={cast?.[f.slug]} /> : null}
         </article>
       ))}
