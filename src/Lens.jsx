@@ -29,7 +29,32 @@ export function useVibes(films) {
   }, [films])
 }
 
-export default function Lens({ vibes, value, onPick, onClose }) {
+// The emotional key, one word logged on the night (tense, dread, fun, cozy,
+// awe, sad, camp). Emitted on every film since the session-two slice and
+// never read by anything until this lens. It groups by feel, not score, so
+// it is the one way through the wall that does not give the numbers away.
+// The lens value for a feel is 'feel:<key>' so it cannot collide with a tag.
+export function useFeels(films) {
+  return useMemo(() => {
+    const count = {}
+    for (const f of films || []) if (f.key) count[f.key] = (count[f.key] || 0) + 1
+    return Object.entries(count)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([key, n]) => ({ key, n }))
+  }, [films])
+}
+
+export function lensMatches(film, lens) {
+  if (!lens) return true
+  if (lens.startsWith('feel:')) return film.key === lens.slice(5)
+  return (film.vibes || []).includes(lens)
+}
+
+export function lensLabel(lens) {
+  return lens && lens.startsWith('feel:') ? 'feels ' + lens.slice(5) : lens
+}
+
+export default function Lens({ vibes, feels = [], value, onPick, onClose }) {
   const card = useRef(null)
   // focus moves into the card on open, so the tags are the next Tab stop
   useEffect(() => { card.current?.focus() }, [])
@@ -51,6 +76,27 @@ export default function Lens({ vibes, value, onPick, onClose }) {
         it goes dark. The wall keeps its shape, so you see where that taste
         actually sits in the scores.
       </p>
+      {feels.length > 0 && (
+        <>
+          <div style={{ ...S.kicker, margin: '0 0 8px' }}>how it felt</div>
+          <div style={{ ...S.tags, marginBottom: 16 }}>
+            {feels.map(({ key, n }) => {
+              const v = 'feel:' + key
+              return (
+                <button
+                  key={v}
+                  aria-pressed={value === v}
+                  onClick={() => onPick(value === v ? null : v)}
+                  style={{ ...S.tag, ...(value === v ? S.on : null) }}
+                >
+                  {key}<span style={S.n}>{n}</span>
+                </button>
+              )
+            })}
+          </div>
+          <div style={{ ...S.kicker, margin: '0 0 8px' }}>tags</div>
+        </>
+      )}
       <div style={S.tags}>
         {vibes.map(({ tag, n }) => (
           <button

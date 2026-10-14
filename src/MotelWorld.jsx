@@ -10,6 +10,7 @@ import ScoreMarks from './ScoreMarks.jsx'
 import Archive from './Archive.jsx'
 import { WallQuotes } from './Quotes.jsx'
 import Signs from './Signs.jsx'
+import { lensMatches } from './Lens.jsx'
 import Nights from './Nights.jsx'
 
 const HD = ROOM.D / 2
@@ -128,7 +129,7 @@ export default function MotelWorld({
           position={p.position}
           rotation={p.rotation}
           inspected={selected === p.film.slug}
-          dimmed={!!lens && !(p.film.vibes || []).includes(lens)}
+          dimmed={!lensMatches(p.film, lens)}
           onSelect={(f) => setSelected(f.slug)}
           onHover={setHover}
         />

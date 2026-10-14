@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Html } from '@react-three/drei'
 import { sheetOf, rgba } from './palette.js'
 import { useInXR } from './xr.jsx'
+import { get as getSetting, subscribe as subscribeSettings } from './settings.js'
+import { plainPanel } from './plain.js'
 
 // The reading layer.
 //
@@ -33,9 +35,16 @@ import { useInXR } from './xr.jsx'
 const SCALE = 0.0235
 const SHEET_PX = 430
 
-function useTypeset(html) {
+function usePlain() {
+  const [plain, setPlain] = useState(() => !!getSetting('reading.plain'))
+  useEffect(() => subscribeSettings(() => setPlain(!!getSetting('reading.plain'))), [])
+  return plain
+}
+
+function useTypeset(html, plain) {
   return useMemo(() => {
     if (!html) return null
+    if (plain) return plainPanel(html)
     // Strip the panel's own title block and rank number — the sheet header
     // already prints those, and repeating them reads as a bug. Parsed rather
     // than regexed: `.head` contains nested divs, so a non-greedy
@@ -45,11 +54,12 @@ function useTypeset(html) {
     doc.querySelectorAll('.no, .head').forEach((el) => el.remove())
     const section = doc.querySelector('section')
     return (section ? section.innerHTML : doc.body.innerHTML).trim()
-  }, [html])
+  }, [html, plain])
 }
 
 export default function CaseFile({ film, links, anchor, onClose, onJump, onEnter, titleOf = (v) => v }) {
-  const body = useTypeset(film.panel)
+  const plain = usePlain()
+  const body = useTypeset(film.panel, plain)
   const [show, setShow] = useState(false)
   const scroller = useRef(null)
   const P = useMemo(() => sheetOf(film.palette), [film.palette])
