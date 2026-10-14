@@ -3,9 +3,7 @@
 // Nothing here is authored per film. A film logged tonight gets a room
 // number, a floor and a spot on the walkway from its score alone, which is
 // plan ruling 11 ("film 48 must appear correctly with nobody opening an
-// editor"). Both prototypes (the Court and the Strip) are laid out by the
-// same two functions below so the comparison is about the building, not the
-// placement code.
+// editor"). Dixon picked the Court over the flat strip on 2026-10-14.
 
 // One room = a door plus its window. Rooms that share a score stand
 // shoulder to shoulder under one porch light (93A, 93B, ...); different
@@ -183,44 +181,4 @@ export function layoutCourt(films) {
   })
 
   return { kind: 'court', floors, roof, rooms: [...floors.flatMap((f) => f.rooms), ...roof.rooms], zPent }
-}
-
-// ---------------------------------------------------------------- the Strip
-//
-// One storey, one long row, doors to the parking lot. Highest score next to
-// the office, then down the line. Every tenth of a point that NOBODY scored
-// adds STRIP_STEP metres of blank wall, so the 5.4 to 6.7 hole is twelve
-// empty tenths of stucco no matter how crowded the nines get.
-
-export const STRIP_STEP = 2.2
-export const STRIP_X0 = 3
-
-export function layoutStrip(films) {
-  const rooms = numberRooms(films)
-  const clusters = clusterRooms(rooms).sort((a, b) => b.tenths - a.tenths)
-  const out = []
-  const ticks = []
-  let x = STRIP_X0 + (100 - clusters[0].tenths) * STRIP_STEP
-  let prev = null
-  for (const c of clusters) {
-    if (prev) {
-      const empty = prev.tenths - c.tenths - 1
-      const start = x
-      x += CLUSTER_GAP + empty * STRIP_STEP
-      // A whole point boundary crossed in this stretch gets a mark, placed
-      // where it falls among the empty tenths.
-      for (let s = Math.floor(prev.tenths / 10) * 10; s > c.tenths; s -= 10) {
-        if (s > prev.tenths || s <= c.tenths) continue
-        const k = prev.tenths - s + 0.5 // tenths walked past to reach the line
-        ticks.push({ score: s / 10, x: start + (k / (prev.tenths - c.tenths)) * (x - start) })
-      }
-    }
-    c.rooms.forEach((r, i) => {
-      out.push({ ...r, floor: 0, x: x + i * MODULE, y: 0, z: 0, rotY: 0, cluster: c.tenths })
-    })
-    x += (c.rooms.length - 1) * MODULE
-    prev = c
-  }
-  const xEnd = x + 6
-  return { kind: 'strip', rooms: out, xEnd, ticks }
 }

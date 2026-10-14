@@ -1,10 +1,9 @@
 import * as THREE from 'three'
 import { Batch, frame, at } from './geo.js'
 import { Atlas, drawPlate, drawCard, drawPaint, drawSign } from './atlas.js'
-import { COURT, layoutCourt, layoutStrip, shortDate } from './layout.js'
+import { COURT, layoutCourt, shortDate } from './layout.js'
 
-// Both buildings are built into the same five layers so the comparison is
-// fair on cost as well as on looks:
+// The Court is built into five merged layers, one draw call each:
 //   arch    lit stucco, slabs, rails, frames          (MeshStandard, vertex colour)
 //   doors   the door panels, pickable                 (MeshStandard, vertex colour)
 //   glow    windows, light under doors, bulbs         (unlit, bloom catches it)
@@ -28,6 +27,7 @@ const C = {
 }
 
 export const EYE = 1.62
+export const OFFICE_TAG = -2
 const SURF = 0.2 // walkway slab top above a floor's datum
 
 const BAND_NAMES = { 1: 'ONES', 2: 'TWOS', 3: 'THREES', 4: 'FOURS', 5: 'FIVES', 6: 'SIXES', 7: 'SEVENS', 8: 'EIGHTS', 9: 'NINES', 10: 'TENS' }
@@ -229,6 +229,34 @@ export function buildCourt(films) {
   L.arch.aabb(sp[0] - 3.1, 8.55, sp[2] - 0.2, sp[0] + 3.1, 12.65, sp[2] + 0.15, '#22272b')
   L.pools.quad([sp[0], 10.6, sp[2] + 0.25], [1, 0, 0], [0, 1, 0], 9, 6, '#fff0cf', undefined, -1, 0.12)
 
+  // The office, Room 4: the motel room that was always here, with the wall
+  // of Polaroids inside it. Out front by the road, door to the lot, the
+  // first door a visitor reaches.
+  const office = { x0: xL - depth - 3, x1: xL - 1.2, z0: zF + 0.8, z1: zF + 5.5, h: 3.8 }
+  L.arch.aabb(office.x0, 0, office.z0, office.x1, office.h, office.z1, '#c4b090', { top: C.roof })
+  L.arch.aabb(office.x0 - 0.3, office.h, office.z0 - 0.3, office.x1 + 0.3, office.h + 0.25, office.z1 + 1.6, C.trim)
+  const od = { x: office.x1 - 2.2, z: office.z1 }
+  {
+    const r = [1, 0, 0]
+    const f = [0, 0, 1]
+    const base = [od.x, 0, od.z]
+    L.doors.box(at(base, r, f, 0, 1.03, 0), r, 0.9, 2.06, 0.08, '#6b2f2a', { tag: OFFICE_TAG })
+    L.arch.box(at(base, r, f, -0.5, 1.07, 0.03), r, 0.1, 2.14, 0.1, C.trim)
+    L.arch.box(at(base, r, f, 0.5, 1.07, 0.03), r, 0.1, 2.14, 0.1, C.trim)
+    L.arch.box(at(base, r, f, 0, 2.17, 0.03), r, 1.1, 0.1, 0.1, C.trim)
+    L.glow.quad(at(base, r, f, 0, 0.025, 0.045), r, [0, 1, 0], 0.86, 0.04, '#ffd28f', undefined, -1, 2.2)
+    // the big office window, lit, with the wall's own count in it
+    L.glow.quad(at(base, r, f, -3.4, 1.55, 0.02), r, [0, 1, 0], 4.2, 1.7, '#ffd28f', undefined, -1, 1.0)
+    L.arch.box(at(base, r, f, -3.4, 0.66, 0.06), r, 4.4, 0.1, 0.14, C.trim)
+    pending.push({ cell: L.atlas.add(160, 80, drawPlate('4')), c: at(base, r, f, 0, 1.62, 0.055), r, w: 0.3, h: 0.15 })
+    pending.push({
+      cell: L.atlas.add(256, 150, drawCard('The wall', `4 · ${lay.rooms.length} films`)),
+      c: at(base, r, f, -2.2, 1.1, 0.03), r, w: 0.62, h: 0.36,
+    })
+    pending.push({ cell: L.atlas.add(512, 96, drawPaint('OFFICE', { color: '#f6ead0', spacing: 14 })), c: [od.x - 2.2, office.h - 0.4, office.z1 + 0.02], r, w: 3.2, h: 0.6 })
+    L.pools.quad([od.x - 2, 0.02, office.z1 + 2.2], r, f, 9, 5, '#ffcf8a', undefined, -1, 0.4)
+  }
+
   lay.rooms.forEach((rm, i) => addRoom(L, rm, i, pending))
   addPorchLights(L, lay.rooms)
   flushWords(L, pending)
@@ -244,6 +272,7 @@ export function buildCourt(films) {
       [xL - 0.6, xL + walk + 0.3, zF - 0.1, zF + 3.3],
       [xR - walk - 0.3, xR + 0.6, zF - 0.1, zF + 3.3],
       [sp[0] - 0.5, sp[0] + 0.5, sp[2] - 0.5, sp[2] + 0.5],
+      [office.x0 - 0.3, office.x1 + 0.3, office.z0 - 0.3, office.z1 + 0.3],
     ],
   }
   const upper = {
@@ -270,79 +299,9 @@ export function buildCourt(films) {
     levels,
     fog: 0.0105,
     overview: { kind: 'orbit', target: [0, Htot * 0.45, -6], width: 62, elev: 0.36 },
-    spawn: { level: 0, x: 0, z: zF + 9, yaw: 0 },
+    spawn: { level: 0, x: xL + 7, z: zF + 13, yaw: 0.12 },
+    officeDoor: { x: od.x + 2.5, z: od.z + 4.5, yaw: 0.45 },
     stats: lay.floors.map((fl) => ({ band: fl.band, n: fl.rooms.length })).concat([{ band: 10, n: lay.roof.rooms.length }]),
-  }
-}
-
-// --------------------------------------------------------------- the Strip
-
-export function buildStrip(films) {
-  const lay = layoutStrip(films)
-  const L = newLayers()
-  const pending = []
-  const H = 3.6
-  const x0 = -12
-  const x1 = lay.xEnd
-  const canopyZ = 2.6
-
-  // the row, the office at its head
-  L.arch.aabb(-2, 0, -8, x1, H, 0, C.stucco, { top: C.roof })
-  L.arch.aabb(x0, 0, -9, -2, 4.4, 1.2, '#c4b090', { top: C.roof })
-  L.glow.quad([-7, 1.7, 1.22], [1, 0, 0], [0, 1, 0], 6, 2.0, '#ffd28f', undefined, -1, 0.9)
-  pending.push({ cell: L.atlas.add(512, 96, drawPaint('OFFICE', { color: '#f6ead0', spacing: 14 })), c: [-7, 3.6, 1.23], r: [1, 0, 0], w: 3.2, h: 0.6 })
-  L.pools.quad([-7, 0.02, 3.4], [1, 0, 0], [0, 0, 1], 9, 5, '#ffcf8a', undefined, -1, 0.35)
-  // walkway and canopy
-  L.arch.aabb(-2, 0, 0, x1, SURF, canopyZ, C.slab)
-  L.arch.aabb(-2, H - 0.55, 0, x1, H - 0.3, canopyZ + 0.2, C.trim)
-  for (let x = 0; x < x1; x += 4.4) L.arch.aabb(x, SURF, canopyZ - 0.1, x + 0.12, H - 0.55, canopyZ + 0.02, C.trim)
-  for (let x = 2; x < x1 - 1; x += 6.6) sodiumLight(L, x, H - 0.62, canopyZ / 2, [1, 0, 0], 0.9)
-  // the lot and the road
-  L.arch.aabb(x0 - 40, -0.1, canopyZ, x1 + 40, -0.02, 22, C.asphalt)
-  L.arch.aabb(x0 - 40, -0.12, 22, x1 + 40, -0.03, 32, C.road)
-  for (let x = x0; x < x1; x += 3) L.arch.aabb(x, -0.02, canopyZ + 1.2, x + 0.1, -0.01, canopyZ + 6.2, '#8d877a')
-  for (let x = x0 - 40; x < x1 + 40; x += 6) L.arch.aabb(x, -0.03, 26.9, x + 3, -0.02, 27.1, '#c9b48a')
-  // streetlights along the lot edge
-  for (let x = x0; x < x1 + 10; x += 24) {
-    L.arch.aabb(x - 0.1, 0, 20.4, x + 0.1, 7, 20.6, '#3d3a36')
-    L.arch.aabb(x - 0.1, 6.9, 18.6, x + 0.1, 7.05, 20.6, '#3d3a36')
-    L.glow.box([x, 6.85, 18.8], [1, 0, 0], 0.6, 0.08, 0.3, C.sodium, {})
-    L.pools.quad([x, 0.02, 18.8], [1, 0, 0], [0, 0, 1], 12, 12, C.sodium, undefined, -1, 0.28)
-  }
-  // whole-point marks: a painted line across the walk and the band ahead on the fascia
-  const marks = [{ score: 11, x: 3 - 1.6 }, ...lay.ticks]
-  for (const t of marks) {
-    const band = t.score - 1
-    if (t.score <= 10) L.glow.quad([t.x, SURF + 0.01, canopyZ / 2], [1, 0, 0], [0, 0, -1], 0.08, canopyZ, C.paint, undefined, -1, 0.5)
-    pending.push({
-      cell: L.atlas.add(1024, 64, drawPaint(`${bandName(band)}   ${band === 10 ? '10.0' : `${band}.9 TO ${band}.0`}`, { spacing: 6, align: 'left' })),
-      c: [t.x + 0.25 + 3.6, H - 0.43, canopyZ + 0.21], r: [1, 0, 0], w: 7.2, h: 0.4,
-    })
-  }
-  // the pole sign by the road
-  const sp = [-17, 0, 17]
-  L.arch.aabb(sp[0] - 0.18, 0, sp[2] - 0.18, sp[0] + 0.18, 9, sp[2] + 0.18, '#3d3a36')
-  L.arch.aabb(sp[0] - 3.1, 8.55, sp[2] - 0.2, sp[0] + 3.1, 12.65, sp[2] + 0.15, '#22272b')
-  pending.push({ cell: L.atlas.add(640, 420, drawSign('The Vault', 'MOTEL')), c: [sp[0], 10.6, sp[2] + 0.2], r: [1, 0, 0], w: 6, h: 3.95 })
-  L.pools.quad([sp[0], 10.6, sp[2] + 0.25], [1, 0, 0], [0, 1, 0], 9, 6, '#fff0cf', undefined, -1, 0.12)
-
-  lay.rooms.forEach((rm, i) => addRoom(L, rm, i, pending))
-  addPorchLights(L, lay.rooms)
-  flushWords(L, pending)
-
-  const area = {
-    allow: [[x0 + 0.5, x1 - 0.5, 0.35, 21.5], [x0 + 0.5, -2, 1.6, 21.5]],
-    block: [[sp[0] - 0.5, sp[0] + 0.5, sp[2] - 0.5, sp[2] + 0.5]],
-  }
-  return {
-    kind: 'strip',
-    layers: L,
-    rooms: lay.rooms,
-    levels: [{ label: 'ONE STOREY', sub: `${Math.round(x1 - x0)} metres long`, y: SURF, area, landing: { x: -4, z: 6, yaw: -Math.PI / 2 } }],
-    fog: 0.0085,
-    overview: { kind: 'dolly', x0: -6, x1: x1 - 10, length: x1 - x0 },
-    spawn: { level: 0, x: -4, z: 5.5, yaw: -Math.PI / 2 + 0.25 },
-    xEnd: x1,
   }
 }
 

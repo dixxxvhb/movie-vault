@@ -254,7 +254,7 @@ the ending.
 
 ## Owed to Dixon (decisions only he can make)
 
-1. The Court (multi-storey, floor = score band) or the flat strip? Judges split.
+1. ~~The Court or the flat strip?~~ **The Court** (Dixon, 2026-10-14, after walking both prototypes). Built as Phase 5's first pass: `src/building/`.
 2. The basement guess: does dialling a number beside his cheapen the numbers?
 3. Dawn as a soft ending at ~40 minutes, or no clock?
 4. The 78 pitched doors are public. Comfortable?
@@ -332,3 +332,11 @@ the MCP, never `db push`. Migrations `20260914015644` and `20260914015720`.
 - Rank lines ("#N of M, tied at S with ...") are now computed by `emit_vault_data.py` from the live scores. Hand-typed ones had gone stale at 53, 57 and 62. Keep writing the sentence in that shape and the emitter keeps it true.
 - Frailty linked to TMDB 12149 (US release 2002, so its year is 2002, matching every other title). Duplicate Sinners row merged into 5373f321.
 - By design, not bugs: the four franchise rows (Bond, Bourne, LOTR, Apes) have no year or tmdb_id; the "No. N" label in each panel is hidden by CaseFile; `lessons.json` is taste-scope only, so the Oct 7 "rewatch to rescore" rule stays off the wall.
+
+## The Court, Phase 5 first pass (2026-10-14)
+
+- A plain visit lands on the Court (`src/building/`): a U around a lit pool, one floor per whole point, the tens in a rooftop penthouse, the office (Room 4) out front. Every door is placed from `vault-data.json` by `building/layout.js`; nothing lists films. Room number = score x 10, ties lettered by watch date (93A to 93I).
+- Doors open the real rooms with the develop wash; "back outside" (and Esc) puts you on the walkway beside the door you went in by. The office door opens the wall, unchanged; the dock's "outside" goes back out.
+- `?wall` (or any `?film=`/`?print=`/`?room=` address) still lands straight in the motel room. `scripts/shot.py` station shots now pass `&wall`.
+- Not built yet from the plan's Phase 5 list: blank nights, shared-night porch lights, the north wall as a scale model, ear to the door. Calls 2 to 5 above are still open.
+
