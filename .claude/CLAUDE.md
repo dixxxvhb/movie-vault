@@ -1,6 +1,6 @@
 # movie-vault — The Vault
 
-Dixon's movie-night ledger as a first-person 3D motel room. Last verified: 2026-09-28.
+Dixon's movie-night ledger as a first-person 3D motel room. Last verified: 2026-10-20.
 
 ## Stack
 Vite 5 + React 18 + React-Three-Fiber (Three.js 0.161), drei, postprocessing, @react-three/xr.
@@ -24,7 +24,6 @@ npm run shot     # python scripts/shot.py — screenshot the room
   `master`). No Netlify here.
 
 ## Rules
-- Repo docs use forward-slash paths (`C:/Users/bowle/...`) — backslashes break Tailwind globs.
 - Commit with explicit paths; this repo has had parallel agent worktrees under
   `.claude/worktrees/`.
 - **Every film room is built to `docs/VAULT-TWO-SCENE-STANDARD.md`** (2026-09-23): an Arrival
