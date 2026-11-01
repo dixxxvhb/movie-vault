@@ -8,6 +8,35 @@ Source material: `docs/plans/2026-09-04-six-designs.md`
 
 ---
 
+## Rooms for the eleven Oct 8 to Oct 30 films (2026-10-31)
+
+Same shape as the Oct 10 pass: a template room in the film's own place, his take scraps placed by hand (`of:` = `splitTake` count for each take), a sound recipe each from `kit.js` only, a caption line each. Commit `66f3405`. `npm run data` now reads `rooms: 76 / 76`. Every room shot headless (swiftshader) at desk 1280x800 and phone 390x844, three rounds of framing fixes, zero console errors in all 22 final shots; a sound-on smoke run over all eleven came back clear. Data files, `vault-data.json` and the building layout untouched.
+
+| Film | Room |
+|---|---|
+| BlacKkKlansman | The Colorado Springs PD intelligence office: Ron at his desk with the phone, the membership card on the blotter, Flip by the second desk and its typewriter, filing cabinets, the cork board, the mountain through the blinds. Sound: fluorescent hum, office air, a rotary phone that rings twice and stops |
+| Insomnia | The Nightmute motel room under the midnight sun: blinds down, light coming through every slat anyway, Dormer on the edge of the bed, the clock at 4:47, the chair jammed under the window. Sound: little fridge hum, a clock tick, a thin high air |
+| Requiem for a Dream | Sara's apartment: the red chair turned to the set, the game show glowing, the side table with her pills, the fridge (the verdict is on its door). Sound: a fridge hum that swells and falls back, a TV murmur, a far studio bell |
+| Companion | The lake house living room: glass back wall, the black lake and far shore, the couch facing it, the bar counter with the corkscrew, Iris at the glass facing back into the room. Sound: water lapping, crickets, a too-perfect held tone |
+| The Wolf of Wall Street | The Stratton Oakmont floor: six desks of green-screen monitors and phones, brokers on their feet, Jordan in the aisle with his arm up, the glass office and the firm's name at the back. Sound: crowd roar, phones everywhere, a cheer now and then |
+| Heat | The coffee shop booth at night: Hanna and McCauley across the table in near-identical dark suits, two coffees, the city lights in the window. Sound: diner hum, a cup set down, a low cold synth bed |
+| Compliance | The back office: the desk with the handset off the hook, the camera-feed monitor, the manager on the phone by the kitchen doorway with the fryer glow through it, the lockers, the security camera in the corner. Sound: fryer hiss, an open phone line, a click on the line |
+| Animals | The campaign office at night: desks and phones, VOTE / FOR MAYOR posters (no candidate name), yard signs, the clock, him at the window over the city grid. Sound: city low through glass, a far siren, a wall clock |
+| Sacrifice | The gala: the stage with the podium under its truss lights, the speaker, white tables of guests, and through the open terrace between the wing flats the volcano glowing. Sound: applause swelling and thinning, a low rumble that hangs on after |
+| The Whisper Man | Jake's bedroom at night: the small bed, the toy box and blocks, his drawings, the nightlight, the window open a crack onto the dark garden, curtains. A PeripheralFigure behind you; `hazards.js` flags slow dread and a figure at the edge of view. Sound: wind at the window, a faint breathy tone, the house settling |
+| Gosford Park | The drawing room, 1932: the fire, the two sofas facing each other in front of it, the bridge table, the piano, the portrait over the mantel, a servant standing by the door at the back. Sound: fire crackle, the mantel clock, a soft piano chord from far off |
+
+- Found while building: `screenPanel` multiplies its canvas by `color`, so a drawn panel whose `color` is its dark background renders near black. The new rooms pass `color: '#ffffff'` on every drawn panel. Older rooms that pass a dark `color` with a `draw` (Dunkirk's clock board, Gone Baby Gone's TV) are probably darker than intended; not touched.
+- Staging is from memory of the films, not checked against stills. Animals' posters carry no candidate name on purpose.
+
+### Open after this pass
+- Insomnia's score (a cream numeral) is low contrast against the blown-out wall, worst on phone where it slides under the window glare.
+- The box-shell ceiling fixture glares over the title on phone in the brighter rooms (BlacKkKlansman, Animals, Wolf); it is the shell's, not these configs'.
+- Sounds were smoke-tested (AudioContext up, no errors), not listened to.
+- The eleven are template rooms, not Two-Scene builds.
+
+---
+
 ## Room polish pass (2026-10-14)
 
 Every room shot headless (desk 16:10 and phone portrait) before and after, swiftshader. Zero console errors either side. Branch `claude/project-thread-9iy0k6`, commits `9386bd4`, `f83f435`. Settings, data files and the building layout untouched (other threads own them).
