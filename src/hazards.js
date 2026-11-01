@@ -26,6 +26,7 @@ export const HAZARDS = {
   'baby-driver': ['brake lights flashing on the beat'],
   hereditary: ['horror, slow dread', 'a figure at the edge of your view'],
   frailty: ['horror, slow dread', 'a figure at the edge of your view'],
+  'the-whisper-man': ['slow dread', 'a figure at the edge of your view'],
   'memories-of-murder': ['slow dread', 'a figure at the edge of your view'],
   se7en: ['horror, slow dread'],
   'fight-club': ['a figure at the edge of your view'],

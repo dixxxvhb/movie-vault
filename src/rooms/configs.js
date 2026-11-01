@@ -2493,6 +2493,859 @@ export const CONFIGS = {
       ],
     },
   },
+  // ----------------------------------------------------------- blackkklansman
+  // The Colorado Springs PD intelligence office, late 70s: Ron at his desk
+  // with the phone he joins the Klan on, the membership card by his elbow,
+  // Flip at the second desk with the typewriter, the filing cabinets, and the
+  // mountain through the blinds.
+  blackkklansman: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#2a261c', fogColor: '#2a261c', fogDensity: 0.03,
+      key: '#f0e0b8', keyIntensity: 2.1, fill: '#5a5236', ambient: 0.3,
+      sat: -0.05, contrast: 0.08, grain: 0.07, vignette: 0.48, bloomIntensity: 0.18,
+    },
+    camera: { pos: [0.5, 1.6, 2.0], look: [-0.3, 1.0, -1.8], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 5, h: 2.6, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'tile', ceiling: 'tile', wallWear: 0.4, floorWear: 0.5 },
+        trim: { color: '#3a3226' },
+      },
+      props: [
+        // Ron's desk, Ron behind it
+        { type: 'table', pos: [-0.8, 0, -1.3], w: 1.5, d: 0.75, color: '#5e4a30' },
+        { type: 'chairRow', pos: [-0.8, 0, -1.95], count: 1, color: '#3a2e22', cushion: '#5a3a24' },
+        { type: 'abstractFigure', pos: [-0.8, 0, -1.92], color: '#2e2420', skin: '#6a4430', hair: '#140e0a', legs: '#2a2a30', pose: 'sit' },
+        // the phone
+        { type: 'bevelBox', pos: [-0.3, 0.8, -1.2], w: 0.22, h: 0.1, d: 0.2, color: '#1a1816' },
+        { type: 'slab', pos: [-0.3, 0.87, -1.2], size: [0.24, 0.04, 0.06], color: '#1a1816' },
+        // the membership card, lying on the blotter
+        { type: 'screenPanel', pos: [-1.05, 0.758, -1.02], rot: [-Math.PI / 2, 0, 0.18], w: 0.28, h: 0.18, color: '#ffffff', intensity: 0.4, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#ece4cc'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#7a1c18'; ctx.lineWidth = 8; ctx.strokeRect(12, 12, W - 24, H - 24)
+          ctx.fillStyle = '#7a1c18'; ctx.textAlign = 'center'
+          ctx.font = 'bold 44px Georgia'; ctx.fillText('MEMBERSHIP CARD', W / 2, 96)
+          ctx.fillStyle = '#2a2a2a'; ctx.font = 'italic 40px Georgia'; ctx.fillText('Ron Stallworth', W / 2, 200)
+          ctx.fillRect(W * 0.2, 240, W * 0.6, 3)
+        } },
+        { type: 'lampPractical', pos: [-1.4, 1.0, -1.55], color: '#ffe0a0', intensity: 0.5 },
+        // Flip's desk and the typewriter
+        { type: 'table', pos: [1.3, 0, -0.5], rot: [0, -0.15, 0], w: 1.3, d: 0.7, color: '#5a4a34' },
+        { type: 'bevelBox', pos: [1.3, 0.84, -0.55], rot: [0, -0.15, 0], w: 0.42, h: 0.16, d: 0.32, color: '#3a3e3a' },
+        { type: 'abstractFigure', pos: [0.75, 0, -1.2], rot: [0, -1.2, 0], color: '#4a4436', hair: '#2a1e14', legs: '#2a2a30', pose: 'stand' },
+        // the filing cabinets
+        { type: 'bevelBox', pos: [2.15, 0.66, -2.15], w: 0.5, h: 1.32, d: 0.6, color: '#6a6a5a', metalness: 0.3 },
+        { type: 'bevelBox', pos: [1.6, 0.66, -2.15], w: 0.5, h: 1.32, d: 0.6, color: '#6e6e5c', metalness: 0.3 },
+        // the window, blinds half down, the mountain beyond
+        { type: 'screenPanel', pos: [-0.7, 1.6, -2.48], w: 1.4, h: 0.9, color: '#ffffff', intensity: 0.8, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#a8c0d4'); g.addColorStop(1, '#e8e4d4')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#7a8a9a'; ctx.beginPath(); ctx.moveTo(0, H * 0.8)
+          ctx.lineTo(W * 0.25, H * 0.62); ctx.lineTo(W * 0.42, H * 0.4); ctx.lineTo(W * 0.55, H * 0.5); ctx.lineTo(W * 0.8, H * 0.6); ctx.lineTo(W, H * 0.7); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill()
+          ctx.fillStyle = 'rgba(90,80,60,0.55)'
+          for (let y = 0; y < H * 0.45; y += 14) ctx.fillRect(0, y, W, 9)
+          ctx.fillStyle = '#4a3e2e'; ctx.fillRect(0, 0, W, 8); ctx.fillRect(0, H - 8, W, 8); ctx.fillRect(0, 0, 8, H); ctx.fillRect(W - 8, 0, 8, H); ctx.fillRect(W / 2 - 4, 0, 8, H)
+        } },
+        // the cork board on the left wall
+        { type: 'screenPanel', pos: [-2.48, 1.5, -0.4], rot: [0, Math.PI / 2, 0], w: 1.0, h: 0.7, color: '#ffffff', intensity: 0.4, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#8a6a44'; ctx.fillRect(0, 0, W, H)
+          ;[[30, 30, 120, 150], [180, 50, 140, 100], [350, 26, 120, 160], [60, 210, 160, 110], [260, 180, 110, 130]].forEach(([x, y, w, h], i) => {
+            ctx.fillStyle = i % 2 ? '#e8e2d0' : '#f0ead8'; ctx.fillRect(x, y, w, h)
+            ctx.fillStyle = '#5a5246'; for (let r = 0; r < 5; r++) ctx.fillRect(x + 10, y + 18 + r * 18, w - 30 - (r * 13) % 30, 3)
+            ctx.fillStyle = '#a02a20'; ctx.beginPath(); ctx.arc(x + w / 2, y + 6, 5, 0, Math.PI * 2); ctx.fill()
+          })
+        } },
+        { type: 'lampPractical', pos: [0.2, 2.5, -0.8], color: '#f0f0d8', intensity: 0.25 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-1.3, 0.75, -1.35], color: '#d8d0c0' },
+        { type: 'bookStack', pos: [1.7, 0.75, -0.4], count: 3, w: 0.3, d: 0.22, colors: ['#e8e2d0', '#d8d0bc'] },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [0.95, 1.9, -2.47],
+      metaPos: [-0.7, 2.3, -2.47],
+      fragments: [
+        { index: 0, of: 2, state: 'film', pos: [-0.8, 0, -1.3], dx: 0.25, dz: 0.18, y: 0.757, tilt: FLAT },
+        { index: 1, of: 2, state: 'film', pos: [1.6, 0.66, -2.15], dz: 0.312, y: 1.05 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ insomnia
+  // Nightmute, Alaska, under the midnight sun: Dormer's motel room at some
+  // hour that should be night. The blinds do not shut the light out; it comes
+  // through every slat, hard and white, and he sits on the edge of the bed
+  // with the clock on the nightstand and the chair he has jammed under the
+  // window. The sun never sets; that is the room.
+  insomnia: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#3a3c3a', fogColor: '#3a3c3a', fogDensity: 0.03,
+      key: '#fffaf0', keyIntensity: 2.4, fill: '#7a8080', ambient: 0.34,
+      sat: -0.25, contrast: 0.12, grain: 0.05, vignette: 0.42, bloomIntensity: 0.3,
+    },
+    camera: { pos: [0.9, 1.6, 1.9], look: [-0.4, 0.95, -1.8], fov: 50 },
+    lights: {
+      key: { pos: [-0.4, 1.6, -1.9], intensity: 1.4, distance: 7, color: '#fff8ec', decay: 2 },
+      bounce: [{ pos: [0.5, 0.6, 0.5], intensity: 0.35, distance: 6, color: '#8a9090', decay: 2 }],
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.4, d: 4.8, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'plaster', wallWear: 0.4, floorWear: 0.55 },
+        trim: { color: '#4a4236' },
+      },
+      props: [
+        // the window: the blinds down, the light coming through anyway
+        { type: 'screenPanel', pos: [-0.4, 1.45, -2.38], w: 1.6, h: 1.1, color: '#ffffff', intensity: 1.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#fffdf6'; ctx.fillRect(0, 0, W, H)
+          for (let y = 6, i = 0; y < H; y += 22, i++) {
+            ctx.fillStyle = '#8a8c86'
+            // a couple of slats bent where he pried them, more light there
+            const bent = i === 5 || i === 11
+            ctx.fillRect(0, y, W, bent ? 7 : 15)
+          }
+          // the tape he put round the edges, which did nothing
+          ctx.fillStyle = '#c8b890'; ctx.fillRect(0, 0, W, 10); ctx.fillRect(0, H - 10, W, 10); ctx.fillRect(0, 0, 10, H); ctx.fillRect(W - 10, 0, 10, H)
+        } },
+        { type: 'slab', pos: [-0.4, 0.86, -2.33], size: [1.8, 0.05, 0.14], color: '#5a5246' },
+        // the shaft of light off the blinds
+        // the bed, him on the edge of it
+        { type: 'bed', pos: [0.9, 0, -1.2], rot: [0, Math.PI, 0], color: '#7a7a6e', frame: '#4a3e30' },
+        { type: 'abstractFigure', pos: [0.4, 0.02, -1.0], rot: [0, -Math.PI / 2 + 0.35, 0], color: '#4a4e54', hair: '#8a8478', legs: '#2a2c30', pose: 'sit' },
+        // the nightstand and the clock
+        { type: 'bevelBox', pos: [1.85, 0.28, -2.05], w: 0.45, h: 0.56, d: 0.4, color: '#4a3e30' },
+        { type: 'screenPanel', pos: [1.85, 0.64, -1.95], w: 0.22, h: 0.1, color: '#ffffff', intensity: 0.9, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#140c0a'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#ff3a22'; ctx.textAlign = 'center'; ctx.font = 'bold 170px monospace'; ctx.fillText('4:47', W / 2, H * 0.8)
+        } },
+        { type: 'bevelBox', pos: [1.85, 0.64, -2.02], w: 0.26, h: 0.14, d: 0.12, color: '#1a1614' },
+        // the chair jammed under the window
+        { type: 'chairRow', pos: [-1.3, 0, -1.9], rot: [0, 0.2, 0], count: 1, color: '#5a4a38', cushion: '#6a5a44' },
+        // the little fridge
+        { type: 'bevelBox', pos: [-1.9, 0.42, -0.4], w: 0.5, h: 0.84, d: 0.5, color: '#d8d4c8' },
+        { type: 'frameOn', pos: [0.9, 1.55, -2.38], w: 0.5, h: 0.38, color: '#4a3e30' },
+      ],
+      atmosphere: [
+        { type: 'HazeCone', pos: [-0.4, 1.45, -1.5], rot: [Math.PI / 2 + 0.35, 0, 0], length: 2.0, radius: 0.8, color: '#fffaf0', opacity: 0.08 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [1.75, 0.57, -2.1], color: '#e8e0d0' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.4, 1.95, -2.37],
+      metaPos: [-0.4, 2.22, -2.37],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [1.85, 0.28, -2.05], dx: -0.08, dz: 0.1, y: 0.566, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [-1.9, 0.42, -0.4], y: 0.846, tilt: FLAT, ry: Math.PI / 2 },
+        { index: 2, of: 5, state: 'film', pos: [0.9, 0, -1.2], dx: 0.15, dz: 0.3, y: 0.516, tilt: FLAT },
+        { index: 3, of: 5, state: 'motel', pos: [-1.3, 0, -1.9], dz: 0.02, y: 0.516, tilt: FLAT },
+        { index: 4, of: 5, state: 'film', pos: [-0.4, 0.86, -2.33], dz: 0.08, y: 0.89, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------- requiem-for-a-dream
+  // Sara's apartment in Coney Island: the red chair turned to face the set,
+  // the game show glowing, the side table with her pills, the fridge that
+  // starts to want something. The TV is the only light that matters.
+  'requiem-for-a-dream': {
+    family: 'dread',
+    grade: {
+      bg: '#1e1a22', fogColor: '#1e1a22', fogDensity: 0.035,
+      key: '#b8d0ff', keyIntensity: 2.0, fill: '#5a2a2a', ambient: 0.22,
+      sat: 0.12, contrast: 0.1, grain: 0.08, vignette: 0.58, bloomIntensity: 0.3,
+    },
+    camera: { pos: [1.1, 1.6, 1.7], look: [-0.4, 0.85, -1.7], fov: 52 },
+    lights: {
+      key: { pos: [-1.3, 0.9, -1.4], intensity: 1.8, distance: 6, color: '#a8c4ff', decay: 2 },
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.4, d: 4.6, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'plaster', wallWear: 0.5, floorWear: 0.55 },
+        trim: { color: '#4a3a30' },
+      },
+      props: [
+        // the set on its console, the show on
+        { type: 'bevelBox', pos: [-1.3, 0.45, -1.95], w: 1.05, h: 0.9, d: 0.55, color: '#4a3424' },
+        { type: 'screenPanel', pos: [-1.3, 0.55, -1.668], w: 0.72, h: 0.54, color: '#ffffff', intensity: 1.1, draw: (ctx, W, H) => {
+          const g = ctx.createRadialGradient(W / 2, H * 0.55, 10, W / 2, H * 0.55, W * 0.6)
+          g.addColorStop(0, '#f8f0c8'); g.addColorStop(0.4, '#c84a9a'); g.addColorStop(1, '#1a2a7a')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#fff6c0'
+          for (let i = 0; i < 18; i++) { const a = (i / 18) * Math.PI * 2; ctx.beginPath(); ctx.arc(W / 2 + Math.cos(a) * W * 0.4, H * 0.55 + Math.sin(a) * H * 0.38, 7, 0, Math.PI * 2); ctx.fill() }
+          ctx.fillStyle = '#1a1a2a'; ctx.fillRect(W * 0.46, H * 0.48, W * 0.08, H * 0.36)
+          ctx.globalAlpha = 0.18; for (let y = 0; y < H; y += 4) { ctx.fillStyle = '#000'; ctx.fillRect(0, y, W, 2) } ctx.globalAlpha = 1
+        } },
+        // the red chair, turned to it, and Sara in it
+        { type: 'bevelBox', pos: [-1.0, 0.22, -0.45], w: 0.72, h: 0.44, d: 0.7, color: '#9a1414' },
+        { type: 'bevelBox', pos: [-1.0, 0.68, -0.13], w: 0.72, h: 0.8, d: 0.16, color: '#8a1212' },
+        { type: 'bevelBox', pos: [-1.33, 0.52, -0.45], w: 0.1, h: 0.2, d: 0.7, color: '#8a1212' },
+        { type: 'bevelBox', pos: [-0.67, 0.52, -0.45], w: 0.1, h: 0.2, d: 0.7, color: '#8a1212' },
+        { type: 'abstractFigure', pos: [-1.0, 0.0, -0.5], rot: [0, Math.PI + 0.25, 0], color: '#7a5a8a', hair: '#a84a24', legs: '#7a5a8a', pose: 'sit' },
+        // the side table, the cup, the pills
+        { type: 'table', pos: [-0.35, 0, -0.85], w: 0.45, d: 0.45, h: 0.55, color: '#5a4030' },
+        { type: 'bevelBox', pos: [-0.25, 0.6, -0.95], w: 0.05, h: 0.09, d: 0.05, radius: 0.01, color: '#e07a1a' },
+        // the fridge, and the counter by it
+        { type: 'bevelBox', pos: [1.7, 0.85, -1.9], w: 0.7, h: 1.7, d: 0.7, color: '#e0dcc8' },
+        { type: 'slab', pos: [1.42, 1.1, -1.53], size: [0.04, 0.4, 0.03], color: '#a8a49a', metalness: 0.5 },
+        { type: 'counter', pos: [1.9, 0, -0.6], rot: [0, -Math.PI / 2, 0], w: 1.2, d: 0.55, keys: false, color: '#c8b898' },
+        // the photo of her in the red dress
+        { type: 'frameOn', pos: [0.4, 1.55, -2.28], w: 0.45, h: 0.55, color: '#6a4a2a' },
+        { type: 'lampPractical', pos: [0.5, 1.2, -2.1], color: '#ffb878', intensity: 0.25 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-0.45, 0.55, -0.8], color: '#e8e0d0' },
+        { type: 'bottleRow', pos: [1.95, 0.95, -0.2], count: 2, color: '#d8d0b8' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [-0.4, 1.95, -2.27],
+      metaPos: [0.9, 2.15, -2.27],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [-0.35, 0, -0.85], dx: 0.02, dz: 0.08, y: 0.556, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [1.9, 0, -0.6], dx: -0.05, dz: 0.2, y: 0.956, tilt: FLAT, ry: -Math.PI / 2 },
+        { index: 2, of: 3, state: 'film', pos: [1.7, 0.85, -1.9], dx: 0.05, dz: 0.362, y: 1.25 },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------------- companion
+  // The lake house on the weekend: the glass living room, the lake black
+  // beyond it with the far shore's trees, the low couch, the bar counter with
+  // the corkscrew on it. Iris stands at the glass, facing back into the room.
+  companion: {
+    family: 'mind-bender',
+    grade: {
+      bg: '#0c141c', fogColor: '#0c141c', fogDensity: 0.02,
+      key: '#ffd8a8', keyIntensity: 2.0, fill: '#2a3a4a', ambient: 0.26,
+      sat: -0.02, contrast: 0.08, grain: 0.04, vignette: 0.45, bloomIntensity: 0.3,
+    },
+    camera: { pos: [1.3, 1.6, 2.0], look: [-1.0, 1.0, -2.4], fov: 54, far: 120 },
+    lights: {
+      practicals: [
+        { pos: [-2.1, 2.1, -0.6], intensity: 0.5, distance: 6, color: '#ffc890', decay: 2 },
+        { pos: [3, 4, -12], intensity: 0.6, distance: 30, color: '#8aa8d0', decay: 1 },
+      ],
+      bounce: [{ pos: [0.6, 1.3, 1.4], intensity: 0.5, distance: 6, color: '#ffd8a8', decay: 2 }],
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6, d: 5.6, h: 2.8, wallMat: 'wood', openBack: true,
+        mat: { walls: 'wood', floor: 'concrete', ceiling: 'wood', wallWear: 0.1, floorWear: 0.15 },
+        trim: { color: '#1e1a16' },
+      },
+      props: [
+        // the glass, and the lake past it
+        { type: 'glassWall', pos: [0, 1.4, -2.78], w: 5.9, h: 2.75, color: '#9ab8c8' },
+        { type: 'waterPlane', pos: [0, -0.3, -16], size: [70, 26], color: '#08121a', bright: '#3a5a7a' },
+        { type: 'tree', pos: [-7, -0.3, -26], scale: 1.6, foliage: '#0e1a16' },
+        { type: 'tree', pos: [-3, -0.3, -27], scale: 1.3, foliage: '#0c1814' },
+        { type: 'tree', pos: [2, -0.3, -26], scale: 1.5, foliage: '#0e1a16' },
+        { type: 'tree', pos: [6.5, -0.3, -27], scale: 1.7, foliage: '#0c1814' },
+        { type: 'lightDisc', pos: [5, 7, -32], rot: [0, 0, 0], radius: 0.9, color: '#e8eef8', opacity: 0.85 },
+        // the deck boards outside the glass
+        { type: 'slab', pos: [0, -0.04, -4.2], size: [6, 0.08, 2.6], color: '#3a2e24' },
+        // the rug, the couch facing the lake, the coffee table
+        { type: 'slab', pos: [-0.6, 0.005, -1.1], size: [3, 0.01, 2.2], color: '#5a5248' },
+        { type: 'bevelBox', pos: [-0.6, 0.2, -0.55], w: 2.2, h: 0.4, d: 0.85, color: '#b8b0a4' },
+        { type: 'bevelBox', pos: [-0.6, 0.52, -0.18], w: 2.2, h: 0.34, d: 0.16, color: '#aaa296' },
+        { type: 'table', pos: [-0.6, 0, -1.55], w: 1.2, d: 0.6, h: 0.38, color: '#2a2420' },
+        // Iris at the glass
+        { type: 'abstractFigure', pos: [1.1, 0, -2.3], rot: [0, -0.35, 0], color: '#d8c078', hair: '#2a1c14', hairStyle: 'long', legs: false, pose: 'stand' },
+        // the bar counter and the corkscrew
+        { type: 'counter', pos: [-2.6, 0, -0.4], rot: [0, Math.PI / 2, 0], w: 1.8, d: 0.6, keys: false, color: '#2a2622' },
+        { type: 'slab', pos: [-2.5, 0.97, -0.75], size: [0.03, 0.035, 0.18], color: '#d8d8dc', metalness: 0.8 },
+        { type: 'slab', pos: [-2.5, 0.98, -0.84], size: [0.16, 0.035, 0.035], color: '#d8d8dc', metalness: 0.8 },
+        { type: 'lampPractical', pos: [-2.5, 2.2, -0.4], color: '#ffc890', intensity: 0.5 },
+        { type: 'lampPractical', pos: [2.4, 1.45, -1.2], color: '#ffd8a8', intensity: 0.45 },
+        { type: 'slab', pos: [2.4, 0.7, -1.2], size: [0.04, 1.4, 0.04], color: '#1a1a1a' },
+      ],
+      clutter: [
+        { type: 'bottleRow', pos: [-2.6, 0.95, -0.1], count: 3, color: '#3a1a1e' },
+        { type: 'cup', pos: [-0.8, 0.38, -1.5], color: '#e8e8ec' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [2.0, 1.95, -2.74],
+      metaPos: [-0.6, 2.4, -2.74],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [-0.6, 0, -1.55], dx: 0.25, dz: 0.02, y: 0.386, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [-2.6, 0, -0.4], dx: 0.12, dz: -0.15, y: 0.956, tilt: FLAT, ry: Math.PI / 2 },
+        { index: 2, of: 3, state: 'film', pos: [-1.6, 1.4, -2.78], dz: 0.03, y: 1.3 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------- the-wolf-of-wall-street
+  // The Stratton Oakmont floor: rows of desks with phones and green-screen
+  // monitors, the brokers on their feet, Jordan in the aisle with his arm up,
+  // and his glass office at the back of it all.
+  'the-wolf-of-wall-street': {
+    family: 'momentum',
+    grade: {
+      bg: '#2a2418', fogColor: '#2a2418', fogDensity: 0.02,
+      key: '#fff0c8', keyIntensity: 2.3, fill: '#6a5a3a', ambient: 0.4,
+      sat: 0.08, contrast: 0.08, grain: 0.04, vignette: 0.35, bloomIntensity: 0.3,
+    },
+    camera: { pos: [0.2, 1.7, 3.6], look: [0, 1.25, -4.5], fov: 56 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 10, d: 10, h: 3.4, wallMat: 'flat',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'tile', wallWear: 0.15, floorWear: 0.3 },
+        trim: { color: '#3a3226' },
+      },
+      props: [
+        // the desks: two banks either side of the aisle, three rows deep
+        ...[1.4, -0.4, -2.2].flatMap((z, row) => [-2.6, 2.6].flatMap((x) => [
+          { type: 'table', pos: [x, 0, z], w: 2.6, d: 0.8, color: '#4a3c2c' },
+          ...[-0.7, 0.7].flatMap((mx) => [
+            { type: 'bevelBox', pos: [x + mx, 0.95, z - 0.2], w: 0.42, h: 0.36, d: 0.3, color: '#c8c0ac' },
+            { type: 'screenPanel', pos: [x + mx, 0.97, z - 0.044], w: 0.34, h: 0.26, color: '#ffffff', intensity: 0.8, draw: (ctx, W, H) => {
+              ctx.fillStyle = '#06140a'; ctx.fillRect(0, 0, W, H)
+              ctx.fillStyle = '#3aff7a'; ctx.font = 'bold 30px monospace'
+              for (let r = 0; r < 9; r++) ctx.fillText(['STRT', 'AXON', 'MADN', 'DUKE', 'SRMF', 'NWYK'][(r + row) % 6] + '  ' + (r * 7 + row * 3 + 2).toString().padStart(2, '0') + '.' + ((r * 13) % 100).toString().padStart(2, '0'), 20, 36 + r * 38)
+            } },
+          ]),
+          { type: 'bevelBox', pos: [x, 0.8, z + 0.15], w: 0.22, h: 0.08, d: 0.18, color: '#1a1a1c' },
+        ])),
+        // the brokers, on their feet
+        { type: 'abstractFigure', pos: [-2.0, 0, 2.0], rot: [0, Math.PI, 0], color: '#e8e4dc', legs: '#2a2a30', pose: 'raise' },
+        { type: 'abstractFigure', pos: [-3.3, 0, 2.0], rot: [0, Math.PI + 0.3, 0], color: '#c8d0e0', legs: '#22242a', pose: 'hold' },
+        { type: 'abstractFigure', pos: [3.1, 0, 2.0], rot: [0, Math.PI - 0.2, 0], color: '#e8e4dc', legs: '#2a2a30', pose: 'raise' },
+        { type: 'abstractFigure', pos: [-2.9, 0, 0.2], rot: [0, Math.PI, 0], color: '#d0d8e8', legs: '#22242a', pose: 'raise' },
+        { type: 'abstractFigure', pos: [2.2, 0, 0.2], rot: [0, Math.PI + 0.2, 0], color: '#e8e4dc', legs: '#22242a', pose: 'hold' },
+        { type: 'abstractFigure', pos: [-1.8, 0, -1.6], rot: [0, Math.PI - 0.4, 0], color: '#c8d0e0', legs: '#2a2a30', pose: 'raise' },
+        { type: 'abstractFigure', pos: [3.3, 0, -1.6], rot: [0, Math.PI, 0], color: '#e8e4dc', legs: '#2a2a30', pose: 'raise' },
+        // Jordan in the aisle, mic arm up, facing his floor
+        { type: 'abstractFigure', pos: [0.1, 0, -2.6], rot: [0, 0, 0], color: '#22242c', legs: '#22242c', hair: '#6a4a2a', pose: 'raise' },
+        // the glass office at the back
+        { type: 'glassWall', pos: [0, 1.3, -3.6], w: 3.2, h: 2.6, color: '#b8d0d8' },
+        { type: 'glassWall', pos: [-1.6, 1.3, -4.3], rot: [0, Math.PI / 2, 0], w: 1.4, h: 2.6, color: '#b8d0d8' },
+        { type: 'glassWall', pos: [1.6, 1.3, -4.3], rot: [0, Math.PI / 2, 0], w: 1.4, h: 2.6, color: '#b8d0d8' },
+        { type: 'table', pos: [0, 0, -4.5], w: 1.6, d: 0.7, color: '#2a1c14' },
+        { type: 'chairRow', pos: [0, 0, -4.85], count: 1, color: '#1a1414', cushion: '#2a1e1a' },
+        // the firm's name over it
+        { type: 'screenPanel', pos: [0, 3.05, -4.97], w: 3.2, h: 0.42, color: '#ffffff', intensity: 0.6, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#14203a'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#f0e8d4'; ctx.textAlign = 'center'; ctx.font = 'bold 40px Georgia'; ctx.fillText('STRATTON OAKMONT', W / 2, H * 0.78)
+        } },
+        { type: 'lampPractical', pos: [-2.6, 3.3, 0.4], color: '#fff4dc', intensity: 0.3, distance: 7 },
+        { type: 'lampPractical', pos: [2.6, 3.3, 0.4], color: '#fff4dc', intensity: 0.3, distance: 7 },
+        { type: 'lampPractical', pos: [0, 3.3, -3.0], color: '#fff4dc', intensity: 0.3, distance: 7 },
+      ],
+      clutter: [
+        { type: 'crumpledPaper', pos: [-2.2, 0.78, 1.5] },
+        { type: 'cup', pos: [2.0, 0.75, -0.3], color: '#e8e0d0' },
+        { type: 'crumpledPaper', pos: [0.5, 0, 0.6] },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [2.9, 2.3, -4.96],
+      metaPos: [-2.9, 2.3, -4.96],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [2.6, 0, 1.4], dx: -1.0, dz: 0.2, y: 0.757, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [2.6, 0, -0.4], dx: -0.2, dz: 0.18, y: 0.757, tilt: FLAT },
+        { index: 2, of: 3, state: 'film', pos: [-2.6, 0, -2.2], dx: 1.0, dz: 0.2, y: 0.757, tilt: FLAT },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------------- heat
+  // The coffee shop booth, night: Hanna and McCauley across the table from
+  // each other, two coffees going cold, the city lights in the window behind
+  // them. Two men in dark suits who could be the same man.
+  heat: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#0e1418', fogColor: '#0e1418', fogDensity: 0.03,
+      key: '#e8e0d0', keyIntensity: 1.9, fill: '#2a4048', ambient: 0.24,
+      sat: -0.12, contrast: 0.1, grain: 0.05, vignette: 0.55, bloomIntensity: 0.3,
+    },
+    camera: { pos: [0.5, 1.55, 1.6], look: [-0.1, 0.95, -1.7], fov: 48 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5, d: 4.6, h: 2.7, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'tile', ceiling: 'plaster', wallWear: 0.25, floorWear: 0.35 },
+        trim: { color: '#2a2622' },
+      },
+      props: [
+        // the window and the city
+        { type: 'screenPanel', pos: [0, 1.45, -2.28], w: 2.6, h: 1.2, color: '#ffffff', intensity: 0.9, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#060a12'); g.addColorStop(1, '#14202c')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          let s = 7
+          const r = () => { s = (s * 16807) % 2147483647; return s / 2147483647 }
+          for (let i = 0; i < 220; i++) {
+            const y = H * (0.45 + r() * 0.5)
+            ctx.fillStyle = r() > 0.7 ? '#f0f4ff' : r() > 0.5 ? '#ffb060' : '#ffd890'
+            ctx.globalAlpha = 0.4 + r() * 0.6
+            ctx.beginPath(); ctx.arc(r() * W, y, 1 + r() * 2.4, 0, Math.PI * 2); ctx.fill()
+          }
+          ctx.globalAlpha = 0.7; ctx.fillStyle = '#ff3a2a'; ctx.fillRect(0, H * 0.9, W * 0.35, 2); ctx.fillStyle = '#f8f4e8'; ctx.fillRect(W * 0.55, H * 0.93, W * 0.45, 2)
+          ctx.globalAlpha = 1; ctx.fillStyle = '#1a1a1a'; ctx.fillRect(W / 2 - 4, 0, 8, H); ctx.fillRect(0, 0, W, 8); ctx.fillRect(0, H - 8, W, 8)
+        } },
+        // the booth: the table, the two benches
+        { type: 'table', pos: [0, 0, -1.75], w: 0.75, d: 1.0, color: '#7a6e62' },
+        { type: 'bevelBox', pos: [-0.68, 0.22, -1.75], w: 0.5, h: 0.44, d: 1.1, color: '#5a2a22' },
+        { type: 'bevelBox', pos: [-0.98, 0.66, -1.75], w: 0.12, h: 0.9, d: 1.1, color: '#4e241e' },
+        { type: 'bevelBox', pos: [0.68, 0.22, -1.75], w: 0.5, h: 0.44, d: 1.1, color: '#5a2a22' },
+        { type: 'bevelBox', pos: [0.98, 0.66, -1.75], w: 0.12, h: 0.9, d: 1.1, color: '#4e241e' },
+        // Hanna and McCauley
+        { type: 'abstractFigure', pos: [-0.62, 0, -1.75], rot: [0, Math.PI / 2, 0], color: '#2c2c30', hair: '#1a1410', legs: '#2c2c30', pose: 'sit' },
+        { type: 'abstractFigure', pos: [0.62, 0, -1.75], rot: [0, -Math.PI / 2, 0], color: '#34363a', hair: '#6a6a66', legs: '#34363a', pose: 'sit' },
+        { type: 'lampPractical', pos: [0, 2.0, -1.75], color: '#ffd8a0', intensity: 0.4, distance: 4 },
+        // the counter along the right wall
+        { type: 'counter', pos: [2.15, 0, 0], rot: [0, -Math.PI / 2, 0], w: 2.2, d: 0.6, keys: false, color: '#7a6a5a' },
+        { type: 'lampPractical', pos: [2.0, 2.3, 0], color: '#f0f4f0', intensity: 0.4 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-0.2, 0.75, -1.65], color: '#f0ece0' },
+        { type: 'cup', pos: [0.2, 0.75, -1.85], color: '#f0ece0' },
+        { type: 'cup', pos: [2.1, 0.95, 0.5], color: '#f0ece0' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [1.75, 1.9, -2.27],
+      metaPos: [-1.75, 1.9, -2.27],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [0, 0, -1.75], dz: 0.32, y: 0.757, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [2.15, 0, 0], dx: -0.05, dz: -0.4, y: 0.956, tilt: FLAT, ry: -Math.PI / 2 },
+        { index: 2, of: 3, state: 'film', pos: [0, 1.45, -2.28], dx: 1.0, dz: 0.012, y: 1.12 },
+      ],
+    },
+  },
+
+  // ---------------------------------------------------------------- compliance
+  // The back office of the fast-food place: the desk with the phone and its
+  // handset off the cradle, the chair, the camera feed on the little monitor,
+  // the fryer glow through the kitchen doorway, the lockers, and the
+  // security camera up in the corner watching all of it.
+  compliance: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1c2020', fogColor: '#1c2020', fogDensity: 0.035,
+      key: '#e8f0e0', keyIntensity: 2.0, fill: '#4a5040', ambient: 0.3,
+      sat: -0.1, contrast: 0.06, grain: 0.06, vignette: 0.5, bloomIntensity: 0.2,
+    },
+    camera: { pos: [0.5, 1.6, 1.7], look: [-0.1, 0.95, -1.6], fov: 52 },
+    lights: {
+      practicals: [
+        { pos: [-1.45, 1.2, -1.7], intensity: 0.9, distance: 4, color: '#ffa050', decay: 2 },
+      ],
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4.2, d: 4.2, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'concrete', floor: 'tile', ceiling: 'tile', wallWear: 0.4, floorWear: 0.6 },
+        trim: { color: '#3a3a36' },
+      },
+      props: [
+        // the desk, the phone, the handset off the hook
+        { type: 'table', pos: [0.35, 0, -1.55], w: 1.3, d: 0.65, color: '#7a7468' },
+        { type: 'bevelBox', pos: [0.75, 0.8, -1.6], w: 0.2, h: 0.09, d: 0.18, color: '#d8d4c8' },
+        { type: 'slab', pos: [0.98, 0.775, -1.4], rot: [0, 0.5, 0], size: [0.22, 0.04, 0.06], color: '#d8d4c8' },
+        // the little monitor with the camera feed
+        { type: 'bevelBox', pos: [0.0, 0.98, -1.77], w: 0.4, h: 0.32, d: 0.14, color: '#2a2a2a' },
+        { type: 'screenPanel', pos: [0.0, 0.98, -1.695], w: 0.34, h: 0.26, color: '#ffffff', intensity: 0.8, draw: (ctx, W, H) => {
+          for (let i = 0; i < 7000; i++) { const v = Math.floor(Math.random() * 90 + 50); ctx.fillStyle = `rgb(${v},${v + 4},${v})`; ctx.fillRect(Math.random() * W, Math.random() * H, 3, 2) }
+          ctx.fillStyle = 'rgba(30,30,30,0.6)'; ctx.fillRect(W * 0.3, H * 0.35, W * 0.4, H * 0.5)
+          ctx.fillStyle = '#f0f0f0'; ctx.font = 'bold 34px monospace'; ctx.fillText('CAM 2', 18, 44)
+        } },
+        // the chair
+        { type: 'chairRow', pos: [0.75, 0, -0.95], rot: [0, Math.PI + 0.5, 0], count: 1, color: '#3a3e44', cushion: '#2a3a5a' },
+        // the manager, on the phone
+        { type: 'abstractFigure', pos: [-1.15, 0, -1.55], rot: [0, 0.5, 0], color: '#2a3a5a', legs: '#1e2028', hair: '#6a4a2a', hat: 'cap', pose: 'hold' },
+        // the kitchen doorway, the fryer glow through it
+        { type: 'screenPanel', pos: [-1.45, 1.0, -2.08], w: 0.9, h: 2.0, color: '#ffffff', intensity: 1.1, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, H, 0, 0); g.addColorStop(0, '#ffb050'); g.addColorStop(0.5, '#c86a2a'); g.addColorStop(1, '#3a2418')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#9aa0a4'; ctx.fillRect(W * 0.1, H * 0.55, W * 0.8, H * 0.1)
+          ctx.fillStyle = '#2a2420'; ctx.fillRect(W * 0.22, H * 0.48, W * 0.2, H * 0.07); ctx.fillRect(W * 0.58, H * 0.48, W * 0.2, H * 0.07)
+          ctx.fillStyle = '#7a8084'; ctx.fillRect(W * 0.1, H * 0.65, W * 0.8, H * 0.35)
+        } },
+        { type: 'slab', pos: [-1.45, 2.04, -2.07], size: [1.0, 0.08, 0.06], color: '#3a3a36' },
+        // the lockers
+        { type: 'bevelBox', pos: [1.82, 0.9, -1.2], w: 0.5, h: 1.8, d: 1.2, color: '#5a6a7a', metalness: 0.3 },
+        // the security camera up in the corner
+        { type: 'slab', pos: [1.98, 2.42, -1.98], size: [0.05, 0.12, 0.05], color: '#c8c8c4' },
+        { type: 'bevelBox', pos: [1.9, 2.32, -1.9], rot: [0.45, -0.78, 0], w: 0.16, h: 0.12, d: 0.26, color: '#d8d8d4' },
+        { type: 'lampPractical', pos: [1.86, 2.34, -1.78], scale: 0.25, color: '#ff2a1a', intensity: 0.15, distance: 1 },
+        // the schedule pinned on the back wall
+        { type: 'screenPanel', pos: [1.3, 1.5, -2.08], w: 0.8, h: 0.6, color: '#ffffff', intensity: 0.45, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#f0eee6'; ctx.fillRect(0, 0, W, H)
+          ctx.strokeStyle = '#8a8a86'; ctx.lineWidth = 2
+          for (let x = 70; x < W; x += 62) { ctx.beginPath(); ctx.moveTo(x, 40); ctx.lineTo(x, H - 10); ctx.stroke() }
+          for (let y = 40; y < H; y += 34) { ctx.beginPath(); ctx.moveTo(10, y); ctx.lineTo(W - 10, y); ctx.stroke() }
+          ctx.fillStyle = '#2a4a8a'; for (let i = 0; i < 16; i++) ctx.fillRect(78 + (i * 3 % 7) * 62, 48 + (i % 9) * 34, 40, 14)
+        } },
+        { type: 'lampPractical', pos: [0, 2.45, -0.6], color: '#f0f8e8', intensity: 0.5 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-0.1, 0.75, -1.4], color: '#e8382a' },
+        { type: 'boxPile', pos: [1.6, 0, 0.6], count: 3, color: '#a88a5a', spread: 0.35 },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [0.2, 1.85, -2.08],
+      metaPos: [1.3, 2.1, -2.08],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [0.35, 0, -1.55], dx: -0.15, dz: 0.16, y: 0.757, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [1.82, 0.9, -1.2], dx: -0.262, y: 1.25, ry: -Math.PI / 2 },
+        { index: 2, of: 3, state: 'film', pos: [1.3, 1.5, -2.08], dz: 0.012, y: 1.32 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------- animals
+  // The mayoral campaign office at night, after the kidnapping: the desks and
+  // their phones, the posters, the yard signs stacked by the wall, the clock
+  // going round, the city through the window. He stands at the glass with
+  // the phone that has not rung.
+  animals: {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#141820', fogColor: '#141820', fogDensity: 0.03,
+      key: '#d8e0f0', keyIntensity: 1.9, fill: '#3a4258', ambient: 0.26,
+      sat: -0.05, contrast: 0.08, grain: 0.05, vignette: 0.5, bloomIntensity: 0.28,
+    },
+    camera: { pos: [0.7, 1.6, 2.0], look: [-0.2, 1.05, -1.8], fov: 50 },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 5.4, d: 5, h: 2.7, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'carpet', ceiling: 'tile', wallWear: 0.2, floorWear: 0.35 },
+        trim: { color: '#2a2c30' },
+      },
+      props: [
+        // the window and the city at night
+        { type: 'screenPanel', pos: [0.5, 1.45, -2.48], w: 2.4, h: 1.2, color: '#ffffff', intensity: 0.9, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0a0e1c'); g.addColorStop(0.6, '#2a2030'); g.addColorStop(1, '#1a1418')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          // the grid of the basin, rows of sodium lights running off
+          for (let row = 0; row < 14; row++) {
+            const y = H * 0.55 + row * row * 0.9
+            const n = 12 + row * 4
+            for (let i = 0; i < n; i++) {
+              ctx.fillStyle = (i + row) % 5 ? '#ffb050' : '#f0f0ff'
+              ctx.globalAlpha = 0.5 + ((i * 7 + row) % 5) / 10
+              ctx.fillRect((i / n) * W + ((row * 37) % 20), y, 2 + row * 0.2, 2)
+            }
+          }
+          ctx.globalAlpha = 1; ctx.fillStyle = '#1a1c20'; ctx.fillRect(W / 3 - 3, 0, 6, H); ctx.fillRect((2 * W) / 3 - 3, 0, 6, H)
+        } },
+        // the desks and the phones
+        { type: 'table', pos: [-0.9, 0, -1.2], w: 1.5, d: 0.75, color: '#3a3430' },
+        { type: 'chairRow', pos: [-0.9, 0, -1.82], count: 1, color: '#22242a', cushion: '#2a2c34' },
+        { type: 'bevelBox', pos: [-0.45, 0.8, -1.15], w: 0.2, h: 0.08, d: 0.18, color: '#1a1a1c' },
+        { type: 'bevelBox', pos: [-1.4, 0.8, -1.15], w: 0.2, h: 0.08, d: 0.18, color: '#1a1a1c' },
+        { type: 'screenPanel', pos: [-0.95, 0.9, -1.4], rot: [-0.2, 0, 0], w: 0.34, h: 0.22, color: '#c8d8f0', intensity: 0.8 },
+        { type: 'table', pos: [1.3, 0, -0.3], rot: [0, -0.2, 0], w: 1.3, d: 0.7, color: '#3a3430' },
+        { type: 'bevelBox', pos: [1.6, 0.8, -0.35], w: 0.2, h: 0.08, d: 0.18, color: '#1a1a1c' },
+        // the posters
+        { type: 'screenPanel', pos: [-2.68, 1.5, -1.4], rot: [0, Math.PI / 2, 0], w: 0.6, h: 0.85, color: '#ffffff', intensity: 0.55, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#1a2a5a'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#c8282a'; ctx.fillRect(0, H * 0.62, W, H * 0.08)
+          ctx.fillStyle = '#f4f0e8'; ctx.textAlign = 'center'; ctx.font = 'bold 120px Arial'; ctx.fillText('VOTE', W / 2, H * 0.4)
+          ctx.font = 'bold 56px Arial'; ctx.fillText('FOR MAYOR', W / 2, H * 0.85)
+        } },
+        { type: 'screenPanel', pos: [-2.68, 1.5, -0.2], rot: [0, Math.PI / 2, 0], w: 0.6, h: 0.85, color: '#ffffff', intensity: 0.55, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#f4f0e8'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#1a2a5a'; ctx.fillRect(0, 0, W, H * 0.5)
+          ctx.fillStyle = '#c8282a'; ctx.fillRect(0, H * 0.5, W, H * 0.06)
+          ctx.fillStyle = '#f4f0e8'; ctx.textAlign = 'center'; ctx.font = 'bold 64px Arial'; ctx.fillText('LOS ANGELES', W / 2, H * 0.3)
+          ctx.fillStyle = '#1a2a5a'; ctx.font = 'bold 96px Arial'; ctx.fillText('MAYOR', W / 2, H * 0.8)
+        } },
+        // the yard signs stacked against the wall
+        { type: 'slab', pos: [-2.5, 0.35, 1.0], rot: [0, Math.PI / 2, -0.08], size: [0.9, 0.6, 0.06], color: '#1a2a5a' },
+        { type: 'slab', pos: [-2.44, 0.35, 1.0], rot: [0, Math.PI / 2, -0.08], size: [0.9, 0.6, 0.06], color: '#f0ece0' },
+        // the clock
+        { type: 'screenPanel', pos: [-1.5, 1.95, -2.48], w: 0.34, h: 0.34, color: '#ffffff', intensity: 0.5, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#14181f'; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#ecece4'; ctx.beginPath(); ctx.arc(W / 2, H / 2, W * 0.46, 0, Math.PI * 2); ctx.fill()
+          ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 14; ctx.lineCap = 'round'
+          ctx.beginPath(); ctx.moveTo(W / 2, H / 2); ctx.lineTo(W / 2 + W * 0.2, H / 2 - H * 0.1); ctx.stroke()
+          ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(W / 2, H / 2); ctx.lineTo(W / 2 - W * 0.05, H / 2 + H * 0.34); ctx.stroke()
+        } },
+        // him at the window, the phone in his hands
+        { type: 'abstractFigure', pos: [0.8, 0, -2.0], rot: [0, Math.PI + 0.3, 0], color: '#22242a', legs: '#22242a', hair: '#3a2a1e', pose: 'hold' },
+        { type: 'lampPractical', pos: [-1.5, 1.05, -1.5], color: '#ffe0b0', intensity: 0.5 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-1.1, 0.75, -1.0], color: '#e8e0d0' },
+        { type: 'cup', pos: [1.0, 0.75, -0.2], color: '#e8e0d0' },
+        { type: 'boxPile', pos: [2.2, 0, 1.0], count: 3, color: '#9a8660', spread: 0.4 },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [2.15, 1.85, -2.47],
+      metaPos: [-1.5, 1.42, -2.47],
+      fragments: [
+        { index: 0, of: 4, state: 'film', pos: [-0.9, 0, -1.2], dx: 0.05, dz: 0.18, y: 0.757, tilt: FLAT },
+        { index: 1, of: 4, state: 'motel', pos: [1.3, 0, -0.3], dx: -0.2, dz: 0.1, y: 0.757, tilt: FLAT, ry: -0.2 },
+        { index: 2, of: 4, state: 'film', pos: [-2.68, 1.5, -0.8], dx: 0.012, y: 1.35, ry: Math.PI / 2 },
+        { index: 3, of: 4, state: 'film', pos: [0.5, 1.45, -2.48], dx: -0.55, dz: 0.012, y: 1.12 },
+      ],
+    },
+  },
+
+  // ------------------------------------------------------------------ sacrifice
+  // The charity gala on the island, the night it gets taken: the stage with
+  // the podium under its lights, the white tables, the guests in their good
+  // clothes, and past the open terrace the volcano glowing orange.
+  sacrifice: {
+    family: 'weird-fable',
+    grade: {
+      bg: '#140a08', fogColor: '#2a1208', fogDensity: 0.016,
+      key: '#ffe8c0', keyIntensity: 2.2, fill: '#5a2a14', ambient: 0.28,
+      sat: 0.05, contrast: 0.1, grain: 0.05, vignette: 0.5, bloomIntensity: 0.4,
+    },
+    camera: { pos: [0.8, 1.65, 3.2], look: [0, 1.35, -3.5], fov: 54, far: 120 },
+    lights: {
+      key: { pos: [0.3, 3.2, -2.0], intensity: 1.6, distance: 8, color: '#fff0d0', decay: 2 },
+      practicals: [
+        { pos: [0, 2, -6], intensity: 1.6, distance: 14, color: '#ff6a20', decay: 2 },
+      ],
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 8, d: 8, h: 4, wallMat: 'flat', openBack: true,
+        mat: { walls: 'plaster', floor: 'wood', ceiling: 'plaster', wallWear: 0.1, floorWear: 0.2 },
+        trim: { color: '#2a1e18' },
+      },
+      props: [
+        // the volcano past the terrace
+        { type: 'screenPanel', pos: [0, 4, -18], w: 40, h: 13, color: '#ffffff', intensity: 1.0, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0e0608'); g.addColorStop(0.55, '#5a1e0c'); g.addColorStop(0.75, '#c84a14'); g.addColorStop(1, '#2a0e06')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          const glow = ctx.createRadialGradient(W * 0.545, H * 0.58, 2, W * 0.545, H * 0.58, W * 0.1)
+          glow.addColorStop(0, 'rgba(255,190,90,0.95)'); glow.addColorStop(1, 'rgba(255,90,20,0)')
+          ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#100806'; ctx.beginPath(); ctx.moveTo(0, H * 0.84); ctx.lineTo(W * 0.36, H * 0.8); ctx.lineTo(W * 0.52, H * 0.6); ctx.lineTo(W * 0.57, H * 0.6); ctx.lineTo(W * 0.72, H * 0.79); ctx.lineTo(W, H * 0.82); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill()
+          ctx.strokeStyle = '#ff7a24'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(W * 0.545, H * 0.61); ctx.lineTo(W * 0.535, H * 0.68); ctx.lineTo(W * 0.54, H * 0.76); ctx.stroke()
+        } },
+        { type: 'slab', pos: [0, -0.04, -6], size: [8, 0.08, 4], color: '#2a2420' },
+        // the stage, the podium, the speaker
+        { type: 'slab', pos: [0, 0.2, -3.0], size: [4.4, 0.4, 1.8], color: '#1a1414' },
+        { type: 'podium', pos: [0.4, 0.4, -2.85], color: '#2a2020' },
+        { type: 'abstractFigure', pos: [0.4, 0.4, -3.25], color: '#1a1a20', legs: '#1a1a20', hair: '#6a4a2a', pose: 'stand' },
+        // the wing flats either side, the open terrace between them
+        { type: 'slab', pos: [-2.7, 1.5, -3.7], size: [1.2, 3.0, 0.08], color: '#3a1012' },
+        { type: 'slab', pos: [2.7, 1.5, -3.7], size: [1.2, 3.0, 0.08], color: '#3a1012' },
+        // the truss and its lamps
+        { type: 'slab', pos: [0, 3.7, -2.6], size: [5, 0.12, 0.12], color: '#1a1a1a', metalness: 0.5 },
+        { type: 'lampPractical', pos: [-1.6, 3.55, -2.6], color: '#fff0d0', intensity: 0.6 },
+        { type: 'lampPractical', pos: [1.6, 3.55, -2.6], color: '#fff0d0', intensity: 0.6 },
+        // the tables and the guests
+        ...[[-2.0, -0.7], [2.2, -0.6], [-1.6, 1.3]].flatMap(([x, z], i) => [
+          { type: 'table', pos: [x, 0, z], w: 1.0, d: 1.0, color: '#c8c0b4' },
+          { type: 'lampPractical', pos: [x, 0.82, z], scale: 0.4, color: '#ffb060', intensity: 0.25, distance: 1.6 },
+          { type: 'chairRow', pos: [x - 0.3, 0, z + 0.75], rot: [0, Math.PI, 0], count: 1, color: '#c8b898', cushion: '#e8e0d0' },
+          { type: 'chairRow', pos: [x + 0.4, 0, z + 0.72], rot: [0, Math.PI, 0], count: 1, color: '#c8b898', cushion: '#e8e0d0' },
+          { type: 'abstractFigure', pos: [x - 0.3, 0, z + 0.78], rot: [0, Math.PI, 0], color: ['#6a1420', '#1a3a3a', '#c8c0b0'][i], hair: ['#d8b070', '#2a1a10', '#4a2a18'][i], hairStyle: 'long', pose: 'sit' },
+          { type: 'abstractFigure', pos: [x + 0.4, 0, z + 0.75], rot: [0, Math.PI, 0], color: '#14141a', legs: '#14141a', pose: 'sit' },
+        ]),
+      ],
+      clutter: [
+        { type: 'bottleRow', pos: [2.2, 0.75, -0.6], count: 2, color: '#1a2a1a' },
+        { type: 'cup', pos: [-2.2, 0.75, -0.5], color: '#e8f0f0' },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [-2.7, 2.2, -3.65],
+      metaPos: [2.7, 2.2, -3.65],
+      fragments: [
+        { index: 0, of: 3, state: 'film', pos: [-1.6, 0, 1.3], dx: 0.15, dz: -0.15, y: 0.757, tilt: FLAT },
+        { index: 1, of: 3, state: 'motel', pos: [2.2, 0, -0.6], dx: -0.15, dz: 0.1, y: 0.757, tilt: FLAT },
+        { index: 2, of: 3, state: 'film', pos: [0, 0.2, -3.0], dx: -1.2, dz: 0.912, y: 0.3 },
+      ],
+    },
+  },
+
+  // ----------------------------------------------------------- the-whisper-man
+  // Jake's bedroom at night: the small bed, the toy box, his drawings on the
+  // wall, the nightlight, and the window left open a crack onto the dark
+  // garden. Something stands at the edge of the room when you are not
+  // looking at it.
+  'the-whisper-man': {
+    family: 'dread',
+    grade: {
+      bg: '#0c1018', fogColor: '#0c1018', fogDensity: 0.04,
+      key: '#9ab0d8', keyIntensity: 1.7, fill: '#2a3048', ambient: 0.16,
+      sat: -0.1, contrast: 0.1, grain: 0.08, vignette: 0.62, bloomIntensity: 0.25,
+    },
+    camera: { pos: [0.1, 1.5, 1.9], look: [0.0, 0.9, -1.6], fov: 52 },
+    lights: {
+      key: { pos: [-0.5, 1.5, -1.8], intensity: 1.3, distance: 5, color: '#8aa0d0', decay: 2 },
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 4, d: 4.4, h: 2.5, wallMat: 'plaster',
+        mat: { walls: 'plaster', floor: 'wood', ceiling: 'plaster', wallWear: 0.3, floorWear: 0.35 },
+        trim: { color: '#d8d4c8' },
+      },
+      props: [
+        // the window, open a crack, the garden beyond
+        { type: 'screenPanel', pos: [-0.5, 1.4, -2.18], w: 1.0, h: 1.1, color: '#ffffff', intensity: 0.7, draw: (ctx, W, H) => {
+          const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1a2a48'); g.addColorStop(1, '#060a12')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#c8d4f0'; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc(W * 0.75, H * 0.18, 18, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1
+          ctx.fillStyle = '#04060a'
+          ctx.beginPath(); ctx.moveTo(0, H * 0.7)
+          for (let x = 0; x <= W; x += 24) ctx.lineTo(x, H * (0.62 + Math.sin(x * 0.05) * 0.04 + ((x * 7) % 5) * 0.01))
+          ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill()
+          ctx.fillRect(W * 0.18, H * 0.25, 10, H * 0.5); ctx.beginPath(); ctx.arc(W * 0.19, H * 0.3, 70, 0, Math.PI * 2); ctx.fill()
+          // the sash: the lower one pushed up, the gap black
+          ctx.fillStyle = '#d8d4c8'; ctx.fillRect(0, 0, W, 14); ctx.fillRect(0, H - 14, W, 14); ctx.fillRect(0, 0, 14, H); ctx.fillRect(W - 14, 0, 14, H)
+          ctx.fillRect(0, H * 0.46, W, 12); ctx.fillRect(0, H * 0.58, W, 12)
+          ctx.fillStyle = '#000000'; ctx.fillRect(14, H * 0.82, W - 28, H * 0.06)
+        } },
+        { type: 'slab', pos: [-1.08, 1.4, -2.1], rot: [0, 0.25, 0.04], size: [0.26, 1.3, 0.03], color: '#3a4a6a' },
+        { type: 'slab', pos: [0.08, 1.4, -2.08], rot: [0, -0.4, -0.06], size: [0.26, 1.3, 0.03], color: '#3a4a6a' },
+        // the small bed and Jake in it
+        { type: 'bed', pos: [1.2, 0, -1.2], rot: [0, -Math.PI / 2, 0], scale: 0.75, color: '#5a6a9a', frame: '#d8d4c8' },
+        { type: 'abstractFigure', pos: [1.25, 0.36, -1.2], rot: [0, -Math.PI / 2, 0], scale: 0.55, color: '#6a7aa0', hair: '#5a3a20', pose: 'lie' },
+        // the nightstand and its nightlight
+        { type: 'bevelBox', pos: [1.72, 0.25, -1.98], w: 0.38, h: 0.5, d: 0.34, color: '#d8d4c8' },
+        { type: 'lampPractical', pos: [1.72, 0.6, -1.98], scale: 0.6, color: '#ffc880', intensity: 0.35, distance: 2.5 },
+        // the toy box, a toy on the floor
+        { type: 'bevelBox', pos: [-1.4, 0.22, -0.6], w: 0.6, h: 0.44, d: 0.4, color: '#6a3a2a' },
+        { type: 'bevelBox', pos: [-0.55, 0.08, -0.75], rot: [0, 0.5, 0], w: 0.16, h: 0.16, d: 0.16, color: '#c84a2a' },
+        { type: 'bevelBox', pos: [-0.35, 0.06, -0.55], rot: [0, 0.2, 0], w: 0.12, h: 0.12, d: 0.12, color: '#2a6ab8' },
+        // his drawings on the wall
+        { type: 'screenPanel', pos: [-1.98, 1.25, -1.2], rot: [0, Math.PI / 2, 0], w: 0.9, h: 0.5, color: '#ffffff', intensity: 0.35, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#16181f'; ctx.fillRect(0, 0, W, H)
+          ;[0, 1, 2].forEach((i) => {
+            const x0 = 12 + i * (W / 3), w = W / 3 - 24
+            ctx.fillStyle = '#ece8dc'; ctx.fillRect(x0, 20, w, H - 40)
+            ctx.strokeStyle = ['#2a4ab8', '#c83a2a', '#2a8a3a'][i]; ctx.lineWidth = 5
+            ctx.beginPath(); ctx.moveTo(x0 + 20, H - 60); ctx.lineTo(x0 + w - 20, H - 60); ctx.stroke()
+            ctx.beginPath(); ctx.arc(x0 + w / 2, 80, 22, 0, Math.PI * 2); ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(x0 + w / 2, 102); ctx.lineTo(x0 + w / 2, H - 100); ctx.stroke()
+          })
+        } },
+      ],
+      clutter: [
+        { type: 'bookStack', pos: [1.62, 0.5, -1.95], count: 2, w: 0.16, d: 0.22, colors: ['#c83a2a', '#2a4a8a'] },
+      ],
+      systems: [
+        { type: 'PeripheralFigure', corner: 'high', pos: [-1.6, 0, 1.2], color: '#06080c' },
+      ],
+    },
+    info: {
+      scorePos: [0.85, 1.9, -2.18],
+      metaPos: [-0.5, 2.18, -2.18],
+      fragments: [
+        { index: 0, of: 5, state: 'film', pos: [1.72, 0.25, -1.98], dx: -0.06, dz: 0.06, y: 0.506, tilt: FLAT },
+        { index: 1, of: 5, state: 'motel', pos: [-1.4, 0.22, -0.6], y: 0.446, tilt: FLAT },
+        { index: 2, of: 5, state: 'film', pos: [-1.98, 1.25, -1.2], dx: 0.012, y: 1.6, ry: Math.PI / 2 },
+        { index: 3, of: 5, state: 'motel', pos: [1.2, 0, -1.2], dx: -0.4, dz: 0.1, y: 0.39, tilt: FLAT },
+        { index: 4, of: 5, state: 'film', pos: [-0.5, 1.4, -2.18], dz: 0.03, y: 0.78 },
+      ],
+    },
+  },
+
+  // -------------------------------------------------------------- gosford-park
+  // The drawing room at Gosford, November 1932: the fire going, the two
+  // sofas facing each other in front of it, the card table, the piano against
+  // the wall, the portrait over the mantel. A servant stands by the door,
+  // seen by no one, seeing everything.
+  'gosford-park': {
+    family: 'intimate-tension',
+    grade: {
+      bg: '#1e1610', fogColor: '#1e1610', fogDensity: 0.028,
+      key: '#ffd8a0', keyIntensity: 2.1, fill: '#4a3a28', ambient: 0.26,
+      sat: -0.04, contrast: 0.08, grain: 0.06, vignette: 0.5, bloomIntensity: 0.25,
+    },
+    camera: { pos: [0.5, 1.7, 2.8], look: [-0.1, 1.0, -2.6], fov: 54 },
+    lights: {
+      key: { pos: [0, 0.5, -2.7], intensity: 1.6, distance: 7, color: '#ff9a48', decay: 2 },
+    },
+    place: {
+      shell: 'box',
+      shellParams: {
+        w: 6.4, d: 6.4, h: 3.4, wallMat: 'wood',
+        mat: { walls: 'wood', floor: 'wood', ceiling: 'plaster', wallWear: 0.15, floorWear: 0.25 },
+        trim: { color: '#2a1a10' },
+      },
+      props: [
+        // the fireplace, the fire, the mantel, the portrait
+        { type: 'slab', pos: [0, 0.6, -3.12], size: [1.6, 1.2, 0.16], color: '#d8ccb4' },
+        { type: 'screenPanel', pos: [0, 0.42, -3.03], w: 0.8, h: 0.6, color: '#ffffff', intensity: 1.1, draw: (ctx, W, H) => {
+          ctx.fillStyle = '#0e0604'; ctx.fillRect(0, 0, W, H)
+          const g = ctx.createRadialGradient(W / 2, H * 0.85, 4, W / 2, H * 0.8, W * 0.45)
+          g.addColorStop(0, '#fff0a0'); g.addColorStop(0.35, '#ff8a2a'); g.addColorStop(1, 'rgba(120,30,0,0)')
+          ctx.fillStyle = g; ctx.fillRect(0, 0, W, H)
+          ctx.fillStyle = '#ffb048'
+          for (let i = 0; i < 7; i++) { const x = W * (0.2 + i * 0.1); ctx.beginPath(); ctx.moveTo(x - 18, H * 0.85); ctx.quadraticCurveTo(x, H * (0.3 + (i % 3) * 0.1), x + 18, H * 0.85); ctx.fill() }
+          ctx.fillStyle = '#2a1408'; ctx.fillRect(W * 0.15, H * 0.86, W * 0.7, H * 0.08)
+        } },
+        { type: 'slab', pos: [0, 1.24, -3.05], size: [1.9, 0.08, 0.3], color: '#c8bca4' },
+        { type: 'bevelBox', pos: [-0.65, 1.4, -3.07], w: 0.2, h: 0.24, d: 0.1, color: '#3a2414' },
+        { type: 'frameOn', pos: [0, 2.05, -3.17], w: 0.8, h: 1.0, color: '#6a4a1c' },
+        // the rug, the two sofas
+        { type: 'slab', pos: [0, 0.005, -1.3], size: [3.6, 0.01, 3], color: '#5a2a22' },
+        { type: 'bevelBox', pos: [-1.5, 0.22, -1.6], w: 0.8, h: 0.44, d: 1.9, color: '#6a5a3e' },
+        { type: 'bevelBox', pos: [-1.86, 0.62, -1.6], w: 0.16, h: 0.5, d: 1.9, color: '#5e5036' },
+        { type: 'bevelBox', pos: [1.5, 0.22, -1.6], w: 0.8, h: 0.44, d: 1.9, color: '#6a5a3e' },
+        { type: 'bevelBox', pos: [1.86, 0.62, -1.6], w: 0.16, h: 0.5, d: 1.9, color: '#5e5036' },
+        // the countess on her sofa, a guest across from her
+        { type: 'abstractFigure', pos: [-1.62, 0, -1.9], rot: [0, Math.PI / 2, 0], color: '#3a3a4a', legs: '#3a3a4a', hair: '#b8b0a8', pose: 'sit' },
+        { type: 'abstractFigure', pos: [1.62, 0, -1.2], rot: [0, -Math.PI / 2, 0], color: '#5a3a4a', legs: '#5a3a4a', hair: '#4a2a1a', hairStyle: 'long', pose: 'sit' },
+        // the card table, two at bridge
+        { type: 'table', pos: [-1.5, 0, 0.5], w: 0.8, d: 0.8, color: '#2a4a2a' },
+        { type: 'chairRow', pos: [-1.98, 0, 0.5], rot: [0, Math.PI / 2, 0], count: 1, color: '#3a2414', cushion: '#6a2a22' },
+        { type: 'chairRow', pos: [-1.02, 0, 0.5], rot: [0, -Math.PI / 2, 0], count: 1, color: '#3a2414', cushion: '#6a2a22' },
+        { type: 'abstractFigure', pos: [-1.95, 0, 0.5], rot: [0, Math.PI / 2, 0], color: '#141418', legs: '#141418', hair: '#5a4a3a', pose: 'sit' },
+        { type: 'abstractFigure', pos: [-1.05, 0, 0.5], rot: [0, -Math.PI / 2, 0], color: '#2a3a4a', legs: '#2a3a4a', hair: '#8a6a3a', hairStyle: 'long', pose: 'sit' },
+        // the piano against the left wall
+        { type: 'bevelBox', pos: [-2.9, 0.55, 1.9], rot: [0, Math.PI / 2, 0], w: 1.4, h: 1.1, d: 0.55, color: '#1a1210' },
+        // the door, the servant by it
+        { type: 'slab', pos: [2.4, 1.1, -3.16], size: [1.0, 2.2, 0.06], color: '#2a1a10' },
+        { type: 'abstractFigure', pos: [2.4, 0, -2.75], rot: [0, -0.3, 0], color: '#121214', legs: '#121214', hair: '#2a1e14', pose: 'stand' },
+        // side tables and their lamps
+        { type: 'bevelBox', pos: [-2.0, 0.35, -2.7], w: 0.5, h: 0.7, d: 0.5, color: '#3a2414' },
+        { type: 'lampPractical', pos: [-2.0, 1.0, -2.7], color: '#ffd8a0', intensity: 0.5 },
+      ],
+      clutter: [
+        { type: 'cup', pos: [-1.65, 0.75, 0.4], color: '#f0ece0' },
+        { type: 'bookStack', pos: [-2.9, 1.1, 1.6], count: 2, w: 0.22, d: 0.3, colors: ['#2a1a10', '#4a2a1a'] },
+      ],
+      systems: [],
+    },
+    info: {
+      scorePos: [-1.5, 2.25, -3.17],
+      metaPos: [1.2, 2.5, -3.17],
+      fragments: [
+        { index: 0, of: 4, state: 'film', pos: [-1.5, 0, 0.5], dz: 0.15, y: 0.757, tilt: FLAT },
+        { index: 1, of: 4, state: 'motel', pos: [0, 1.24, -3.05], dx: 0.3, dz: 0.02, y: 1.286, tilt: FLAT },
+        { index: 2, of: 4, state: 'film', pos: [-2.9, 0.55, 1.9], dx: 0.05, y: 1.106, tilt: FLAT, ry: Math.PI / 2 },
+        { index: 3, of: 4, state: 'film', pos: [1.5, 0.22, -1.6], dx: -0.05, dz: 0.5, y: 0.446, tilt: FLAT, ry: -Math.PI / 2 },
+      ],
+    },
+  },
 }
 
 const CAMERA = { pos: [0, 1.55, 3.2], look: [0, 1.3, 0], fov: 50, far: undefined }

@@ -52,6 +52,17 @@ import { start as upgrade } from './upgrade.js'
 import { start as primalFear } from './primal-fear.js'
 import { start as frailty } from './frailty.js'
 import { start as terminator2 } from './terminator-2.js'
+import { start as blackkklansman } from './blackkklansman.js'
+import { start as insomnia } from './insomnia.js'
+import { start as requiemForADream } from './requiem-for-a-dream.js'
+import { start as companion } from './companion.js'
+import { start as theWolfOfWallStreet } from './the-wolf-of-wall-street.js'
+import { start as heat } from './heat.js'
+import { start as compliance } from './compliance.js'
+import { start as animals } from './animals.js'
+import { start as sacrifice } from './sacrifice.js'
+import { start as theWhisperMan } from './the-whisper-man.js'
+import { start as gosfordPark } from './gosford-park.js'
 
 export const TEMPLATE_RECIPES = {
   darkknight,
@@ -102,4 +113,15 @@ export const TEMPLATE_RECIPES = {
   'primal-fear': primalFear,
   frailty,
   'terminator-2': terminator2,
+  blackkklansman,
+  insomnia,
+  'requiem-for-a-dream': requiemForADream,
+  companion,
+  'the-wolf-of-wall-street': theWolfOfWallStreet,
+  heat,
+  compliance,
+  animals,
+  sacrifice,
+  'the-whisper-man': theWhisperMan,
+  'gosford-park': gosfordPark,
 }
