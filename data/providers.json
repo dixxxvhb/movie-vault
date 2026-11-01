@@ -7,9 +7,7 @@
  ],
  "titles": {
   "Her": {
-   "flat": [
-    "Apple TV"
-   ],
+   "flat": [],
    "free": [],
    "rent": true
   },
@@ -58,12 +56,11 @@
   },
   "John Wick": {
    "flat": [
-    "YouTube TV"
+    "Amazon Prime Video",
+    "YouTube TV",
+    "Amazon Prime Video with Ads"
    ],
-   "free": [
-    "Pluto TV",
-    "VIX "
-   ],
+   "free": [],
    "rent": true
   },
   "Prisoners": {
@@ -78,10 +75,7 @@
     "Paramount Plus Premium",
     "Paramount Plus Essential",
     "Peacock Premium",
-    "Philo",
-    "AMC Plus Apple TV channel",
     "Paramount+ Amazon Channel",
-    "AMC+",
     "YouTube TV",
     "Paramount+ Roku Premium Channel",
     "Amazon Prime Video with Ads",
@@ -159,9 +153,7 @@
    "rent": true
   },
   "Kingsman: The Secret Service": {
-   "flat": [
-    "FXNow"
-   ],
+   "flat": [],
    "free": [],
    "rent": true
   }

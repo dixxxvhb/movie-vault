@@ -4,6 +4,11 @@
   6.8,
   "The Game"
  ],
+ "heat": [
+  "2026-10-25",
+  8.4,
+  "Heat"
+ ],
  "moon": [
   "2026-08-06",
   8.1,
@@ -59,6 +64,11 @@
   9.3,
   "Amadeus"
  ],
+ "animals": [
+  "2026-10-27",
+  7.4,
+  "Animals"
+ ],
  "dunkirk": [
   "2026-10-05",
   10,
@@ -88,6 +98,11 @@
   "2026-10-06",
   9.3,
   "Hot Fuzz"
+ ],
+ "insomnia": [
+  "2026-10-12",
+  8.8,
+  "Insomnia"
  ],
  "maverick": [
   "2026-07-17",
@@ -144,6 +159,11 @@
   8.9,
   "Coherence"
  ],
+ "companion": [
+  "2026-10-24",
+  9.1,
+  "Companion"
+ ],
  "exmachina": [
   "2026-07-13",
   8.8,
@@ -169,6 +189,11 @@
   8.2,
   "Rogue One: A Star Wars Story"
  ],
+ "sacrifice": [
+  "2026-10-27",
+  7.8,
+  "Sacrifice"
+ ],
  "spotlight": [
   "2026-09-13",
   9.4,
@@ -178,6 +203,11 @@
   "2026-08-01",
   9.6,
   "The Sting"
+ ],
+ "compliance": [
+  "2026-10-26",
+  9,
+  "Compliance"
  ],
  "darkknight": [
   "2026-07-24",
@@ -249,6 +279,11 @@
   7.4,
   "Annihilation"
  ],
+ "gosford-park": [
+  "2026-10-30",
+  8,
+  "Gosford Park"
+ ],
  "nightcrawler": [
   "2026-07-21",
   9.5,
@@ -268,6 +303,11 @@
   "2026-08-26",
   9.7,
   "The Big Short"
+ ],
+ "blackkklansman": [
+  "2026-10-08",
+  9.6,
+  "BlacKkKlansman"
  ],
  "disclosure-day": [
   "2026-07-31",
@@ -294,6 +334,11 @@
   7.5,
   "Minority Report"
  ],
+ "the-whisper-man": [
+  "2026-10-30",
+  8.5,
+  "The Whisper Man"
+ ],
  "operation-finale": [
   "2026-09-14",
   9.3,
@@ -304,6 +349,11 @@
   8.9,
   "Memories of Murder"
  ],
+ "requiem-for-a-dream": [
+  "2026-10-22",
+  9.1,
+  "Requiem for a Dream"
+ ],
  "the-death-of-stalin": [
   "2026-10-02",
   9.3,
@@ -313,6 +363,11 @@
   "2026-09-07",
   9.7,
   "Inglourious Basterds"
+ ],
+ "the-wolf-of-wall-street": [
+  "2026-10-24",
+  9.7,
+  "The Wolf of Wall Street"
  ],
  "one-battle-after-another": [
   "2026-08-25",

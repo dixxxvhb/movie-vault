@@ -9,6 +9,16 @@
    ],
    "rewatch": false
   },
+  "heat": {
+   "key": "tense",
+   "vibes": [
+    "heist",
+    "la",
+    "well-made",
+    "epic"
+   ],
+   "rewatch": false
+  },
   "moon": {
    "key": "sad",
    "vibes": [
@@ -132,6 +142,15 @@
    ],
    "rewatch": false
   },
+  "animals": {
+   "key": "tense",
+   "vibes": [
+    "crime thriller",
+    "political",
+    "kidnapping"
+   ],
+   "rewatch": false
+  },
   "dunkirk": {
    "key": "awe",
    "vibes": [
@@ -205,6 +224,11 @@
     "fun",
     "solo night"
    ],
+   "rewatch": false
+  },
+  "insomnia": {
+   "key": "tense",
+   "vibes": [],
    "rewatch": false
   },
   "maverick": {
@@ -325,6 +349,16 @@
    ],
    "rewatch": false
   },
+  "companion": {
+   "key": "fun",
+   "vibes": [
+    "horror-comedy",
+    "revenge",
+    "fun",
+    "rental"
+   ],
+   "rewatch": false
+  },
   "exmachina": {
    "key": "tense",
    "vibes": [
@@ -382,6 +416,15 @@
    ],
    "rewatch": false
   },
+  "sacrifice": {
+   "key": "camp",
+   "vibes": [
+    "satire",
+    "cult",
+    "dark comedy"
+   ],
+   "rewatch": false
+  },
   "spotlight": {
    "key": "tense",
    "vibes": [
@@ -403,6 +446,16 @@
     "competence-porn",
     "classic",
     "staged-not-explained"
+   ],
+   "rewatch": false
+  },
+  "compliance": {
+   "key": "tense",
+   "vibes": [
+    "true-story",
+    "one-room-tension",
+    "wtf-delivered",
+    "low-budget-miracle"
    ],
    "rewatch": false
   },
@@ -568,6 +621,11 @@
    ],
    "rewatch": false
   },
+  "gosford-park": {
+   "key": "cozy",
+   "vibes": [],
+   "rewatch": false
+  },
   "nightcrawler": {
    "key": "dread",
    "vibes": [
@@ -609,6 +667,16 @@
     "ensemble",
     "fun",
     "true-story"
+   ],
+   "rewatch": false
+  },
+  "blackkklansman": {
+   "key": "tense",
+   "vibes": [
+    "true-story",
+    "tonal-morph",
+    "satire",
+    "rental"
    ],
    "rewatch": false
   },
@@ -669,6 +737,11 @@
    ],
    "rewatch": false
   },
+  "the-whisper-man": {
+   "key": "tense",
+   "vibes": [],
+   "rewatch": false
+  },
   "operation-finale": {
    "key": "tense",
    "vibes": [
@@ -686,6 +759,16 @@
     "tonal-morph",
     "true-story",
     "subtitles"
+   ],
+   "rewatch": false
+  },
+  "requiem-for-a-dream": {
+   "key": "sad",
+   "vibes": [
+    "tragic",
+    "score-driven",
+    "predictable",
+    "heartbreaking"
    ],
    "rewatch": false
   },
@@ -712,6 +795,16 @@
     "tarantino",
     "historical",
     "subtitles"
+   ],
+   "rewatch": false
+  },
+  "the-wolf-of-wall-street": {
+   "key": "fun",
+   "vibes": [
+    "true-story",
+    "satire",
+    "scorsese",
+    "over-the-top"
    ],
    "rewatch": false
   },

@@ -12,6 +12,19 @@
    "David Fincher"
   ]
  },
+ "heat": {
+  "year": 1995,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Action"
+  ],
+  "poster": "/umSVjVdbVwtx5ryCA2QXL44Durm.jpg",
+  "runtime": 170,
+  "director": [
+   "Michael Mann"
+  ]
+ },
  "moon": {
   "year": 2009,
   "genres": [
@@ -153,6 +166,20 @@
    "Miloš Forman"
   ]
  },
+ "animals": {
+  "year": 2026,
+  "genres": [
+   "Thriller",
+   "Drama",
+   "Action",
+   "Crime"
+  ],
+  "poster": "/iISM36voS1E8gX9BM0DVK0kgi3E.jpg",
+  "runtime": 106,
+  "director": [
+   "Ben Affleck"
+  ]
+ },
  "dunkirk": {
   "year": 2017,
   "genres": [
@@ -228,6 +255,19 @@
   "runtime": 121,
   "director": [
    "Edgar Wright"
+  ]
+ },
+ "insomnia": {
+  "year": 2002,
+  "genres": [
+   "Thriller",
+   "Crime",
+   "Drama"
+  ],
+  "poster": "/riVXh3EimGO0y5dgQxEWPRy5Itg.jpg",
+  "runtime": 118,
+  "director": [
+   "Christopher Nolan"
   ]
  },
  "maverick": {
@@ -370,6 +410,19 @@
    "James Ward Byrkit"
   ]
  },
+ "companion": {
+  "year": 2025,
+  "genres": [
+   "Horror",
+   "Science Fiction",
+   "Thriller"
+  ],
+  "poster": "/oCoTgC3UyWGfyQ9thE10ulWR7bn.jpg",
+  "runtime": 97,
+  "director": [
+   "Drew Hancock"
+  ]
+ },
  "exmachina": {
   "year": 2015,
   "genres": [
@@ -433,6 +486,19 @@
    "Gareth Edwards"
   ]
  },
+ "sacrifice": {
+  "year": 2026,
+  "genres": [
+   "Adventure",
+   "Comedy",
+   "Action"
+  ],
+  "poster": "/SGH7mlgfDyGgRCi2At62Ljg3zV.jpg",
+  "runtime": 100,
+  "director": [
+   "Romain Gavras"
+  ]
+ },
  "spotlight": {
   "year": 2015,
   "genres": [
@@ -456,6 +522,18 @@
   "runtime": 129,
   "director": [
    "George Roy Hill"
+  ]
+ },
+ "compliance": {
+  "year": 2012,
+  "genres": [
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/bLdu28fr9txYlHLmEOyGplDT3nH.jpg",
+  "runtime": 90,
+  "director": [
+   "Craig Zobel"
   ]
  },
  "darkknight": {
@@ -634,6 +712,19 @@
    "Alex Garland"
   ]
  },
+ "gosford-park": {
+  "year": 2001,
+  "genres": [
+   "Drama",
+   "Mystery",
+   "Thriller"
+  ],
+  "poster": "/7r8DeZuaaHCiOEbkqZC6MFmwJ69.jpg",
+  "runtime": 137,
+  "director": [
+   "Robert Altman"
+  ]
+ },
  "nightcrawler": {
   "year": 2014,
   "genres": [
@@ -683,6 +774,19 @@
   "runtime": 131,
   "director": [
    "Adam McKay"
+  ]
+ },
+ "blackkklansman": {
+  "year": 2018,
+  "genres": [
+   "Crime",
+   "Drama",
+   "History"
+  ],
+  "poster": "/8jxqAvSDoneSKRczaK8v9X5gqBp.jpg",
+  "runtime": 136,
+  "director": [
+   "Spike Lee"
   ]
  },
  "disclosure-day": {
@@ -749,6 +853,19 @@
    "Steven Spielberg"
   ]
  },
+ "the-whisper-man": {
+  "year": 2026,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Thriller"
+  ],
+  "poster": "/ndRs5lADYm0PeVjuOxaMcInY0o2.jpg",
+  "runtime": 111,
+  "director": [
+   "James Ashcroft"
+  ]
+ },
  "operation-finale": {
   "year": 2018,
   "genres": [
@@ -775,6 +892,17 @@
    "Bong Joon Ho"
   ]
  },
+ "requiem-for-a-dream": {
+  "year": 2000,
+  "genres": [
+   "Drama"
+  ],
+  "poster": "/9BTwsLaMVHOGFlmsSlx5QYCaXb.jpg",
+  "runtime": 102,
+  "director": [
+   "Darren Aronofsky"
+  ]
+ },
  "the-death-of-stalin": {
   "year": 2017,
   "genres": [
@@ -799,6 +927,19 @@
   "runtime": 153,
   "director": [
    "Quentin Tarantino"
+  ]
+ },
+ "the-wolf-of-wall-street": {
+  "year": 2013,
+  "genres": [
+   "Crime",
+   "Drama",
+   "Comedy"
+  ],
+  "poster": "/kW9LmvYHAaS9iA0tHmZVq8hQYoq.jpg",
+  "runtime": 180,
+  "director": [
+   "Martin Scorsese"
   ]
  },
  "one-battle-after-another": {
