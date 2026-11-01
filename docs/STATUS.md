@@ -26,7 +26,7 @@ Same shape as the Oct 10 pass: a template room in the film's own place, his take
 | The Whisper Man | Jake's bedroom at night: the small bed, the toy box and blocks, his drawings, the nightlight, the window open a crack onto the dark garden, curtains. A PeripheralFigure behind you; `hazards.js` flags slow dread and a figure at the edge of view. Sound: wind at the window, a faint breathy tone, the house settling |
 | Gosford Park | The drawing room, 1932: the fire, the two sofas facing each other in front of it, the bridge table, the piano, the portrait over the mantel, a servant standing by the door at the back. Sound: fire crackle, the mantel clock, a soft piano chord from far off |
 
-- Found while building: `screenPanel` multiplies its canvas by `color`, so a drawn panel whose `color` is its dark background renders near black. The new rooms pass `color: '#ffffff'` on every drawn panel. Older rooms that pass a dark `color` with a `draw` (Dunkirk's clock board, Gone Baby Gone's TV) are probably darker than intended; not touched.
+- ~~Found while building: `screenPanel` multiplies its canvas by `color`, so a drawn panel whose `color` is its dark background renders near black.~~ Fixed the same night in `props.jsx`: a panel with `draw` is no longer tinted (plain panels keep their tint). 15 rooms changed, shot before and after: Dunkirk's three clocks, Sandford and The Crown, the screens in Upgrade, The Big Short and The Amateur now read. Sunshine's sun now blazes, so its score moved to the dark wall beside it (`info.scorePos`).
 - Staging is from memory of the films, not checked against stills. Animals' posters carry no candidate name on purpose.
 
 ### Open after this pass

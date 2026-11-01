@@ -1117,6 +1117,9 @@ export const CONFIGS = {
         { type: 'PulseBeat', bpm: 6, depth: 0.2 },
       ],
     },
+    // the sun lit up once screenPanel stopped tinting drawn panels (Oct 31),
+    // and the default score spot sat on it; the wall beside it is dark
+    info: { scorePos: [1.92, 2.2, -1.9] },
   },
 
   // ------------------------------------------------------------------- annihilation

@@ -223,7 +223,9 @@ export function screenPanel({ pos, rot, scale = 1, w = 1, h = 0.6, color = '#eee
     <Wrap pos={pos} rot={rot} scale={scale}>
       <mesh>
         <planeGeometry args={[w, h]} />
-        <meshBasicMaterial map={tex} color={color} transparent opacity={0.94} side={THREE.DoubleSide} />
+        {/* a drawn panel already carries its own colours; tinting the map by
+            `color` (usually its dark background) crushed it nearly black */}
+        <meshBasicMaterial map={tex} color={draw ? '#ffffff' : color} transparent opacity={0.94} side={THREE.DoubleSide} />
       </mesh>
     </Wrap>
   )
